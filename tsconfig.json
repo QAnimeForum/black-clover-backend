@@ -20,7 +20,7 @@
   },
   "include": [
     "src",
-    "test",
+    "test", "data-source.ts",
   ],
   "exclude": [
     "node_modules",

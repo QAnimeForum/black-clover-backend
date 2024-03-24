@@ -51,25 +51,31 @@ async function bootstrap() {
 
     logger.log(`==========================================================`);
 
-    logger.log(`Environment Variable`, 'NestApplication');
-    logger.log(JSON.parse(JSON.stringify(process.env)), 'NestApplication');
+    logger.log(`Environment Variable`, 'Black clover application');
+    logger.log(
+        JSON.parse(JSON.stringify(process.env)),
+        'Black clover Application'
+    );
 
     logger.log(`==========================================================`);
 
-    logger.log(`Job is ${jobEnable}`, 'NestApplication');
+    logger.log(`Job is ${jobEnable}`, 'black clover application');
     logger.log(
         `Http is ${httpEnable}, ${
             httpEnable ? 'routes registered' : 'no routes registered'
         }`,
-        'NestApplication'
+        'Black clover Application'
     );
-    logger.log(`Http versioning is ${versionEnable}`, 'NestApplication');
+    logger.log(
+        `Http versioning is ${versionEnable}`,
+        'Black clover Application'
+    );
 
     logger.log(
         `Http Server running on ${await app.getUrl()}`,
-        'NestApplication'
+        'Black clover Application'
     );
-    logger.log(`Database uri ${databaseUri}`, 'NestApplication');
+    logger.log(`Database uri ${databaseUri}`, 'Black clover Application');
 
     logger.log(`==========================================================`);
 }

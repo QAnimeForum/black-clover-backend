@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HelperModule } from 'src/common/helper/helper.module';
 import { ErrorModule } from 'src/common/error/error.module';
 import { ResponseModule } from 'src/common/response/response.module';
@@ -12,7 +12,8 @@ import configs from 'src/config';
 import { ENUM_APP_ENVIRONMENT } from 'src/app/constants/app.enum.constant';
 import { APP_LANGUAGE } from 'src/app/constants/app.constant';
 import { DebuggerLoggerModule } from 'src/common/debugger/debugger.logger.module';
-
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 @Module({
     controllers: [],
     providers: [],
@@ -51,7 +52,21 @@ import { DebuggerLoggerModule } from 'src/common/debugger/debugger.logger.module
 
                 JOB_ENABLE: Joi.boolean().default(false).required(),
 
-                DATABASE_HOST: Joi.string()
+                DATABASE_URL: Joi.string()
+                    .default('postgresql://localhost:5432')
+                    .required(),
+                DATABASE_TYPE: Joi.string().default('postgres').required(),
+                DATABASE_HOST: Joi.string().required(),
+                DATABASE_PORT: Joi.number().required(),
+                DATABASE_PASSWORD: Joi.string().required(),
+                DATABASE_NAME: Joi.string().required(),
+                DATABASE_USERNAME: Joi.string().required(),
+                DATABASE_SYNCHRONIZ: Joi.string().required(),
+                DATABASE_MAX_CONNECTIONS: Joi.number().required(),
+                DATABASE_SSL_ENABLED: Joi.bool().required(),
+                DATABASE_REJECT_UNAUTHORIZED: Joi.bool().required(),
+                /**
+        *          DATABASE_HOST: Joi.string()
                     .default('mongodb://localhost:27017')
                     .required(),
                 DATABASE_NAME: Joi.string().default('ack').required(),
@@ -59,12 +74,57 @@ import { DebuggerLoggerModule } from 'src/common/debugger/debugger.logger.module
                 DATABASE_PASSWORD: Joi.string().allow(null, '').optional(),
                 DATABASE_DEBUG: Joi.boolean().default(false).required(),
                 DATABASE_OPTIONS: Joi.string().allow(null, '').optional(),
-
-                SENTRY_DSN: Joi.string().allow(null, '').optional(),
+                
+        */
             }),
             validationOptions: {
                 allowUnknown: true,
                 abortEarly: true,
+            },
+        }),
+        TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            // Use useFactory, useClass, or useExisting
+            // to configure the DataSourceOptions.
+            useFactory: (configService: ConfigService) => ({
+                type: 'postgres',
+                url: configService.get('database.url', { infer: true }),
+                host: configService.get('database.host', { infer: true }),
+                port: configService.get('database.port', { infer: true }),
+                username: configService.get('database.username', {
+                    infer: true,
+                }),
+                password: configService.get('database.password', {
+                    infer: true,
+                }),
+                database: configService.get('database.name', { infer: true }),
+                synchronize: configService.get('database.synchronize', {
+                    infer: true,
+                }),
+                dropSchema: false,
+                keepConnectionAlive: true,
+                logging:
+                    configService.get('app.nodeEnv', { infer: true }) !==
+                    'production',
+                entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+                migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+                cli: {
+                    entitiesDir: 'src',
+                    migrationsDir: 'src/database/migrations',
+                    subscribersDir: 'subscriber',
+                },
+                extra: {
+                    // based on https://node-postgres.com/apis/pool
+                    // max connection pool size
+                    max: configService.get('database.maxConnections', {
+                        infer: true,
+                    }),
+                },
+            }),
+
+            dataSourceFactory: async (options: DataSourceOptions) => {
+                return new DataSource(options).initialize();
             },
         }),
         MessageModule,
