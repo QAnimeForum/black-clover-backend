@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, ManyToOne } from 'typeorm';
+import { GrimoireEntity } from './grimoire.entity';
+import { Grimoire } from '../domain/Grimoire';
 
 @Entity('spell')
 export class SpellEntity {
@@ -56,4 +58,7 @@ export class SpellEntity {
         type: 'varchar',
     })
     spellcastingAbility: string;
+
+    @ManyToOne(() => GrimoireEntity, (grimoire) => grimoire.spells)
+    grimoire: GrimoireEntity;
 }

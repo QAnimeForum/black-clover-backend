@@ -5,13 +5,14 @@ import {
     OneToOne,
     JoinColumn,
     PrimaryGeneratedColumn,
+    ManyToOne,
 } from 'typeorm';
 import { StateEntity } from './state.entity';
 import { BurgEntity } from './burg.entity';
 import { ProvinceFormEntity } from './province.form.entity';
 
 @Entity('province')
-export class ProvinceEnity {
+export class ProvinceEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
     @Column({
@@ -25,14 +26,11 @@ export class ProvinceEnity {
     })
     fullName: string;
 
-    @OneToOne(() => StateEntity, (state) => state.provinces)
-    @JoinColumn({
-        name: 'state_id',
-        referencedColumnName: 'id',
-    })
+    @ManyToOne(() => StateEntity, (state) => state.provinces)
+    @JoinColumn({ name: 'state_id', referencedColumnName: 'id' })
     state: StateEntity;
 
-    @OneToOne(() => ProvinceFormEntity, (form) => form.province)
+    @ManyToOne(() => ProvinceFormEntity, (form) => form.provinces)
     @JoinColumn({ name: 'form_id', referencedColumnName: 'id' })
     form: ProvinceFormEntity;
 

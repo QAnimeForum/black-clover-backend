@@ -2,17 +2,17 @@ import { Module } from '@nestjs/common';
 import { MapController } from './controllers/map.controller';
 import { MapService } from './service/map.service';
 import { BurgEntity } from './enitity/burg.entity';
-import { ProvinceEnity } from './enitity/province.entity';
 import { ProvinceFormEntity } from './enitity/province.form.entity';
 import { StateEntity } from './enitity/state.entity';
 import { StateFormEntity } from './enitity/state.form.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProvinceEntity } from './enitity/province.entity';
 @Module({
     imports: [
         TypeOrmModule.forFeature(
             [
                 BurgEntity,
-                ProvinceEnity,
+                ProvinceEntity,
                 ProvinceFormEntity,
                 StateEntity,
                 StateFormEntity,

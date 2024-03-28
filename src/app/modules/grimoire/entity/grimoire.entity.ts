@@ -1,55 +1,27 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { CardSymbolsEnum } from '../constants/card.symbol.enum';
+import { SpellEntity } from './spell.entity';
 @Entity('grimoire')
-export class SpellEntity {
+export class GrimoireEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
     @Column({
         type: 'varchar',
     })
-    name: string;
+    magicName: string;
+
+    @Column({
+        type: 'enum',
+        enum: CardSymbolsEnum,
+        default: CardSymbolsEnum.CLOVER,
+    })
+    coverSymbol: CardSymbolsEnum;
+
     @Column({
         type: 'varchar',
     })
-    description: string;
-    @Column({
-        type: 'varchar',
-    })
-    school: string;
-    @Column({
-        type: 'varchar',
-    })
-    readonly castTime: string;
-    @Column({
-        type: 'varchar',
-    })
-    readonly range: string;
-    @Column({
-        type: 'boolean',
-    })
-    readonly concentration: boolean;
-    @Column({
-        type: 'varchar',
-    })
-    readonly duration: string;
-    @Column({
-        type: 'varchar',
-    })
-    readonly material: string;
-    @Column({
-        type: 'varchar',
-    })
-    readonly minimumLevel: string;
-    @Column({
-        type: 'bool',
-    })
-    readonly ritual: boolean;
-    @Column({
-        type: 'bool',
-    })
-    readonly spellAttack: boolean;
-    @Column({
-        type: 'varchar',
-    })
-    spellcastingAbility: string;
+    magicColor: string;
+
+    @OneToMany(() => SpellEntity, (spell) => spell.grimoire)
+    spells: Array<SpellEntity>;
 }

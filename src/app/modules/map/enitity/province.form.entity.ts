@@ -1,5 +1,5 @@
-import { Entity, Column, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { ProvinceEnity } from './province.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { ProvinceEntity } from './province.entity';
 
 @Entity('province_form')
 export class ProvinceFormEntity {
@@ -14,6 +14,6 @@ export class ProvinceFormEntity {
     })
     description: string;
 
-    @OneToOne(() => ProvinceEnity, (province) => province.form)
-    province: ProvinceEnity;
+    @OneToMany(() => ProvinceEntity, (province) => province.form)
+    provinces: Array<ProvinceEntity>;
 }

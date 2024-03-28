@@ -1,4 +1,5 @@
-import { Logger } from '@nestjs/common';
+/**
+ * import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { CommandModule, CommandService } from 'nestjs-command';
 import { MigrationModule } from 'src/migration/migration.module';
@@ -20,3 +21,5 @@ async function bootstrap() {
 }
 
 bootstrap();
+
+ */

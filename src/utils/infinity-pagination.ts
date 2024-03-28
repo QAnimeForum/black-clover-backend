@@ -1,4 +1,5 @@
-import { IPaginationOptions } from 'src/common/pagination/interfaces/pagination.interface';
+/**
+ * import { IPaginationOptions } from 'src/common/pagination/interfaces/pagination.interface';
 import { InfinityPaginationResultType } from './infinity-pagination-result.type';
 
 export const infinityPagination = <T>(
@@ -10,3 +11,5 @@ export const infinityPagination = <T>(
         hasNextPage: data.length === options.limit,
     };
 };
+
+ */

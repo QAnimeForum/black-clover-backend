@@ -1,4 +1,4 @@
-import { Entity, Column, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { StateEntity } from './state.entity';
 
 @Entity('stateform')
@@ -14,6 +14,6 @@ export class StateFormEntity {
     })
     description: string;
 
-    @OneToOne(() => StateEntity, (state) => state.form)
-    state: StateFormEntity;
+    @OneToMany(() => StateEntity, (state) => state.form)
+    states: StateEntity[];
 }

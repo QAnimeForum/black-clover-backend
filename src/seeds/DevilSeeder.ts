@@ -3,7 +3,7 @@ import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 import { DevilEntity } from '../app/modules/devils/entity/devil.entity';
 import { CreateDevilDto } from '../app/modules/devils/dtos/create.devil.dto';
 import { DevilRanksEnum } from '../app/modules/devils/constants/devil.ranks.enum';
-import { DevilFloorEnum } from 'src/app/modules/devils/constants/devil.flor.enum';
+import { DevilFloorEnum } from '../app/modules/devils/constants/devil.flor.enum';
 export default class DevilSeeder implements Seeder {
     public async run(
         dataSource: DataSource,

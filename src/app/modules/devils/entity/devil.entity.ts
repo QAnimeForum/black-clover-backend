@@ -17,10 +17,20 @@ export class DevilEntity {
     })
     description: string;
 
+    /**
+     *   @Column({
+    type: "enum",
+    enum: MenuStatusEnum,
+    default: MenuStatusEnum.ACTIVE,
+    nullable: false,
+    name: "status_enum"
+  })
+     */
     @Column({
         type: 'enum',
         enum: DevilFloorEnum,
         default: DevilFloorEnum.ONE,
+        nullable: false,
     })
     floor: DevilFloorEnum;
 

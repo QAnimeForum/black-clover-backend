@@ -2,19 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StateEntity } from '../enitity/state.entity';
-import { ProvinceEnity } from '../enitity/province.entity';
 import { BurgEntity } from '../enitity/burg.entity';
 import { CreateStateDto } from '../dto/create-state.dto';
 import { ProvinceFormEntity } from '../enitity/province.form.entity';
 import { StateFormEntity } from '../enitity/state.form.entity';
+import { ProvinceEntity } from '../enitity/province.entity';
 
 @Injectable()
 export class MapService {
     constructor(
         @InjectRepository(StateEntity)
         private readonly stateRepository: Repository<StateEntity>,
-        @InjectRepository(ProvinceEnity)
-        private readonly provinceRepository: Repository<ProvinceEnity>,
+        @InjectRepository(ProvinceEntity)
+        private readonly provinceRepository: Repository<ProvinceEntity>,
         @InjectRepository(ProvinceFormEntity)
         private readonly provinceFormEntity: Repository<ProvinceFormEntity>,
         @InjectRepository(StateFormEntity)
@@ -27,11 +27,11 @@ export class MapService {
         return this.stateRepository.find();
     }
 
-    async getAllProvincies(): Promise<ProvinceEnity[]> {
+    async getAllProvincies(): Promise<ProvinceEntity[]> {
         return this.provinceRepository.find();
     }
 
-    async getAllBurges(): Promise<BurgEntity[]> {
+    async getAllBurgs(): Promise<BurgEntity[]> {
         return this.burgRepository.find();
     }
 

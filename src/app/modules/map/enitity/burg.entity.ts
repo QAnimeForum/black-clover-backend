@@ -1,5 +1,5 @@
 import { Entity, Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { ProvinceEnity } from './province.entity';
+import { ProvinceEntity } from './province.entity';
 
 @Entity('burg')
 export class BurgEntity {
@@ -10,8 +10,13 @@ export class BurgEntity {
     })
     name: string;
 
-    @ManyToOne(() => ProvinceEnity, (province) => province.burgs)
-    province: ProvinceEnity;
+    @Column({
+        type: 'varchar',
+    })
+    description: string;
+
+    @ManyToOne(() => ProvinceEntity, (province) => province.burgs)
+    province: ProvinceEntity;
 
     /**
     *  @OneToOne(() => StateEntity, (state) => state.capital) // specify inverse side as a second parameter

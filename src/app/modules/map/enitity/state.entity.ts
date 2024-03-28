@@ -5,10 +5,11 @@ import {
     JoinColumn,
     OneToMany,
     PrimaryGeneratedColumn,
+    ManyToOne,
 } from 'typeorm';
-import { ProvinceEnity } from './province.entity';
+import { ProvinceEntity } from './province.entity';
 import { StateFormEntity } from './state.form.entity';
-
+import { BackgroundEnity } from '../../characters/entity/background.entity';
 @Entity('state')
 export class StateEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -35,9 +36,14 @@ export class StateEntity {
 
   */
 
-    @OneToOne(() => StateFormEntity, (form) => form.state)
-    @JoinColumn()
+    @OneToOne(() => BackgroundEnity, (Background) => Background.state, {
+        cascade: true,
+    })
+    background: BackgroundEnity;
+  //  @OneToOne(() => StateFormEntity, (form) => form.state, { cascade: true })
+    @ManyToOne(() => StateFormEntity, (stateForm) => stateForm.states)
+    @JoinColumn({ name: 'form_id', referencedColumnName: 'id' })
     form: StateFormEntity;
-    @OneToMany(() => ProvinceEnity, (province) => province.state)
-    provinces: Array<ProvinceEnity>;
+    @OneToMany(() => ProvinceEntity, (province) => province.state)
+    provinces: Array<ProvinceEntity>;
 }

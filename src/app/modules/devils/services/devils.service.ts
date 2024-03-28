@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DevilEntity } from '../entity/devil.entity';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DevilRanksEnum } from '../constants/devil.ranks.enum';
 import { DevilFloorEnum } from '../constants/devil.flor.enum';
-import { FilterDevilDto, SortDevilDto } from '../dtos/query.devil.dto';
-import { IPaginationOptions } from 'src/common/pagination/interfaces/pagination.interface';
-import { Devil } from '../domain/devil';
 import { DevilMapper } from '../devils.mapper';
-
 @Injectable()
 export class DevilsService {
     constructor(
@@ -16,7 +12,34 @@ export class DevilsService {
         private readonly devilrepository: Repository<DevilEntity>
     ) {}
 
-    async findManyWithPagination({
+    async findAll() {
+        const entities = await this.devilrepository.find();
+        return entities.map((devil) => DevilMapper.toDomain(devil));
+    }
+
+    async findByPagination() {
+        //const entities = await this.devilrepository.find();
+ /*       const [entities, count] = await this.devilrepository.findAndCount({
+            skip: paginationDto._offset,
+            take: paginationDto._limit,
+    
+            order: paginationDto._availableOrderBy.reduce(
+                (accumulator, sort) => ({
+                    ...accumulator,
+                    [sort]: paginationDto._availableOrderDirection,
+                }),
+                {}
+            ),
+        });
+        return {
+            devils: entities.map((devil) => DevilMapper.toDomain(devil)),
+            total: count,
+        }*/
+    }
+
+    /**
+ * 
+ * @param rank     async findManyWithPagination({
         filterOptions,
         sortOptions,
         paginationOptions,
@@ -45,9 +68,14 @@ export class DevilsService {
 
         return entities.map((devil) => DevilMapper.toDomain(devil));
     }
-    findAll(): Promise<DevilEntity[]> {
-        return this.devilrepository.find();
+    async findAll<T = DevilEntity>(
+        find?: Record<string, any>,
+        options?: IDatabaseFindAllOptions
+    ): Promise<T[]> {
+        return this.devilrepository.<T>(find, options);
     }
+ * @returns 
+ */
 
     findByRank(rank: DevilRanksEnum): Promise<DevilEntity[]> {
         return this.devilrepository.find({
@@ -65,11 +93,11 @@ export class DevilsService {
         });
     }
 
-    findOne(id: number): Promise<DevilEntity | null> {
+    findOne(id: string): Promise<DevilEntity | null> {
         return this.devilrepository.findOneBy({ id });
     }
 
-    async remove(id: number): Promise<void> {
+    async remove(id: string): Promise<void> {
         await this.devilrepository.delete(id);
     }
 }

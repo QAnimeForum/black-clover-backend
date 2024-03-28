@@ -1,0 +1,124 @@
+import { MigrationInterface, QueryRunner } from "typeorm";
+
+export class  $npmConfigName1711545751852 implements MigrationInterface {
+    name = ' $npmConfigName1711545751852'
+
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`CREATE TYPE "public"."devils_floor_enum" AS ENUM('1', '2', '3', '4', '5', '6', '7')`);
+        await queryRunner.query(`CREATE TYPE "public"."devils_rank_enum" AS ENUM('hightest', 'high', 'mid', 'low')`);
+        await queryRunner.query(`CREATE TABLE "devils" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "description" character varying NOT NULL, "floor" "public"."devils_floor_enum" NOT NULL DEFAULT '1', "rank" "public"."devils_rank_enum" NOT NULL DEFAULT 'low', "magic_type" character varying NOT NULL, CONSTRAINT "PK_a5fe548e4adfa079304fe67f027" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "burg" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "description" character varying NOT NULL, "provinceId" uuid, CONSTRAINT "PK_3f599743b5ef43b82430448c756" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "province_form" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "description" character varying NOT NULL, CONSTRAINT "PK_7100060d132705fe129ff576026" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "province" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "short_name" character varying NOT NULL, "full_name" character varying NOT NULL, "state_id" uuid, "form_id" uuid, CONSTRAINT "PK_4f461cb46f57e806516b7073659" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "stateform" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "description" character varying NOT NULL, CONSTRAINT "PK_8a14859db916aeda81c38a99b15" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "race" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "description" character varying NOT NULL, CONSTRAINT "PK_a3068b184130d87a20e516045bb" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "item" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "itemType" character varying NOT NULL, "quantity" integer NOT NULL, "cost" character varying NOT NULL, "weight" character varying NOT NULL, "description" character varying NOT NULL, "inventoryId" uuid, CONSTRAINT "PK_d3c0c71f23e7adcf952a1d13423" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "weapons" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "weaponType" character varying NOT NULL, "cost" character varying NOT NULL, "damage" character varying NOT NULL, "damageType" character varying NOT NULL, "weight" character varying NOT NULL, "inventoryId" uuid, CONSTRAINT "PK_a102f55ffbab023a922ac10ab76" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "toolKit" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "kit" character varying NOT NULL, "cost" character varying NOT NULL, "weight" character varying NOT NULL, "description" character varying NOT NULL, "inventoryId" uuid, CONSTRAINT "PK_96b9d5a2e4c820007e0eaaf4954" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "wallet" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "cooper" integer NOT NULL, "silver" integer NOT NULL, "eclevtrum" integer NOT NULL, "gold" integer NOT NULL, "platinum" integer NOT NULL, CONSTRAINT "PK_bec464dd8d54c39c54fd32e2334" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "inventory" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "walletId" uuid, CONSTRAINT "REL_950884209837afcc4d3585352c" UNIQUE ("walletId"), CONSTRAINT "PK_82aa5da437c5bbfb80703b08309" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "armor" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "armorType" character varying NOT NULL, "cost" character varying NOT NULL, "strengthPrerequisite" integer NOT NULL, "stealthDisadvantage" boolean NOT NULL, "weight" character varying NOT NULL, "acId" uuid, "inventoryId" uuid, CONSTRAINT "REL_a9c7d9a8be9f18153adf75fbd0" UNIQUE ("acId"), CONSTRAINT "PK_9897d8f2edafda53ca0412ddeec" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "сharacter_сharacteristics" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "current_level" integer NOT NULL, "max_level" integer NOT NULL, "currentHealth" integer NOT NULL, "maxHealth" integer NOT NULL, CONSTRAINT "PK_9ecdbc6923171be1ee71bca3ea2" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "proficiency" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "level" integer NOT NULL, "extraBonus" integer NOT NULL, CONSTRAINT "PK_5d1139f6dd3f59ad11b90b5fc57" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "ability" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "abbr" character varying NOT NULL, "score" integer NOT NULL, "modifier" integer NOT NULL, "characterCharacteristicsId" uuid, CONSTRAINT "PK_5643559d435d01ec126981417a2" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TYPE "public"."skill_skillproficiency_enum" AS ENUM('0', '0.5', '1', '2')`);
+        await queryRunner.query(`CREATE TABLE "skill" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "skillProficiency" "public"."skill_skillproficiency_enum" NOT NULL DEFAULT '1', "extraBonus" integer NOT NULL, "ability_id" uuid, "proficiency_id" uuid, CONSTRAINT "REL_050ba8921bff2965456d92b2ce" UNIQUE ("ability_id"), CONSTRAINT "REL_0e6b09300470b12bdaa2dc5337" UNIQUE ("proficiency_id"), CONSTRAINT "PK_a0d33334424e64fb78dc3ce7196" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "passive_skill" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "base" integer NOT NULL, CONSTRAINT "PK_41d6f2f8d977cefe37fd00bd3da" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "armor_class" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "base" integer NOT NULL, "bonus" integer NOT NULL, "characterCharacteristicsId" uuid, CONSTRAINT "PK_5ba1e32999f6b0ce7c57665e4da" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "speed" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "base" integer NOT NULL, "bonus" integer NOT NULL, "characterCharacteristicsId" uuid, CONSTRAINT "PK_3725257a5ff7a71c525874d4444" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "spell" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "description" character varying NOT NULL, "school" character varying NOT NULL, "castTime" character varying NOT NULL, "range" character varying NOT NULL, "concentration" boolean NOT NULL, "duration" character varying NOT NULL, "material" character varying NOT NULL, "minimumLevel" character varying NOT NULL, "ritual" boolean NOT NULL, "spellAttack" boolean NOT NULL, "spellcastingAbility" character varying NOT NULL, "grimoireId" uuid, CONSTRAINT "PK_148c7e69812f7047fe34e3848fa" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TYPE "public"."grimoire_coversymbol_enum" AS ENUM('♥️', '♣️', '♦️', '♠️')`);
+        await queryRunner.query(`CREATE TABLE "grimoire" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "magicName" character varying NOT NULL, "coverSymbol" "public"."grimoire_coversymbol_enum" NOT NULL DEFAULT '♣️', "magicColor" character varying NOT NULL, CONSTRAINT "PK_adacd671c000d938874ad610c8b" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "telegram_id" integer NOT NULL, "character_id" uuid, CONSTRAINT "REL_b8f8ed851510bad74faa705e14" UNIQUE ("character_id"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TYPE "public"."character_type_enum" AS ENUM('NPC', 'PC')`);
+        await queryRunner.query(`CREATE TABLE "character" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "type" "public"."character_type_enum" NOT NULL DEFAULT 'PC', "background_id" uuid, "characteristics_id" uuid, "grimoire_id" uuid, "inventory_id" uuid, CONSTRAINT "REL_55d96be2679a079fb92a8c3238" UNIQUE ("background_id"), CONSTRAINT "REL_70fabaf90fc01eea3796b9b3ce" UNIQUE ("characteristics_id"), CONSTRAINT "REL_0d02288a8b2bc07298f21af0a5" UNIQUE ("grimoire_id"), CONSTRAINT "REL_523d22374b8851fe6e1a3c574c" UNIQUE ("inventory_id"), CONSTRAINT "PK_6c4aec48c564968be15078b8ae5" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "note" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "title" character varying NOT NULL, "description" character varying NOT NULL, "date" character varying NOT NULL, "characterId" uuid, CONSTRAINT "PK_96d0c172a4fba276b1bbed43058" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "background" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "age" integer NOT NULL, "height" integer NOT NULL, "race_id" uuid, "state_id" uuid, CONSTRAINT "REL_5d6f6589e1b7d72329c7810f39" UNIQUE ("race_id"), CONSTRAINT "REL_65d9c4a0ed73462a9f92354619" UNIQUE ("state_id"), CONSTRAINT "PK_7271b4d2e4bd0f68b3fdb5c090a" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "state" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "fullName" character varying NOT NULL, "description" character varying NOT NULL, "form_id" uuid, CONSTRAINT "PK_549ffd046ebab1336c3a8030a12" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "mineral" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "description" character varying NOT NULL, CONSTRAINT "PK_7163ddfaca3b9fc68b150c662cc" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`ALTER TABLE "burg" ADD CONSTRAINT "FK_d51177135257fdd6c86a4262104" FOREIGN KEY ("provinceId") REFERENCES "province"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "province" ADD CONSTRAINT "FK_51b3ecc6d0fd9eb342ee8742274" FOREIGN KEY ("state_id") REFERENCES "state"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "province" ADD CONSTRAINT "FK_7100060d132705fe129ff576026" FOREIGN KEY ("form_id") REFERENCES "province_form"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "item" ADD CONSTRAINT "FK_335e61fecbef385e187b17e36c5" FOREIGN KEY ("inventoryId") REFERENCES "inventory"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "weapons" ADD CONSTRAINT "FK_a225042c6bd10df68e9692f66b1" FOREIGN KEY ("inventoryId") REFERENCES "inventory"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "toolKit" ADD CONSTRAINT "FK_53f384bd3a6dfb4699caf8b94ac" FOREIGN KEY ("inventoryId") REFERENCES "inventory"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "inventory" ADD CONSTRAINT "FK_950884209837afcc4d3585352c3" FOREIGN KEY ("walletId") REFERENCES "wallet"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "armor" ADD CONSTRAINT "FK_a9c7d9a8be9f18153adf75fbd0b" FOREIGN KEY ("acId") REFERENCES "armor_class"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "armor" ADD CONSTRAINT "FK_499f0da763c693a7e50ceaabdbc" FOREIGN KEY ("inventoryId") REFERENCES "inventory"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "ability" ADD CONSTRAINT "FK_cca3fde0b135526e41214bea45e" FOREIGN KEY ("characterCharacteristicsId") REFERENCES "сharacter_сharacteristics"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "skill" ADD CONSTRAINT "FK_050ba8921bff2965456d92b2ce9" FOREIGN KEY ("ability_id") REFERENCES "ability"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "skill" ADD CONSTRAINT "FK_0e6b09300470b12bdaa2dc53372" FOREIGN KEY ("proficiency_id") REFERENCES "proficiency"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "armor_class" ADD CONSTRAINT "FK_fbf690bf735f167efa79b76c38a" FOREIGN KEY ("characterCharacteristicsId") REFERENCES "сharacter_сharacteristics"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "speed" ADD CONSTRAINT "FK_e393895f521624eea2713ede7a2" FOREIGN KEY ("characterCharacteristicsId") REFERENCES "сharacter_сharacteristics"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "spell" ADD CONSTRAINT "FK_3206fb7f3140a32f0a2a9a379f0" FOREIGN KEY ("grimoireId") REFERENCES "grimoire"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "user" ADD CONSTRAINT "FK_b8f8ed851510bad74faa705e149" FOREIGN KEY ("character_id") REFERENCES "character"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "character" ADD CONSTRAINT "FK_55d96be2679a079fb92a8c3238b" FOREIGN KEY ("background_id") REFERENCES "background"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "character" ADD CONSTRAINT "FK_70fabaf90fc01eea3796b9b3ce2" FOREIGN KEY ("characteristics_id") REFERENCES "сharacter_сharacteristics"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "character" ADD CONSTRAINT "FK_0d02288a8b2bc07298f21af0a5f" FOREIGN KEY ("grimoire_id") REFERENCES "grimoire"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "character" ADD CONSTRAINT "FK_523d22374b8851fe6e1a3c574c5" FOREIGN KEY ("inventory_id") REFERENCES "inventory"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "note" ADD CONSTRAINT "FK_c94f298d9cde38a409be2e734ba" FOREIGN KEY ("characterId") REFERENCES "character"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "background" ADD CONSTRAINT "FK_5d6f6589e1b7d72329c7810f39c" FOREIGN KEY ("race_id") REFERENCES "race"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "background" ADD CONSTRAINT "FK_65d9c4a0ed73462a9f923546192" FOREIGN KEY ("state_id") REFERENCES "state"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "state" ADD CONSTRAINT "FK_9e79bcb4b9c77c2862cffc0eb10" FOREIGN KEY ("form_id") REFERENCES "stateform"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+    }
+
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "state" DROP CONSTRAINT "FK_9e79bcb4b9c77c2862cffc0eb10"`);
+        await queryRunner.query(`ALTER TABLE "background" DROP CONSTRAINT "FK_65d9c4a0ed73462a9f923546192"`);
+        await queryRunner.query(`ALTER TABLE "background" DROP CONSTRAINT "FK_5d6f6589e1b7d72329c7810f39c"`);
+        await queryRunner.query(`ALTER TABLE "note" DROP CONSTRAINT "FK_c94f298d9cde38a409be2e734ba"`);
+        await queryRunner.query(`ALTER TABLE "character" DROP CONSTRAINT "FK_523d22374b8851fe6e1a3c574c5"`);
+        await queryRunner.query(`ALTER TABLE "character" DROP CONSTRAINT "FK_0d02288a8b2bc07298f21af0a5f"`);
+        await queryRunner.query(`ALTER TABLE "character" DROP CONSTRAINT "FK_70fabaf90fc01eea3796b9b3ce2"`);
+        await queryRunner.query(`ALTER TABLE "character" DROP CONSTRAINT "FK_55d96be2679a079fb92a8c3238b"`);
+        await queryRunner.query(`ALTER TABLE "user" DROP CONSTRAINT "FK_b8f8ed851510bad74faa705e149"`);
+        await queryRunner.query(`ALTER TABLE "spell" DROP CONSTRAINT "FK_3206fb7f3140a32f0a2a9a379f0"`);
+        await queryRunner.query(`ALTER TABLE "speed" DROP CONSTRAINT "FK_e393895f521624eea2713ede7a2"`);
+        await queryRunner.query(`ALTER TABLE "armor_class" DROP CONSTRAINT "FK_fbf690bf735f167efa79b76c38a"`);
+        await queryRunner.query(`ALTER TABLE "skill" DROP CONSTRAINT "FK_0e6b09300470b12bdaa2dc53372"`);
+        await queryRunner.query(`ALTER TABLE "skill" DROP CONSTRAINT "FK_050ba8921bff2965456d92b2ce9"`);
+        await queryRunner.query(`ALTER TABLE "ability" DROP CONSTRAINT "FK_cca3fde0b135526e41214bea45e"`);
+        await queryRunner.query(`ALTER TABLE "armor" DROP CONSTRAINT "FK_499f0da763c693a7e50ceaabdbc"`);
+        await queryRunner.query(`ALTER TABLE "armor" DROP CONSTRAINT "FK_a9c7d9a8be9f18153adf75fbd0b"`);
+        await queryRunner.query(`ALTER TABLE "inventory" DROP CONSTRAINT "FK_950884209837afcc4d3585352c3"`);
+        await queryRunner.query(`ALTER TABLE "toolKit" DROP CONSTRAINT "FK_53f384bd3a6dfb4699caf8b94ac"`);
+        await queryRunner.query(`ALTER TABLE "weapons" DROP CONSTRAINT "FK_a225042c6bd10df68e9692f66b1"`);
+        await queryRunner.query(`ALTER TABLE "item" DROP CONSTRAINT "FK_335e61fecbef385e187b17e36c5"`);
+        await queryRunner.query(`ALTER TABLE "province" DROP CONSTRAINT "FK_7100060d132705fe129ff576026"`);
+        await queryRunner.query(`ALTER TABLE "province" DROP CONSTRAINT "FK_51b3ecc6d0fd9eb342ee8742274"`);
+        await queryRunner.query(`ALTER TABLE "burg" DROP CONSTRAINT "FK_d51177135257fdd6c86a4262104"`);
+        await queryRunner.query(`DROP TABLE "mineral"`);
+        await queryRunner.query(`DROP TABLE "state"`);
+        await queryRunner.query(`DROP TABLE "background"`);
+        await queryRunner.query(`DROP TABLE "note"`);
+        await queryRunner.query(`DROP TABLE "character"`);
+        await queryRunner.query(`DROP TYPE "public"."character_type_enum"`);
+        await queryRunner.query(`DROP TABLE "user"`);
+        await queryRunner.query(`DROP TABLE "grimoire"`);
+        await queryRunner.query(`DROP TYPE "public"."grimoire_coversymbol_enum"`);
+        await queryRunner.query(`DROP TABLE "spell"`);
+        await queryRunner.query(`DROP TABLE "speed"`);
+        await queryRunner.query(`DROP TABLE "armor_class"`);
+        await queryRunner.query(`DROP TABLE "passive_skill"`);
+        await queryRunner.query(`DROP TABLE "skill"`);
+        await queryRunner.query(`DROP TYPE "public"."skill_skillproficiency_enum"`);
+        await queryRunner.query(`DROP TABLE "ability"`);
+        await queryRunner.query(`DROP TABLE "proficiency"`);
+        await queryRunner.query(`DROP TABLE "сharacter_сharacteristics"`);
+        await queryRunner.query(`DROP TABLE "armor"`);
+        await queryRunner.query(`DROP TABLE "inventory"`);
+        await queryRunner.query(`DROP TABLE "wallet"`);
+        await queryRunner.query(`DROP TABLE "toolKit"`);
+        await queryRunner.query(`DROP TABLE "weapons"`);
+        await queryRunner.query(`DROP TABLE "item"`);
+        await queryRunner.query(`DROP TABLE "race"`);
+        await queryRunner.query(`DROP TABLE "stateform"`);
+        await queryRunner.query(`DROP TABLE "province"`);
+        await queryRunner.query(`DROP TABLE "province_form"`);
+        await queryRunner.query(`DROP TABLE "burg"`);
+        await queryRunner.query(`DROP TABLE "devils"`);
+        await queryRunner.query(`DROP TYPE "public"."devils_rank_enum"`);
+        await queryRunner.query(`DROP TYPE "public"."devils_floor_enum"`);
+    }
+
+}

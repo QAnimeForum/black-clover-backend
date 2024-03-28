@@ -15,7 +15,7 @@ export class DevilMapper {
 
     static toPersistence(devil: Devil): DevilEntity {
         const devilEntity = new DevilEntity();
-        if (devil.id && typeof devil.id === 'number') {
+        if (devil.id && typeof devil.id === 'string') {
             devilEntity.id = devil.id;
         }
         devilEntity.name = devil.name;
