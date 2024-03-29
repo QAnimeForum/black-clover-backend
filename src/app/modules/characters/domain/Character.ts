@@ -1,7 +1,6 @@
-import { Grimoire } from '../../grimoire/domain/Grimoire';
 import { CharacterType } from '../constants/character.type.enum';
 import { Background } from './Background';
-import  { Inventory} from './Inventory';
+import { Inventory } from './Inventory';
 import { CharacterCharacteristics } from './CharacterCharacteristics';
 import { Note } from './Note';
 
@@ -10,7 +9,7 @@ export class Character {
     type: CharacterType;
     background: Background;
     characteristics: CharacterCharacteristics;
-    grimoire: Grimoire;
+   // grimoire: Grimoire;
     notes: Note[];
     inventory: Inventory;
 }

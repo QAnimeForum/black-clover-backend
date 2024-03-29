@@ -11,13 +11,12 @@ import { CharacterType } from '../constants/character.type.enum';
 import { BackgroundEnity } from './background.entity';
 import { CharacterCharacteristicsEntity } from './character.characteristics.entity';
 import { InventoryEntity } from './inventory.entity';
-import { GrimoireEntity } from '../../grimoire/entity/grimoire.entity';
-import { UserEnity } from '../../users/entity/user.entity';
+import { GrimoireEntity } from './grimoire.entity';
 
 @Entity('character')
 export class CharacterEntity {
     @PrimaryGeneratedColumn('uuid')
-    id: number;
+    id: string;
 
     @Column({
         type: 'enum',
@@ -55,9 +54,6 @@ export class CharacterEntity {
         referencedColumnName: 'id',
     })
     inventory: InventoryEntity;
-
-    @OneToOne(() => UserEnity, (user) => user.character)
-    user: UserEnity;
 }
 
 @Entity('note')

@@ -4,7 +4,6 @@ import { AppController } from './controllers/app.controller';
 import { CommonModule } from 'src/common/common.module';
 import { CharacterModule } from './modules/characters/character.module';
 import { DevilsModule } from './modules/devils/devils.module';
-import { GrimoireModule } from './modules/grimoire/grimoire.module';
 import { MapModule } from './modules/map/map.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,6 +12,8 @@ import { HelperModule } from 'src/common/helper/helper.module';
 import { DataSourceOptions, DataSource } from 'typeorm';
 import { ENUM_APP_ENVIRONMENT } from './constants/app.enum.constant';
 import configs from 'src/config';
+import { AppMiddlewareModule } from './middleware/app.middleware.module';
+import { RouterModule } from 'src/router/router.module';
 //import { AppMiddlewareModule } from 'src/app/middleware/app.middleware.module';
 @Module({
     controllers: [AppController],
@@ -124,9 +125,16 @@ import configs from 'src/config';
                 return new DataSource(options).initialize();
             },
         }),
+        CommonModule,
+        AppMiddlewareModule,
+
+        // Jobs
+     //   JobsModule.forRoot(),
+
+        // Routes
+        RouterModule.forRoot(),
         HelperModule,
         CharacterModule,
-        GrimoireModule,
         MapModule,
         DevilsModule,
         //     AppMiddlewareModule,

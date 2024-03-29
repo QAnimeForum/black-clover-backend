@@ -7,6 +7,7 @@ import { CreateStateDto } from '../dto/create-state.dto';
 import { ProvinceFormEntity } from '../enitity/province.form.entity';
 import { StateFormEntity } from '../enitity/state.form.entity';
 import { ProvinceEntity } from '../enitity/province.entity';
+import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
 
 @Injectable()
 export class MapService {
@@ -23,16 +24,35 @@ export class MapService {
         private readonly burgRepository: Repository<BurgEntity>
     ) {}
 
-    async getAllCountries(): Promise<StateEntity[]> {
-        return this.stateRepository.find();
+    async getAllStates(
+        dto: PaginationListDto
+    ): Promise<[StateEntity[], number]> {
+        const [entities, total] = await this.stateRepository.findAndCount({
+            skip: dto._offset * dto._limit,
+            take: dto._limit,
+            order: dto._order,
+        });
+        return [entities, total];
     }
 
-    async getAllProvincies(): Promise<ProvinceEntity[]> {
-        return this.provinceRepository.find();
+    async getAllProvincies(
+        dto: PaginationListDto
+    ): Promise<[ProvinceEntity[], number]> {
+        const [entities, total] = await this.provinceRepository.findAndCount({
+            skip: dto._offset * dto._limit,
+            take: dto._limit,
+            order: dto._order,
+        });
+        return [entities, total];
     }
 
-    async getAllBurgs(): Promise<BurgEntity[]> {
-        return this.burgRepository.find();
+    async getAllBurgs(dto: PaginationListDto): Promise<[BurgEntity[], number]> {
+        const [entities, total] = await this.burgRepository.findAndCount({
+            skip: dto._offset * dto._limit,
+            take: dto._limit,
+            order: dto._order,
+        });
+        return [entities, total];
     }
 
     async createState(data: CreateStateDto): Promise<StateEntity> {

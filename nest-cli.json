@@ -6,12 +6,7 @@
     "plugins": [
       "@nestjs/swagger"
   ],
-    "assets": [
-      { 
-        "include": "languages/**/*", 
-        "outDir": "dist/src" 
-      }
-    ],
+  "assets": [{ "include": "languages/**/*", "watchAssets": true, "outDir": "dist/src/" }],
     "deleteOutDir": true,
     "watchAssets": true
   }

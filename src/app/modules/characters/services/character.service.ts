@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { CharacterEntity } from '../entity/character.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { GrimoireEntity } from '../../grimoire/entity/grimoire.entity';
 import { CharacterType } from '../constants/character.type.enum';
 import { BackgroundEnity } from '../entity/background.entity';
 import { RaceEntity } from '../entity/race.entity';
 import { StateEntity } from '../../map/enitity/state.entity';
-import { CreatePlayableCharacterDto } from '../dto/CreatePlayableCharacterDto';
+import { CreatePlayableCharacterDto } from '../dto/create-playable-character.dto';
 import { InventoryEntity } from '../entity/inventory.entity';
 import {
     AbilityEntity,
@@ -16,6 +15,14 @@ import {
     ProficiencyEntity,
 } from '../entity/character.characteristics.entity';
 import { ArmorEntity } from '../entity/armor.entity';
+import { SpellEntity } from '../entity/spell.entity';
+import {
+    GetCharacterInfoDto,
+    GetCharacteristicsDto,
+    GetGrimoireDto,
+    GetSpellsDto,
+} from '../dto/query-character-info.dto';
+import { GrimoireEntity } from '../entity/grimoire.entity';
 @Injectable()
 export class CharacterService {
     constructor(
@@ -38,6 +45,8 @@ export class CharacterService {
         private readonly inventoryRepository: Repository<InventoryEntity>,
         @InjectRepository(GrimoireEntity)
         private readonly grimoireRepository: Repository<GrimoireEntity>,
+        @InjectRepository(SpellEntity)
+        private readonly spellRepository: Repository<SpellEntity>,
         @InjectRepository(RaceEntity)
         private readonly raceRepository: Repository<RaceEntity>,
         @InjectRepository(StateEntity)
@@ -121,7 +130,7 @@ export class CharacterService {
         const armorClass = new ArmorClassEntity();
         armorClass.name = 'Базовый';
         armorClass.base = 10;
-       // armorClass.modifier = [dexterity.modifier];
+        // armorClass.modifier = [dexterity.modifier];
         armorClass.bonus = 0;
         this.armorClassRepository.insert(armorClass);
         /**
@@ -158,8 +167,36 @@ export class CharacterService {
             return;
         }
         character.background.state = states[0];
-        this.backgroundRepository.insert(character.background);
-        this.characterRepository.insert(character);
+        await this.backgroundRepository.insert(character.background);
+        await this.characterRepository.insert(character);
         //  character.background.race = dto.raceId;
+    }
+
+    getCharacterInfo(dto: GetCharacterInfoDto) {
+        return this.characterRepository.findBy({
+            id: dto.characterId,
+        });
+    }
+
+    getGrimoireInfo(dto: GetGrimoireDto) {
+        return this.grimoireRepository.findBy({
+            id: dto.grimoireId,
+        });
+    }
+
+    findAllRaces() {
+        return this.raceRepository.find();
+    }
+
+    findCharacteristics(dto: GetCharacteristicsDto) {
+        return this.characterRepository.findBy({
+            id: dto.charactristicsId,
+        });
+    }
+
+    findSpells(dto: GetSpellsDto) {
+        return this.spellRepository.findBy({
+            id: dto.grimoireId,
+        });
     }
 }
