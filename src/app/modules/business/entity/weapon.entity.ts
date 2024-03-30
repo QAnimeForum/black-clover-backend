@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { InventoryEntity } from './inventory.entity';
+import { InventoryEntity } from '../../characters/entity/inventory.entity';
 
 @Entity('weapons')
 export class WeaponEntity {

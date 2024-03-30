@@ -6,8 +6,8 @@ import {
     OneToMany,
 } from 'typeorm';
 import { ItemEnity } from './item.entity';
-import { ArmorEntity } from './armor.entity';
-import { WeaponEntity } from './weapon.entity';
+import { ArmorEntity } from '../../business/entity/armor.entity';
+import { WeaponEntity } from '../../business/entity/weapon.entity';
 import { ToolKitEnity } from './toolkit.entity';
 import { WalletEntity } from './wallet.entity';
 @Entity('inventory')

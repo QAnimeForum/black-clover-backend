@@ -1,6 +1,6 @@
 export enum ENUM_PAGINATION_ORDER_DIRECTION_TYPE {
-    ASC = 'asc',
-    DESC = 'desc',
+    ASC = 'ASC',
+    DESC = 'DESC',
 }
 
 export enum ENUM_PAGINATION_FILTER_CASE_OPTIONS {

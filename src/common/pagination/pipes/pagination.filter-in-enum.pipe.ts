@@ -17,11 +17,8 @@ export function PaginationFilterInEnumPipe<T>(
             private readonly paginationService: PaginationService
         ) {}
 
-        async transform(
-            value: string
-        ): Promise<Record<string, { $in: T[] } | T[]>> {
+        async transform(value: string): Promise<Record<string, T[]>> {
             let finalValue: T[] = defaultValue as T[];
-
             if (value) {
                 finalValue = value
                     .split(',')

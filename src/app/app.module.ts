@@ -2,9 +2,6 @@ import { Module } from '@nestjs/common';
 //import { JobsModule } from 'src/jobs/jobs.module';
 import { AppController } from './controllers/app.controller';
 import { CommonModule } from 'src/common/common.module';
-import { CharacterModule } from './modules/characters/character.module';
-import { DevilsModule } from './modules/devils/devils.module';
-import { MapModule } from './modules/map/map.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import Joi from 'joi';
@@ -129,16 +126,11 @@ import { RouterModule } from 'src/router/router.module';
         AppMiddlewareModule,
 
         // Jobs
-     //   JobsModule.forRoot(),
+        //   JobsModule.forRoot(),
 
         // Routes
         RouterModule.forRoot(),
         HelperModule,
-        CharacterModule,
-        MapModule,
-        DevilsModule,
-        //     AppMiddlewareModule,
-
         // Jobs
         ///    JobsModule.forRoot(),
 

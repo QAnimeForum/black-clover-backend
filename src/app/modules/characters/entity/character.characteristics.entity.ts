@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { CharacterEntity } from './character.entity';
 import { SkillProficiency } from '../constants/skill.proficiency.enum';
-import { ArmorEntity } from './armor.entity';
+import { ArmorEntity } from '../../business/entity/armor.entity';
 @Entity('сharacter_сharacteristics')
 export class CharacterCharacteristicsEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -191,14 +191,10 @@ export class ArmorClassEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
     @Column({
-        type: 'varchar',
-    })
-    name: string;
-    @Column({
         type: 'int',
     })
     base: number;
- //  modifier: Array<number>;
+    //  modifier: Array<number>;
     @Column({
         type: 'int',
     })

@@ -1,6 +1,6 @@
 export enum DevilRanksEnum {
-    HighestRanking = 'hightest',
-    HighRanking = 'high',
-    MidRanking = 'mid',
-    LowRanking = 'low',
+    HIGHEST = 'highest',
+    HIGH = 'high',
+    MID = 'mid',
+    LOW = 'low',
 }

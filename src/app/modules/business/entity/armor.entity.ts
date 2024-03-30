@@ -1,14 +1,5 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    JoinColumn,
-    OneToOne,
-    ManyToOne,
-} from 'typeorm';
-import { InventoryEntity } from './inventory.entity';
-import { ArmorClassEntity } from './character.characteristics.entity';
-
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { InventoryEntity } from '../../characters/entity/inventory.entity';
 @Entity('armor')
 export class ArmorEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -26,13 +17,22 @@ export class ArmorEntity {
     })
     cost: string;
 
-    @OneToOne(() => ArmorClassEntity)
+    /* @OneToOne(() => ArmorClassEntity)
     @JoinColumn()
-    ac: ArmorClassEntity;
-
+    ac: ArmorClassEntity;*/
+    //  modifier: Array<number>;
     @Column({
         type: 'int',
+        name: 'ac_base',
     })
+    acBase: number;
+    //  modifier: Array<number>;
+    @Column({
+        type: 'int',
+        name: 'ac_bonus',
+    })
+    acBonus: number;
+
     strengthPrerequisite: number;
     @Column({
         type: 'boolean',

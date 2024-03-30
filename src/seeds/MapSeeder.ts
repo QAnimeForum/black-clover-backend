@@ -1,16 +1,16 @@
-import { CreateStateDto } from '../../app/modules/map/dto/create-state.dto';
-import { StateEntity } from '../../app/modules/map/enitity/state.entity';
+import { CreateStateDto } from '../app/modules/map/dto/create-state.dto';
+import { StateEntity } from '../app/modules/map/enitity/state.entity';
 import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
-import { CreateStateFormDto } from '../../app/modules/map/dto/create-state-form.dto';
-import { StateFormEntity } from '../../app/modules/map/enitity/state.form.entity';
-import { ProvinceFormEntity } from '../../app/modules/map/enitity/province.form.entity';
-import { CreateProvinceFormDto } from '../../app/modules/map/dto/create-province-form.dto';
-import { ProvinceEntity } from '../../app/modules/map/enitity/province.entity';
-import { BurgEntity } from '../../app/modules/map/enitity/burg.entity';
-import { CreateProvinceDto } from '../../app/modules/map/dto/create-province.dto';
-import { CreateBurgDto } from '../../app/modules/map/dto/create-burg-dto';
-export default class StateSeeder implements Seeder {
+import { CreateStateFormDto } from '../app/modules/map/dto/create-state-form.dto';
+import { StateFormEntity } from '../app/modules/map/enitity/state.form.entity';
+import { ProvinceFormEntity } from '../app/modules/map/enitity/province.form.entity';
+import { CreateProvinceFormDto } from '../app/modules/map/dto/create-province-form.dto';
+import { ProvinceEntity } from '../app/modules/map/enitity/province.entity';
+import { BurgEntity } from '../app/modules/map/enitity/burg.entity';
+import { CreateProvinceDto } from '../app/modules/map/dto/create-province.dto';
+import { CreateBurgDto } from '../app/modules/map/dto/create-burg-dto';
+export default class MapSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<any> {
         const stateFormRepository = dataSource.getRepository(StateFormEntity);
         const stateRepository = dataSource.getRepository(StateEntity);

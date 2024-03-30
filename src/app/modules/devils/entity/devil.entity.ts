@@ -37,7 +37,7 @@ export class DevilEntity {
     @Column({
         type: 'enum',
         enum: DevilRanksEnum,
-        default: DevilRanksEnum.LowRanking,
+        default: DevilRanksEnum.LOW,
     })
     rank: DevilRanksEnum;
 

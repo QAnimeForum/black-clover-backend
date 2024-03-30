@@ -4,7 +4,8 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DevilRanksEnum } from '../constants/devil.ranks.enum';
 import { DevilFloorEnum } from '../constants/devil.flor.enum';
-import { DevilMapper } from '../devils.mapper';
+import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
+import { CreateDevilDto } from '../dtos/create.devil.dto';
 @Injectable()
 export class DevilsService {
     constructor(
@@ -12,71 +13,35 @@ export class DevilsService {
         private readonly devilrepository: Repository<DevilEntity>
     ) {}
 
-    async findAll() {
-        const entities = await this.devilrepository.find();
-        return entities.map((devil) => DevilMapper.toDomain(devil));
-    }
-
-    async findByPagination() {
-        //const entities = await this.devilrepository.find();
- /*       const [entities, count] = await this.devilrepository.findAndCount({
-            skip: paginationDto._offset,
-            take: paginationDto._limit,
-    
-            order: paginationDto._availableOrderBy.reduce(
+    async getDevils(
+        dto: PaginationListDto,
+        rank: Record<string, any>,
+        floor: Record<string, any>
+    ): Promise<[DevilEntity[], number]> {
+        console.log(rank, floor);
+        const [entities, total] = await this.devilrepository.findAndCount({
+            skip: dto._offset * dto._limit,
+            take: dto._limit,
+            order: dto._availableOrderBy?.reduce(
                 (accumulator, sort) => ({
                     ...accumulator,
-                    [sort]: paginationDto._availableOrderDirection,
+                    [sort]: dto._order,
                 }),
                 {}
             ),
         });
-        return {
-            devils: entities.map((devil) => DevilMapper.toDomain(devil)),
-            total: count,
-        }*/
+        return [entities, total];
     }
-
-    /**
- * 
- * @param rank     async findManyWithPagination({
-        filterOptions,
-        sortOptions,
-        paginationOptions,
-    }: {
-        filterOptions?: FilterDevilDto | null;
-        sortOptions?: SortDevilDto[] | null;
-        paginationOptions: IPaginationOptions;
-    }): Promise<Devil[]> {
-        const where: FindOptionsWhere<DevilEntity> = {};
-        if (filterOptions?.rank) {
-            where.rank = filterOptions.rank;
-        }
-
-        const entities = await this.devilrepository.find({
-            skip: (paginationOptions.page - 1) * paginationOptions.limit,
-            take: paginationOptions.limit,
-            where: where,
-            order: sortOptions?.reduce(
-                (accumulator, sort) => ({
-                    ...accumulator,
-                    [sort.orderBy]: sort.order,
-                }),
-                {}
-            ),
+    async existByName(name: string): Promise<boolean> {
+        const entity = await this.devilrepository.findOneBy({
+            name: name,
         });
-
-        return entities.map((devil) => DevilMapper.toDomain(devil));
+        return entity ? true : false;
     }
-    async findAll<T = DevilEntity>(
-        find?: Record<string, any>,
-        options?: IDatabaseFindAllOptions
-    ): Promise<T[]> {
-        return this.devilrepository.<T>(find, options);
+    async create(dto: CreateDevilDto) {
+        const insert = await this.devilrepository.insert(dto);
+        return insert.raw[0].id;
     }
- * @returns 
- */
-
     findByRank(rank: DevilRanksEnum): Promise<DevilEntity[]> {
         return this.devilrepository.find({
             where: {

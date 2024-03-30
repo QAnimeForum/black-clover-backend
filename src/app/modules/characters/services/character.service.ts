@@ -14,7 +14,7 @@ import {
     CharacterCharacteristicsEntity,
     ProficiencyEntity,
 } from '../entity/character.characteristics.entity';
-import { ArmorEntity } from '../entity/armor.entity';
+import { ArmorEntity } from '../../business/entity/armor.entity';
 import { SpellEntity } from '../entity/spell.entity';
 import {
     GetCharacterInfoDto,
@@ -23,6 +23,8 @@ import {
     GetSpellsDto,
 } from '../dto/query-character-info.dto';
 import { GrimoireEntity } from '../entity/grimoire.entity';
+import { CreateRaceDto } from '../dto/create-race.dto';
+import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
 @Injectable()
 export class CharacterService {
     constructor(
@@ -128,7 +130,7 @@ export class CharacterService {
         ];
 
         const armorClass = new ArmorClassEntity();
-        armorClass.name = 'Базовый';
+     //   armorClass.name = 'Базовый';
         armorClass.base = 10;
         // armorClass.modifier = [dexterity.modifier];
         armorClass.bonus = 0;
@@ -184,10 +186,33 @@ export class CharacterService {
         });
     }
 
-    findAllRaces() {
-        return this.raceRepository.find();
+    async findAllRaces(
+        dto: PaginationListDto
+    ): Promise<[RaceEntity[], number]> {
+        const [entities, total] = await this.raceRepository.findAndCount({
+            skip: dto._offset * dto._limit,
+            take: dto._limit,
+            order: dto._availableOrderBy?.reduce(
+                (accumulator, sort) => ({
+                    ...accumulator,
+                    [sort]: dto._order,
+                }),
+                {}
+            ),
+        });
+        return [entities, total];
     }
 
+    async raceExistByName(name: string): Promise<boolean> {
+        const entity = await this.raceRepository.findOneBy({
+            name: name,
+        });
+        return entity ? true : false;
+    }
+
+    createrRace(dto: CreateRaceDto) {
+        return this.raceRepository.insert(dto);
+    }
     findCharacteristics(dto: GetCharacteristicsDto) {
         return this.characterRepository.findBy({
             id: dto.charactristicsId,

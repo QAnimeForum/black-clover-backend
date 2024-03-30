@@ -117,14 +117,9 @@ export class PaginationService implements IPaginationService {
         };
     }
 
-    filterIn<T = string>(
-        field: string,
-        filterValue: T[]
-    ): Record<string, { $in: T[] }> {
+    filterIn<T = string>(field: string, filterValue: T[]): Record<string, T[]> {
         return {
-            [field]: {
-                $in: filterValue,
-            },
+            [field]: filterValue,
         };
     }
 

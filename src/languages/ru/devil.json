@@ -1,0 +1,14 @@
+{
+  "list": "List Role Success.",
+  "get": "Get Role Success.",
+  "create": "Create Succeed",
+    "update": "Update Succeed",
+    "updatePermission": "Update permission Succeed",
+    "delete": "Delete Succeed",
+    "inactive": "Inactive Succeed",
+    "active": "Active Succeed",
+    "error": {
+      "notFound": "Role not found",
+      "exist": "Role exist"
+    }
+}

@@ -8,7 +8,7 @@ import {
 import { Transform, Type, plainToInstance } from 'class-transformer';
 import { DevilRanksEnum } from '../constants/devil.ranks.enum';
 import { Devil } from '../domain/devil';
-import { RequestPaginationSerialization } from 'src/utils/RequestPaginationSerialization';
+import { RequestPaginationSerialization } from '../../../../common/request/serializations/request.pagination.serialization';
 
 export class AllDevilsDto {
     __pagination?: RequestPaginationSerialization;
@@ -47,7 +47,7 @@ export class QueryDevilDto {
     @ApiPropertyOptional({ type: String })
     @IsOptional()
     @Transform(({ value }) =>
-        value? plainToInstance(FilterDevilDto, JSON.parse(value)) : undefined
+        value ? plainToInstance(FilterDevilDto, JSON.parse(value)) : undefined
     )
     @ValidateNested()
     @Type(() => FilterDevilDto)

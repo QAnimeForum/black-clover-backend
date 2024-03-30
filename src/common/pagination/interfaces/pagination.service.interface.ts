@@ -25,9 +25,6 @@ export interface IPaginationService {
         field: string,
         filterValue: string
     ): Record<string, { $regex: RegExp; $options: string }>;
-    filterIn<T = string>(
-        field: string,
-        filterValue: T[]
-    ): Record<string, { $in: T[] }>;
+    filterIn<T = string>(field: string, filterValue: T[]): Record<string, T[]>;
     filterDate(field: string, filterValue: Date): Record<string, Date>;
 }

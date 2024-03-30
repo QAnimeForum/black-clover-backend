@@ -21,6 +21,9 @@ import {
 } from '../constants/map-list.constant';
 import { IResponsePaging } from 'src/common/response/interfaces/response.interface';
 import { PaginationService } from 'src/common/pagination/services/pagination.service';
+import { ResponsePaging } from 'src/common/response/decorators/response.decorator';
+import { StateListSerialization } from '../serialization/state.list.serialization';
+import { BurgListSerialization } from '../serialization/burg.list.serialization';
 
 @Controller({
     version: VERSION_NEUTRAL,
@@ -31,6 +34,10 @@ export class MapController {
         private readonly mapService: MapService,
         private readonly paginationService: PaginationService
     ) {}
+
+    @ResponsePaging('map.state.list', {
+        serialization: StateListSerialization,
+    })
     @Get('/states')
     async getAllStates(
         @PaginationQuery(
@@ -54,6 +61,9 @@ export class MapController {
         };
     }
 
+    /* @ResponsePaging('map.province.list', {
+        serialization: ProvinceListSerialization,
+    })*/
     @Get('/provinces')
     async getAllProvinces(
         @PaginationQuery(
@@ -64,18 +74,22 @@ export class MapController {
             PROVINCES_DEFAULT_AVAILABLE_ORDER_BY
         )
         dto: PaginationListDto
-    ) {
+    ): Promise<IResponsePaging> {
         const [provinces, total] = await this.mapService.getAllProvincies(dto);
         const totalPage: number = this.paginationService.totalPage(
             total,
             dto._limit
         );
+        console.log(totalPage);
         return {
             _pagination: { totalPage, total },
             data: provinces,
         };
     }
 
+    @ResponsePaging('map.burg.list', {
+        serialization: BurgListSerialization,
+    })
     @Get('/burgs')
     async getAllBurgs(
         @PaginationQuery(

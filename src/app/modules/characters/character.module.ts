@@ -16,11 +16,11 @@ import {
 import { BackgroundEnity } from './entity/background.entity';
 import { StateEntity } from '../map/enitity/state.entity';
 import { InventoryEntity } from './entity/inventory.entity';
-import { ArmorEntity } from './entity/armor.entity';
+import { ArmorEntity } from '../business/entity/armor.entity';
 import { ItemEnity } from './entity/item.entity';
 import { ToolKitEnity } from './entity/toolkit.entity';
 import { WalletEntity } from './entity/wallet.entity';
-import { WeaponEntity } from './entity/weapon.entity';
+import { WeaponEntity } from '../business/entity/weapon.entity';
 import { GrimoireEntity } from './entity/grimoire.entity';
 import { SpellEntity } from './entity/spell.entity';
 @Module({

@@ -30,7 +30,16 @@ export class MapService {
         const [entities, total] = await this.stateRepository.findAndCount({
             skip: dto._offset * dto._limit,
             take: dto._limit,
-            order: dto._order,
+            order: dto._availableOrderBy?.reduce(
+                (accumulator, sort) => ({
+                    ...accumulator,
+                    [sort]: dto._order,
+                }),
+                {}
+            ),
+            relations: {
+                form: true,
+            },
         });
         return [entities, total];
     }
@@ -38,19 +47,35 @@ export class MapService {
     async getAllProvincies(
         dto: PaginationListDto
     ): Promise<[ProvinceEntity[], number]> {
-        const [entities, total] = await this.provinceRepository.findAndCount({
+        console.log(dto);
+        const entities = await this.provinceRepository.find({
             skip: dto._offset * dto._limit,
             take: dto._limit,
-            order: dto._order,
+            order: dto._availableOrderBy?.reduce(
+                (accumulator, sort) => ({
+                    ...accumulator,
+                    [sort]: dto._order,
+                }),
+                {}
+            ),
+            relations: {
+                form: true,
+            },
         });
-        return [entities, total];
+        return [entities, 10];
     }
 
     async getAllBurgs(dto: PaginationListDto): Promise<[BurgEntity[], number]> {
         const [entities, total] = await this.burgRepository.findAndCount({
             skip: dto._offset * dto._limit,
             take: dto._limit,
-            order: dto._order,
+            order: dto._availableOrderBy?.reduce(
+                (accumulator, sort) => ({
+                    ...accumulator,
+                    [sort]: dto._order,
+                }),
+                {}
+            ),
         });
         return [entities, total];
     }
