@@ -1,19 +1,12 @@
 {
-  "weapon": "Оружие успешно создано",
-  "list": "List Role Success.",
-  "get": "Get Role Success.",
-  "create": "Create Succeed",
-  "update": "Update Succeed",
-  "updatePermission": "Update permission Succeed",
-  "delete": "Delete Succeed",
-  "inactive": "Inactive Succeed",
-  "active": "Active Succeed",
+  "weapon": "Оружие успешно создано.",
+  "list": "Список оружий успешно создан.",
+  "get": "Информация об оружии успешно получено.",
+  "create": "Оружие успешно создано.",
+  "update": "Иноформация об оружии успешно обновлена.",
+  "delete": "Иноформация об оружии удалена.",
   "error": {
-      "notFound": "Role not found",
-      "inactive": "Role is inactive",
-      "exist": "Role exist",
-      "used": "Role in used",
-      "isActiveInvalid": "Role is active invalid",
-      "typeForbidden": "Role type not allowed"
+      "notFound": "Оружие не найдено.",
+      "exist": "Оружие уже существует"
   }
 }

@@ -1,44 +1,35 @@
 {
   "state": {
-    "list": "List Role Success.",
-    "get": "Get Role Success.",
-    "create": "Create Succeed",
-    "update": "Update Succeed",
-    "updatePermission": "Update permission Succeed",
-    "delete": "Delete Succeed",
-    "inactive": "Inactive Succeed",
-    "active": "Active Succeed",
+    "list": "Список стран получен успешно.",
+    "get": "Информация о стране получена успешно.",
+    "create": "Создание страны произошло успешн.",
+    "update": "Обновление информации о стране произошло успешн.",
+    "delete": "Страна успешно удалена.",
     "error": {
-      "notFound": "Role not found",
-      "exist": "Role exist"
+      "notFound": "Страна не найдена.",
+      "exist": "Страна существует."
     }
   },
   "province": {
-    "list": "List Role Success.",
-    "get": "Get Role Success.",
-    "create": "Create Succeed",
-    "update": "Update Succeed",
-    "updatePermission": "Update permission Succeed",
-    "delete": "Delete Succeed",
-    "inactive": "Inactive Succeed",
-    "active": "Active Succeed",
+    "list": "Список областей получен успешно.",
+    "get": "Информация о области получена успешно.",
+    "create": "Создание областей произошло успешн.",
+    "update": "Обновление информации об области произошло успешн.",
+    "delete": "Область успешно удалена.",
     "error": {
-      "notFound": "Role not found",
-      "exist": "Role exist"
+      "notFound": "Область не найдена.",
+      "exist": "Область существует."
     }
   },
   "burg": {
-    "list": "List Role Success.",
-    "get": "Get Role Success.",
-    "create": "Create Succeed",
-    "update": "Update Succeed",
-    "updatePermission": "Update permission Succeed",
-    "delete": "Delete Succeed",
-    "inactive": "Inactive Succeed",
-    "active": "Active Succeed",
+    "list": "Список городов получен успешно.",
+    "get": "Информация о городе получена успешно.",
+    "create": "Создание города произошло успешн.",
+    "update": "Обновление информации о городе произошло успешн.",
+    "delete": "Город успешно удалена.",
     "error": {
-      "notFound": "Role not found",
-      "exist": "Role exist"
+      "notFound": "Город не найден.",
+      "exist": "Город существует."
     }
   }
 }

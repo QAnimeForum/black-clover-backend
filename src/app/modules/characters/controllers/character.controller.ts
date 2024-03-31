@@ -36,6 +36,7 @@ import { RaceRequestDto } from '../dto/race.request.dto';
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
 import { CharacterRequestDto } from '../dto/character.request.dto';
 import { GrimoireRequestDto } from '../dto/grimoire.request.dto';
+import { CharacteristicsRequestDto } from '../dto/characteristics.request.dto';
 
 export enum ENUM_RACE_STATUS_CODE_ERROR {
     RACE_NOT_FOUND_ERROR = 5100,
@@ -64,10 +65,6 @@ export class CharacterController {
         return {
             data: { _id: create.raw[0].id },
         };
-    }
-    @Get('/character')
-    findCharacter(dto: GetCharacterInfoDto) {
-        return this.characterService.getCharacterInfo(dto);
     }
 
     @Response('character.character.get', {
@@ -109,6 +106,27 @@ export class CharacterController {
         }
         return {
             data: character,
+        };
+    }
+
+    @Response('character.chracteristics.get', {
+        serialization: RaceGetSerialization,
+    })
+    @RequestParamGuard(GrimoireRequestDto)
+    @Get('/characteristics/get/:characteristics')
+    async findCharacteristics(@Param() params: CharacteristicsRequestDto) {
+        const characteristics =
+            await this.characterService.getCharacteristicsById(
+                params.chracteristics
+            );
+        if (!characteristics) {
+            throw new ConflictException({
+                statusCode: ENUM_RACE_STATUS_CODE_ERROR.RACE_EXIST_ERROR,
+                message: 'character.grimoire.error.exist',
+            });
+        }
+        return {
+            data: characteristics,
         };
     }
 

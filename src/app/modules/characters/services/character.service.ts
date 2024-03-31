@@ -241,6 +241,7 @@ export class CharacterService {
         });
         return entity;
     }
+
     async getRaceById(raceId: string): Promise<RaceEntity> {
         const entity = await this.raceRepository.findOneBy({
             id: raceId,
