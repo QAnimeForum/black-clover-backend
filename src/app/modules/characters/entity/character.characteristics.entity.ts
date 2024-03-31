@@ -2,14 +2,15 @@ import {
     Column,
     Entity,
     JoinColumn,
-    ManyToOne,
     OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CharacterEntity } from './character.entity';
-import { SkillProficiency } from '../constants/skill.proficiency.enum';
-import { ArmorEntity } from '../../business/entity/armor.entity';
+import { AbilityEntity } from './ability.entity';
+import { ArmorClassEntity } from './armor.class.entity';
+import { SpeedEntity } from './speed.entity';
+import { ProficiencyEntity } from './proficiency.entity';
 @Entity('сharacter_сharacteristics')
 export class CharacterCharacteristicsEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -37,39 +38,61 @@ export class CharacterCharacteristicsEntity {
     })
     maxHealth: number;
 
+    @OneToOne(() => ProficiencyEntity, {
+        cascade: true,
+    })
+    @JoinColumn({ name: 'proficiency_id' })
+    proficiency: ProficiencyEntity;
+
     @OneToOne(() => CharacterEntity)
     character: CharacterEntity;
 
-    @OneToMany(
+    /* @OneToMany(
         () => AbilityEntity,
         (ability) => ability.characterCharacteristics
     )
-    abilites: AbilityEntity[];
+    abilites: AbilityEntity[];*/
 
-    @OneToMany(
-        () => ArmorClassEntity,
-        (armor) => armor.characterCharacteristics
-    )
-    armorClasses: ArmorClassEntity[];
+    @OneToOne(() => AbilityEntity)
+    @JoinColumn({
+        name: 'strength_id',
+    })
+    strength: AbilityEntity;
+    @OneToOne(() => AbilityEntity)
+    @JoinColumn({
+        name: 'dexterity_id',
+    })
+    dexterity: AbilityEntity;
+    @OneToOne(() => AbilityEntity)
+    @JoinColumn({
+        name: 'constitution_id',
+    })
+    constitution: AbilityEntity;
+    @OneToOne(() => AbilityEntity)
+    @JoinColumn({
+        name: 'intelligence_id',
+    })
+    intelligence: AbilityEntity;
+    @OneToOne(() => AbilityEntity)
+    @JoinColumn({
+        name: 'wisdom_id',
+    })
+    wisdom: AbilityEntity;
+    @OneToOne(() => AbilityEntity)
+    @JoinColumn({
+        name: 'charisma_id',
+    })
+    charisma: AbilityEntity;
+
+    @OneToOne(() => ArmorClassEntity)
+    @JoinColumn({
+        name: 'armor_class_id',
+        referencedColumnName: 'id',
+    })
+    armorClass: ArmorClassEntity;
 
     @OneToMany(() => SpeedEntity, (speed) => speed.characterCharacteristics)
     speeds: SpeedEntity[];
-}
-
-@Entity('proficiency')
-export class ProficiencyEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-
-    @Column({
-        type: 'int',
-    })
-    level: number;
-
-    @Column({
-        type: 'int',
-    })
-    extraBonus: number;
 }
 
 /*
@@ -110,103 +133,6 @@ export class CharacterAbilitiesEntity {
     charisma: AbilityEntity;
 }*/
 
-@Entity('ability')
-export class AbilityEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-    @Column({
-        type: 'varchar',
-    })
-    name: string;
-    @Column({
-        type: 'varchar',
-    })
-    abbr: string;
-    @Column({
-        type: 'int',
-    })
-    score: number;
-
-    @Column({
-        type: 'int',
-    })
-    modifier: number;
-
-    @ManyToOne(
-        () => CharacterCharacteristicsEntity,
-        (characterCharacteristics) => characterCharacteristics.speeds
-    )
-    characterCharacteristics: CharacterCharacteristicsEntity;
-}
-
-@Entity('skill')
-export class SkillEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-
-    @Column({
-        type: 'varchar',
-    })
-    name: string;
-
-    @OneToOne(() => AbilityEntity)
-    @JoinColumn({
-        name: 'ability_id',
-    })
-    ability: AbilityEntity;
-    @OneToOne(() => ProficiencyEntity)
-    @JoinColumn({
-        name: 'proficiency_id',
-    })
-    proficiency: ProficiencyEntity;
-
-    @Column({
-        type: 'enum',
-        enum: SkillProficiency,
-        default: SkillProficiency.FULL,
-    })
-    skillProficiency: SkillProficiency;
-    @Column({
-        type: 'int',
-    })
-    extraBonus: number;
-}
-@Entity('passive_skill')
-export class PassiveSkillEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-    @Column({
-        type: 'varchar',
-    })
-    name: string;
-    @Column({
-        type: 'int',
-    })
-    base: number;
-    skill: SkillEntity;
-}
-
-@Entity('armor_class')
-export class ArmorClassEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-    @Column({
-        type: 'int',
-    })
-    base: number;
-    //  modifier: Array<number>;
-    @Column({
-        type: 'int',
-    })
-    bonus: number;
-    @ManyToOne(
-        () => CharacterCharacteristicsEntity,
-        (characterCharacteristics) => characterCharacteristics.speeds
-    )
-    characterCharacteristics: CharacterCharacteristicsEntity;
-    @OneToOne(() => ArmorEntity)
-    armor: ArmorEntity;
-}
 /**
  * import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ArmorEntity } from './armor.entity';
@@ -233,30 +159,6 @@ export class ArmorClassEntity {
 }
 
  */
-@Entity('speed')
-export class SpeedEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-    @Column({
-        type: 'varchar',
-    })
-    name: string;
-    @Column({
-        type: 'int',
-    })
-    base: number;
-    @Column({
-        type: 'int',
-    })
-    bonus: number;
-
-    @ManyToOne(
-        () => CharacterCharacteristicsEntity,
-        (characterCharacteristics) => characterCharacteristics.speeds
-    )
-    characterCharacteristics: CharacterCharacteristicsEntity;
-}
-
 /**
  * import { ArmorClass } from './ArmorClass';
 import { Attack } from './Attack';

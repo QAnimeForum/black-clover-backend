@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    OneToOne,
+    OneToMany,
+} from 'typeorm';
 import { BackgroundEnity } from './background.entity';
 @Entity('race')
 export class RaceEntity {
@@ -15,6 +21,6 @@ export class RaceEntity {
     })
     description: string;
 
-    @OneToOne(() => BackgroundEnity, (background) => background.race)
-    background: BackgroundEnity;
+    @OneToMany(() => BackgroundEnity, (background) => background.race)
+    backgrounds: BackgroundEnity[];
 }

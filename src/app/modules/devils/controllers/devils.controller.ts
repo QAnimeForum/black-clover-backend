@@ -5,6 +5,7 @@ import {
     Post,
     Body,
     VERSION_NEUTRAL,
+    Param,
 } from '@nestjs/common';
 import { DevilsService } from '../services/devils.service';
 import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from '../../../../common/pagination/constants/pagination.enum.constant';
@@ -35,6 +36,9 @@ import { ResponseIdSerialization } from 'src/common/response/serializations/resp
 import { ENUM_DEVIL_STATUS_CODE_ERROR } from '../constants/devil.status-code.constant';
 import { DevilRanksEnum } from '../constants/devil.ranks.enum';
 import { DevilFloorEnum } from '../constants/devil.flor.enum';
+import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
+import { DevilGetSerialization } from '../serializations/devil.get.serialization';
+import { DevilRequestDto } from '../dtos/devil.request.dto';
 
 export const DEVILS_DEFAULT_PER_PAGE = 20;
 export const DEVILS_DEFAULT_ORDER_BY = 'floor';
@@ -116,6 +120,24 @@ export class DevilsController {
 
         return {
             data: { _id: create.raw[0].id },
+        };
+    }
+
+    @Response('devil.get', {
+        serialization: DevilGetSerialization,
+    })
+    @RequestParamGuard(DevilRequestDto)
+    @Get('/race/get/:race')
+    async getRace(@Param() params: DevilRequestDto): Promise<IResponse> {
+        const devil = await this.devilService.findOne(params.devil);
+        if (!devil) {
+            throw new ConflictException({
+                statusCode: ENUM_DEVIL_STATUS_CODE_ERROR.DEVIL_EXIST_ERROR,
+                message: 'character.race.error.exist',
+            });
+        }
+        return {
+            data: devil,
         };
     }
 }

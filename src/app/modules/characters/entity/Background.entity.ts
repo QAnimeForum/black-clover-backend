@@ -2,6 +2,7 @@ import {
     Column,
     Entity,
     JoinColumn,
+    ManyToOne,
     OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -19,7 +20,7 @@ export class BackgroundEnity {
     })
     name: string;
 
-    @OneToOne(() => RaceEntity, (race) => race.background)
+    @ManyToOne(() => RaceEntity, (race) => race.backgrounds)
     @JoinColumn({ name: 'race_id', referencedColumnName: 'id' })
     race: RaceEntity;
 
@@ -33,7 +34,7 @@ export class BackgroundEnity {
     })
     height: number;
 
-    @OneToOne(() => StateEntity, (state) => state.background)
+    @ManyToOne(() => StateEntity, (state) => state.backgrounds)
     @JoinColumn({ name: 'state_id', referencedColumnName: 'id' })
     state: StateEntity;
 

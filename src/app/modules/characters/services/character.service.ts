@@ -8,23 +8,22 @@ import { RaceEntity } from '../entity/race.entity';
 import { StateEntity } from '../../map/enitity/state.entity';
 import { CreatePlayableCharacterDto } from '../dto/create-playable-character.dto';
 import { InventoryEntity } from '../entity/inventory.entity';
-import {
-    AbilityEntity,
-    ArmorClassEntity,
-    CharacterCharacteristicsEntity,
-    ProficiencyEntity,
-} from '../entity/character.characteristics.entity';
 import { ArmorEntity } from '../../business/entity/armor.entity';
 import { SpellEntity } from '../entity/spell.entity';
 import {
     GetCharacterInfoDto,
     GetCharacteristicsDto,
-    GetGrimoireDto,
     GetSpellsDto,
 } from '../dto/query-character-info.dto';
 import { GrimoireEntity } from '../entity/grimoire.entity';
 import { CreateRaceDto } from '../dto/create-race.dto';
 import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
+import { CharacterCharacteristicsEntity } from '../entity/character.characteristics.entity';
+import { ProficiencyEntity } from '../entity/proficiency.entity';
+import { AbilityEntity } from '../entity/ability.entity';
+import { ArmorClassEntity } from '../entity/armor.class.entity';
+import { SpeedEntity } from '../entity/speed.entity';
+import { CardSymbolsEnum } from '../constants/card.symbol.enum';
 @Injectable()
 export class CharacterService {
     constructor(
@@ -37,7 +36,7 @@ export class CharacterService {
 
         @InjectRepository(ProficiencyEntity)
         private readonly proficiencyRepository: Repository<ProficiencyEntity>,
-        @InjectRepository(CharacterCharacteristicsEntity)
+        @InjectRepository(AbilityEntity)
         private readonly abilityRepository: Repository<AbilityEntity>,
         @InjectRepository(ArmorEntity)
         private readonly armorRepository: Repository<ArmorEntity>,
@@ -52,105 +51,11 @@ export class CharacterService {
         @InjectRepository(RaceEntity)
         private readonly raceRepository: Repository<RaceEntity>,
         @InjectRepository(StateEntity)
-        private readonly stateEntity: Repository<StateEntity>
+        private readonly stateEntity: Repository<StateEntity>,
+        @InjectRepository(SpeedEntity)
+        private readonly speedEntity: Repository<SpeedEntity>
     ) {}
     async createPlayableCharacterDto(dto: CreatePlayableCharacterDto) {
-        const character = new CharacterEntity();
-        character.type = CharacterType.PC;
-
-        /**
-         * Создание характеристик персонажа
-         */
-        const characteristics = new CharacterCharacteristicsEntity();
-        characteristics.currentHealth = 500;
-        characteristics.maxHealth = 500;
-        characteristics.currentLevel = 1;
-        characteristics.maxLevel = 20;
-        this.characteristicsRepository.insert(characteristics);
-
-        const proficiency: ProficiencyEntity = new ProficiencyEntity();
-        proficiency.level = 1;
-        proficiency.extraBonus = 0;
-        this.proficiencyRepository.insert(proficiency);
-        const strength: AbilityEntity = new AbilityEntity();
-        strength.name = 'Сила';
-        strength.abbr = '💪';
-        strength.score = 10;
-        strength.modifier = 0;
-        strength.characterCharacteristics = characteristics;
-        this.abilityRepository.insert(strength);
-
-        const dexterity: AbilityEntity = new AbilityEntity();
-        dexterity.name = 'Ловкость';
-        dexterity.abbr = '🏃';
-        dexterity.score = 10;
-        dexterity.modifier = 0;
-        dexterity.characterCharacteristics = characteristics;
-        this.abilityRepository.insert(dexterity);
-
-        const constitution: AbilityEntity = new AbilityEntity();
-        constitution.name = 'Телосложение';
-        constitution.abbr = '🏋️';
-        constitution.score = 10;
-        constitution.modifier = 0;
-        constitution.characterCharacteristics = characteristics;
-        this.abilityRepository.insert(constitution);
-
-        const intelligence: AbilityEntity = new AbilityEntity();
-        intelligence.name = 'Интелект';
-        intelligence.abbr = '🎓';
-        intelligence.score = 10;
-        intelligence.modifier = 0;
-        intelligence.characterCharacteristics = characteristics;
-        this.abilityRepository.insert(intelligence);
-
-        const wisdom: AbilityEntity = new AbilityEntity();
-        wisdom.name = 'Мудрость';
-        wisdom.abbr = '📚';
-        wisdom.score = 10;
-        wisdom.modifier = 0;
-        wisdom.characterCharacteristics = characteristics;
-        this.abilityRepository.insert(wisdom);
-
-        const charisma: AbilityEntity = new AbilityEntity();
-        charisma.name = 'Харизма';
-        charisma.abbr = '🗣';
-        charisma.score = 10;
-        charisma.modifier = 0;
-        charisma.characterCharacteristics = characteristics;
-        this.abilityRepository.insert(charisma);
-
-        character.characterCharacteristics.abilites = [
-            strength,
-            dexterity,
-            constitution,
-            intelligence,
-            wisdom,
-            charisma,
-        ];
-
-        const armorClass = new ArmorClassEntity();
-     //   armorClass.name = 'Базовый';
-        armorClass.base = 10;
-        // armorClass.modifier = [dexterity.modifier];
-        armorClass.bonus = 0;
-        this.armorClassRepository.insert(armorClass);
-        /**
-         * класс защиты
-         */
-        character.characterCharacteristics.armorClasses = [armorClass];
-        /**
-         * Создание инвенторя
-         */
-        const inventory = new InventoryEntity();
-        this.inventoryRepository.insert(inventory);
-        character.inventory = inventory;
-
-        /**
-         * Создание истории персонажа
-         */
-        character.background = new BackgroundEnity();
-        character.background.name = dto.name;
         const races = await this.raceRepository.find({
             where: {
                 id: dto.raceId,
@@ -159,7 +64,6 @@ export class CharacterService {
         if (races.length == 0) {
             return;
         }
-        character.background.race = races[0];
         const states = await this.stateEntity.find({
             where: {
                 id: dto.countryId,
@@ -168,21 +72,134 @@ export class CharacterService {
         if (states.length == 0) {
             return;
         }
-        character.background.state = states[0];
-        await this.backgroundRepository.insert(character.background);
-        await this.characterRepository.insert(character);
+
+        const backgroundEntity = (
+            await this.backgroundRepository.insert({
+                name: dto.name,
+                race: races[0],
+                height: 0,
+                age: 0,
+                state: states[0],
+            })
+        ).raw[0];
+
+        /**
+         * Создание инвенторя
+         */
+        const inventoryEntity = (await this.inventoryRepository.insert({}))
+            .raw[0];
+        console.log(inventoryEntity);
+        /**
+         * Создание истории персонажа
+         */
+
+        const grimoireEntity = (
+            await this.grimoireRepository.insert({
+                magicName: 'не выбрана',
+                coverSymbol: CardSymbolsEnum.CLOVER,
+                magicColor: 'не выбран',
+            })
+        ).raw[0];
+        const proficiency = (
+            await this.proficiencyRepository.insert({
+                level: 1,
+                extraBonus: 0,
+            })
+        ).raw[0];
+
+        // const strength: AbilityEntity = new AbilityEntity();
+        const strengthEntity = (
+            await this.abilityRepository.insert({
+                name: 'Сила',
+                abbr: '💪',
+                score: 10,
+                modifier: 0,
+                //   characterCharacteristics: characteristitcsEntity,
+            })
+        ).raw[0];
+
+        const dexterityEntity = (
+            await this.abilityRepository.insert({
+                name: 'Ловкость',
+                abbr: '🏃',
+                score: 10,
+                modifier: 0,
+            })
+        ).raw[0];
+
+        const constitutionEntity = (
+            await this.abilityRepository.insert({
+                name: 'Телосложение',
+                abbr: '🏋️',
+                score: 10,
+                modifier: 0,
+            })
+        ).raw[0];
+
+        const intelligenceEntity = (
+            await this.abilityRepository.insert({
+                name: 'Интеллект',
+                abbr: '🎓',
+                score: 10,
+                modifier: 0,
+            })
+        ).raw[0];
+
+        const wisdomEntity = (
+            await this.abilityRepository.insert({
+                name: 'Мудрость',
+                abbr: '📚',
+                score: 10,
+                modifier: 0,
+            })
+        ).raw[0];
+
+        const charismaEntity = (
+            await this.abilityRepository.insert({
+                name: 'Харизма',
+                abbr: '🗣',
+                score: 10,
+                modifier: 0,
+            })
+        ).raw[0];
+        /**
+         * класс защиты
+         */
+        const armorClassEntity = (
+            await this.armorClassRepository.insert({
+                base: 10,
+                bonus: 0,
+            })
+        ).raw[0];
+        const characteristitcsEntity = (
+            await this.characteristicsRepository.insert({
+                currentHealth: 500,
+                maxHealth: 500,
+                currentLevel: 1,
+                maxLevel: 20,
+                proficiency: proficiency,
+                strength: strengthEntity,
+                dexterity: dexterityEntity,
+                constitution: constitutionEntity,
+                intelligence: intelligenceEntity,
+                wisdom: wisdomEntity,
+                charisma: charismaEntity,
+                armorClass: armorClassEntity,
+            })
+        ).raw[0];
+        return this.characterRepository.insert({
+            type: CharacterType.PC,
+            background: backgroundEntity,
+            characterCharacteristics: characteristitcsEntity,
+            grimoire: grimoireEntity,
+            inventory: inventoryEntity,
+        });
         //  character.background.race = dto.raceId;
     }
 
     getCharacterInfo(dto: GetCharacterInfoDto) {
         return this.characterRepository.findBy({
             id: dto.characterId,
-        });
-    }
-
-    getGrimoireInfo(dto: GetGrimoireDto) {
-        return this.grimoireRepository.findBy({
-            id: dto.grimoireId,
         });
     }
 
@@ -207,9 +224,71 @@ export class CharacterService {
         const entity = await this.raceRepository.findOneBy({
             name: name,
         });
-        return entity ? true : false;
+        return entity ? false : true;
     }
 
+    async getCharacterById(characerId: string): Promise<CharacterEntity> {
+        const entity = await this.characterRepository.findOne({
+            where: {
+                id: characerId,
+            },
+            relations: {
+                background: true,
+                characterCharacteristics: true,
+                grimoire: true,
+                inventory: true,
+            },
+        });
+        return entity;
+    }
+    async getRaceById(raceId: string): Promise<RaceEntity> {
+        const entity = await this.raceRepository.findOneBy({
+            id: raceId,
+        });
+        return entity;
+    }
+
+    async getBackgroundById(backgroundId: string): Promise<BackgroundEnity> {
+        const entity = await this.backgroundRepository.findOneBy({
+            id: backgroundId,
+        });
+        return entity;
+    }
+
+    async getCharacteristicsById(
+        characteristicsId: string
+    ): Promise<CharacterCharacteristicsEntity> {
+        const entity = await this.characteristicsRepository.findOne({
+            where: {
+                id: characteristicsId,
+            },
+            relations: {
+                proficiency: true,
+                strength: true,
+                dexterity: true,
+                constitution: true,
+                intelligence: true,
+                wisdom: true,
+                charisma: true,
+                armorClass: true,
+            },
+        });
+        return entity;
+    }
+
+    async getGrimoireById(backgroundId: string): Promise<BackgroundEnity> {
+        const entity = await this.backgroundRepository.findOneBy({
+            id: backgroundId,
+        });
+        return entity;
+    }
+
+    async getInventoryById(backgroundId: string): Promise<BackgroundEnity> {
+        const entity = await this.backgroundRepository.findOneBy({
+            id: backgroundId,
+        });
+        return entity;
+    }
     createrRace(dto: CreateRaceDto) {
         return this.raceRepository.insert(dto);
     }

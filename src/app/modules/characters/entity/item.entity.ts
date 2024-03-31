@@ -26,6 +26,5 @@ export class ItemEnity {
     })
     description: string;
 
-    @ManyToOne(() => InventoryEntity, (inventory) => inventory.weapons)
     inventory: InventoryEntity;
 }

@@ -9,11 +9,7 @@ import {
 } from '@nestjs/common';
 import { CharacterService } from '../services/character.service';
 import { CreatePlayableCharacterDto } from '../dto/create-playable-character.dto';
-import {
-    GetCharacterInfoDto,
-    GetCharacteristicsDto,
-    GetGrimoireDto,
-} from '../dto/query-character-info.dto';
+import { GetCharacterInfoDto } from '../dto/query-character-info.dto';
 import { CreateRaceDto } from '../dto/create-race.dto';
 import { PaginationQuery } from 'src/common/pagination/decorators/pagination.decorator';
 import {
@@ -38,6 +34,8 @@ import { ResponseIdSerialization } from 'src/common/response/serializations/resp
 import { RaceGetSerialization } from '../serializations/race.get.serialization';
 import { RaceRequestDto } from '../dto/race.request.dto';
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
+import { CharacterRequestDto } from '../dto/character.request.dto';
+import { GrimoireRequestDto } from '../dto/grimoire.request.dto';
 
 export enum ENUM_RACE_STATUS_CODE_ERROR {
     RACE_NOT_FOUND_ERROR = 5100,
@@ -54,18 +52,64 @@ export class CharacterController {
         private readonly characterService: CharacterService,
         private readonly paginationService: PaginationService
     ) {}
-    @Post('/character')
-    createCharacter(dto: CreatePlayableCharacterDto) {
-        return this.characterService.createPlayableCharacterDto(dto);
+
+    @Response('character.character.create', {
+        serialization: ResponseIdSerialization,
+    })
+    @Post('/character/create')
+    async createCharacter(@Body() dto: CreatePlayableCharacterDto) {
+        console.log(dto);
+        const create =
+            await this.characterService.createPlayableCharacterDto(dto);
+        return {
+            data: { _id: create.raw[0].id },
+        };
     }
     @Get('/character')
     findCharacter(dto: GetCharacterInfoDto) {
         return this.characterService.getCharacterInfo(dto);
     }
 
-    @Get('/grimouire')
-    findGrimoire(dto: GetGrimoireDto) {
-        return this.characterService.getGrimoireInfo(dto);
+    @Response('character.character.get', {
+        serialization: RaceGetSerialization,
+    })
+    @RequestParamGuard(CharacterRequestDto)
+    @Get('/character/get/:character')
+    async getCharacter(
+        @Param() params: CharacterRequestDto
+    ): Promise<IResponse> {
+        const character = await this.characterService.getCharacterById(
+            params.character
+        );
+        if (!character) {
+            throw new ConflictException({
+                statusCode: ENUM_RACE_STATUS_CODE_ERROR.RACE_EXIST_ERROR,
+                message: 'character.characer.error.exist',
+            });
+        }
+        return {
+            data: character,
+        };
+    }
+
+    @Response('character.grimoire.get', {
+        serialization: RaceGetSerialization,
+    })
+    @RequestParamGuard(GrimoireRequestDto)
+    @Get('/grimouire/get/:grimoire')
+    async findGrimoire(@Param() params: GrimoireRequestDto) {
+        const character = await this.characterService.getCharacterById(
+            params.grimoire
+        );
+        if (!character) {
+            throw new ConflictException({
+                statusCode: ENUM_RACE_STATUS_CODE_ERROR.RACE_EXIST_ERROR,
+                message: 'character.grimoire.error.exist',
+            });
+        }
+        return {
+            data: character,
+        };
     }
 
     @ResponsePaging('character.race.list', {
@@ -101,10 +145,10 @@ export class CharacterController {
         const exist: boolean = await this.characterService.raceExistByName(
             dto.name
         );
-        if (exist) {
+        if (!exist) {
             throw new ConflictException({
                 statusCode: ENUM_RACE_STATUS_CODE_ERROR.RACE_EXIST_ERROR,
-                message: 'race.error.exist',
+                message: 'character.race.error.exist',
             });
         }
 
@@ -119,37 +163,16 @@ export class CharacterController {
     })
     @RequestParamGuard(RaceRequestDto)
     @Get('/race/get/:race')
-    async getRace(@Param() params: RaceRequestDto) {
-        console.log(params);
-        return 'jello';
-    }
-    @Get('/characteristics')
-    findCharacteristics(dto: GetCharacteristicsDto) {
-        return this.characterService.findCharacteristics(dto);
-    }
-
-    @Get('/spells')
-    findAllSpells() {
-        return null;
-    }
-
-    @Get('/spell')
-    findSpell() {
-        return null;
-    }
-
-    @Post('/spell')
-    createSpell() {
-        return null;
-    }
-
-    @Post('/grimoire')
-    createGrimoire() {
-        return null;
-    }
-
-    @Get('/inventory')
-    findInventory() {
-        return null;
+    async getRace(@Param() params: RaceRequestDto): Promise<IResponse> {
+        const race = await this.characterService.getRaceById(params.race);
+        if (!race) {
+            throw new ConflictException({
+                statusCode: ENUM_RACE_STATUS_CODE_ERROR.RACE_EXIST_ERROR,
+                message: 'character.race.error.exist',
+            });
+        }
+        return {
+            data: race,
+        };
     }
 }

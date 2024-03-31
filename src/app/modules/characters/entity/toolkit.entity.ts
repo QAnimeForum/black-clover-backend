@@ -25,7 +25,4 @@ export class ToolKitEnity {
         type: 'varchar',
     })
     description: string;
-
-    @ManyToOne(() => InventoryEntity, (inventory) => inventory.weapons)
-    inventory: InventoryEntity;
 }

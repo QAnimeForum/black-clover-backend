@@ -36,11 +36,9 @@ export class StateEntity {
 
   */
 
-    @OneToOne(() => BackgroundEnity, (Background) => Background.state, {
-        cascade: true,
-    })
-    background: BackgroundEnity;
-  //  @OneToOne(() => StateFormEntity, (form) => form.state, { cascade: true })
+    @OneToMany(() => BackgroundEnity, (background) => background.state)
+    backgrounds: BackgroundEnity[];
+    //  @OneToOne(() => StateFormEntity, (form) => form.state, { cascade: true })
     @ManyToOne(() => StateFormEntity, (stateForm) => stateForm.states)
     @JoinColumn({ name: 'form_id', referencedColumnName: 'id' })
     form: StateFormEntity;

@@ -4,6 +4,8 @@ import {
     OneToOne,
     JoinColumn,
     OneToMany,
+    ManyToMany,
+    JoinTable,
 } from 'typeorm';
 import { ItemEnity } from './item.entity';
 import { ArmorEntity } from '../../business/entity/armor.entity';
@@ -17,20 +19,24 @@ export class InventoryEntity {
     /**
      * оружие
      */
-    @OneToMany(() => WeaponEntity, (weapon) => weapon.inventory)
+    @ManyToMany(() => WeaponEntity)
+    @JoinTable()
     weapons: WeaponEntity[];
     /**
      * броня
      */
-    @OneToMany(() => ArmorEntity, (armor) => armor.inventory)
+    @ManyToMany(() => ArmorEntity)
+    @JoinTable()
     armor: ArmorEntity[];
     /**инструмент */
-    @OneToMany(() => ToolKitEnity, (toolKit) => toolKit.inventory)
+    @ManyToMany(() => ToolKitEnity)
+    @JoinTable()
     toolKits: ToolKitEnity[];
     /**
      * механизм
      */
-    @OneToMany(() => ItemEnity, (item) => item.inventory)
+    @ManyToMany(() => ItemEnity)
+    @JoinTable()
     gear: ItemEnity[];
 
     @OneToOne(() => WalletEntity)

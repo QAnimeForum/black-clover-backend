@@ -4,7 +4,7 @@ import { BusinessController } from './business.controller';
 import { ArmorEntity } from './entity/armor.entity';
 import { WeaponEntity } from './entity/weapon.entity';
 import { BusinessService } from './business.service';
-import { ArmorClassEntity } from '../characters/entity/character.characteristics.entity';
+import { ArmorClassEntity } from '../characters/entity/armor.class.entity';
 @Module({
     imports: [
         TypeOrmModule.forFeature([ArmorEntity, ArmorClassEntity, WeaponEntity]),
