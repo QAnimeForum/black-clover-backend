@@ -9,13 +9,13 @@ import { StateEntity } from '../../map/enitity/state.entity';
 import { CreatePlayableCharacterDto } from '../dto/create-playable-character.dto';
 import { InventoryEntity } from '../entity/inventory.entity';
 import { ArmorEntity } from '../../business/entity/armor.entity';
-import { SpellEntity } from '../entity/spell.entity';
+import { SpellEntity } from '../../grimoire/entity/spell.entity';
 import {
     GetCharacterInfoDto,
     GetCharacteristicsDto,
     GetSpellsDto,
 } from '../dto/query-character-info.dto';
-import { GrimoireEntity } from '../entity/grimoire.entity';
+import { GrimoireEntity } from '../../grimoire/entity/grimoire.entity';
 import { CreateRaceDto } from '../dto/create-race.dto';
 import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
 import { CharacterCharacteristicsEntity } from '../entity/character.characteristics.entity';

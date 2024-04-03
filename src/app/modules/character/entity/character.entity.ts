@@ -10,7 +10,7 @@ import { CharacterType } from '../constants/character.type.enum';
 import { BackgroundEnity } from './background.entity';
 import { CharacterCharacteristicsEntity } from './character.characteristics.entity';
 import { InventoryEntity } from './inventory.entity';
-import { GrimoireEntity } from './grimoire.entity';
+import { GrimoireEntity } from '../../grimoire/entity/grimoire.entity';
 import { NoteEntity } from './note.entity';
 import { WalletEntity } from '../../money/entity/wallet.entity';
 import { VehicleEntity } from '../../business/entity/vehicle.entity';

@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { CardSymbolsEnum } from '../constants/card.symbol.enum';
+import { CardSymbolsEnum } from '../../character/constants/card.symbol.enum';
 import { SpellEntity } from './spell.entity';
 @Entity('grimoire')
 export class GrimoireEntity {

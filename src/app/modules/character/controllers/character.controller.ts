@@ -35,7 +35,7 @@ import { RaceGetSerialization } from '../serializations/race.get.serialization';
 import { RaceRequestDto } from '../dto/race.request.dto';
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
 import { CharacterRequestDto } from '../dto/character.request.dto';
-import { GrimoireRequestDto } from '../dto/grimoire.request.dto';
+import { GrimoireRequestDto } from '../../grimoire/dto/grimoire.request.dto';
 import { CharacteristicsRequestDto } from '../dto/characteristics.request.dto';
 
 export enum ENUM_RACE_STATUS_CODE_ERROR {
