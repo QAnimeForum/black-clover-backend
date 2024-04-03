@@ -1,6 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    OneToOne,
+    JoinColumn,
+} from 'typeorm';
 import { DevilFloorEnum } from '../constants/devil.flor.enum';
 import { DevilRanksEnum } from '../constants/devil.ranks.enum';
+import { DevilUnion } from './devil.union.entity';
 
 @Entity('devils')
 export class DevilEntity {
@@ -17,15 +24,6 @@ export class DevilEntity {
     })
     description: string;
 
-    /**
-     *   @Column({
-    type: "enum",
-    enum: MenuStatusEnum,
-    default: MenuStatusEnum.ACTIVE,
-    nullable: false,
-    name: "status_enum"
-  })
-     */
     @Column({
         type: 'enum',
         enum: DevilFloorEnum,
@@ -45,4 +43,41 @@ export class DevilEntity {
         type: 'varchar',
     })
     magic_type: string;
+
+    @OneToOne(() => DevilUnion)
+    @JoinColumn({
+        name: 'union_10_id',
+    })
+    union_10: DevilUnion;
+
+    @OneToOne(() => DevilUnion)
+    @JoinColumn({
+        name: 'union_25_id',
+    })
+    union_25: DevilUnion;
+
+    @OneToOne(() => DevilUnion)
+    @JoinColumn({
+        name: 'union_50_id',
+    })
+    union_50: DevilUnion;
+
+    @OneToOne(() => DevilUnion)
+    @JoinColumn({
+        name: 'union_65_id',
+    })
+    union_65: DevilUnion;
+
+
+    @OneToOne(() => DevilUnion)
+    @JoinColumn({
+        name: 'union_65_id',
+    })
+    union_80: DevilUnion;
+
+    @OneToOne(() => DevilUnion)
+    @JoinColumn({
+        name: 'union_100_id',
+    })
+    union_100: DevilUnion;
 }

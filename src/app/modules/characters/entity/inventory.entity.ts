@@ -1,17 +1,9 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    OneToOne,
-    JoinColumn,
-    OneToMany,
-    ManyToMany,
-    JoinTable,
-} from 'typeorm';
-import { ItemEnity } from './item.entity';
+import { Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
+import { ItemEnity } from '../../business/entity/item.entity';
 import { ArmorEntity } from '../../business/entity/armor.entity';
 import { WeaponEntity } from '../../business/entity/weapon.entity';
-import { ToolKitEnity } from './toolkit.entity';
-import { WalletEntity } from './wallet.entity';
+import { ToolKitEnity } from '../../business/entity/toolkit.entity';
+import { VehicleEntity } from '../../business/entity/vehicle.entity';
 @Entity('inventory')
 export class InventoryEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -39,7 +31,7 @@ export class InventoryEntity {
     @JoinTable()
     gear: ItemEnity[];
 
-    @OneToOne(() => WalletEntity)
-    @JoinColumn()
-    wallet: WalletEntity;
+    @ManyToMany(() => VehicleEntity)
+    @JoinTable()
+    vehicles: Array<VehicleEntity>;
 }

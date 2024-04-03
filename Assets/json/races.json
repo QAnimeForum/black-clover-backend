@@ -1,0 +1,20 @@
+{
+  "races": [
+    {
+      "name": "Человек",
+      "description": ""
+    },
+    {
+      "name": "Ведьма",
+      "description": ""
+    },
+    {
+      "name": "Гном",
+      "description": ""
+    },
+    {
+      "name": "Демон",
+      "description": ""
+    }
+  ]
+}

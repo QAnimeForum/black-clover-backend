@@ -8,7 +8,7 @@ import { MineService } from '../services/mine.service';
 })
 export class MinesController {
     constructor(
-        private readonly mapService: MineService,
+        private readonly mineService: MineService,
         private readonly paginationService: PaginationService
     ) {}
 }

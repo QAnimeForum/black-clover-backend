@@ -18,6 +18,10 @@ export class CharacterCharacteristicsEntity {
 
     @Column({
         type: 'int',
+    })
+    experience: number;
+    @Column({
+        type: 'int',
         name: 'current_level',
     })
     currentLevel: number;
@@ -38,6 +42,15 @@ export class CharacterCharacteristicsEntity {
     })
     maxHealth: number;
 
+    @Column({
+        type: 'varchar',
+    })
+    hunger: number;
+
+    @Column({
+        types: 'int',
+    })
+    sanity: number;
     @OneToOne(() => ProficiencyEntity, {
         cascade: true,
     })

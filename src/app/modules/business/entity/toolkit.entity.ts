@@ -1,5 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { InventoryEntity } from './inventory.entity';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    ManyToOne,
+    JoinColumn,
+} from 'typeorm';
+import { InventoryEntity } from '../../characters/entity/inventory.entity';
 
 @Entity('toolKit')
 export class ToolKitEnity {
@@ -25,4 +31,8 @@ export class ToolKitEnity {
         type: 'varchar',
     })
     description: string;
+
+    @ManyToOne(() => InventoryEntity, (inventory) => inventory.weapons)
+    @JoinColumn({ name: 'inventory_id', referencedColumnName: 'id' })
+    inventory: InventoryEntity;
 }

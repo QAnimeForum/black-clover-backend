@@ -2,7 +2,6 @@ import {
     Column,
     Entity,
     JoinColumn,
-    ManyToOne,
     OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
@@ -12,6 +11,9 @@ import { BackgroundEnity } from './background.entity';
 import { CharacterCharacteristicsEntity } from './character.characteristics.entity';
 import { InventoryEntity } from './inventory.entity';
 import { GrimoireEntity } from './grimoire.entity';
+import { NoteEntity } from './note.entity';
+import { WalletEntity } from '../../money/entity/wallet.entity';
+import { VehicleEntity } from '../../business/entity/vehicle.entity';
 
 @Entity('character')
 export class CharacterEntity {
@@ -54,37 +56,32 @@ export class CharacterEntity {
         referencedColumnName: 'id',
     })
     inventory: InventoryEntity;
+
+    @OneToOne(() => WalletEntity)
+    @JoinColumn({ name: 'character_id', referencedColumnName: 'id' })
+    wallet: WalletEntity;
+
+    tasks: Array<TaskEntity>;
 }
 
-@Entity('note')
-export class NoteEntity {
+@Entity('task')
+export class TaskEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
-    @Column({
-        type: 'varchar',
-    })
-    title: string;
-
-    @Column({
-        type: 'varchar',
-    })
-    description: string;
-
-    @Column({
-        type: 'varchar',
-    })
-    date: string;
-
-    @ManyToOne(() => CharacterEntity, (character) => character.notes)
-    character: CharacterEntity;
 }
 
-/**
- *     id: string;
-    type: CharacterType;
-    background: Background;
-    characteristics: CharacterCharacteristics;
-    grimoire: Grimoire;
-    notes: Note[];
-    inventory: Inventory;
- */
+@Entity('arrest')
+export class ArrastEntity {
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
+
+    @Column({
+        type: 'datetime',
+    })
+    time: Date;
+
+    @Column({
+        type: 'varchar',
+    })
+    reason: string;
+}

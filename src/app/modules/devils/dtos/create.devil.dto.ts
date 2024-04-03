@@ -12,10 +12,10 @@ export class CreateDevilDto {
     description: string;
     @ApiProperty({ example: '1 этаж' })
     @IsNotEmpty()
-    floor: DevilFloorEnum;
+    floor: string;
     @ApiProperty({ example: 'высший дьявол' })
     @IsNotEmpty()
-    rank: DevilRanksEnum;
+    rank: string;
     @ApiProperty({ example: 'магия гравитации' })
     @IsNotEmpty()
     magic_type: string;

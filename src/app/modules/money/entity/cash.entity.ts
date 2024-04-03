@@ -1,10 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
-import { InventoryEntity } from './inventory.entity';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { WalletEntity } from './wallet.entity';
 
-@Entity('wallet')
-export class WalletEntity {
+@Entity('cash')
+export class CashEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
+
     @Column({
         type: 'int',
     })
@@ -26,6 +27,6 @@ export class WalletEntity {
     })
     platinum: number;
 
-    @OneToOne(() => InventoryEntity)
-    inventory: InventoryEntity;
+    @OneToOne(() => WalletEntity)
+    wallet: WalletEntity;
 }
