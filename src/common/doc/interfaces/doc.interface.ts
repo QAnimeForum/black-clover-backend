@@ -2,6 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import { ApiParamOptions, ApiQueryOptions } from '@nestjs/swagger';
 import { ClassConstructor } from 'class-transformer';
 import { ENUM_DOC_REQUEST_BODY_TYPE } from 'src/common/doc/constants/doc.enum.constant';
+import { ENUM_FILE_MIME } from 'src/common/file/constants/file.enum.constant';
 
 export interface IDocOptions {
     summary?: string;
@@ -53,6 +54,11 @@ export interface IDocResponseOptions<T> {
 export interface IDocResponsePagingOptions<T>
     extends Omit<IDocResponseOptions<T>, 'serialization'> {
     serialization: ClassConstructor<T>;
+}
+
+export interface IDocResponseFileOptions
+    extends Omit<IDocResponseOptions<any>, 'serialization' | 'statusCode'> {
+    fileType?: ENUM_FILE_MIME;
 }
 
 export interface IDocErrorOptions<T> {

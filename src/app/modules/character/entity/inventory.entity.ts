@@ -3,7 +3,7 @@ import { WeaponEntity } from '../../jobs/business/entity/weapon.entity';
 import { ArmorEntity } from '../../jobs/business/entity/armor.entity';
 import { ToolKitEnity } from '../../jobs/business/entity/toolkit.entity';
 import { VehicleEntity } from '../../jobs/business/entity/vehicle.entity';
-import { GearEnity } from '../../jobs/business/entity/gear.entity';
+import { GearEntity } from '../../jobs/business/entity/gear.entity';
 @Entity('inventory')
 export class InventoryEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -27,9 +27,9 @@ export class InventoryEntity {
     /**
      * механизм
      */
-    @ManyToMany(() => GearEnity)
+    @ManyToMany(() => GearEntity)
     @JoinTable()
-    gears: GearEnity[];
+    gears: GearEntity[];
 
     @ManyToMany(() => VehicleEntity)
     @JoinTable()

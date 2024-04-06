@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
 import { InventoryEntity } from '../../../character/entity/inventory.entity';
 @Entity('gear')
-export class GearEnity {
+export class GearEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
     @Column({

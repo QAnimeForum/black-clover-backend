@@ -6,6 +6,7 @@ import { DevilFloorEnum } from '../app/modules/devils/constants/devil.floor.enum
 import { DevilRanksEnum } from '../app/modules/devils/constants/devil.ranks.enum';
 import { DevilSpellEntity } from '../app/modules/devils/entity/devil.spell.entity';
 import { DevilUnionEntity } from '../app/modules/devils/entity/devil.union.entity';
+import { DevilUnionsPercentEnum } from 'src/app/modules/devils/constants/devil.union.percent.enum';
 export default class DevilSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<any> {
         const devilRepository = dataSource.getRepository(DevilEntity);
@@ -27,18 +28,36 @@ export default class DevilSeeder implements Seeder {
                 union_80,
                 union_100,
             } = devils[i];
-            const devil_union_10 = (await devilUnionRepository.insert({}))
-                .raw[0];
-            const devil_union_25 = (await devilUnionRepository.insert({}))
-                .raw[0];
-            const devil_union_50 = (await devilUnionRepository.insert({}))
-                .raw[0];
-            const devil_union_65 = (await devilUnionRepository.insert({}))
-                .raw[0];
-            const devil_union_80 = (await devilUnionRepository.insert({}))
-                .raw[0];
-            const devil_union_100 = (await devilUnionRepository.insert({}))
-                .raw[0];
+            const devil_union_10 = (
+                await devilUnionRepository.insert({
+                    percent: DevilUnionsPercentEnum.PERCENT_10,
+                })
+            ).raw[0];
+            const devil_union_25 = (
+                await devilUnionRepository.insert({
+                    percent: DevilUnionsPercentEnum.PERCENT_25,
+                })
+            ).raw[0];
+            const devil_union_50 = (
+                await devilUnionRepository.insert({
+                    percent: DevilUnionsPercentEnum.PERCENT_50,
+                })
+            ).raw[0];
+            const devil_union_65 = (
+                await devilUnionRepository.insert({
+                    percent: DevilUnionsPercentEnum.PERCENT_65,
+                })
+            ).raw[0];
+            const devil_union_80 = (
+                await devilUnionRepository.insert({
+                    percent: DevilUnionsPercentEnum.PERCENT_80,
+                })
+            ).raw[0];
+            const devil_union_100 = (
+                await devilUnionRepository.insert({
+                    percent: DevilUnionsPercentEnum.PERCENT_100,
+                })
+            ).raw[0];
             await devilRepository.insert({
                 name: name,
                 description: description,

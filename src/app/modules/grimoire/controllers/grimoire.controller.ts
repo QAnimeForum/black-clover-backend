@@ -11,12 +11,7 @@ import { RequestParamGuard } from 'src/common/request/decorators/request.decorat
 import { GrimoireRequestDto } from '../../grimoire/dto/grimoire.request.dto';
 import { GrimoireService } from '../services/grimoire.service';
 import { RaceGetSerialization } from '../../race/serializations/race.get.serialization';
-
-export enum ENUM_GRIMOIRE_STATUS_CODE_ERROR {
-    GRIMOIRE_NOT_FOUND_ERROR = 5100,
-    GRIMOIRE_EXIST_ERROR = 5101,
-    GRIMOIRE_USED_ERROR = 5103,
-}
+import { ENUM_GRIMOIRE_STATUS_CODE_ERROR } from '../constants/grimoire.status-code.constant';
 
 @Controller({
     version: VERSION_NEUTRAL,
@@ -32,15 +27,15 @@ export class GrimoireController {
         serialization: RaceGetSerialization,
     })
     @RequestParamGuard(GrimoireRequestDto)
-    @Get('/grimouire/get/:grimoire')
+    @Get('/get/:grimoire')
     async findGrimoire(@Param() params: GrimoireRequestDto) {
-        const grimoire = await this.grimoireService.getGrimoireById(
+        const grimoire = await this.grimoireService.findGrimoireById(
             params.grimoire
         );
         if (!grimoire) {
             throw new ConflictException({
                 statusCode: ENUM_GRIMOIRE_STATUS_CODE_ERROR.GRIMOIRE_EXIST_ERROR,
-                message: 'character.grimoire.error.exist',
+                message: 'grimoire.error.exist',
             });
         }
         return {

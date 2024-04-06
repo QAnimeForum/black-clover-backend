@@ -16,6 +16,7 @@ export class DevilEntity {
 
     @Column({
         type: 'varchar',
+        unique: true,
     })
     name: string;
 

@@ -22,7 +22,7 @@ import { ArmorEntity } from '../jobs/business/entity/armor.entity';
 import { ToolKitEnity } from '../jobs/business/entity/toolkit.entity';
 import { VehicleEntity } from '../jobs/business/entity/vehicle.entity';
 import { CashEntity } from '../money/entity/cash.entity';
-import { GearEnity } from '../jobs/business/entity/gear.entity';
+import { GearEntity } from '../jobs/business/entity/gear.entity';
 @Module({
     imports: [
         TypeOrmModule.forFeature(
@@ -48,7 +48,7 @@ import { GearEnity } from '../jobs/business/entity/gear.entity';
                 WeaponEntity,
                 ArmorEntity,
                 ToolKitEnity,
-                GearEnity,
+                GearEntity,
                 VehicleEntity,
                 WalletEntity,
                 CashEntity,

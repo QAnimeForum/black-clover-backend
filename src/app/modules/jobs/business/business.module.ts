@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { BusinessController } from './business.controller';
+
 import { ArmorEntity } from './entity/armor.entity';
 import { WeaponEntity } from './entity/weapon.entity';
-import { BusinessService } from './business.service';
 import { ClothesEntity } from './entity/clothes.entity';
 import { HouseEnity } from './entity/house.entity';
 import { ToolKitEnity } from './entity/toolkit.entity';
@@ -12,7 +10,10 @@ import { ArmorClassEntity } from '../../character/entity/armor.class.entity';
 import { BusinessEntity } from './entity/business.entity';
 import { JobEntity } from './entity/job.entity';
 import { InventoryEntity } from '../../character/entity/inventory.entity';
-import { GearEnity } from './entity/gear.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { BusinessController } from './controller/business.controller';
+import { BusinessService } from './service/business.service';
+import { GearEntity } from './entity/gear.entity';
 @Module({
     imports: [
         TypeOrmModule.forFeature([
@@ -23,7 +24,7 @@ import { GearEnity } from './entity/gear.entity';
             ArmorClassEntity,
             ClothesEntity,
             HouseEnity,
-            GearEnity,
+            GearEntity,
             ToolKitEnity,
             VehicleEntity,
             WeaponEntity,

@@ -1,14 +1,11 @@
 {
-  "list": "List Role Success.",
-  "get": "Get Role Success.",
-  "create": "Create Succeed",
-    "update": "Update Succeed",
-    "updatePermission": "Update permission Succeed",
-    "delete": "Delete Succeed",
-    "inactive": "Inactive Succeed",
-    "active": "Active Succeed",
+  "list": "Список дьяволов успешно получен.",
+  "get": "Информация о дьяволе получена.",
+  "create": "Создание информации о дьяволе произошло успешно.",
+    "update": "Обновление информации о дьяволе произошло успешно.",
+    "delete": "Информация о дьяаоле успешно удалена.",
     "error": {
-      "notFound": "Role not found",
-      "exist": "Role exist"
+      "notFound": "Дьявол не найден.",
+      "exist": "Дьявол существует."
     }
 }

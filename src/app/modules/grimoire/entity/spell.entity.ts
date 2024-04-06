@@ -12,50 +12,44 @@ export class SpellEntity {
         type: 'varchar',
     })
     description: string;
+
     @Column({
         type: 'varchar',
     })
-    school: string;
+    range: string;
     @Column({
         type: 'varchar',
     })
-    readonly castTime: string;
+    duration: string;
     @Column({
         type: 'varchar',
     })
-    readonly range: string;
+    cost: string;
     @Column({
+        type: 'varchar',
+    })
+    castTime: string;
+    /* @Column({
         type: 'boolean',
     })
-    readonly concentration: boolean;
-    @Column({
-        type: 'varchar',
-    })
-    readonly duration: string;
+    concentration: boolean;*/
     /*  @Column({
         type: 'string',
     })
-    readonly components: string[];*/
+    readonly components: string[];
+        @Column({
+        type: 'varchar',
+    })
+    material: string;
     @Column({
         type: 'varchar',
     })
-    readonly material: string;
+    minimumLevel: string;
+
     @Column({
         type: 'varchar',
     })
-    readonly minimumLevel: string;
-    @Column({
-        type: 'bool',
-    })
-    readonly ritual: boolean;
-    @Column({
-        type: 'bool',
-    })
-    readonly spellAttack: boolean;
-    @Column({
-        type: 'varchar',
-    })
-    spellcastingAbility: string;
+    spellcastingAbility: string;*/
 
     @ManyToOne(() => GrimoireEntity, (grimoire) => grimoire.spells)
     grimoire: GrimoireEntity;

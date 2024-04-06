@@ -7,6 +7,7 @@ import {
     VERSION_NEUTRAL,
     Param,
     Delete,
+    Put,
 } from '@nestjs/common';
 import { DevilsService } from '../services/devils.service';
 import {
@@ -25,7 +26,6 @@ import {
     PaginationQueryFilterInEnum,
 } from 'src/common/pagination/decorators/pagination.decorator';
 
-import { CreateDevilDto } from '../dtos/devil.create.dto';
 import { ResponseIdSerialization } from 'src/common/response/serializations/response.id.serialization';
 import { ENUM_DEVIL_STATUS_CODE_ERROR } from '../constants/devil.status-code.constant';
 import { DevilRanksEnum } from '../constants/devil.ranks.enum';
@@ -42,6 +42,9 @@ import {
     DEVIL_FLOOR_DEFAULT_TYPE,
     DEVIL_RANK_DEFAULT_TYPE,
 } from '../constants/devil.list.constant';
+import { DevilUpdateNameDto } from '../dtos/devil.update-name.dto';
+import { DevilUpdateDescriptionDto } from '../dtos/devil.update-description.dto';
+import { DevilCreateDto } from '../dtos/devil.create.dto';
 
 @Controller({
     version: VERSION_NEUTRAL,
@@ -79,7 +82,7 @@ export class DevilsController {
         )
         floor: Record<string, any>
     ): Promise<IResponsePaging> {
-        const [states, total] = await this.devilService.getDevils(
+        const [states, total] = await this.devilService.findAllDevils(
             dto,
             rank,
             floor
@@ -100,7 +103,7 @@ export class DevilsController {
     @Post('/create')
     async create(
         @Body()
-        dto: CreateDevilDto
+        dto: DevilCreateDto
     ): Promise<IResponse> {
         const exist: boolean = await this.devilService.existByName(dto.name);
         if (exist) {
@@ -110,7 +113,7 @@ export class DevilsController {
             });
         }
 
-        const create = await this.devilService.create(dto);
+        const create = await this.devilService.createDevil(dto);
 
         return {
             data: { _id: create.raw[0].id },
@@ -123,11 +126,29 @@ export class DevilsController {
     @RequestParamGuard(DevilRequestDto)
     @Get('/get/:devil')
     async getOne(@Param() params: DevilRequestDto): Promise<IResponse> {
-        const devil = await this.devilService.findOne(params.devil);
+        const devil = await this.devilService.findDevilById(params.devil);
         if (!devil) {
             throw new ConflictException({
                 statusCode: ENUM_DEVIL_STATUS_CODE_ERROR.DEVIL_EXIST_ERROR,
-                message: 'character.race.error.exist',
+                message: 'devil.error.exist',
+            });
+        }
+        return {
+            data: devil,
+        };
+    }
+
+    @Response('devil.get', {
+        serialization: DevilGetSerialization,
+    })
+    @RequestParamGuard(DevilRequestDto)
+    @Get('/get/unions/:devil')
+    async getUnions(@Param() params: DevilRequestDto): Promise<IResponse> {
+        const devil = await this.devilService.findDevilById(params.devil);
+        if (!devil) {
+            throw new ConflictException({
+                statusCode: ENUM_DEVIL_STATUS_CODE_ERROR.DEVIL_EXIST_ERROR,
+                message: 'devil.error.exist',
             });
         }
         return {
@@ -139,7 +160,37 @@ export class DevilsController {
     @RequestParamGuard(DevilRequestDto)
     @Delete('/delete/:devil')
     async delete(@Param() params: DevilRequestDto): Promise<void> {
-        await this.devilService.remove(params.devil);
+        await this.devilService.deleteDevil(params.devil);
         return;
+    }
+
+    @Response('devil.update', {
+        serialization: ResponseIdSerialization,
+    })
+    @RequestParamGuard(DevilRequestDto)
+    @Put('/update/name/:devil')
+    async updateDevilName(
+        @Param('devil') devil: string,
+        @Body() dto: DevilUpdateNameDto
+    ): Promise<IResponse> {
+        await this.devilService.updateDevilName(devil, dto);
+        return {
+            data: { _id: devil },
+        };
+    }
+
+    @Response('devil.update', {
+        serialization: ResponseIdSerialization,
+    })
+    @RequestParamGuard(DevilRequestDto)
+    @Put('/update/description/:devil')
+    async updateDevilDescription(
+        @Param('devil') devil: string,
+        @Body() dto: DevilUpdateDescriptionDto
+    ): Promise<IResponse> {
+        await this.devilService.updateDevilDescription(devil, dto);
+        return {
+            data: { _id: devil },
+        };
     }
 }
