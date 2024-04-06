@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
-import { CreateArmorDto } from '../dto/armor.create.dto';
 import { ArmorEntity } from '../entity/armor.entity';
 import { WeaponEntity } from '../entity/weapon.entity';
 import { GearEntity } from '../entity/gear.entity';
@@ -14,6 +13,7 @@ import { GearCreateDto } from '../dto/gear.create.dto';
 import { VehicleCreateDto } from '../dto/vehicle.create.dto';
 import { ToolKitCreateDto } from '../dto/toolkit.create.dto';
 import { WeaponCreateDto } from '../dto/weapon.create.dto';
+import { ArmorCreateDto } from '../dto/armor.create.dto';
 @Injectable()
 export class BusinessService {
     constructor(
@@ -43,7 +43,7 @@ export class BusinessService {
     findDevilById(id: string): Promise<ArmorEntity | null> {
         return this.armorRepository.findOneBy({ id });
     }
-    async createArmor(dto: CreateArmorDto) {
+    async createArmor(dto: ArmorCreateDto) {
         const armor = new ArmorEntity();
         armor.name = dto.name;
         armor.armorType = dto.armorType;
@@ -53,7 +53,7 @@ export class BusinessService {
         armor.strengthPrerequisite = dto.strengthPrerequisite;
         armor.stealthDisadvantage = dto.stealthDisadvantage;
         armor.weight = dto.weight;
-        this.armorRepository.insert(armor);
+        return this.armorRepository.insert(armor);
     }
 
     async deleteArmor(id: string): Promise<void> {
