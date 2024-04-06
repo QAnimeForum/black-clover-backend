@@ -14,6 +14,7 @@ import { VehicleCreateDto } from '../dto/vehicle.create.dto';
 import { ToolKitCreateDto } from '../dto/toolkit.create.dto';
 import { WeaponCreateDto } from '../dto/weapon.create.dto';
 import { ArmorCreateDto } from '../dto/armor.create.dto';
+import { InventoryEntity } from 'src/app/modules/character/entity/inventory.entity';
 @Injectable()
 export class BusinessService {
     constructor(
@@ -28,7 +29,9 @@ export class BusinessService {
         @InjectRepository(VehicleEntity)
         private readonly vehicleReposiory: Repository<VehicleEntity>,
         @InjectRepository(WeaponEntity)
-        private readonly weaponRepository: Repository<WeaponEntity>
+        private readonly weaponRepository: Repository<WeaponEntity>,
+        @InjectRepository(InventoryEntity)
+        private readonly inventoryRepository: Repository<InventoryEntity>
     ) {}
     async getAllArmors(
         dto: PaginationListDto
@@ -40,7 +43,7 @@ export class BusinessService {
         });
         return [entities, total];
     }
-    findDevilById(id: string): Promise<ArmorEntity | null> {
+    findArmorById(id: string): Promise<ArmorEntity | null> {
         return this.armorRepository.findOneBy({ id });
     }
     async createArmor(dto: ArmorCreateDto) {
@@ -86,7 +89,7 @@ export class BusinessService {
         return this.gearRepository.findOneBy({ id });
     }
     async createGear(dto: GearCreateDto) {
-        await this.gearRepository.insert(dto);
+        return await this.gearRepository.insert(dto);
     }
 
     async getlAllGears(
@@ -109,7 +112,7 @@ export class BusinessService {
     }
 
     async createToolkit(dto: ToolKitCreateDto) {
-        await this.toolKitRepository.insert(dto);
+        return await this.toolKitRepository.insert(dto);
     }
 
     async getAllTookits(
@@ -127,8 +130,11 @@ export class BusinessService {
         return this.vehicleReposiory.findOneBy({ id });
     }
 
+    async deleteTookit(id: string): Promise<void> {
+        await this.vehicleReposiory.delete(id);
+    }
     async createVehicle(dto: VehicleCreateDto) {
-        await this.weaponRepository.insert(dto);
+        return await this.weaponRepository.insert(dto);
     }
 
     async getAllVehicles(
@@ -150,7 +156,7 @@ export class BusinessService {
         return this.weaponRepository.findOneBy({ id });
     }
     async createWeapon(dto: WeaponCreateDto) {
-        await this.weaponRepository.insert(dto);
+        return await this.weaponRepository.insert(dto);
     }
 
     async getAllWeapons(

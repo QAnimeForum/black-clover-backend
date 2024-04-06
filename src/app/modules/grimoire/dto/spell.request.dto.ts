@@ -5,5 +5,5 @@ export class SpellRequestDto {
     @IsNotEmpty()
     @IsUUID('4')
     @Type(() => String)
-    grimoire: string;
+    spell: string;
 }

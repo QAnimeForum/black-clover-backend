@@ -15,6 +15,7 @@ import { SpellCastTimeDescriptionDto } from '../dto/spell.update-cast-time.dto';
 import { SpellUpdateRangeDto } from '../dto/spell.update-range.dto';
 import { SpellUpdateCostDto } from '../dto/spell.update-cost.dto';
 import { SpellUpdateDto } from '../dto/spell.update.dto';
+import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
 @Injectable()
 export class GrimoireService {
     constructor(
@@ -23,6 +24,24 @@ export class GrimoireService {
         @InjectRepository(SpellEntity)
         private readonly spellRepository: Repository<SpellEntity>
     ) {}
+
+
+    async findAllGrimoires(
+        dto: PaginationListDto,
+    ): Promise<[SpellEntity[], number]> {
+        const [entities, total] = await this.spellRepository.findAndCount({
+            skip: dto._offset * dto._limit,
+            take: dto._limit,
+            order: dto._availableOrderBy?.reduce(
+                (accumulator, sort) => ({
+                    ...accumulator,
+                    [sort]: dto._order,
+                }),
+                {}
+            )
+        });
+        return [entities, total];
+    }
 
     async findGrimoireById(id: string): Promise<GrimoireEntity> {
         const entity = await this.grimoireRepository.findOneBy({
@@ -132,10 +151,34 @@ export class GrimoireService {
         await this.spellRepository.delete(id);
     }
 
-    /*
-    findSpells(dto: GetSpellsDto) {
-        return this.spellRepository.findBy({
-            id: dto.grimoireId,
+    async findSpells(grimoireId: string) {
+        const grimoire = await this.findGrimoireById(grimoireId);
+        return this.spellRepository.find({
+            where: {
+                grimoire: grimoire,
+            },
         });
-    }*/
+    }
+
+    async findAllSpells(
+        dto: PaginationListDto,
+        grimoireId: string
+    ): Promise<[SpellEntity[], number]> {
+        const grimoire = await this.findGrimoireById(grimoireId);
+        const [entities, total] = await this.spellRepository.findAndCount({
+            skip: dto._offset * dto._limit,
+            take: dto._limit,
+            order: dto._availableOrderBy?.reduce(
+                (accumulator, sort) => ({
+                    ...accumulator,
+                    [sort]: dto._order,
+                }),
+                {}
+            ),
+            where: {
+                grimoire: grimoire,
+            },
+        });
+        return [entities, total];
+    }
 }
