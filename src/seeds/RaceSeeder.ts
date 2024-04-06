@@ -1,8 +1,8 @@
 import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
-import { RaceEntity } from '../app/modules/characters/entity/race.entity';
-import { CreateRaceDto } from '../app/modules/characters/dto/create-race.dto';
 import { races } from '../../Assets/json/races.json';
+import { RaceEntity } from '../app/modules/race/entity/race.entity';
+import { CreateRaceDto } from '../app/modules/race/dto/create-race.dto';
 export default class RaceSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<any> {
         const raceRepository = dataSource.getRepository(RaceEntity);

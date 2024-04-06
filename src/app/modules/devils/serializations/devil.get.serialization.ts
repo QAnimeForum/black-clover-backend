@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { ApiProperty } from '@nestjs/swagger';
 import { ResponseIdSerialization } from 'src/common/response/serializations/response.id.serialization';
-import { DevilFloorEnum } from '../constants/devil.flor.enum';
+import { DevilFloorEnum } from '../constants/devil.floor.enum';
 import { DevilRanksEnum } from '../constants/devil.ranks.enum';
 
 export class DevilGetSerialization extends ResponseIdSerialization {

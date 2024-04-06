@@ -27,6 +27,6 @@ export class CashEntity {
     })
     platinum: number;
 
-    @OneToOne(() => WalletEntity)
+    @OneToOne(() => WalletEntity, (wallet) => wallet.cash)
     wallet: WalletEntity;
 }

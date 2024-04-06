@@ -1,15 +1,16 @@
 import {
     Entity,
     Column,
-    OneToOne,
     JoinColumn,
     OneToMany,
     PrimaryGeneratedColumn,
     ManyToOne,
+    OneToOne,
 } from 'typeorm';
 import { ProvinceEntity } from './province.entity';
 import { StateFormEntity } from './state.form.entity';
-import { BackgroundEnity } from '../../characters/entity/background.entity';
+import { BackgroundEnity } from '../../character/entity/background.entity';
+import { SquadEntity } from '../../jobs/squards/entity/squad.entity';
 @Entity('state')
 export class StateEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -44,4 +45,6 @@ export class StateEntity {
     form: StateFormEntity;
     @OneToMany(() => ProvinceEntity, (province) => province.state)
     provinces: Array<ProvinceEntity>;
+    @OneToMany(() => SquadEntity, (squad) => squad.state)
+    squads: Array<SquadEntity>;
 }

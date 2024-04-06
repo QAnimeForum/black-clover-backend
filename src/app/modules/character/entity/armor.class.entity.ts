@@ -1,6 +1,6 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { ArmorEntity } from '../../business/entity/armor.entity';
 import { CharacterCharacteristicsEntity } from './character.characteristics.entity';
+import { ArmorEntity } from '../../jobs/business/entity/armor.entity';
 
 @Entity('armor_class')
 export class ArmorClassEntity {

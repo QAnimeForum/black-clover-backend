@@ -6,9 +6,9 @@ import {
     Body,
     VERSION_NEUTRAL,
     Param,
+    Delete,
 } from '@nestjs/common';
 import { DevilsService } from '../services/devils.service';
-import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from '../../../../common/pagination/constants/pagination.enum.constant';
 import {
     IResponse,
     IResponsePaging,
@@ -24,31 +24,25 @@ import {
     PaginationQuery,
     PaginationQueryFilterInEnum,
 } from 'src/common/pagination/decorators/pagination.decorator';
+
+import { CreateDevilDto } from '../dtos/devil.create.dto';
+import { ResponseIdSerialization } from 'src/common/response/serializations/response.id.serialization';
+import { ENUM_DEVIL_STATUS_CODE_ERROR } from '../constants/devil.status-code.constant';
+import { DevilRanksEnum } from '../constants/devil.ranks.enum';
+import { DevilFloorEnum } from '../constants/devil.floor.enum';
+import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
+import { DevilGetSerialization } from '../serializations/devil.get.serialization';
+import { DevilRequestDto } from '../dtos/devil.request.dto';
 import {
     DEVIL_DEFAULT_AVAILABLE_ORDER_BY,
     DEVIL_DEFAULT_AVAILABLE_SEARCH,
     DEVIL_DEFAULT_ORDER_BY,
     DEVIL_DEFAULT_ORDER_DIRECTION,
     DEVIL_DEFAULT_PER_PAGE,
-} from '../constants/devil-list.constant';
-import { CreateDevilDto } from '../dtos/create.devil.dto';
-import { ResponseIdSerialization } from 'src/common/response/serializations/response.id.serialization';
-import { ENUM_DEVIL_STATUS_CODE_ERROR } from '../constants/devil.status-code.constant';
-import { DevilRanksEnum } from '../constants/devil.ranks.enum';
-import { DevilFloorEnum } from '../constants/devil.flor.enum';
-import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
-import { DevilGetSerialization } from '../serializations/devil.get.serialization';
-import { DevilRequestDto } from '../dtos/devil.request.dto';
+    DEVIL_FLOOR_DEFAULT_TYPE,
+    DEVIL_RANK_DEFAULT_TYPE,
+} from '../constants/devil.list.constant';
 
-export const DEVILS_DEFAULT_PER_PAGE = 20;
-export const DEVILS_DEFAULT_ORDER_BY = 'floor';
-export const DEVILS_DEFAULT_ORDER_DIRECTION =
-    ENUM_PAGINATION_ORDER_DIRECTION_TYPE.ASC;
-export const DEVILS_DEFAULT_AVAILABLE_ORDER_BY = ['name', 'floor', 'rank'];
-export const DEVILS_DEFAULT_AVAILABLE_SEARCH = ['name', 'floor', 'rank'];
-
-export const DEVIL_RANK_DEFAULT_TYPE = Object.values(DevilRanksEnum);
-export const DEVIL_FLOOR_DEFAULT_TYPE = Object.values(DevilFloorEnum);
 @Controller({
     version: VERSION_NEUTRAL,
     path: '/devils',
@@ -127,8 +121,8 @@ export class DevilsController {
         serialization: DevilGetSerialization,
     })
     @RequestParamGuard(DevilRequestDto)
-    @Get('/race/get/:race')
-    async getRace(@Param() params: DevilRequestDto): Promise<IResponse> {
+    @Get('/get/:devil')
+    async getOne(@Param() params: DevilRequestDto): Promise<IResponse> {
         const devil = await this.devilService.findOne(params.devil);
         if (!devil) {
             throw new ConflictException({
@@ -139,5 +133,13 @@ export class DevilsController {
         return {
             data: devil,
         };
+    }
+
+    @Response('devil.delete')
+    @RequestParamGuard(DevilRequestDto)
+    @Delete('/delete/:devil')
+    async delete(@Param() params: DevilRequestDto): Promise<void> {
+        await this.devilService.remove(params.devil);
+        return;
     }
 }

@@ -24,6 +24,7 @@ import { PaginationService } from 'src/common/pagination/services/pagination.ser
 import { ResponsePaging } from 'src/common/response/decorators/response.decorator';
 import { StateListSerialization } from '../serialization/state.list.serialization';
 import { BurgListSerialization } from '../serialization/burg.list.serialization';
+import { ProvinceListSerialization } from '../serialization/province.list.serialization';
 
 @Controller({
     version: VERSION_NEUTRAL,
@@ -61,9 +62,9 @@ export class MapController {
         };
     }
 
-    /* @ResponsePaging('map.province.list', {
+    @ResponsePaging('map.province.list', {
         serialization: ProvinceListSerialization,
-    })*/
+    })
     @Get('/provinces')
     async getAllProvinces(
         @PaginationQuery(

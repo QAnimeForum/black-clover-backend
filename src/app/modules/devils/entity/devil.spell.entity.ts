@@ -1,9 +1,14 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
-import { DevilUnion } from './devil.union.entity';
-
-@Entity('devil_Spell')
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
+import { DevilUnionEntity } from './devil.union.entity';
+@Entity('devil_spell')
 export class DevilSpellEntity {
-    @PrimaryColumn('uuid')
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column({
@@ -27,16 +32,16 @@ export class DevilSpellEntity {
     duration: string;
 
     @Column({
-        type: 'int',
+        type: 'varchar',
     })
     cost: string;
 
     @Column({
-        type: 'int',
+        type: 'varchar',
     })
     castTime: string;
 
-    @ManyToOne(() => DevilUnion, (devilUnion) => devilUnion.spells)
+    @ManyToOne(() => DevilUnionEntity, (devilUnion) => devilUnion.spells)
     @JoinColumn({ name: 'union_id', referencedColumnName: 'id' })
-    union: DevilUnion;
+    union: DevilUnionEntity;
 }

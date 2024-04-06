@@ -48,7 +48,7 @@ export class CharacterCharacteristicsEntity {
     hunger: number;
 
     @Column({
-        types: 'int',
+        type: 'int',
     })
     sanity: number;
     @OneToOne(() => ProficiencyEntity, {
@@ -69,31 +69,37 @@ export class CharacterCharacteristicsEntity {
     @OneToOne(() => AbilityEntity)
     @JoinColumn({
         name: 'strength_id',
+        referencedColumnName: 'id',
     })
     strength: AbilityEntity;
     @OneToOne(() => AbilityEntity)
     @JoinColumn({
         name: 'dexterity_id',
+        referencedColumnName: 'id',
     })
     dexterity: AbilityEntity;
     @OneToOne(() => AbilityEntity)
     @JoinColumn({
         name: 'constitution_id',
+        referencedColumnName: 'id',
     })
     constitution: AbilityEntity;
     @OneToOne(() => AbilityEntity)
     @JoinColumn({
         name: 'intelligence_id',
+        referencedColumnName: 'id',
     })
     intelligence: AbilityEntity;
     @OneToOne(() => AbilityEntity)
     @JoinColumn({
         name: 'wisdom_id',
+        referencedColumnName: 'id',
     })
     wisdom: AbilityEntity;
     @OneToOne(() => AbilityEntity)
     @JoinColumn({
         name: 'charisma_id',
+        referencedColumnName: 'id',
     })
     charisma: AbilityEntity;
 

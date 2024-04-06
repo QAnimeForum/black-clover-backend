@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
-import { ItemEnity } from '../../business/entity/item.entity';
-import { ArmorEntity } from '../../business/entity/armor.entity';
-import { WeaponEntity } from '../../business/entity/weapon.entity';
-import { ToolKitEnity } from '../../business/entity/toolkit.entity';
-import { VehicleEntity } from '../../business/entity/vehicle.entity';
+import { WeaponEntity } from '../../jobs/business/entity/weapon.entity';
+import { ArmorEntity } from '../../jobs/business/entity/armor.entity';
+import { ToolKitEnity } from '../../jobs/business/entity/toolkit.entity';
+import { VehicleEntity } from '../../jobs/business/entity/vehicle.entity';
+import { GearEnity } from '../../jobs/business/entity/gear.entity';
 @Entity('inventory')
 export class InventoryEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -27,9 +27,9 @@ export class InventoryEntity {
     /**
      * механизм
      */
-    @ManyToMany(() => ItemEnity)
+    @ManyToMany(() => GearEnity)
     @JoinTable()
-    gear: ItemEnity[];
+    gears: GearEnity[];
 
     @ManyToMany(() => VehicleEntity)
     @JoinTable()

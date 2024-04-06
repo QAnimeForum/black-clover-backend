@@ -7,7 +7,7 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { StateEntity } from '../../map/enitity/state.entity';
-import { RaceEntity } from './race.entity';
+import { RaceEntity } from '../../race/entity/race.entity';
 import { CharacterEntity } from './character.entity';
 
 @Entity('background')

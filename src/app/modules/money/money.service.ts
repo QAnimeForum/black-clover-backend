@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { WalletEntity } from './entity/wallet.entity';
-import { BankAccountEntity } from './entity/bank.account.enity';
-import { BankEntity } from './entity/bank.enity';
+import { BankAccountEntity } from './entity/bank.account.entity';
+import { BankEntity } from './entity/bank.entity';
 import { CashEntity } from './entity/cash.entity';
 import { MoneyLogEntity } from './entity/money.logs.enitiy';
 @Injectable()

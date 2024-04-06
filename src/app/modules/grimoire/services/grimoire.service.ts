@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { SpellEntity } from '../entity/spell.entity';
 import { GrimoireEntity } from '../entity/grimoire.entity';
 @Injectable()
-export class CharacterService {
+export class GrimoireService {
     constructor(
         @InjectRepository(GrimoireEntity)
         private readonly grimoireRepository: Repository<GrimoireEntity>,

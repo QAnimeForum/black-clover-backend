@@ -1,17 +1,17 @@
 import { Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
-import { CharacterEntity } from '../../characters/entity/character.entity';
 import { CashEntity } from './cash.entity';
-import { BankAccountEntity } from './bank.account.enity';
+import { BankAccountEntity } from './bank.account.entity';
+import { CharacterEntity } from '../../character/entity/character.entity';
 @Entity('wallet')
 export class WalletEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @OneToOne(() => CashEntity)
+    @OneToOne(() => CashEntity, (cash) => cash.wallet)
     @JoinColumn({ name: 'cash_id', referencedColumnName: 'id' })
     cash: CashEntity;
 
-    @OneToOne(() => BankAccountEntity)
+    @OneToOne(() => BankAccountEntity, (account) => account.wallet)
     @JoinColumn({ name: 'bank_account_id', referencedColumnName: 'id' })
     bankAccount: BankAccountEntity;
 

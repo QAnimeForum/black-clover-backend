@@ -4,26 +4,22 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CharacterType } from '../constants/character.type.enum';
 import { BackgroundEnity } from '../entity/background.entity';
-import { RaceEntity } from '../entity/race.entity';
+import { RaceEntity } from '../../race/entity/race.entity';
 import { StateEntity } from '../../map/enitity/state.entity';
 import { CreatePlayableCharacterDto } from '../dto/create-playable-character.dto';
 import { InventoryEntity } from '../entity/inventory.entity';
-import { ArmorEntity } from '../../business/entity/armor.entity';
-import { SpellEntity } from '../../grimoire/entity/spell.entity';
 import {
     GetCharacterInfoDto,
     GetCharacteristicsDto,
-    GetSpellsDto,
 } from '../dto/query-character-info.dto';
 import { GrimoireEntity } from '../../grimoire/entity/grimoire.entity';
-import { CreateRaceDto } from '../dto/create-race.dto';
-import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
 import { CharacterCharacteristicsEntity } from '../entity/character.characteristics.entity';
 import { ProficiencyEntity } from '../entity/proficiency.entity';
 import { AbilityEntity } from '../entity/ability.entity';
 import { ArmorClassEntity } from '../entity/armor.class.entity';
 import { SpeedEntity } from '../entity/speed.entity';
 import { CardSymbolsEnum } from '../constants/card.symbol.enum';
+import { ArmorEntity } from '../../jobs/business/entity/armor.entity';
 @Injectable()
 export class CharacterService {
     constructor(
@@ -46,8 +42,6 @@ export class CharacterService {
         private readonly inventoryRepository: Repository<InventoryEntity>,
         @InjectRepository(GrimoireEntity)
         private readonly grimoireRepository: Repository<GrimoireEntity>,
-        @InjectRepository(SpellEntity)
-        private readonly spellRepository: Repository<SpellEntity>,
         @InjectRepository(RaceEntity)
         private readonly raceRepository: Repository<RaceEntity>,
         @InjectRepository(StateEntity)
@@ -88,7 +82,6 @@ export class CharacterService {
          */
         const inventoryEntity = (await this.inventoryRepository.insert({}))
             .raw[0];
-        console.log(inventoryEntity);
         /**
          * Создание истории персонажа
          */
@@ -203,30 +196,6 @@ export class CharacterService {
         });
     }
 
-    async findAllRaces(
-        dto: PaginationListDto
-    ): Promise<[RaceEntity[], number]> {
-        const [entities, total] = await this.raceRepository.findAndCount({
-            skip: dto._offset * dto._limit,
-            take: dto._limit,
-            order: dto._availableOrderBy?.reduce(
-                (accumulator, sort) => ({
-                    ...accumulator,
-                    [sort]: dto._order,
-                }),
-                {}
-            ),
-        });
-        return [entities, total];
-    }
-
-    async raceExistByName(name: string): Promise<boolean> {
-        const entity = await this.raceRepository.findOneBy({
-            name: name,
-        });
-        return entity ? false : true;
-    }
-
     async getCharacterById(characerId: string): Promise<CharacterEntity> {
         const entity = await this.characterRepository.findOne({
             where: {
@@ -277,31 +246,15 @@ export class CharacterService {
         return entity;
     }
 
-    async getGrimoireById(backgroundId: string): Promise<BackgroundEnity> {
-        const entity = await this.backgroundRepository.findOneBy({
-            id: backgroundId,
-        });
-        return entity;
-    }
-
     async getInventoryById(backgroundId: string): Promise<BackgroundEnity> {
         const entity = await this.backgroundRepository.findOneBy({
             id: backgroundId,
         });
         return entity;
     }
-    createrRace(dto: CreateRaceDto) {
-        return this.raceRepository.insert(dto);
-    }
     findCharacteristics(dto: GetCharacteristicsDto) {
         return this.characterRepository.findBy({
             id: dto.charactristicsId,
-        });
-    }
-
-    findSpells(dto: GetSpellsDto) {
-        return this.spellRepository.findBy({
-            id: dto.grimoireId,
         });
     }
 }

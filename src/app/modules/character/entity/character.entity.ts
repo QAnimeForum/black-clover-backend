@@ -2,6 +2,8 @@ import {
     Column,
     Entity,
     JoinColumn,
+    JoinTable,
+    ManyToMany,
     OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
@@ -13,8 +15,10 @@ import { InventoryEntity } from './inventory.entity';
 import { GrimoireEntity } from '../../grimoire/entity/grimoire.entity';
 import { NoteEntity } from './note.entity';
 import { WalletEntity } from '../../money/entity/wallet.entity';
-import { VehicleEntity } from '../../business/entity/vehicle.entity';
-
+import { TaskEntity } from '../../events/entity/task.entity';
+import { BusinessEntity } from '../../jobs/business/entity/business.entity';
+import { FactionMemberEntity } from '../../jobs/judicial.system/entity/faction.member.entity';
+import { SquadMemberEntity } from '../../jobs/squards/entity/squad.member.entity';
 @Entity('character')
 export class CharacterEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -61,27 +65,15 @@ export class CharacterEntity {
     @JoinColumn({ name: 'character_id', referencedColumnName: 'id' })
     wallet: WalletEntity;
 
+    @OneToOne(() => BusinessEntity)
+    business: BusinessEntity;
+    @OneToOne(() => FactionMemberEntity)
+    factionMember: FactionMemberEntity;
+
+    @OneToOne(() => SquadMemberEntity)
+    squadMember: SquadMemberEntity;
+
+    @ManyToMany(() => TaskEntity)
+    @JoinTable()
     tasks: Array<TaskEntity>;
-}
-
-@Entity('task')
-export class TaskEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-}
-
-@Entity('arrest')
-export class ArrastEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-
-    @Column({
-        type: 'datetime',
-    })
-    time: Date;
-
-    @Column({
-        type: 'varchar',
-    })
-    reason: string;
 }

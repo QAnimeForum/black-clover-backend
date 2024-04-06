@@ -5,9 +5,9 @@ import {
     OneToOne,
     JoinColumn,
 } from 'typeorm';
-import { DevilFloorEnum } from '../constants/devil.flor.enum';
+import { DevilFloorEnum } from '../constants/devil.floor.enum';
 import { DevilRanksEnum } from '../constants/devil.ranks.enum';
-import { DevilUnion } from './devil.union.entity';
+import { DevilUnionEntity } from './devil.union.entity';
 
 @Entity('devils')
 export class DevilEntity {
@@ -44,40 +44,39 @@ export class DevilEntity {
     })
     magic_type: string;
 
-    @OneToOne(() => DevilUnion)
+    @OneToOne(() => DevilUnionEntity)
     @JoinColumn({
         name: 'union_10_id',
     })
-    union_10: DevilUnion;
+    union_10: DevilUnionEntity;
 
-    @OneToOne(() => DevilUnion)
+    @OneToOne(() => DevilUnionEntity)
     @JoinColumn({
         name: 'union_25_id',
     })
-    union_25: DevilUnion;
+    union_25: DevilUnionEntity;
 
-    @OneToOne(() => DevilUnion)
+    @OneToOne(() => DevilUnionEntity)
     @JoinColumn({
         name: 'union_50_id',
     })
-    union_50: DevilUnion;
+    union_50: DevilUnionEntity;
 
-    @OneToOne(() => DevilUnion)
+    @OneToOne(() => DevilUnionEntity)
     @JoinColumn({
         name: 'union_65_id',
     })
-    union_65: DevilUnion;
+    union_65: DevilUnionEntity;
 
-
-    @OneToOne(() => DevilUnion)
+    @OneToOne(() => DevilUnionEntity)
     @JoinColumn({
-        name: 'union_65_id',
+        name: 'union_80_id',
     })
-    union_80: DevilUnion;
+    union_80: DevilUnionEntity;
 
-    @OneToOne(() => DevilUnion)
+    @OneToOne(() => DevilUnionEntity)
     @JoinColumn({
         name: 'union_100_id',
     })
-    union_100: DevilUnion;
+    union_100: DevilUnionEntity;
 }
