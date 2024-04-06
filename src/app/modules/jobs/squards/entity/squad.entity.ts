@@ -3,12 +3,11 @@ import {
     PrimaryGeneratedColumn,
     Column,
     OneToMany,
-    OneToOne,
     JoinColumn,
     ManyToOne,
 } from 'typeorm';
 import { SquadMemberEntity } from './squad.member.entity';
-import { StateEntity } from 'src/app/modules/map/enitity/state.entity';
+import { StateEntity } from '../../../map/enitity/state.entity';
 
 @Entity('squads')
 export class SquadEntity {

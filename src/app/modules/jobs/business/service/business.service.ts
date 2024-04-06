@@ -3,17 +3,24 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
 import { CreateArmorDto } from '../dto/armor.create.dto';
-import { CreateWeaponDto } from '../dto/weapon.create.dto';
 import { ArmorEntity } from '../entity/armor.entity';
 import { WeaponEntity } from '../entity/weapon.entity';
 import { GearEntity } from '../entity/gear.entity';
 import { VehicleEntity } from '../entity/vehicle.entity';
 import { ToolKitEnity } from '../entity/toolkit.entity';
+import { ClothesEntity } from '../entity/clothes.entity';
+import { ClothesCreateDto } from '../dto/clothes.create.dto';
+import { GearCreateDto } from '../dto/gear.create.dto';
+import { VehicleCreateDto } from '../dto/vehicle.create.dto';
+import { ToolKitCreateDto } from '../dto/toolkit.create.dto';
+import { WeaponCreateDto } from '../dto/weapon.create.dto';
 @Injectable()
 export class BusinessService {
     constructor(
         @InjectRepository(ArmorEntity)
         private readonly armorRepository: Repository<ArmorEntity>,
+        @InjectRepository(ClothesEntity)
+        private readonly clothesRepository: Repository<ClothesEntity>,
         @InjectRepository(GearEntity)
         private readonly gearRepository: Repository<GearEntity>,
         @InjectRepository(ToolKitEnity)
@@ -33,6 +40,9 @@ export class BusinessService {
         });
         return [entities, total];
     }
+    findDevilById(id: string): Promise<ArmorEntity | null> {
+        return this.armorRepository.findOneBy({ id });
+    }
     async createArmor(dto: CreateArmorDto) {
         const armor = new ArmorEntity();
         armor.name = dto.name;
@@ -46,7 +56,100 @@ export class BusinessService {
         this.armorRepository.insert(armor);
     }
 
-    async createWeapon(dto: CreateWeaponDto) {
+    async deleteArmor(id: string): Promise<void> {
+        await this.armorRepository.delete(id);
+    }
+
+    findClothesById(id: string): Promise<ClothesEntity | null> {
+        return this.clothesRepository.findOneBy({ id });
+    }
+
+    async createClothes(dto: ClothesCreateDto) {
+        await this.clothesRepository.insert(dto);
+    }
+
+    async getAllClothes(
+        dto: PaginationListDto
+    ): Promise<[ClothesEntity[], number]> {
+        const [entities, total] = await this.clothesRepository.findAndCount({
+            skip: dto._offset * dto._limit,
+            take: dto._limit,
+            order: dto._order,
+        });
+        return [entities, total];
+    }
+    async deleteClothes(id: string): Promise<void> {
+        await this.clothesRepository.delete(id);
+    }
+
+    findGearById(id: string): Promise<GearEntity | null> {
+        return this.gearRepository.findOneBy({ id });
+    }
+    async createGear(dto: GearCreateDto) {
+        await this.gearRepository.insert(dto);
+    }
+
+    async getlAllGears(
+        dto: PaginationListDto
+    ): Promise<[GearCreateDto[], number]> {
+        const [entities, total] = await this.gearRepository.findAndCount({
+            skip: dto._offset * dto._limit,
+            take: dto._limit,
+            order: dto._order,
+        });
+        return [entities, total];
+    }
+
+    async deleteGear(id: string): Promise<void> {
+        await this.gearRepository.delete(id);
+    }
+
+    findToolkitById(id: string): Promise<ToolKitEnity | null> {
+        return this.toolKitRepository.findOneBy({ id });
+    }
+
+    async createToolkit(dto: ToolKitCreateDto) {
+        await this.toolKitRepository.insert(dto);
+    }
+
+    async getAllTookits(
+        dto: PaginationListDto
+    ): Promise<[ToolKitEnity[], number]> {
+        const [entities, total] = await this.toolKitRepository.findAndCount({
+            skip: dto._offset * dto._limit,
+            take: dto._limit,
+            order: dto._order,
+        });
+        return [entities, total];
+    }
+
+    findVehicleById(id: string): Promise<VehicleEntity | null> {
+        return this.vehicleReposiory.findOneBy({ id });
+    }
+
+    async createVehicle(dto: VehicleCreateDto) {
+        await this.weaponRepository.insert(dto);
+    }
+
+    async getAllVehicles(
+        dto: PaginationListDto
+    ): Promise<[VehicleEntity[], number]> {
+        const [entities, total] = await this.vehicleReposiory.findAndCount({
+            skip: dto._offset * dto._limit,
+            take: dto._limit,
+            order: dto._order,
+        });
+        return [entities, total];
+    }
+
+    async deleteVehicle(id: string): Promise<void> {
+        await this.vehicleReposiory.delete(id);
+    }
+
+    findWeaponById(id: string): Promise<WeaponEntity | null> {
+        return this.weaponRepository.findOneBy({ id });
+    }
+    async createWeapon(dto: WeaponCreateDto) {
         await this.weaponRepository.insert(dto);
     }
 
@@ -59,5 +162,8 @@ export class BusinessService {
             order: dto._order,
         });
         return [entities, total];
+    }
+    async deleteWeapon(id: string): Promise<void> {
+        await this.weaponRepository.delete(id);
     }
 }

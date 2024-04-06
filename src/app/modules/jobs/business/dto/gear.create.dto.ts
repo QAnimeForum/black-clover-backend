@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-export class CreateGearDto {
+export class GearCreateDto {
     @ApiProperty({ example: '' })
     @IsNotEmpty()
     itemType: string;

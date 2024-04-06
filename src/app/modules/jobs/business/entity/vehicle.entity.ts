@@ -1,5 +1,4 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { CharacterEntity } from '../../../character/entity/character.entity';
 import { InventoryEntity } from '../../../character/entity/inventory.entity';
 
 @Entity('vehicle')
@@ -7,9 +6,9 @@ export class VehicleEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    owner: CharacterEntity;
+ //   owner: CharacterEntity;
 
-    oldOwners: Array<CharacterEntity>;
+  //  oldOwners: Array<CharacterEntity>;
 
     @Column({
         type: 'varchar',

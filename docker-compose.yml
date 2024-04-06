@@ -9,6 +9,8 @@ services:
       POSTGRES_USER: ${DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
+    networks:
+      - black-clover-network
 
 
   adminer:
@@ -16,14 +18,26 @@ services:
     restart: always
     ports:
       - 8080:8080
-9
+    depends_on:
+      - postgres
+    networks:
+      - black-clover-network
 
   api:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - ${APP_PORT}:${APP_PORT}
-
+      - 3000:3000
+    #  - ${APP_PORT}:${APP_PORT}
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - adminer
+    networks:
+      - black-clover-network
 volumes:
   boilerplate-db:
+networks:
+  black-clover-network:

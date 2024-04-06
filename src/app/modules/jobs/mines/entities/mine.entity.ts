@@ -18,5 +18,4 @@ export class MineEntity {
 
     @OneToMany(() => MineralEnity, (mineral) => mineral.mine)
     minerals: Array<MineralEnity>;
-
 }
