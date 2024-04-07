@@ -28,7 +28,7 @@ export class RoleEntity {
     })
     type: ENUM_ROLE_TYPE;
 
-   /* @Prop({
+    /* @Prop({
         required: true,
         default: [],
         _id: false,

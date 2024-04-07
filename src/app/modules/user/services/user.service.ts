@@ -8,9 +8,9 @@ import { UserEntity } from '../entities/user.entity';
 export class UserService {
     constructor(
         @InjectRepository(UserEntity)
-        private readonly userRepository: Repository<UserEntity>,
-       // private readonly helperDateService: HelperDateService,
-      //  private readonly configService: ConfigService
+        private readonly userRepository: Repository<UserEntity>
+        // private readonly helperDateService: HelperDateService,
+        //  private readonly configService: ConfigService
     ) {}
 }
 

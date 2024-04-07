@@ -5,23 +5,23 @@ import { IHelperHashService } from 'src/common/helper/interfaces/helper.hash-ser
 
 @Injectable()
 export class HelperHashService implements IHelperHashService {
-  randomSalt(length: number): string {
-    return genSaltSync(length);
-  }
+    randomSalt(length: number): string {
+        return genSaltSync(length);
+    }
 
-  bcrypt(passwordString: string, salt: string): string {
-    return hashSync(passwordString, salt);
-  }
+    bcrypt(passwordString: string, salt: string): string {
+        return hashSync(passwordString, salt);
+    }
 
-  bcryptCompare(passwordString: string, passwordHashed: string): boolean {
-    return compareSync(passwordString, passwordHashed);
-  }
+    bcryptCompare(passwordString: string, passwordHashed: string): boolean {
+        return compareSync(passwordString, passwordHashed);
+    }
 
-  sha256(string: string): string {
-    return SHA256(string).toString(enc.Hex);
-  }
+    sha256(string: string): string {
+        return SHA256(string).toString(enc.Hex);
+    }
 
-  sha256Compare(hashOne: string, hashTwo: string): boolean {
-    return hashOne === hashTwo;
-  }
+    sha256Compare(hashOne: string, hashTwo: string): boolean {
+        return hashOne === hashTwo;
+    }
 }

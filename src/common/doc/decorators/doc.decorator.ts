@@ -36,7 +36,6 @@ import { ENUM_REQUEST_STATUS_CODE_ERROR } from 'src/common/request/constants/req
 import { ResponsePagingSerialization } from 'src/common/response/serializations/response.paging.serialization';
 import { ResponseSerialization } from 'src/common/response/serializations/response.serialization';
 
-
 export function DocDefault<T>(options: IDocDefaultOptions): MethodDecorator {
     const docs = [];
     const schema: Record<string, any> = {

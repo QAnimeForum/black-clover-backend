@@ -1,3 +1,1 @@
-export class MemberCreateDto {
-  
-}
+export class MemberCreateDto {}

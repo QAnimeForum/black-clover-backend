@@ -7,7 +7,6 @@ export const STATES_DEFAULT_ORDER_DIRECTION =
 export const STATES_DEFAULT_AVAILABLE_ORDER_BY = ['name'];
 export const STATES_DEFAULT_AVAILABLE_SEARCH = ['name'];
 
-
 export const PROVINCES_DEFAULT_PER_PAGE = 20;
 export const PROVINCES_DEFAULT_ORDER_BY = 'shortName';
 export const PROVINCES_DEFAULT_ORDER_DIRECTION =

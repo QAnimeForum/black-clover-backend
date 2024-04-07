@@ -25,9 +25,8 @@ export class GrimoireService {
         private readonly spellRepository: Repository<SpellEntity>
     ) {}
 
-
     async findAllGrimoires(
-        dto: PaginationListDto,
+        dto: PaginationListDto
     ): Promise<[SpellEntity[], number]> {
         const [entities, total] = await this.spellRepository.findAndCount({
             skip: dto._offset * dto._limit,
@@ -38,7 +37,7 @@ export class GrimoireService {
                     [sort]: dto._order,
                 }),
                 {}
-            )
+            ),
         });
         return [entities, total];
     }

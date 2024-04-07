@@ -16,8 +16,6 @@ export class RankEntity {
     })
     description: string;
 
-
-    
     salary: SalaryEntity;
 
     @OneToMany(() => SquadMemberEntity, (member) => member.squad)

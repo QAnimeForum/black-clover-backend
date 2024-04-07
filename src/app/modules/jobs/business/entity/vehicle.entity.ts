@@ -6,9 +6,9 @@ export class VehicleEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
- //   owner: CharacterEntity;
+    //   owner: CharacterEntity;
 
-  //  oldOwners: Array<CharacterEntity>;
+    //  oldOwners: Array<CharacterEntity>;
 
     @Column({
         type: 'varchar',

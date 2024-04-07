@@ -9,7 +9,7 @@ export class Character {
     type: CharacterType;
     background: Background;
     characteristics: CharacterCharacteristics;
-   // grimoire: Grimoire;
+    // grimoire: Grimoire;
     notes: Note[];
     inventory: Inventory;
 }

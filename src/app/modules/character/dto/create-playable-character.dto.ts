@@ -3,10 +3,9 @@ export class CreatePlayableCharacterDto {
     raceId: string;
     countryId: string;
     //  magicName: string;
-   // userId: string;
+    // userId: string;
     // age: number;
 }
-
 
 export class CharacterCharacteristicsDto {
     currentLevel: number;
@@ -14,7 +13,6 @@ export class CharacterCharacteristicsDto {
     currentHealth: number;
     maxHealth: number;
 }
-
 
 /**
  * import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';

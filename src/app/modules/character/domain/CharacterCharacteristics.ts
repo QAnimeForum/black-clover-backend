@@ -23,7 +23,6 @@ export class CharacterCharacteristics {
     speeds: Speed[];
 }
 
-
 /**
  *    fightingStyles?: string[];
     attacks: Attack[];

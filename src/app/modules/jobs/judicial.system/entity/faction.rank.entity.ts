@@ -18,7 +18,7 @@ export class FactionRankEntity {
 
     @OneToMany(() => FactionMemberEntity, (member) => member.faction)
     members: Array<FactionMemberEntity>;
- /*   @Column({
+    /*   @Column({
         type: 'varchar',
     })
     permissions: string[];*/

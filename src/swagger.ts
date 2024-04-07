@@ -39,7 +39,7 @@ export default async function (app: NestApplication) {
 
         const document = SwaggerModule.createDocument(app, documentBuild, {
             deepScanRoutes: true,
-       //     extraModels: [ResponseSerialization, ResponsePagingSerialization],
+            //     extraModels: [ResponseSerialization, ResponsePagingSerialization],
         });
 
         //writeFileSync('./data/swagger.json', JSON.stringify(document));
