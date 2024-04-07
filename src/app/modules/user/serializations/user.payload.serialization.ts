@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
-import { ENUM_POLICY_SUBJECT } from '../../policy/constants/policy.enum.constant';
 import { ENUM_ROLE_TYPE } from '../../role/constants/role.enum.constant';
 import { UserProfileSerialization } from './user.profile.serialization';
+import { ENUM_POLICY_SUBJECT } from 'src/common/policy/constants/policy.enum.constant';
 export class UserPayloadPermissionSerialization {
     @ApiProperty({
         required: true,

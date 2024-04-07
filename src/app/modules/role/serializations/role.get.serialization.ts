@@ -2,11 +2,11 @@ import { faker } from '@faker-js/faker';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude, Type } from 'class-transformer';
 import { ResponseIdSerialization } from 'src/common/response/serializations/response.id.serialization';
+import { ENUM_ROLE_TYPE } from '../constants/role.enum.constant';
 import {
     ENUM_POLICY_SUBJECT,
     ENUM_POLICY_ACTION,
-} from '../../policy/constants/policy.enum.constant';
-import { ENUM_ROLE_TYPE } from '../constants/role.enum.constant';
+} from 'src/common/policy/constants/policy.enum.constant';
 
 export class RoleGetPermissionSerialization {
     @ApiProperty({

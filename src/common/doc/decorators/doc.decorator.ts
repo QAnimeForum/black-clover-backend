@@ -13,7 +13,6 @@ import {
     getSchemaPath,
 } from '@nestjs/swagger';
 import { APP_LANGUAGE } from 'src/app/constants/app.constant';
-import { ENUM_POLICY_STATUS_CODE_ERROR } from 'src/app/modules/policy/constants/policy.status-code.constant';
 import { ENUM_ROLE_STATUS_CODE_ERROR } from 'src/app/modules/role/constants/role.status-code.constant';
 import { ENUM_DOC_REQUEST_BODY_TYPE } from 'src/common/doc/constants/doc.enum.constant';
 import {
@@ -25,7 +24,6 @@ import {
     IDocResponsePagingOptions,
 } from 'src/common/doc/interfaces/doc.interface';
 import {
-    IDocAuthOptions,
     IDocDefaultOptions,
     IDocOfOptions,
     IDocResponseOptions,
@@ -33,6 +31,7 @@ import {
 import { ENUM_ERROR_STATUS_CODE_ERROR } from 'src/common/error/constants/error.status-code.constant';
 import { ENUM_FILE_MIME } from 'src/common/file/constants/file.enum.constant';
 import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from 'src/common/pagination/constants/pagination.enum.constant';
+import { ENUM_POLICY_STATUS_CODE_ERROR } from 'src/common/policy/constants/policy.status-code.constant';
 import { ENUM_REQUEST_STATUS_CODE_ERROR } from 'src/common/request/constants/request.status-code.constant';
 import { ResponsePagingSerialization } from 'src/common/response/serializations/response.paging.serialization';
 import { ResponseSerialization } from 'src/common/response/serializations/response.serialization';
