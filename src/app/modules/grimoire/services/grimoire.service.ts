@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SpellEntity } from '../entity/spell.entity';
 import { GrimoireEntity } from '../entity/grimoire.entity';
-import { CardSymbolsEnum } from '../../character/constants/card.symbol.enum';
 import { GrimoireUpdateNameDto } from '../dto/grimoire.update-name.dto';
 import { GrimoireUpdateColorDto } from '../dto/grimoire.update-color.dto';
 import { GrimoireCreateDto } from '../dto/grimoire.create.dto';
@@ -49,10 +48,10 @@ export class GrimoireService {
         return entity;
     }
 
-    async createEmptyGrimoire(coverSymbol: CardSymbolsEnum) {
+    async createEmptyGrimoire() {
         const insert = await this.grimoireRepository.insert({
             magicName: 'не выбрана',
-            coverSymbol: coverSymbol,
+         //   coverSymbol: coverSymbol,
             magicColor: 'не выбран',
         });
         return insert.raw[0].id;
@@ -61,7 +60,7 @@ export class GrimoireService {
     async createGrimoire(dto: GrimoireCreateDto) {
         const insert = await this.grimoireRepository.insert({
             magicName: dto.magicName,
-            coverSymbol: CardSymbolsEnum[dto.coverSymbol],
+          //  coverSymbol: CardSymbolsEnum[dto.coverSymbol],
             magicColor: dto.magicColor,
         });
         return insert.raw[0].id;

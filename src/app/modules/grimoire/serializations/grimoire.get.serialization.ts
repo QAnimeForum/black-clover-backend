@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { ApiProperty } from '@nestjs/swagger';
 import { ResponseIdSerialization } from 'src/common/response/serializations/response.id.serialization';
-import { CardSymbolsEnum } from '../../character/constants/card.symbol.enum';
 
 export class GrimoireGetSerialization extends ResponseIdSerialization {
     @ApiProperty({
@@ -19,12 +18,12 @@ export class GrimoireGetSerialization extends ResponseIdSerialization {
         nullable: true,
     })
     readonly description: string;
-    @ApiProperty({
+   /* @ApiProperty({
         required: true,
         nullable: false,
         example: CardSymbolsEnum.HEART,
     })
-    readonly coverSymbol: CardSymbolsEnum;
+    readonly coverSymbol: CardSymbolsEnum;*/
     @ApiProperty({
         description: 'Тип магии у дьявола',
         example: faker.lorem.sentence(),

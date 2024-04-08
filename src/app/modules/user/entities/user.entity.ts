@@ -7,7 +7,22 @@ export class UserEntity {
     role: RoleEntity;
 
     @Column({
-        type: 'boolean',
+        type: 'varchar',
     })
-    isActive: boolean;
+    firstName: string;
+
+    @Column({
+        type: 'varchar',
+    })
+    lastName: string;
+
+    @Column({
+        type: 'varchar',
+    })
+    username: string;
+
+    @Column({
+        type: 'varchar',
+    })
+    tgUserId: string;
 }

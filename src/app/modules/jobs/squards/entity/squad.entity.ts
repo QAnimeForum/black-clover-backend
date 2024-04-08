@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { SquadMemberEntity } from './squad.member.entity';
 import { StateEntity } from '../../../map/enitity/state.entity';
-
+import { ArmedForcesEntity } from './armed.forces.entity';
 @Entity('squads')
 export class SquadEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -24,9 +24,9 @@ export class SquadEntity {
 
     @ManyToOne(() => StateEntity)
     @JoinColumn({
-        name: 'state_id',
+        name: 'forces_id',
         referencedColumnName: 'id',
     })
-    state: StateEntity;
+    armorForces: ArmedForcesEntity;
     // ranks: any[];
 }

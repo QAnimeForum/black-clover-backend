@@ -10,7 +10,9 @@ import {
 import { ProvinceEntity } from './province.entity';
 import { StateFormEntity } from './state.form.entity';
 import { BackgroundEnity } from '../../character/entity/background.entity';
-import { SquadEntity } from '../../jobs/squards/entity/squad.entity';
+import { ArmedForcesEntity } from '../../jobs/squards/entity/armed.forces.entity';
+import { ENUM_STATE_SYMBOL } from '../constants/state.symbol.enum';
+
 @Entity('state')
 export class StateEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -29,7 +31,13 @@ export class StateEntity {
         type: 'varchar',
     })
     description: string;
-
+   /* @Column({
+        type: 'enum',
+        enum: ENUM_STATE_SYMBOL,
+        default: ENUM_STATE_SYMBOL.CLOVER,
+        nullable: false,
+    })
+    coverSymbol: ENUM_STATE_SYMBOL;*/
     /**
   *    @OneToOne(() => BurgEntity, (burg) => burg.state) // specify inverse side as a second parameter
     @JoinColumn()
@@ -45,6 +53,7 @@ export class StateEntity {
     form: StateFormEntity;
     @OneToMany(() => ProvinceEntity, (province) => province.state)
     provinces: Array<ProvinceEntity>;
-    @OneToMany(() => SquadEntity, (squad) => squad.state)
-    squads: Array<SquadEntity>;
+
+    @OneToOne(() => ArmedForcesEntity)
+    forces: ArmedForcesEntity;
 }

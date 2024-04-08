@@ -1,0 +1,219 @@
+{
+  "states": [
+    {
+      "name": "Клевер",
+      "fullName": "Клевер",
+      "coverSymbol": "♠️",
+      "description": "",
+      "form": "Королевство",
+      "provinces": [
+        {
+          "shortName": "Дворянские земли",
+          "fullName": "Дворянские земли",
+          "form": "Земля",
+          "burgs": [
+            {
+              "name": "Столица Королевства Клевер",
+              "description": ""
+            },
+            {
+              "name": "Деревня Тоута",
+              "description": ""
+            },
+            {
+              "name": "Город Раке",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "shortName": "Общие земли",
+          "fullName": "Общие земли",
+          "form": "Земля",
+          "burgs": [
+            {
+              "name": "Город Кикка",
+              "description": ""
+            },
+            {
+              "name": "Деревня Ивон",
+              "description": ""
+            },
+            {
+              "name": "Город Неан",
+              "description": ""
+            },
+            {
+              "name": "Город Китен",
+              "description": ""
+            },
+            {
+              "name": "Город Кекайро",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "shortName": "Заброшенные земли",
+          "fullName": "Заброшенные земли",
+          "form": "Земля",
+          "burgs": [
+            {
+              "name": "Деревня Хейдж",
+              "description": ""
+            },
+            {
+              "name": "Деревня Райяка",
+              "description": ""
+            },
+            {
+              "name": "Деревня Соши",
+              "description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Пики",
+      "fullName": "Королевство Пик",
+      "coverSymbol": "♠️",
+      "description": "",
+      "form": "Королевство",
+      "provinces": [
+        {
+          "shortName": "Главная область",
+          "fullName": "Главная область",
+          "form": "Земля",
+          "burgs": [
+            {
+              "name": "Столица Пик",
+              "description": ""
+            },
+            {
+              "name": "",
+              "description": ""
+            },
+            {
+              "name": "",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "shortName": "",
+          "fullName": "",
+          "form": "Земля",
+          "burgs": [
+            {
+              "name": "Столица Пик",
+              "description": ""
+            },
+            {
+              "name": "",
+              "description": ""
+            },
+            {
+              "name": "",
+              "description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Алмаз",
+      "fullName": "Алмазное королевство",
+      "description": "",
+      "coverSymbol": "♦️",
+      "form": "Королевство",
+      "provinces": [
+        {
+          "shortName": "Главная область",
+          "fullName": "Главная область",
+          "form": "Земля",
+          "burgs": [
+            {
+              "name": "Столица Алмаза",
+              "description": ""
+            },
+            {
+              "name": "",
+              "description": ""
+            },
+            {
+              "name": "",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "shortName": "Главная область",
+          "fullName": "Главн",
+          "form": "Земля",
+          "burgs": [
+            {
+              "name": "Столица Пик",
+              "description": ""
+            },
+            {
+              "name": "",
+              "description": ""
+            },
+            {
+              "name": "",
+              "description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Сердце",
+      "fullName": "Королевство Сердца",
+      "description": "",
+      "coverSymbol": "♥️",
+      "form": "Королевство",
+      "provinces": [
+        {
+          "shortName": "Главная область",
+          "fullName": "Главная область",
+          "form": "Земля",
+          "burgs": [
+            {
+              "name": "Столица Королевства Сердца",
+              "description": ""
+            },
+            {
+              "name": "",
+              "description": ""
+            },
+            {
+              "name": "",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "shortName": "Главная область",
+          "fullName": "Главная область",
+          "form": "Земля",
+          "burgs": [
+            {
+              "name": "Столица Пик",
+              "description": ""
+            },
+            {
+              "name": "",
+              "description": ""
+            },
+            {
+              "name": "",
+              "description": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

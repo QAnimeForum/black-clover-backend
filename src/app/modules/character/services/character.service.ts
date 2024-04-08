@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { CharacterEntity } from '../entity/character.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CharacterType } from '../constants/character.type.enum';
 import { BackgroundEnity } from '../entity/background.entity';
 import { RaceEntity } from '../../race/entity/race.entity';
 import { StateEntity } from '../../map/enitity/state.entity';
@@ -18,8 +17,8 @@ import { ProficiencyEntity } from '../entity/proficiency.entity';
 import { AbilityEntity } from '../entity/ability.entity';
 import { ArmorClassEntity } from '../entity/armor.class.entity';
 import { SpeedEntity } from '../entity/speed.entity';
-import { CardSymbolsEnum } from '../constants/card.symbol.enum';
 import { ArmorEntity } from '../../jobs/business/entity/armor.entity';
+import { ENUM_CHARCACTER_TYPE } from '../constants/character.type.enum';
 @Injectable()
 export class CharacterService {
     constructor(
@@ -89,7 +88,7 @@ export class CharacterService {
         const grimoireEntity = (
             await this.grimoireRepository.insert({
                 magicName: 'не выбрана',
-                coverSymbol: CardSymbolsEnum.CLOVER,
+                //   coverSymbol: CardSymbolsEnum.CLOVER,
                 magicColor: 'не выбран',
             })
         ).raw[0];
@@ -181,7 +180,7 @@ export class CharacterService {
             })
         ).raw[0];
         return this.characterRepository.insert({
-            type: CharacterType.PC,
+            type: ENUM_CHARCACTER_TYPE.PC,
             background: backgroundEntity,
             characterCharacteristics: characteristitcsEntity,
             grimoire: grimoireEntity,

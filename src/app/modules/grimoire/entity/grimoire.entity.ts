@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { CardSymbolsEnum } from '../../character/constants/card.symbol.enum';
 import { SpellEntity } from './spell.entity';
+import { ENUM_GRIMOIRE_SYMBOL } from '../constants/grimoire.symbol.enum';
+
 @Entity('grimoire')
 export class GrimoireEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -12,10 +13,10 @@ export class GrimoireEntity {
 
     @Column({
         type: 'enum',
-        enum: CardSymbolsEnum,
-        default: CardSymbolsEnum.CLOVER,
+        enum: ENUM_GRIMOIRE_SYMBOL,
+        default: ENUM_GRIMOIRE_SYMBOL.CLOVER,
     })
-    coverSymbol: CardSymbolsEnum;
+    coverSymbol: ENUM_GRIMOIRE_SYMBOL;
 
     @Column({
         type: 'varchar',

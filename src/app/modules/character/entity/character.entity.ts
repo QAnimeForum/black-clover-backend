@@ -8,7 +8,6 @@ import {
     OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
-import { CharacterType } from '../constants/character.type.enum';
 import { BackgroundEnity } from './background.entity';
 import { CharacterCharacteristicsEntity } from './character.characteristics.entity';
 import { InventoryEntity } from './inventory.entity';
@@ -19,6 +18,7 @@ import { TaskEntity } from '../../events/entity/task.entity';
 import { BusinessEntity } from '../../jobs/business/entity/business.entity';
 import { FactionMemberEntity } from '../../jobs/judicial.system/entity/faction.member.entity';
 import { SquadMemberEntity } from '../../jobs/squards/entity/squad.member.entity';
+import { ENUM_CHARCACTER_TYPE } from '../constants/character.type.enum';
 @Entity('character')
 export class CharacterEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -26,10 +26,10 @@ export class CharacterEntity {
 
     @Column({
         type: 'enum',
-        enum: CharacterType,
-        default: CharacterType.PC,
+        enum: ENUM_CHARCACTER_TYPE,
+        default: ENUM_CHARCACTER_TYPE.PC,
     })
-    type: CharacterType;
+    type: ENUM_CHARCACTER_TYPE;
 
     @OneToOne(() => BackgroundEnity)
     @JoinColumn({

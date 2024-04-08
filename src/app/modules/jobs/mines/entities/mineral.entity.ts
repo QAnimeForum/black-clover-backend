@@ -8,7 +8,7 @@ import {
 import { MineEntity } from './mine.entity';
 
 @Entity('mineral')
-export class MineralEnity {
+export class MineralEntity {
     @PrimaryGeneratedColumn('uuid')
     id: number;
 

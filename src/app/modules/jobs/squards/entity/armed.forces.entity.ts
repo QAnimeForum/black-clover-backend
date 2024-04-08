@@ -1,9 +1,16 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 import { SquadEntity } from './squad.entity';
-import { StateEntity } from 'src/app/modules/map/enitity/state.entity';
+import { StateEntity } from '../../../map/enitity/state.entity';
 
 @Entity('armer_forces')
-export class ArmerForcesEntity {
+export class ArmedForcesEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -17,6 +24,12 @@ export class ArmerForcesEntity {
     })
     descripiton: string;
 
+    @OneToOne(() => StateEntity)
+    @JoinColumn({
+        name: 'state_id',
+        referencedColumnName: 'id',
+    })
     state: StateEntity;
+    @OneToMany(() => SquadEntity, (squad) => squad.armorForces)
     squads: Array<SquadEntity>;
 }

@@ -1,8 +1,15 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 import { SquadMemberEntity } from './squad.member.entity';
-import { SalaryEntity } from 'src/app/modules/money/entity/amount.entity';
+import { SalaryEntity } from '../../../money/entity/amount.entity';
 @Entity('rank')
-export class RankEntity {
+export class SquadRankEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -16,6 +23,11 @@ export class RankEntity {
     })
     description: string;
 
+    @OneToOne(() => SalaryEntity)
+    @JoinColumn({
+        name: 'salary_id',
+        referencedColumnName: 'id',
+    })
     salary: SalaryEntity;
 
     @OneToMany(() => SquadMemberEntity, (member) => member.squad)

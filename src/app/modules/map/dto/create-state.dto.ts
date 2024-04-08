@@ -5,5 +5,6 @@ export class CreateStateDto {
     description: string;
     fullName: string;
     form: StateFormEntity;
+    coverSymbol: string;
     //form_id: string;
 }

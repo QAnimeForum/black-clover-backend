@@ -11,6 +11,8 @@ import { ENUM_APP_ENVIRONMENT } from './constants/app.enum.constant';
 import configs from 'src/config';
 import { AppMiddlewareModule } from './middleware/app.middleware.module';
 import { RouterModule } from 'src/router/router.module';
+import { TelegrafModule } from 'nestjs-telegraf';
+import { TgBotModule } from './modules/tg-bot/tg-bot.module';
 //import { AppMiddlewareModule } from 'src/app/middleware/app.middleware.module';
 @Module({
     controllers: [AppController],
@@ -60,6 +62,7 @@ import { RouterModule } from 'src/router/router.module';
                 DATABASE_MAX_CONNECTIONS: Joi.number().required(),
                 DATABASE_SSL_ENABLED: Joi.bool().required(),
                 DATABASE_REJECT_UNAUTHORIZED: Joi.bool().required(),
+                TELEGRAM_BOT_TOKEN: Joi.string().required(),
                 /**
         *          DATABASE_HOST: Joi.string()
                     .default('mongodb://localhost:27017')
@@ -121,6 +124,13 @@ import { RouterModule } from 'src/router/router.module';
             dataSourceFactory: async (options: DataSourceOptions) => {
                 return new DataSource(options).initialize();
             },
+        }),
+        TelegrafModule.forRootAsync({
+            imports: [TgBotModule],
+            inject: [ConfigService],
+            useFactory: () => ({
+                token: process.env.TELEGRAM_BOT_TOKEN,
+            }),
         }),
         CommonModule,
         AppMiddlewareModule,

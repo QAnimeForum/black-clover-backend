@@ -6,7 +6,7 @@ import { DevilFloorEnum } from '../app/modules/devils/constants/devil.floor.enum
 import { DevilRanksEnum } from '../app/modules/devils/constants/devil.ranks.enum';
 import { DevilSpellEntity } from '../app/modules/devils/entity/devil.spell.entity';
 import { DevilUnionEntity } from '../app/modules/devils/entity/devil.union.entity';
-import { DevilUnionsPercentEnum } from 'src/app/modules/devils/constants/devil.union.percent.enum';
+import { DevilUnionsPercentEnum } from '../app/modules/devils/constants/devil.union.percent.enum';
 export default class DevilSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<any> {
         const devilRepository = dataSource.getRepository(DevilEntity);

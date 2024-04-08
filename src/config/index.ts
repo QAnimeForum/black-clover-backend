@@ -4,6 +4,7 @@ import DocConfig from './doc.config';
 import DebuggerConfig from './debugger.config';
 import DatabaseConfig from './database.config';
 import messagesConfig from './messages.config';
+import tgConfig from './tg.config';
 export default [
     AppConfig,
     DatabaseConfig,
@@ -11,4 +12,5 @@ export default [
     DocConfig,
     DebuggerConfig,
     messagesConfig,
+    tgConfig
 ];

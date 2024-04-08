@@ -37,6 +37,7 @@ export class DevilEntity {
         type: 'enum',
         enum: DevilRanksEnum,
         default: DevilRanksEnum.LOW,
+        nullable: false,
     })
     rank: DevilRanksEnum;
 

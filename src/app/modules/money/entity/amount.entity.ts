@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { SquadRankEntity } from '../../jobs/squards/entity/squad.rank.entity';
 
 @Entity('salary')
 export class SalaryEntity {
@@ -27,4 +28,7 @@ export class SalaryEntity {
         type: 'int',
     })
     platinum: number;
+
+    @OneToOne(() => SquadRankEntity)
+    squadRank: SquadRankEntity;
 }

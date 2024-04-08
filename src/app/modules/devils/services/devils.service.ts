@@ -59,7 +59,7 @@ export class DevilsService {
     findDevilById(id: string): Promise<DevilEntity | null> {
         return this.devilRepository.findOneBy({ id });
     }
-    findOneDevil() {}
+  //  findOneDevil() {}
 
     findDevilByIdWithUnions(id: string): Promise<DevilEntity | null> {
         return this.devilRepository.findOne({

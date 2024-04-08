@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MineralEnity } from './entities/mineral.entity';
+import { MineralEntity } from './entities/mineral.entity';
 import { MinesController } from './controllers/mines.controller';
 import { MineService } from './services/mine.service';
 import { MineEntity } from './entities/mine.entity';
 @Module({
     imports: [
         TypeOrmModule.forFeature(
-            [MineralEnity, MineEntity],
+            [MineralEntity, MineEntity],
             process.env.DATABASE_NAME
         ),
     ],

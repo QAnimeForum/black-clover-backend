@@ -12,7 +12,7 @@ import { ResponseModule } from './response/response.module';
         MessageModule,
         HelperModule,
         PaginationModule,
-        ErrorModule,
+         ErrorModule,
         ResponseModule,
         RequestModule,
     ],
