@@ -30,6 +30,11 @@ export class BackgroundEnity {
     age: number;
 
     @Column({
+        type: 'varchar',
+    })
+    sex: string;
+
+    @Column({
         type: 'int',
     })
     height: number;

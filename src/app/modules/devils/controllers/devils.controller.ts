@@ -82,6 +82,7 @@ export class DevilsController {
         )
         floor: Record<string, any>
     ): Promise<IResponsePaging> {
+        console.log(dto);
         const [states, total] = await this.devilService.findAllDevils(
             dto,
             rank,

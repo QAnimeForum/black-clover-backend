@@ -5,7 +5,6 @@ import { unlink, writeFile } from 'fs/promises';
 import { ConfigService } from '@nestjs/config';
 import { Composer } from 'telegraf';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from '../../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { BotContext } from '../interfaces/bot.context';
 import { getFileMimeType } from 'src/utils/utils';
@@ -13,18 +12,18 @@ import { getFileMimeType } from 'src/utils/utils';
 @Injectable()
 export class TgBotService {
     constructor(
-        @InjectRepository(UserEntity)
-        private readonly userRepository: Repository<UserEntity>,
+      //  @InjectRepository(UserEntity)
+      //  private readonly userRepository: Repository<UserEntity>,
         private readonly configService: ConfigService
         // private readonly dbLoggerService: DbLoggerService
     ) {}
 
     async findTgUserById(tgId: string) {
-        return this.userRepository.find({
+     /*   return this.userRepository.find({
             where: {
                 tgUserId: tgId,
             },
-        });
+        });*/
     }
 
     async downloadAndSaveLocalFile(filePath: string) {

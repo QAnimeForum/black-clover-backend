@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NotFoundException } from '@nestjs/common';
 //import { JobsModule } from 'src/jobs/jobs.module';
 import { AppController } from './controllers/app.controller';
 import { CommonModule } from 'src/common/common.module';
@@ -13,6 +13,10 @@ import { AppMiddlewareModule } from './middleware/app.middleware.module';
 import { RouterModule } from 'src/router/router.module';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { TgBotModule } from './modules/tg-bot/tg-bot.module';
+import { session } from 'telegraf';
+import { Postgres } from '@telegraf/session/pg';
+import { PostgresAdapter } from 'kysely';
+import { TgBotI18nService } from './modules/tg-bot/services/tg-bot-i18n.service';
 //import { AppMiddlewareModule } from 'src/app/middleware/app.middleware.module';
 @Module({
     controllers: [AppController],
@@ -125,14 +129,21 @@ import { TgBotModule } from './modules/tg-bot/tg-bot.module';
                 return new DataSource(options).initialize();
             },
         }),
+        CommonModule,
         TelegrafModule.forRootAsync({
             imports: [TgBotModule],
-            inject: [ConfigService],
-            useFactory: () => ({
+            inject: [ConfigService, TgBotI18nService],
+            useFactory: (
+                config: ConfigService,
+                tgBotI18nService: TgBotI18nService
+            ) => ({
                 token: process.env.TELEGRAM_BOT_TOKEN,
+                middlewares: [
+                    session({ store: store(config) }),
+                    tgBotI18nService.i18n.middleware(),
+                ],
             }),
         }),
-        CommonModule,
         AppMiddlewareModule,
 
         // Jobs
@@ -150,3 +161,17 @@ import { TgBotModule } from './modules/tg-bot/tg-bot.module';
     ],
 })
 export class AppModule {}
+
+
+
+const store = (config: ConfigService) => {
+    return Postgres<PostgresAdapter>({
+        database: config.get<string>('DATABASE_NAME'),
+        host: config.get<string>('DATABASE_HOST'),
+        user: config.get<string>('DATABASE_USERNAME'),
+        password: config.get<string>('DATABASE_PASSWORD'),
+        onInitError(err) {
+            throw new NotFoundException(`Config value in not found`, err);
+        },
+    });
+};

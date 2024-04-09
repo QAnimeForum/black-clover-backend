@@ -146,8 +146,6 @@ export class ErrorHttpFilter implements ExceptionFilter {
             _metadata: metadata,
             data,
         };
-
-        //console.log(response);
         response
             .setHeader('x-custom-lang', __customLang)
             .setHeader('x-timestamp', __timestamp)

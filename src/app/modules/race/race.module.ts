@@ -9,5 +9,6 @@ import { RaceEntity } from './entity/race.entity';
     ],
     controllers: [RaceController],
     providers: [RaceService],
+    exports: [RaceService],
 })
 export class RaceModule {}

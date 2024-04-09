@@ -98,6 +98,12 @@ export class MapService {
         });
         return this.stateRepository.create(create);
     }
+
+    async findStateById(state: string) {
+        return await this.stateRepository.findOneBy({
+            id: state,
+        });
+    }
     /**
  *     async createMany(
         data: RoleCreateDto[],

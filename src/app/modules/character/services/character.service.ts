@@ -71,7 +71,8 @@ export class CharacterService {
                 name: dto.name,
                 race: races[0],
                 height: 0,
-                age: 0,
+                sex: dto.sex,
+                age: dto.age,
                 state: states[0],
             })
         ).raw[0];
@@ -169,6 +170,8 @@ export class CharacterService {
                 maxHealth: 500,
                 currentLevel: 1,
                 maxLevel: 20,
+                hunger: 0,
+                sanity: 0,
                 proficiency: proficiency,
                 strength: strengthEntity,
                 dexterity: dexterityEntity,

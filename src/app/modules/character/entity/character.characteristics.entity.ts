@@ -43,7 +43,7 @@ export class CharacterCharacteristicsEntity {
     maxHealth: number;
 
     @Column({
-        type: 'varchar',
+        type: 'int',
     })
     hunger: number;
 

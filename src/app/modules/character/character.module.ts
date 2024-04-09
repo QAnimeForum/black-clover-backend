@@ -58,5 +58,6 @@ import { GearEntity } from '../jobs/business/entity/gear.entity';
     ],
     controllers: [CharacterController],
     providers: [CharacterService],
+    exports: [CharacterService],
 })
 export class CharacterModule {}

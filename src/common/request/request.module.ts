@@ -37,7 +37,7 @@ import { LessThanConstraint } from 'src/common/request/validations/request.less-
             provide: APP_INTERCEPTOR,
             useClass: RequestTimeoutInterceptor,
         },
-        {
+        /*{
             provide: APP_PIPE,
             useFactory: () =>
                 new ValidationPipe({
@@ -59,7 +59,7 @@ import { LessThanConstraint } from 'src/common/request/validations/request.less-
         {
             provide: APP_GUARD,
             useClass: ThrottlerGuard,
-        },
+        },*/
         DateGreaterThanEqualTodayConstraint,
         DateLessThanEqualTodayConstraint,
         GreaterThanEqualConstraint,
