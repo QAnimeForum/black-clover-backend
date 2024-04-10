@@ -2,11 +2,11 @@ import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
 import { DevilEntity } from '../app/modules/devils/entity/devil.entity';
 import { devils } from '../../Assets/json/devlis.json';
-import { DevilFloorEnum } from '../app/modules/devils/constants/devil.floor.enum';
-import { DevilRanksEnum } from '../app/modules/devils/constants/devil.ranks.enum';
 import { DevilSpellEntity } from '../app/modules/devils/entity/devil.spell.entity';
 import { DevilUnionEntity } from '../app/modules/devils/entity/devil.union.entity';
 import { DevilUnionsPercentEnum } from '../app/modules/devils/constants/devil.union.percent.enum';
+import { ENUM_DEVIL_RANK } from 'src/app/modules/devils/constants/devil.ranks.enum';
+import { ENUM_DEVIL_FLOOR } from 'src/app/modules/devils/constants/devil.floor.enum';
 export default class DevilSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<any> {
         const devilRepository = dataSource.getRepository(DevilEntity);
@@ -61,8 +61,8 @@ export default class DevilSeeder implements Seeder {
             await devilRepository.insert({
                 name: name,
                 description: description,
-                rank: DevilRanksEnum[rank],
-                floor: DevilFloorEnum[floor],
+                rank: ENUM_DEVIL_RANK[rank],
+                floor: ENUM_DEVIL_FLOOR[floor],
                 magic_type: magic_type,
                 union_10: devil_union_10,
                 union_25: devil_union_25,

@@ -25,7 +25,7 @@ export class EntryWizard {
                     inline_keyboard: [
                         [
                             {
-                                text: 'Начать путешествивие',
+                                text: 'Начать путешествие',
                                 callback_data: SceneIds.createCharacter,
                             },
                         ],

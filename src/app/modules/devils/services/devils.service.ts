@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { DevilEntity } from '../entity/devil.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DevilRanksEnum } from '../constants/devil.ranks.enum';
-import { DevilFloorEnum } from '../constants/devil.floor.enum';
 import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
 import { DevilCreateDto } from '../dtos/devil.create.dto';
 import { DevilUnionEntity } from '../entity/devil.union.entity';
 import { DevilSpellEntity } from '../entity/devil.spell.entity';
 import { DevilUpdateNameDto } from '../dtos/devil.update-name.dto';
 import { DevilUpdateDescriptionDto } from '../dtos/devil.update-description.dto';
+import { ENUM_DEVIL_RANK } from '../constants/devil.ranks.enum';
+import { ENUM_DEVIL_FLOOR } from '../constants/devil.floor.enum';
 @Injectable()
 export class DevilsService {
     constructor(
@@ -40,7 +40,7 @@ export class DevilsService {
         });
         return [entities, total];
     }
-    findByRank(rank: DevilRanksEnum): Promise<DevilEntity[]> {
+    findByRank(rank: ENUM_DEVIL_RANK): Promise<DevilEntity[]> {
         return this.devilRepository.find({
             where: {
                 rank: rank,
@@ -48,7 +48,7 @@ export class DevilsService {
         });
     }
 
-    findByFloor(floor: DevilFloorEnum): Promise<DevilEntity[]> {
+    findByFloor(floor: ENUM_DEVIL_FLOOR): Promise<DevilEntity[]> {
         return this.devilRepository.find({
             where: {
                 floor: floor,
@@ -59,7 +59,6 @@ export class DevilsService {
     findDevilById(id: string): Promise<DevilEntity | null> {
         return this.devilRepository.findOneBy({ id });
     }
-  //  findOneDevil() {}
 
     findDevilByIdWithUnions(id: string): Promise<DevilEntity | null> {
         return this.devilRepository.findOne({
@@ -77,7 +76,7 @@ export class DevilsService {
         });
     }
     findSpellsByUnion(id: string) {
-        return this.devilUnionRepository.find({
+        return this.devilUnionRepository.findOne({
             where: {
                 id: id,
             },
@@ -115,8 +114,8 @@ export class DevilsService {
         const insert = await this.devilRepository.insert({
             name: dto.name,
             description: dto.description,
-            rank: DevilRanksEnum[dto.rank],
-            floor: DevilFloorEnum[dto.floor],
+            rank: ENUM_DEVIL_RANK[dto.rank],
+            floor: ENUM_DEVIL_FLOOR[dto.floor],
             magic_type: dto.magic_type,
             union_10: devil_union_10,
             union_25: devil_union_25,

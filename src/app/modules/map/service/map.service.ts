@@ -44,6 +44,31 @@ export class MapService {
         return [entities, total];
     }
 
+    async getProvincesByState(
+        state_id: string,
+        dto: PaginationListDto
+    ): Promise<[ProvinceEntity[], number]> {
+        const country = await this.findStateById(state_id);
+        const [entities, total] = await this.provinceRepository.findAndCount({
+            skip: dto._offset * dto._limit,
+            take: dto._limit,
+            order: dto._availableOrderBy?.reduce(
+                (accumulator, sort) => ({
+                    ...accumulator,
+                    [sort]: dto._order,
+                }),
+                {}
+            ),
+            where: {
+                state: country,
+            },
+            relations: {
+                form: true,
+            },
+        });
+        return [entities, total];
+    }
+
     async getAllProvincies(
         dto: PaginationListDto
     ): Promise<[ProvinceEntity[], number]> {
@@ -65,6 +90,27 @@ export class MapService {
         return [entities, 10];
     }
 
+    async getBurgsByProvince(
+        province_id: string,
+        dto: PaginationListDto
+    ): Promise<[BurgEntity[], number]> {
+        const province = await this.findStateById(province_id);
+        const [entities, total] = await this.burgRepository.findAndCount({
+            skip: dto._offset * dto._limit,
+            take: dto._limit,
+            order: dto._availableOrderBy?.reduce(
+                (accumulator, sort) => ({
+                    ...accumulator,
+                    [sort]: dto._order,
+                }),
+                {}
+            ),
+            where: {
+                province: province,
+            },
+        });
+        return [entities, total];
+    }
     async getAllBurgs(dto: PaginationListDto): Promise<[BurgEntity[], number]> {
         const [entities, total] = await this.burgRepository.findAndCount({
             skip: dto._offset * dto._limit,

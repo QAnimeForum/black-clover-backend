@@ -1,4 +1,4 @@
-export enum DevilFloorEnum {
+export enum ENUM_DEVIL_FLOOR {
     ONE = '1',
     TWO = '2',
     THREE = '3',

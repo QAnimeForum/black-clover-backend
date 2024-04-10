@@ -5,9 +5,9 @@ import {
     OneToOne,
     JoinColumn,
 } from 'typeorm';
-import { DevilFloorEnum } from '../constants/devil.floor.enum';
-import { DevilRanksEnum } from '../constants/devil.ranks.enum';
 import { DevilUnionEntity } from './devil.union.entity';
+import { ENUM_DEVIL_RANK } from '../constants/devil.ranks.enum';
+import { ENUM_DEVIL_FLOOR } from '../constants/devil.floor.enum';
 
 @Entity('devils')
 export class DevilEntity {
@@ -27,19 +27,19 @@ export class DevilEntity {
 
     @Column({
         type: 'enum',
-        enum: DevilFloorEnum,
-        default: DevilFloorEnum.ONE,
+        enum: ENUM_DEVIL_FLOOR,
+        default: ENUM_DEVIL_FLOOR.ONE,
         nullable: false,
     })
-    floor: DevilFloorEnum;
+    floor: ENUM_DEVIL_FLOOR;
 
     @Column({
         type: 'enum',
-        enum: DevilRanksEnum,
-        default: DevilRanksEnum.LOW,
+        enum: ENUM_DEVIL_RANK,
+        default: ENUM_DEVIL_RANK.LOW,
         nullable: false,
     })
-    rank: DevilRanksEnum;
+    rank: ENUM_DEVIL_RANK;
 
     @Column({
         type: 'varchar',

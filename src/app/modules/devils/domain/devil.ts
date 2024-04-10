@@ -1,12 +1,12 @@
-import { DevilFloorEnum } from '../constants/devil.floor.enum';
-import { DevilRanksEnum } from '../constants/devil.ranks.enum';
+import { ENUM_DEVIL_FLOOR } from '../constants/devil.floor.enum';
+import { ENUM_DEVIL_RANK } from '../constants/devil.ranks.enum';
 
 export class Devil {
     id: string;
     name: string;
     description: string;
-    floor: DevilFloorEnum;
-    rank: DevilRanksEnum;
+    floor: ENUM_DEVIL_FLOOR;
+    rank: ENUM_DEVIL_RANK;
     magic_type: string;
 
     union_10: DevilUnion;

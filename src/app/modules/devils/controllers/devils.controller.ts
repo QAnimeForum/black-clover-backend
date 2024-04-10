@@ -28,8 +28,6 @@ import {
 
 import { ResponseIdSerialization } from 'src/common/response/serializations/response.id.serialization';
 import { ENUM_DEVIL_STATUS_CODE_ERROR } from '../constants/devil.status-code.constant';
-import { DevilRanksEnum } from '../constants/devil.ranks.enum';
-import { DevilFloorEnum } from '../constants/devil.floor.enum';
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
 import { DevilGetSerialization } from '../serializations/devil.get.serialization';
 import { DevilRequestDto } from '../dtos/devil.request.dto';
@@ -45,6 +43,8 @@ import {
 import { DevilUpdateNameDto } from '../dtos/devil.update-name.dto';
 import { DevilUpdateDescriptionDto } from '../dtos/devil.update-description.dto';
 import { DevilCreateDto } from '../dtos/devil.create.dto';
+import { ENUM_DEVIL_RANK } from '../constants/devil.ranks.enum';
+import { ENUM_DEVIL_FLOOR } from '../constants/devil.floor.enum';
 
 @Controller({
     version: VERSION_NEUTRAL,
@@ -72,13 +72,13 @@ export class DevilsController {
         @PaginationQueryFilterInEnum(
             'rank',
             DEVIL_RANK_DEFAULT_TYPE,
-            DevilRanksEnum
+            ENUM_DEVIL_RANK
         )
         rank: Record<string, any>,
         @PaginationQueryFilterInEnum(
             'floor',
             DEVIL_FLOOR_DEFAULT_TYPE,
-            DevilFloorEnum
+            ENUM_DEVIL_FLOOR
         )
         floor: Record<string, any>
     ): Promise<IResponsePaging> {
