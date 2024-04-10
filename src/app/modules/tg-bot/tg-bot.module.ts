@@ -23,6 +23,7 @@ import { CharacterModule } from '../character/character.module';
 import { RaceModule } from '../race/race.module';
 import { MapModule } from '../map/map.module';
 import { UserModule } from '../user/user.module';
+import { DevilsModule } from '../devils/devils.module';
 @Module({
     imports: [
         TypeOrmModule.forFeature([]),
@@ -30,6 +31,7 @@ import { UserModule } from '../user/user.module';
         RaceModule,
         MapModule,
         UserModule,
+        DevilsModule,
     ],
     providers: [
         AllDevilsWizard,

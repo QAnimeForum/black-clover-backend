@@ -15,5 +15,6 @@ import { DevilSpellEntity } from './entity/devil.spell.entity';
     ],
     controllers: [DevilsController],
     providers: [DevilsService],
+    exports: [DevilsService],
 })
 export class DevilsModule {}

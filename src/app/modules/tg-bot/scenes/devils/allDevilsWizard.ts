@@ -1,25 +1,35 @@
 import { Context, Message, Wizard, WizardStep } from 'nestjs-telegraf';
-import { DEVIL_HOSTS_RULES, DEVILS_IMAGE_PATH, HELLO_IMAGE_PATH } from '../../constants/images';
+import {
+    DEVIL_HOSTS_RULES,
+    DEVILS_IMAGE_PATH,
+    DEVILS_QLIPOTH_IMAGE_PATH,
+    HELLO_IMAGE_PATH,
+} from '../../constants/images';
 import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
+import { DevilFloorEnum } from 'src/app/modules/devils/constants/devil.floor.enum';
+import { DevilRanksEnum } from 'src/app/modules/devils/constants/devil.ranks.enum';
+import { DevilsService } from 'src/app/modules/devils/services/devils.service';
+import { DevilEntity } from 'src/app/modules/devils/entity/devil.entity';
 
 @Wizard(SceneIds.allDevils)
 @UseFilters(TelegrafExceptionFilter)
 export class AllDevilsWizard {
-    constructor(private readonly tgBotService: TgBotService) {}
+    constructor(
+        private readonly devilService: DevilsService,
+        private readonly tgBotService: TgBotService
+    ) {}
 
     // STEP - 1 start travel
     @WizardStep(1)
     async step1(@Context() ctx: BotContext) {
-        await ctx.replyWithPhoto(
+        ctx.replyWithPhoto(
             { source: DEVILS_IMAGE_PATH },
             {
-                caption: `
-              Вы попали в преисподнюю
-             `,
+                caption: `Вы попали в преисподнюю`,
                 parse_mode: 'HTML',
                 reply_markup: {
                     inline_keyboard: [
@@ -51,21 +61,89 @@ export class AllDevilsWizard {
     // STEP - 2 Choose name
 
     @WizardStep(2)
-    async step2(@Context() ctx: BotContext, @Message('text') msg: string) {
-        ctx.scene.leave();
+    async step2(@Context() ctx: BotContext) {
+        switch (ctx.updateType) {
+            case 'callback_query': {
+                await ctx.answerCbQuery();
+                if ('data' in ctx.callbackQuery) {
+                    ctx.session.devils_list = ctx.callbackQuery.data;
+                } else ctx.scene.leave();
+                break;
+            }
+            case 'message': {
+                ctx.scene.leave();
+                break;
+            }
+            case 'inline_query': {
+                ctx.scene.leave();
+                break;
+            }
+        }
+        ctx.replyWithPhoto(
+            { source: DEVILS_QLIPOTH_IMAGE_PATH },
+            {
+                caption: `
+      Список дьяволов по уровням
+     `,
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: 'Высшие дьяволы',
+                                callback_data: DevilRanksEnum.HIGHEST,
+                            },
+                        ],
+                        [
+                            {
+                                text: 'Высокоранговые дьяволы',
+                                callback_data: DevilRanksEnum.HIGH,
+                            },
+                        ],
+                        [
+                            {
+                                text: 'Среднеранговые дьяволы',
+                                callback_data: DevilRanksEnum.MID,
+                            },
+                        ],
+                        [
+                            {
+                                text: 'Низкоранговые дьяволы',
+                                callback_data: DevilRanksEnum.LOW,
+                            },
+                        ],
+                        [{ text: 'Назад', callback_data: 'back' }],
+                    ],
+                },
+            }
+        );
+        ctx.wizard.next();
     }
 
     @WizardStep(3)
-    async step3(@Context() ctx: BotContext, @Message('text') msg: string) {
-        ctx.scene.leave();
+    async step3(@Context() ctx: BotContext) {
+        let devils: Array<DevilEntity> = [];
+        console.log('hello');
+        switch (ctx.updateType) {
+            case 'callback_query':
+                await ctx.answerCbQuery();
+                if ('data' in ctx.callbackQuery) {
+                    devils = await this.devilService.findByRank(
+                        DevilRanksEnum[ctx.callbackQuery.data]
+                    );
+                    console.log(devils);
+                } else ctx.scene.leave();
+            case 'message':
+                ctx.scene.leave();
+            case 'inline_query':
+                ctx.scene.leave();
+        }
+
+        ctx.wizard.next();
     }
 
-    @WizardStep(2)
+    @WizardStep(4)
     async step4(@Context() ctx: BotContext, @Message('text') msg: string) {
-        ctx.scene.leave();
-    }
-    @WizardStep(2)
-    async step5(@Context() ctx: BotContext, @Message('text') msg: string) {
         ctx.scene.leave();
     }
 }
