@@ -1,45 +1,49 @@
-import { Context, Message, Wizard, WizardStep } from 'nestjs-telegraf';
-import { HELLO_IMAGE_PATH } from '../../constants/images';
+import {
+    Action,
+    Context,
+    SceneEnter,
+    Wizard,
+    WizardStep,
+} from 'nestjs-telegraf';
 import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
+import { LanguageTexts } from '../../constants/language.text.constant';
+import { Markup } from 'telegraf';
+import { INVENTORY_IMAGE_PATH } from '../../constants/images';
 
 @Wizard(SceneIds.equipment)
 @UseFilters(TelegrafExceptionFilter)
 export class EquipmentWizard {
     constructor(private readonly tgBotService: TgBotService) {}
 
-    // STEP - 1 start travel
-    @WizardStep(1)
-    async step1(@Context() ctx: BotContext) {
+    // STEP - 1
+    @SceneEnter()
+    async start(@Context() ctx: BotContext) {
         const caption = ctx.i18n.t('entry');
-        ctx.sendPhoto(
+        await ctx.sendPhoto(
             {
-                source: HELLO_IMAGE_PATH,
+                source: INVENTORY_IMAGE_PATH,
             },
             {
                 caption,
-                reply_markup: {
-                    inline_keyboard: [
-                        [
-                            {
-                                text: 'Начать путешествивие',
-                                callback_data: SceneIds.createCharacter,
-                            },
-                        ],
-                    ],
-                },
+                ...Markup.inlineKeyboard([
+                    Markup.button.callback(
+                        ctx.i18n.t(LanguageTexts.back),
+                        ctx.i18n.t(LanguageTexts.back)
+                    ),
+                ]),
             }
         );
         ctx.wizard.next();
     }
 
-    // STEP - 2 Choose name
     @WizardStep(2)
+    @Action('Назад')
     //@UseInterceptors(TgBotLoggerInterceptor)
-    async step2(@Context() ctx: BotContext, @Message('text') msg: string) {
-        ctx.scene.leave();
+    async back(@Context() ctx: BotContext) {
+        await ctx.scene.enter(SceneIds.profile);
     }
 }

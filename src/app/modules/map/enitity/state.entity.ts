@@ -11,7 +11,6 @@ import { ProvinceEntity } from './province.entity';
 import { StateFormEntity } from './state.form.entity';
 import { BackgroundEnity } from '../../character/entity/background.entity';
 import { ArmedForcesEntity } from '../../jobs/squards/entity/armed.forces.entity';
-import { ENUM_STATE_SYMBOL } from '../constants/state.symbol.enum';
 
 @Entity('state')
 export class StateEntity {
@@ -31,6 +30,11 @@ export class StateEntity {
         type: 'varchar',
     })
     description: string;
+
+    @Column({
+        type: 'varchar',
+    })
+    symbol: string;
    /* @Column({
         type: 'enum',
         enum: ENUM_STATE_SYMBOL,

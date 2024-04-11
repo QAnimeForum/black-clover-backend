@@ -19,6 +19,9 @@ import { ArmorClassEntity } from '../entity/armor.class.entity';
 import { SpeedEntity } from '../entity/speed.entity';
 import { ArmorEntity } from '../../jobs/business/entity/armor.entity';
 import { ENUM_CHARCACTER_TYPE } from '../constants/character.type.enum';
+import { WalletEntity } from '../../money/entity/wallet.entity';
+import { UserEntity } from '../../user/entities/user.entity';
+import { CashEntity } from '../../money/entity/cash.entity';
 @Injectable()
 export class CharacterService {
     constructor(
@@ -44,9 +47,15 @@ export class CharacterService {
         @InjectRepository(RaceEntity)
         private readonly raceRepository: Repository<RaceEntity>,
         @InjectRepository(StateEntity)
-        private readonly stateEntity: Repository<StateEntity>,
+        private readonly stateRepository: Repository<StateEntity>,
         @InjectRepository(SpeedEntity)
-        private readonly speedEntity: Repository<SpeedEntity>
+        private readonly speedEntity: Repository<SpeedEntity>,
+        @InjectRepository(WalletEntity)
+        private readonly walletRepository: Repository<WalletEntity>,
+        @InjectRepository(CashEntity)
+        private readonly cashRepository: Repository<CashEntity>,
+        @InjectRepository(UserEntity)
+        private readonly userRepository: Repository<UserEntity>
     ) {}
     async createPlayableCharacterDto(dto: CreatePlayableCharacterDto) {
         const races = await this.raceRepository.find({
@@ -57,7 +66,7 @@ export class CharacterService {
         if (races.length == 0) {
             return;
         }
-        const states = await this.stateEntity.find({
+        const states = await this.stateRepository.find({
             where: {
                 id: dto.countryId,
             },
@@ -65,7 +74,6 @@ export class CharacterService {
         if (states.length == 0) {
             return;
         }
-
         const backgroundEntity = (
             await this.backgroundRepository.insert({
                 name: dto.name,
@@ -169,6 +177,7 @@ export class CharacterService {
                 currentHealth: 500,
                 maxHealth: 500,
                 currentLevel: 1,
+                experience: 0,
                 maxLevel: 20,
                 hunger: 0,
                 sanity: 0,
@@ -182,19 +191,42 @@ export class CharacterService {
                 armorClass: armorClassEntity,
             })
         ).raw[0];
+
+        const cashEntity = (
+            await this.cashRepository.insert({
+                cooper: 0,
+                silver: 0,
+                eclevtrum: 0,
+                platinum: 0,
+            })
+        ).raw[0];
+        const wallet = (
+            await this.walletRepository.insert({
+                cash: cashEntity,
+            })
+        ).raw[0];
         return this.characterRepository.insert({
             type: ENUM_CHARCACTER_TYPE.PC,
             background: backgroundEntity,
             characterCharacteristics: characteristitcsEntity,
             grimoire: grimoireEntity,
             inventory: inventoryEntity,
+            wallet: wallet,
         });
         //  character.background.race = dto.raceId;
     }
 
     getCharacterInfo(dto: GetCharacterInfoDto) {
-        return this.characterRepository.findBy({
-            id: dto.characterId,
+        return this.characterRepository.findOne({
+            where: {
+                id: dto.characterId,
+            },
+            relations: {
+                background: {
+                    race: true,
+                    state: true,
+                },
+            },
         });
     }
 
@@ -258,5 +290,33 @@ export class CharacterService {
         return this.characterRepository.findBy({
             id: dto.charactristicsId,
         });
+    }
+
+    async findChatacterByUserId(tg_id: string): Promise<GrimoireEntity> {
+        const entity = await this.userRepository.findOne({
+            where: {
+                tgUserId: tg_id,
+            },
+            relations: {
+                character: {
+                    grimoire: true,
+                },
+            },
+        });
+        return entity.character.grimoire;
+    }
+
+    async getWalletByCharacter(tg_id: string) {
+        const entity = await this.userRepository.findOne({
+            where: {
+                tgUserId: tg_id,
+            },
+            relations: {
+                character: {
+                    wallet: true,
+                },
+            },
+        });
+        return entity;
     }
 }

@@ -17,6 +17,7 @@ export class UserService {
     async createUser(dto: UserCreateDto) {
         this.userRepository.insert({
             tgUserId: dto.tgUserId,
+            character: dto.character,
         });
     }
 }

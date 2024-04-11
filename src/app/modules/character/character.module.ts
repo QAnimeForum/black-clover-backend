@@ -23,6 +23,7 @@ import { ToolKitEnity } from '../jobs/business/entity/toolkit.entity';
 import { VehicleEntity } from '../jobs/business/entity/vehicle.entity';
 import { CashEntity } from '../money/entity/cash.entity';
 import { GearEntity } from '../jobs/business/entity/gear.entity';
+import { UserEntity } from '../user/entities/user.entity';
 @Module({
     imports: [
         TypeOrmModule.forFeature(
@@ -52,6 +53,7 @@ import { GearEntity } from '../jobs/business/entity/gear.entity';
                 VehicleEntity,
                 WalletEntity,
                 CashEntity,
+                UserEntity,
             ],
             process.env.DATABASE_NAME
         ),

@@ -15,13 +15,16 @@ import { SpellUpdateRangeDto } from '../dto/spell.update-range.dto';
 import { SpellUpdateCostDto } from '../dto/spell.update-cost.dto';
 import { SpellUpdateDto } from '../dto/spell.update.dto';
 import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
+import { UserEntity } from '../../user/entities/user.entity';
 @Injectable()
 export class GrimoireService {
     constructor(
         @InjectRepository(GrimoireEntity)
         private readonly grimoireRepository: Repository<GrimoireEntity>,
         @InjectRepository(SpellEntity)
-        private readonly spellRepository: Repository<SpellEntity>
+        private readonly spellRepository: Repository<SpellEntity>,
+        @InjectRepository(UserEntity)
+        private readonly userRepository: Repository<UserEntity>
     ) {}
 
     async findAllGrimoires(
@@ -41,6 +44,20 @@ export class GrimoireService {
         return [entities, total];
     }
 
+    async findGrimoireByUserId(tg_id: string): Promise<GrimoireEntity> {
+        const entity = await this.userRepository.findOne({
+            where: {
+                tgUserId: tg_id,
+            },
+            relations: {
+                character: {
+                    grimoire: true,
+                },
+            },
+        });
+        return entity.character.grimoire;
+    }
+
     async findGrimoireById(id: string): Promise<GrimoireEntity> {
         const entity = await this.grimoireRepository.findOneBy({
             id: id,
@@ -51,7 +68,7 @@ export class GrimoireService {
     async createEmptyGrimoire() {
         const insert = await this.grimoireRepository.insert({
             magicName: 'не выбрана',
-         //   coverSymbol: coverSymbol,
+            //   coverSymbol: coverSymbol,
             magicColor: 'не выбран',
         });
         return insert.raw[0].id;
@@ -60,7 +77,7 @@ export class GrimoireService {
     async createGrimoire(dto: GrimoireCreateDto) {
         const insert = await this.grimoireRepository.insert({
             magicName: dto.magicName,
-          //  coverSymbol: CardSymbolsEnum[dto.coverSymbol],
+            //  coverSymbol: CardSymbolsEnum[dto.coverSymbol],
             magicColor: dto.magicColor,
         });
         return insert.raw[0].id;
@@ -76,7 +93,7 @@ export class GrimoireService {
         return entity;
     }
 
-    async createSpell(dto: SpellCreateDto) {
+    async createSpell(dto: SpellCreateDto, grimoire: GrimoireEntity) {
         const insert = await this.spellRepository.insert({
             name: dto.name,
             description: dto.description,
@@ -84,6 +101,7 @@ export class GrimoireService {
             duration: dto.duration,
             cost: dto.cost,
             castTime: dto.castTime,
+            grimoire: grimoire,
         });
         return insert.raw[0].id;
     }
@@ -158,6 +176,18 @@ export class GrimoireService {
         });
     }
 
+    async findSpellNames(grimoireId: string) {
+        const grimoire = await this.findGrimoireById(grimoireId);
+        return this.spellRepository.find({
+            where: {
+                grimoire: grimoire,
+            },
+            select: {
+                name: true,
+            },
+        });
+    }
+
     async findAllSpells(
         dto: PaginationListDto,
         grimoireId: string
@@ -173,6 +203,16 @@ export class GrimoireService {
                 }),
                 {}
             ),
+            where: {
+                grimoire: grimoire,
+            },
+        });
+        return [entities, total];
+    }
+
+    async getAllSpells(grimoireId: string): Promise<[SpellEntity[], number]> {
+        const grimoire = await this.findGrimoireById(grimoireId);
+        const [entities, total] = await this.spellRepository.findAndCount({
             where: {
                 grimoire: grimoire,
             },

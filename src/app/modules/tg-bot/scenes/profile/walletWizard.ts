@@ -1,45 +1,60 @@
-import { Context, Message, Wizard, WizardStep } from 'nestjs-telegraf';
-import { HELLO_IMAGE_PATH } from '../../constants/images';
+import {
+    Action,
+    Context,
+    Message,
+    SceneEnter,
+    Sender,
+    Wizard,
+    WizardStep,
+} from 'nestjs-telegraf';
+import { MONEY_IMAGE_PATH } from '../../constants/images';
 import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
+import { Markup } from 'telegraf';
+import { LanguageTexts } from '../../constants/language.text.constant';
+import { CharacterService } from 'src/app/modules/character/services/character.service';
+import { UserService } from 'src/app/modules/user/services/user.service';
 
 @Wizard(SceneIds.wallet)
 @UseFilters(TelegrafExceptionFilter)
 export class WalletWizard {
-    constructor(private readonly tgBotService: TgBotService) {}
-
-    // STEP - 1 start travel
-    @WizardStep(1)
-    async step1(@Context() ctx: BotContext) {
+    constructor(
+        private readonly tgBotService: TgBotService,
+        private readonly characterService: CharacterService,
+        private readonly userService: UserService
+    ) {}
+    // STEP - 1
+    @SceneEnter()
+    async start(@Context() ctx: BotContext, @Sender() sender) {
+        const character = await this.characterService.getWalletByCharacter(
+            sender.id
+        );
+        console.log(character);
         const caption = ctx.i18n.t('entry');
-        ctx.sendPhoto(
+        await ctx.sendPhoto(
             {
-                source: HELLO_IMAGE_PATH,
+                source: MONEY_IMAGE_PATH,
             },
             {
                 caption,
-                reply_markup: {
-                    inline_keyboard: [
-                        [
-                            {
-                                text: 'Начать путешествивие',
-                                callback_data: SceneIds.createCharacter,
-                            },
-                        ],
-                    ],
-                },
+                ...Markup.inlineKeyboard([
+                    Markup.button.callback(
+                        ctx.i18n.t(LanguageTexts.back),
+                        ctx.i18n.t(LanguageTexts.back)
+                    ),
+                ]),
             }
         );
         ctx.wizard.next();
     }
 
-    // STEP - 2 Choose name
     @WizardStep(2)
+    @Action('Назад')
     //@UseInterceptors(TgBotLoggerInterceptor)
-    async step2(@Context() ctx: BotContext, @Message('text') msg: string) {
-        ctx.scene.leave();
+    async back(@Context() ctx: BotContext) {
+        await ctx.scene.enter(SceneIds.profile);
     }
 }

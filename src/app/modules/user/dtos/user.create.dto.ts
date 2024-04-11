@@ -1,5 +1,7 @@
+import { CharacterEntity } from '../../character/entity/character.entity';
+
 export class UserCreateDto {
-   /* @ApiProperty({
+    /* @ApiProperty({
         example: faker.string.uuid(),
         required: true,
     })
@@ -7,4 +9,6 @@ export class UserCreateDto {
     @IsUUID('4')
     readonly role: string;*/
     tgUserId: string;
+
+    character: CharacterEntity;
 }

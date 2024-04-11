@@ -19,6 +19,7 @@ import { BusinessEntity } from '../../jobs/business/entity/business.entity';
 import { FactionMemberEntity } from '../../jobs/judicial.system/entity/faction.member.entity';
 import { SquadMemberEntity } from '../../jobs/squards/entity/squad.member.entity';
 import { ENUM_CHARCACTER_TYPE } from '../constants/character.type.enum';
+import { UserEntity } from '../../user/entities/user.entity';
 @Entity('character')
 export class CharacterEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -76,4 +77,7 @@ export class CharacterEntity {
     @ManyToMany(() => TaskEntity)
     @JoinTable()
     tasks: Array<TaskEntity>;
+
+    @OneToOne(() => UserEntity)
+    user: UserEntity;
 }

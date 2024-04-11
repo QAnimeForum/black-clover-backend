@@ -1,25 +1,16 @@
-import {
-    Context,
-    InjectBot,
-    Message,
-    TELEGRAF_STAGE,
-    Wizard,
-    WizardStep,
-} from 'nestjs-telegraf';
-import { HELLO_IMAGE_PATH, SAMPLE_GRIMOURE_URL, SAMPLE_SPELL_URL, WORLD_MAP_IMAGE_PATH } from '../../constants/images';
+import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
+import { WORLD_MAP_IMAGE_PATH } from '../../constants/images';
 import { SceneIds } from '../../constants/scenes.id';
-import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
-import { Inject, Injectable, Logger, UseFilters } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { LanguageTexts } from '../../constants/language.text.constant';
 import { CharacterService } from 'src/app/modules/character/services/character.service';
 import { MapService } from 'src/app/modules/map/service/map.service';
 import { RaceService } from 'src/app/modules/race/race.service';
 import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from 'src/common/pagination/constants/pagination.enum.constant';
 import { message } from 'telegraf/filters';
-import { Telegraf, Scenes, Composer } from 'telegraf';
-import { IsNumber } from 'class-validator';
+import { Telegraf, Scenes, Composer, Markup } from 'telegraf';
 import { UserService } from 'src/app/modules/user/services/user.service';
 
 //@Wizard(SceneIds.createCharacter)
@@ -71,8 +62,12 @@ export class CreateCharacterWizard {
     step1() {
         return this.tgBotService.createComposer(async (composer) => {
             composer.use(async (ctx) => {
-                ctx.reply(ctx.i18n.t(LanguageTexts.character_create_entry));
-                ctx.reply(ctx.i18n.t(LanguageTexts.character_create_name));
+                await ctx.reply(
+                    ctx.i18n.t(LanguageTexts.character_create_entry)
+                );
+                await ctx.reply(
+                    ctx.i18n.t(LanguageTexts.character_create_name)
+                );
                 ctx.wizard.next();
             });
         });
@@ -133,7 +128,6 @@ export class CreateCharacterWizard {
         return this.tgBotService.createComposer(async (composer) => {
             composer.use(async (ctx) => {
                 await ctx.answerCbQuery();
-                console.log(ctx.callbackQuery);
                 if ('data' in ctx.callbackQuery) {
                     ctx.scene.session.character.state = ctx.callbackQuery.data;
                 } else ctx.scene.leave();
@@ -247,23 +241,68 @@ export class CreateCharacterWizard {
         return this.tgBotService.createComposer((composer) => {
             composer.use(async (ctx) => {
                 await ctx.answerCbQuery();
-                if ('data' in ctx.callbackQuery) {
-                    ctx.scene.session.character.sex = ctx.callbackQuery.data;
-                } else ctx.scene.leave();
-
-                const dto = { tgUserId: String(ctx.from.id) };
-                this.userService.createUser(dto);
-                const userId = this.characterService.createPlayableCharacterDto(
-                    {
+                const character = (
+                    await this.characterService.createPlayableCharacterDto({
                         name: ctx.scene.session.character.name,
                         sex: ctx.scene.session.character.sex,
                         age: ctx.scene.session.character.age,
                         raceId: ctx.scene.session.character.race,
                         countryId: ctx.scene.session.character.state,
-                    }
+                    })
+                ).raw[0];
+                const dto = {
+                    tgUserId: String(ctx.from.id),
+                    character: character,
+                };
+                this.userService.createUser(dto);
+                ctx.reply(
+                    ctx.i18n.t(LanguageTexts.character_congratulations),
+                    Markup.inlineKeyboard([
+                        [
+                            Markup.button.callback(
+                                ctx.i18n.t(LanguageTexts.grimoire_think),
+                                'EXIT'
+                            ),
+                        ],
+                    ])
                 );
-                ctx.reply(ctx.i18n.t(LanguageTexts.character_congratulations), {
-                    reply_markup: {
+                await ctx.wizard.next();
+                //   await ctx.scene.leave();
+            });
+        });
+    }
+    step8() {
+        return this.tgBotService.createComposer(async (composer) => {
+            composer.use(async (ctx) => {
+                await ctx.answerCbQuery();
+                if ('data' in ctx.callbackQuery) {
+                    switch (ctx.callbackQuery.data) {
+                        case 'EXIT': {
+                            ctx.reply(
+                                '',
+                                Markup.keyboard([
+                                    ['Профиль', 'Карта'],
+                                    ['Дьяволы', 'Духи'],
+                                ]).resize()
+                            );
+                            ctx.scene.leave();
+                            break;
+                        }
+                    }
+                } else ctx.scene.leave();
+
+                //ctx.reply(ctx.i18n.t(LanguageTexts.character_create_age));
+                await ctx.scene.leave();
+            });
+        });
+    }
+}
+
+/**
+ * 
+    /**
+     * 
+     * @returns        reply_markup: {
                         inline_keyboard: [
                             [
                                 {
@@ -295,36 +334,15 @@ export class CreateCharacterWizard {
                             ],
                             [
                                 {
-                                    text: 'Мне надо подумать',
+                                    text: ctx.i18n.t(
+                                        LanguageTexts.grimoire_think
+                                    ),
                                     callback_data: 'admins_create_grimoure',
                                 },
                             ],
                         ],
                     },
-                });
-                await ctx.wizard.next();
-                //   await ctx.scene.leave();
-            });
-        });
-    }
-
-    step8() {
-        return this.tgBotService.createComposer(async (composer) => {
-            composer.use(async (ctx) => {
-                await ctx.answerCbQuery();
-                if ('data' in ctx.callbackQuery) {
-                    ctx.scene.session.character.race = ctx.callbackQuery.data;
-                    const answer =  ctx.callbackQuery.data;
-                    console.log(answer);
-                } else ctx.scene.leave();
-
-                //ctx.reply(ctx.i18n.t(LanguageTexts.character_create_age));
-                await ctx.scene.leave();
-            });
-        });
-    }
-}
-
+ */
 /**
  * ctx.wizard.state.characterData.goal = ctx.message.text;
  * async(ctx) => {

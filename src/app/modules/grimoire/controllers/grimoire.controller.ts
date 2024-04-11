@@ -208,13 +208,18 @@ export class GrimoireController {
     @Response('spell.create', {
         serialization: ResponseIdSerialization,
     })
-    @Post('/spell/create')
+    @Post('/spell/create/:grimoireId')
     async createSpell(
         @Body()
         dto: SpellCreateDto
     ): Promise<IResponse> {
         try {
-            const SpellEntity = await this.grimoireService.createSpell(dto);
+            //TODO change
+            const grimoire = await this.grimoireService.findGrimoireById('3r');
+            const SpellEntity = await this.grimoireService.createSpell(
+                dto,
+                grimoire
+            );
             return {
                 data: { _id: SpellEntity.raw[0].id },
             };
