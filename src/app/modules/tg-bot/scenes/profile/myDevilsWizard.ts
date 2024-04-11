@@ -16,7 +16,7 @@ export class MyDevilsWizard {
     // STEP - 1
     @SceneEnter()
     async start(@Context() ctx: BotContext) {
-        const caption = ctx.i18n.t('entry');
+        const caption = 'мои дьяволы';
         await ctx.sendPhoto(
             {
                 source: DEVILS_IMAGE_PATH,

@@ -197,6 +197,7 @@ export class CharacterService {
                 cooper: 0,
                 silver: 0,
                 eclevtrum: 0,
+                gold: 0,
                 platinum: 0,
             })
         ).raw[0];
@@ -313,7 +314,29 @@ export class CharacterService {
             },
             relations: {
                 character: {
-                    wallet: true,
+                    wallet: {
+                        cash: true,
+                    },
+                },
+            },
+        });
+        return entity;
+    }
+
+    async getInventoryByCharacter(tg_id: string) {
+        const entity = await this.userRepository.findOne({
+            where: {
+                tgUserId: tg_id,
+            },
+            relations: {
+                character: {
+                    inventory: {
+                        weapons: true,
+                        armor: true,
+                        toolKits: true,
+                        gears: true,
+                        vehicles: true,
+                    },
                 },
             },
         });

@@ -47,7 +47,7 @@ export class GrimoireWizard {
         } else {
             caption += `Количество заклинаний: ${spellList.length}\n`;
             spellList.map(
-                (item, index) => (caption += `${index})${item.name}\n`)
+                (item, index) => (caption += `${index + 1})${item.name}\n`)
             );
         }
         await ctx.sendPhoto(

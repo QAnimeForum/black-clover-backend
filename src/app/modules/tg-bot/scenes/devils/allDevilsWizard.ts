@@ -1,8 +1,6 @@
 import {
     Action,
-    Command,
     Context,
-    Ctx,
     SceneEnter,
     Wizard,
     WizardStep,
@@ -82,43 +80,43 @@ async function byfloor(ctx: BotContext) {
                 [
                     Markup.button.callback(
                         `${ctx.i18n.t(LanguageTexts.devil_floor_1)}`,
-                        ENUM_DEVIL_FLOOR.ONE
+                        ALL_DEVILS_ACTIONS.ONE
                     ),
                 ],
                 [
                     Markup.button.callback(
                         `${ctx.i18n.t(LanguageTexts.devil_floor_2)}`,
-                        ENUM_DEVIL_FLOOR.TWO
+                        ALL_DEVILS_ACTIONS.TWO
                     ),
                 ],
                 [
                     Markup.button.callback(
                         `${ctx.i18n.t(LanguageTexts.devil_floor_3)}`,
-                        ENUM_DEVIL_FLOOR.THREE
+                        ALL_DEVILS_ACTIONS.THREE
                     ),
                 ],
                 [
                     Markup.button.callback(
                         `${ctx.i18n.t(LanguageTexts.devil_floor_4)}`,
-                        ENUM_DEVIL_FLOOR.FOUR
+                        ALL_DEVILS_ACTIONS.FOUR
                     ),
                 ],
                 [
                     Markup.button.callback(
                         `${ctx.i18n.t(LanguageTexts.devil_floor_5)}`,
-                        ENUM_DEVIL_FLOOR.FIVE
+                        ALL_DEVILS_ACTIONS.FIVE
                     ),
                 ],
                 [
                     Markup.button.callback(
                         `${ctx.i18n.t(LanguageTexts.devil_floor_6)}`,
-                        ENUM_DEVIL_FLOOR.SIX
+                        ALL_DEVILS_ACTIONS.SIX
                     ),
                 ],
                 [
                     Markup.button.callback(
                         `${ctx.i18n.t(LanguageTexts.devil_floor_7)}`,
-                        ENUM_DEVIL_FLOOR.SEVEN
+                        ALL_DEVILS_ACTIONS.SEVEN
                     ),
                 ],
                 [
@@ -142,25 +140,25 @@ async function byRank(ctx: BotContext) {
                 [
                     Markup.button.callback(
                         `${ctx.i18n.t(LanguageTexts.devil_rank_1)}`,
-                        ENUM_DEVIL_RANK.HIGHEST
+                        ALL_DEVILS_ACTIONS.HIGHEST
                     ),
                 ],
                 [
                     Markup.button.callback(
                         `${ctx.i18n.t(LanguageTexts.devil_rank_2)}`,
-                        ENUM_DEVIL_RANK.HIGH
+                        ALL_DEVILS_ACTIONS.HIGH
                     ),
                 ],
                 [
                     Markup.button.callback(
                         `${ctx.i18n.t(LanguageTexts.devil_rank_3)}`,
-                        ENUM_DEVIL_RANK.MID
+                        ALL_DEVILS_ACTIONS.MID
                     ),
                 ],
                 [
                     Markup.button.callback(
                         `${ctx.i18n.t(LanguageTexts.devil_rank_4)}`,
-                        ENUM_DEVIL_RANK.LOW
+                        ALL_DEVILS_ACTIONS.LOW
                     ),
                 ],
                 [
@@ -172,6 +170,20 @@ async function byRank(ctx: BotContext) {
             ]),
         }
     );
+}
+
+enum ALL_DEVILS_ACTIONS {
+    ONE = 'ONE',
+    TWO = 'TWO',
+    THREE = 'THREE',
+    FOUR = 'FOUR',
+    FIVE = 'FIVE',
+    SIX = 'SIX',
+    SEVEN = 'SEVEN',
+    HIGHEST = 'HIGHEST',
+    HIGH = 'HIGH',
+    MID = 'MID',
+    LOW = 'LOW',
 }
 @Wizard(SceneIds.allDevils)
 @UseFilters(TelegrafExceptionFilter)
@@ -210,82 +222,106 @@ export class AllDevilsWizard {
     }
 
     @WizardStep(3)
-    @Action(ENUM_DEVIL_FLOOR.ONE)
+    @Action(ALL_DEVILS_ACTIONS.ONE)
     async floor1(@Context() ctx: BotContext) {
         const devils = await this.devilService.findByFloor(
             ENUM_DEVIL_FLOOR.ONE
         );
-        floorList(ctx, devils, `Список дьяволов C первого этажа`);
+        floorList(ctx, devils, `Список дьяволов c первого этажа`);
         ctx.wizard.next();
     }
 
     @WizardStep(3)
-    @Action(ENUM_DEVIL_FLOOR.TWO)
+    @Action(ALL_DEVILS_ACTIONS.TWO)
     async floor2(@Context() ctx: BotContext) {
         const devils = await this.devilService.findByFloor(
             ENUM_DEVIL_FLOOR.TWO
         );
-        floorList(ctx, devils, `Список дьяволов C второго этажа`);
+        floorList(ctx, devils, `Список дьяволов c второго этажа`);
         ctx.wizard.next();
     }
 
     @WizardStep(3)
-    @Action(ENUM_DEVIL_FLOOR.THREE)
+    @Action(ALL_DEVILS_ACTIONS.THREE)
     async floor3(@Context() ctx: BotContext) {
         const devils = await this.devilService.findByFloor(
             ENUM_DEVIL_FLOOR.THREE
         );
-        floorList(ctx, devils, `Список дьяволов C третьего этажа`);
+        floorList(ctx, devils, `Список дьяволов c третьего этажа`);
         ctx.wizard.next();
     }
 
     @WizardStep(3)
-    @Action(ENUM_DEVIL_FLOOR.FOUR)
+    @Action(ALL_DEVILS_ACTIONS.FOUR)
     async floor4(@Context() ctx: BotContext) {
         const devils = await this.devilService.findByFloor(
-            ENUM_DEVIL_FLOOR.ONE
+            ENUM_DEVIL_FLOOR.TWO
         );
-        floorList(ctx, devils, `Список дьяволов C четвёртого этажа`);
+        floorList(ctx, devils, `Список дьяволов c четвёртого этажа`);
         ctx.wizard.next();
     }
 
     @WizardStep(3)
-    @Action(ENUM_DEVIL_FLOOR.FIVE)
+    @Action(ALL_DEVILS_ACTIONS.FIVE)
     async floor5(@Context() ctx: BotContext) {
-        const devils = await this.devilService.findByRank(
-            ENUM_DEVIL_RANK.HIGHEST
+        const devils = await this.devilService.findByFloor(
+            ENUM_DEVIL_FLOOR.FIVE
         );
         floorList(ctx, devils, `Список низкоранговых дьяволов`);
         ctx.wizard.next();
     }
 
     @WizardStep(3)
-    @Action(ENUM_DEVIL_FLOOR.SIX)
-    async mid(@Context() ctx: BotContext) {
-        const devils = await this.devilService.findByRank(
-            ENUM_DEVIL_RANK.HIGHEST
+    @Action(ALL_DEVILS_ACTIONS.SIX)
+    async floor6(@Context() ctx: BotContext) {
+        const devils = await this.devilService.findByFloor(
+            ENUM_DEVIL_FLOOR.SIX
         );
         floorList(ctx, devils, `Список среднеранговых дьяволов`);
         ctx.wizard.next();
     }
 
     @WizardStep(3)
-    @Action(ENUM_DEVIL_FLOOR.SEVEN)
-    async high(@Context() ctx: BotContext) {
-        const devils = await this.devilService.findByRank(
-            ENUM_DEVIL_RANK.HIGHEST
+    @Action(ALL_DEVILS_ACTIONS.SEVEN)
+    async floor7(@Context() ctx: BotContext) {
+        const devils = await this.devilService.findByFloor(
+            ENUM_DEVIL_FLOOR.SEVEN
         );
         floorList(ctx, devils, `Список высокороанговых дьяволов`);
         ctx.wizard.next();
     }
 
     @WizardStep(3)
-    @Action(ENUM_DEVIL_RANK.HIGHEST)
+    @Action(ALL_DEVILS_ACTIONS.HIGHEST)
     async highest(@Context() ctx: BotContext) {
         const devils = await this.devilService.findByRank(
             ENUM_DEVIL_RANK.HIGHEST
         );
         floorList(ctx, devils, `Список высших дьяволов`);
+        ctx.wizard.next();
+    }
+
+    @WizardStep(3)
+    @Action(ALL_DEVILS_ACTIONS.HIGH)
+    async high(@Context() ctx: BotContext) {
+        const devils = await this.devilService.findByRank(ENUM_DEVIL_RANK.HIGH);
+        floorList(ctx, devils, `Список высокоранговых дьяволов`);
+        ctx.wizard.next();
+    }
+
+    @WizardStep(3)
+    @Action(ALL_DEVILS_ACTIONS.MID)
+    async mid(@Context() ctx: BotContext) {
+        const devils = await this.devilService.findByRank(ENUM_DEVIL_RANK.MID);
+        floorList(ctx, devils, `Список среднеранговых дьяволов`);
+        ctx.wizard.next();
+    }
+
+    @WizardStep(3)
+    @Action(ALL_DEVILS_ACTIONS.LOW)
+    async low(@Context() ctx: BotContext) {
+        const devils = await this.devilService.findByRank(ENUM_DEVIL_RANK.LOW);
+        floorList(ctx, devils, `Список низкоранговых дьяволов`);
         ctx.wizard.next();
     }
 
@@ -398,12 +434,7 @@ async function showSpellInfo(
                 `${spell.name}${spell.castTime}${spell.cost}${spell.duration}${spell.range}${spell.description}\n\n`
         )
         .join();
-    await ctx.replyWithPhoto(
-        { source: LUCIFERO_IMAGE_PATH },
-        {
-            caption: `Единение ${number}${caption}`,
-        }
-    );
+    await ctx.reply(`Единение ${number}\n${caption}`);
 }
 /**
  *     // STEP - 1 start travel

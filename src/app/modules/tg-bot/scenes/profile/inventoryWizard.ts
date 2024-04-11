@@ -1,4 +1,12 @@
-import { Action, Context, Message, SceneEnter, Wizard, WizardStep } from 'nestjs-telegraf';
+import {
+    Action,
+    Context,
+    Message,
+    SceneEnter,
+    Sender,
+    Wizard,
+    WizardStep,
+} from 'nestjs-telegraf';
 import { HELLO_IMAGE_PATH, INVENTORY_IMAGE_PATH } from '../../constants/images';
 import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
@@ -7,22 +15,28 @@ import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 import { LanguageTexts } from '../../constants/language.text.constant';
+import { CharacterService } from 'src/app/modules/character/services/character.service';
 
 @Wizard(SceneIds.inventory)
 @UseFilters(TelegrafExceptionFilter)
 export class InventoryWizard {
-    constructor(private readonly tgBotService: TgBotService) {}
+    constructor(
+        private readonly tgBotService: TgBotService,
+        private readonly characterService: CharacterService
+    ) {}
 
     // STEP - 1
     @SceneEnter()
-    async start(@Context() ctx: BotContext) {
-        const caption = ctx.i18n.t('entry');
+    async start(@Context() ctx: BotContext, @Sender() sender) {
+
+      //  const inventory = await this.characterService.getIn();
+      const caption = 'ваш инвентарь';
         await ctx.sendPhoto(
             {
                 source: INVENTORY_IMAGE_PATH,
             },
             {
-                caption,
+                caption: caption,
                 ...Markup.inlineKeyboard([
                     Markup.button.callback(
                         ctx.i18n.t(LanguageTexts.back),

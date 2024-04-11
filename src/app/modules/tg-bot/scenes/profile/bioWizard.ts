@@ -15,7 +15,7 @@ export class BioWizard {
 
     @SceneEnter()
     async start(@Context() ctx: BotContext) {
-        const caption = ctx.i18n.t('entry');
+        const caption = 'биография';
         await ctx.sendPhoto(
             {
                 source: KNIGHT_IMAGE_PATH,

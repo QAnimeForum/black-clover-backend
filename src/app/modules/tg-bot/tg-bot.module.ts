@@ -25,9 +25,9 @@ import { MapModule } from '../map/map.module';
 import { UserModule } from '../user/user.module';
 import { DevilsModule } from '../devils/devils.module';
 import { GrimoireModule } from '../grimoire/grimoire.module';
-import { CreateSpellWizard } from './scenes/profile/characterCreateSpellWizard';
 import { EditGrimoireMagicNameWizard } from './scenes/profile/grimoire/editGrimoireMagicWizard';
 import { EditGrimoireMagicColorWizard } from './scenes/profile/grimoire/editMagicColorWizard';
+import { CreateSpellWizard } from './scenes/profile/grimoire/characterCreateSpellWizard';
 @Module({
     imports: [
         TypeOrmModule.forFeature([]),

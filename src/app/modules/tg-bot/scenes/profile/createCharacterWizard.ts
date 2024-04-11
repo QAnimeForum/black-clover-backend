@@ -266,7 +266,7 @@ export class CreateCharacterWizard {
                         ],
                     ])
                 );
-                await ctx.wizard.next();
+                ctx.wizard.next();
                 //   await ctx.scene.leave();
             });
         });
@@ -279,7 +279,7 @@ export class CreateCharacterWizard {
                     switch (ctx.callbackQuery.data) {
                         case 'EXIT': {
                             ctx.reply(
-                                '',
+                                'вы можете увидеть, что есть',
                                 Markup.keyboard([
                                     ['Профиль', 'Карта'],
                                     ['Дьяволы', 'Духи'],

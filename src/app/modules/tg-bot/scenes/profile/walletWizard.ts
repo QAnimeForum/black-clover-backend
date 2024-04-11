@@ -29,11 +29,12 @@ export class WalletWizard {
     // STEP - 1
     @SceneEnter()
     async start(@Context() ctx: BotContext, @Sender() sender) {
-        const character = await this.characterService.getWalletByCharacter(
+        const user = await this.characterService.getWalletByCharacter(
             sender.id
         );
-        console.log(character);
-        const caption = ctx.i18n.t('entry');
+        const wallet = user.character.wallet;
+        const cash = wallet.cash;
+        const caption = `Ниличные\n Медные: ${cash.cooper}\n;Серебряные: ${cash.silver}\nЭлектрумовые${cash.eclevtrum}\nЗолотые: ${cash.gold}\nПлатиновые: ${cash.platinum}\n\n`;
         await ctx.sendPhoto(
             {
                 source: MONEY_IMAGE_PATH,

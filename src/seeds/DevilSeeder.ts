@@ -58,11 +58,12 @@ export default class DevilSeeder implements Seeder {
                     percent: DevilUnionsPercentEnum.PERCENT_100,
                 })
             ).raw[0];
+
             await devilRepository.insert({
                 name: name,
                 description: description,
-                rank: ENUM_DEVIL_RANK[rank],
-                floor: ENUM_DEVIL_FLOOR[floor],
+                rank: rank as ENUM_DEVIL_RANK,
+                floor: floor as ENUM_DEVIL_FLOOR,
                 magic_type: magic_type,
                 union_10: devil_union_10,
                 union_25: devil_union_25,

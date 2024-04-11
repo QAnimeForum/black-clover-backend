@@ -1,17 +1,12 @@
 import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
-
-import { SceneIds } from '../../constants/scenes.id';
-import { BotContext } from '../../interfaces/bot.context';
-import { TgBotService } from '../../services/tg-bot.service';
 import { Inject, Injectable } from '@nestjs/common';
-import { LanguageTexts } from '../../constants/language.text.constant';
-import { CharacterService } from 'src/app/modules/character/services/character.service';
-import { MapService } from 'src/app/modules/map/service/map.service';
-import { RaceService } from 'src/app/modules/race/race.service';
 import { Telegraf, Scenes, Composer } from 'telegraf';
-import { UserService } from 'src/app/modules/user/services/user.service';
 import { message } from 'telegraf/filters';
 import { GrimoireService } from 'src/app/modules/grimoire/services/grimoire.service';
+import { LanguageTexts } from '../../../constants/language.text.constant';
+import { SceneIds } from '../../../constants/scenes.id';
+import { BotContext } from '../../../interfaces/bot.context';
+import { TgBotService } from '../../../services/tg-bot.service';
 
 //@Wizard(SceneIds.createCharacter)
 //@UseFilters(TelegrafExceptionFilter)
@@ -94,7 +89,7 @@ export class CreateSpellWizard {
         return this.tgBotService.createComposer(async (composer) => {
             composer.on(message('text'), async (ctx) => {
                 const msg = ctx.update?.message.text;
-                ctx.scene.session.spell.range = msg;
+                ctx.scene.session.spell.castTime = msg;
                 await ctx.reply(ctx.i18n.t(LanguageTexts.spell_create_cost));
                 ctx.wizard.next();
             });

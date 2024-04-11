@@ -15,7 +15,7 @@ export class MySpiritsWizard {
 
     @SceneEnter()
     async start(@Context() ctx: BotContext) {
-        const caption = ctx.i18n.t('entry');
+        const caption = 'мои духи';
         await ctx.sendPhoto(
             {
                 source: SPIRITS_IMAGE_PATH,

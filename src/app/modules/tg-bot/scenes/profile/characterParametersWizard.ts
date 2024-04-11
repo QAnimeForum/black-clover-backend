@@ -16,7 +16,7 @@ export class CharacterParametersWizard {
     // STEP - 1 start travel
     @SceneEnter()
     async start(@Context() ctx: BotContext) {
-        const caption = ctx.i18n.t('entry');
+        const caption = 'Характеристики персонажа';
         await ctx.sendPhoto(
             {
                 source: KNIGHT_IMAGE_PATH,
