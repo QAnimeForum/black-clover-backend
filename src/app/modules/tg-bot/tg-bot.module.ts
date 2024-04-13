@@ -3,21 +3,10 @@ import { TgBotService } from './services/tg-bot.service';
 import { TgBotUpdate } from './services/tg-bot.update';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TgBotI18nService } from './services/tg-bot-i18n.service';
-import { AllDevilsWizard } from './scenes/devils/allDevilsWizard';
 import { EntryWizard } from './scenes/entryWizard';
 import { MapWizard } from './scenes/map/mapWizard';
-import { BioWizard } from './scenes/profile/bioWizard';
-import { CharacterParametersWizard } from './scenes/profile/characterParametersWizard';
-import { EquipmentWizard } from './scenes/profile/equipmentWizard';
-import { GrimoireWizard } from './scenes/profile/grimoireWizard';
-import { InventoryWizard } from './scenes/profile/inventoryWizard';
-import { MyDevilsWizard } from './scenes/profile/myDevilsWizard';
-import { MySpiritsWizard } from './scenes/profile/mySpiritsWIzard';
-import { ProfileWizard } from './scenes/profile/profileWizard';
-import { WalletWizard } from './scenes/profile/walletWizard';
-import { AllSpirtsWizard } from './scenes/spirits/allSpirits';
+import { AllSpiritsScene } from './scenes/spirits/allSpirits';
 import { MinesWizard } from './scenes/work/minesWizard';
-import { SquadWizard } from './scenes/work/squadWizard';
 import { CreateCharacterWizard } from './scenes/profile/createCharacterWizard';
 import { CharacterModule } from '../character/character.module';
 import { RaceModule } from '../race/race.module';
@@ -28,6 +17,23 @@ import { GrimoireModule } from '../grimoire/grimoire.module';
 import { EditGrimoireMagicNameWizard } from './scenes/profile/grimoire/editGrimoireMagicWizard';
 import { EditGrimoireMagicColorWizard } from './scenes/profile/grimoire/editMagicColorWizard';
 import { CreateSpellWizard } from './scenes/profile/grimoire/characterCreateSpellWizard';
+import { HomeScene } from './scenes/HomeScene';
+import { ProfileScene } from './scenes/profile/profileScene';
+import { WalletScene } from './scenes/profile/walletScene';
+import { MyDevilsScene } from './scenes/profile/myDevilsScene';
+import { MySpiritsScene } from './scenes/profile/mySpiritsScene';
+import { InventoryScene } from './scenes/profile/inventoryScene';
+import { BioScene, EditCharactreName } from './scenes/profile/BioScene';
+import { CharacterParamsScene } from './scenes/profile/paramsScene';
+import {
+    AllDevilsByFloorScene,
+    AllDevilsByRankScene,
+    AllDevilsScene,
+} from './scenes/devils/allDevilsScene';
+import { AdminScene } from './scenes/admin/adminScene';
+import { HelpScene } from './scenes/helpScene';
+import { ArmedForcesScene } from './scenes/armedForces';
+import { GrimoreScene } from './scenes/profile/grimoire/grimoireScene';
 @Module({
     imports: [
         TypeOrmModule.forFeature([]),
@@ -39,28 +45,33 @@ import { CreateSpellWizard } from './scenes/profile/grimoire/characterCreateSpel
         DevilsModule,
     ],
     providers: [
-        AllDevilsWizard,
-        AllSpirtsWizard,
+        AdminScene,
+        ArmedForcesScene,
+        HelpScene,
+        AllDevilsScene,
+        AllDevilsByFloorScene,
+        AllDevilsByRankScene,
+        AllSpiritsScene,
         MapWizard,
-        BioWizard,
-        CharacterParametersWizard,
+        HomeScene,
+        CharacterParamsScene,
         CreateSpellWizard,
         CreateCharacterWizard,
-        EquipmentWizard,
-        GrimoireWizard,
+        GrimoreScene,
         EditGrimoireMagicColorWizard,
         EditGrimoireMagicNameWizard,
-        InventoryWizard,
-        MyDevilsWizard,
-        MySpiritsWizard,
-        ProfileWizard,
-        WalletWizard,
+        InventoryScene,
+        BioScene,
+        MyDevilsScene,
+        MySpiritsScene,
+        ProfileScene,
+        WalletScene,
         MinesWizard,
-        SquadWizard,
         EntryWizard,
         TgBotUpdate,
         TgBotService,
         TgBotI18nService,
+        EditCharactreName,
     ],
     exports: [TgBotI18nService],
 })

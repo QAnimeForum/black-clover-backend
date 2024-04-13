@@ -127,7 +127,7 @@ export class CreateSpellWizard {
                 const msg = ctx.update?.message.text;
                 ctx.scene.session.spell.description = msg;
                 const content = `${ctx.i18n.t(LanguageTexts.spell_create_check_information)}${ctx.i18n.t(LanguageTexts.spell_name)}${ctx.scene.session.spell.name}${ctx.i18n.t(LanguageTexts.spell_cast_time)}${ctx.scene.session.spell.castTime}${ctx.i18n.t(LanguageTexts.spell_cost)}${ctx.scene.session.spell.cost}${ctx.i18n.t(LanguageTexts.spell_cost)}${ctx.scene.session.spell.duration}${ctx.i18n.t(LanguageTexts.spell_range)}${ctx.scene.session.spell.range}${ctx.i18n.t(LanguageTexts.spell_description)}${ctx.scene.session.spell.description}`;
-                ctx.reply(content, {
+                await ctx.reply(content, {
                     reply_markup: {
                         inline_keyboard: [
                             [
@@ -146,8 +146,8 @@ export class CreateSpellWizard {
             composer.use(async (ctx) => {
                 switch (ctx.updateType) {
                     case 'callback_query': {
+                        await ctx.answerCbQuery();
                         if ('data' in ctx.callbackQuery) {
-                            console.log(ctx.callbackQuery);
                             const grimoire =
                                 await this.grimoireService.findGrimoireByUserId(
                                     ctx.callbackQuery.from.id.toString()

@@ -1,16 +1,17 @@
 export enum SceneIds {
     entry = 'entry',
+    ADMIN = 'админская панель',
     createCharacter = 'create-character',
     createSpell = 'create-spell',
     createSpells = 'create-spells',
     equipment = 'equipment',
+    help = 'help',
+    quests = 'quests',
     roll = 'foll',
     about = 'about',
+    home = 'home',
     profile = 'profile',
-    grimoire = 'grimoire',
-    grimoireAdd = 'grimoireAdd',
-    grimoireEditName = 'grimoireName',
-    grimoireEditColor = 'grimoireColore',
+
     spells = 'spells',
     inventory = 'inventory',
     wallet = 'wallet',
@@ -20,9 +21,18 @@ export enum SceneIds {
     mySpirits = 'my-spirits',
     allSpirits = 'all-spirits',
     allDevils = 'all-devils',
+    allDevilsByRank = 'all-devils-by-rank',
+    allDevilsByFloor = 'all-devils-by-floor',
     myDevils = 'my-devils',
-    spirits = 'spirits',
     map = 'map',
-    squads = 'squad',
+    armedForces = 'вооружённые силы',
     mines = 'mines',
+    editCharacterName = 'edit-character-name',
+
+    //grimore
+    //edit
+    grimoire = 'grimoire',
+    grimoireAdd = 'grimoire-add',
+    grimoireEditMagicName = 'grimoire-edit-magic-name',
+    grimoireEditMagicColor = 'grimoire-edit-magic-color',
 }

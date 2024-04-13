@@ -26,6 +26,11 @@ export class DevilEntity {
     description: string;
 
     @Column({
+        name: 'image_path',
+        type: 'varchar',
+    })
+    image: string;
+    @Column({
         type: 'enum',
         enum: ENUM_DEVIL_FLOOR,
         default: ENUM_DEVIL_FLOOR.ONE,

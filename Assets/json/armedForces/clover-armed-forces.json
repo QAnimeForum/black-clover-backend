@@ -1,0 +1,19 @@
+{
+  "clover": {
+    "name": "Организация рыцарей чародеев",
+    "description": "Защищает королевство",
+    "ranks": [
+      {
+        "name": "",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      }    
+    ]
+  }
+}

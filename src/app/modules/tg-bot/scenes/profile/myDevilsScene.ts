@@ -1,4 +1,5 @@
 import { Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
+import { DEVILS_IMAGE_PATH, SPIRITS_IMAGE_PATH } from '../../constants/images';
 import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
@@ -8,11 +9,10 @@ import { Markup } from 'telegraf';
 import { CharacterService } from 'src/app/modules/character/services/character.service';
 import { UserService } from 'src/app/modules/user/services/user.service';
 import { BUTTON_ACTIONS } from '../../constants/actions';
-import { INVENTORY_IMAGE_PATH, SPIRITS_IMAGE_PATH } from '../../constants/images';
 
-@Scene(SceneIds.allSpirits)
+@Scene(SceneIds.myDevils)
 @UseFilters(TelegrafExceptionFilter)
-export class AllSpiritsScene {
+export class MyDevilsScene {
     constructor(
         private readonly tgBotService: TgBotService,
         private readonly characterService: CharacterService,
@@ -20,10 +20,10 @@ export class AllSpiritsScene {
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
-        const caption = 'ДУХИ';
+        const caption = 'мои дьяволы';
         await ctx.sendPhoto(
             {
-                source: SPIRITS_IMAGE_PATH,
+                source: DEVILS_IMAGE_PATH,
             },
             {
                 caption,
@@ -34,6 +34,6 @@ export class AllSpiritsScene {
 
     @Hears(BUTTON_ACTIONS.back)
     async profile(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.home);
+        await ctx.scene.enter(SceneIds.profile);
     }
 }

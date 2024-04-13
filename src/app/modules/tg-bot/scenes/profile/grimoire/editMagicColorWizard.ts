@@ -30,7 +30,7 @@ export class EditGrimoireMagicColorWizard {
         // Create scene and add steps
         this.steps = [this.start(), this.step1()];
         this.scene = new Scenes.WizardScene<BotContext>(
-            SceneIds.grimoireEditColor,
+            SceneIds.grimoireEditMagicColor,
             ...this.steps
         );
         // Register add discount wizard

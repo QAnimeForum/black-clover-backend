@@ -18,6 +18,7 @@ export default class DevilSeeder implements Seeder {
             const {
                 name,
                 description,
+                image_path,
                 floor,
                 rank,
                 magic_type,
@@ -62,6 +63,7 @@ export default class DevilSeeder implements Seeder {
             await devilRepository.insert({
                 name: name,
                 description: description,
+                image: image_path,
                 rank: rank as ENUM_DEVIL_RANK,
                 floor: floor as ENUM_DEVIL_FLOOR,
                 magic_type: magic_type,

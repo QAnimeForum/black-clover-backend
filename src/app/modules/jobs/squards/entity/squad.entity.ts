@@ -19,6 +19,11 @@ export class SquadEntity {
     })
     name: string;
 
+    @Column({
+        type: 'varchar',
+    })
+    descripiton: string;
+
     @OneToMany(() => SquadMemberEntity, (member) => member.squad)
     members: Array<SquadMemberEntity>;
 

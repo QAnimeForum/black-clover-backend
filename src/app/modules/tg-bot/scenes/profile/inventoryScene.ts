@@ -8,11 +8,11 @@ import { Markup } from 'telegraf';
 import { CharacterService } from 'src/app/modules/character/services/character.service';
 import { UserService } from 'src/app/modules/user/services/user.service';
 import { BUTTON_ACTIONS } from '../../constants/actions';
-import { INVENTORY_IMAGE_PATH, SPIRITS_IMAGE_PATH } from '../../constants/images';
+import { INVENTORY_IMAGE_PATH } from '../../constants/images';
 
-@Scene(SceneIds.allSpirits)
+@Scene(SceneIds.inventory)
 @UseFilters(TelegrafExceptionFilter)
-export class AllSpiritsScene {
+export class InventoryScene {
     constructor(
         private readonly tgBotService: TgBotService,
         private readonly characterService: CharacterService,
@@ -20,10 +20,10 @@ export class AllSpiritsScene {
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
-        const caption = 'ДУХИ';
+        const caption = 'биография';
         await ctx.sendPhoto(
             {
-                source: SPIRITS_IMAGE_PATH,
+                source: INVENTORY_IMAGE_PATH,
             },
             {
                 caption,
@@ -34,6 +34,6 @@ export class AllSpiritsScene {
 
     @Hears(BUTTON_ACTIONS.back)
     async profile(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.home);
+        await ctx.scene.enter(SceneIds.profile);
     }
 }

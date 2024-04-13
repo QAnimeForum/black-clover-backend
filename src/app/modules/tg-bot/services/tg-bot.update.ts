@@ -53,25 +53,8 @@ bot.command('roll', ctx => ctx.scene.enter(ROLL_SCENE));
         await ctx.scene.enter(SceneIds.profile);
     }
     @Help()
-    async help1(@Context() ctx: BotContext) {
-        ctx.reply('полные правила вы можете посмотреть ниже', {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: 'Ссылка на QFourum',
-                            url: SAMPLE_SPELL_URL,
-                        },
-                    ],
-                    [
-                        {
-                            text: 'Ссылка на правила',
-                            url: SAMPLE_SPELL_URL,
-                        },
-                    ],
-                ],
-            },
-        });
+    async helps(@Context() ctx: BotContext) {
+        await ctx.scene.enter(SceneIds.help);
     }
 
     @Command('about')

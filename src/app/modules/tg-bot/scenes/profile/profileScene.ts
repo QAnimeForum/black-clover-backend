@@ -1,10 +1,9 @@
 import {
-    Context,
-    Message,
+    Ctx,
+    Hears,
+    Scene,
     SceneEnter,
     Sender,
-    Wizard,
-    WizardStep,
 } from 'nestjs-telegraf';
 import { KNIGHT_IMAGE_PATH } from '../../constants/images';
 import { SceneIds } from '../../constants/scenes.id';
@@ -13,22 +12,90 @@ import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
 import { CharacterService } from 'src/app/modules/character/services/character.service';
+import { Markup } from 'telegraf';
+import { BUTTON_ACTIONS } from '../../constants/actions';
 import { LanguageTexts } from '../../constants/language.text.constant';
 
-@Wizard(SceneIds.profile)
+@Scene(SceneIds.profile)
 @UseFilters(TelegrafExceptionFilter)
-export class ProfileWizard {
+export class ProfileScene {
     constructor(
         private readonly tgBotService: TgBotService,
         private readonly characterService: CharacterService
     ) {}
-
     @SceneEnter()
-    async start(@Context() ctx: BotContext, @Sender() sender) {
-        const character = await this.characterService.getCharacterInfo(
-            sender.id
+    async enter(@Ctx() ctx: BotContext, @Sender() sender) {
+        const senderId = sender.id;
+        const background =
+            await this.characterService.findBackgroundByTgId(senderId);
+        const name = `${ctx.i18n.t(LanguageTexts.character_profile_name)}: ${background.name}\n`;
+        const sex = `${ctx.i18n.t(LanguageTexts.character_profile_sex)}: ${background.sex}\n`;
+        const age = `${ctx.i18n.t(LanguageTexts.character_profile_age)}: ${background.age}\n`;
+        const state = `${ctx.i18n.t(LanguageTexts.character_profile_state)}: ${background.state.name}\n`;
+        const race = `${ctx.i18n.t(LanguageTexts.character_profile_race)}: ${background.race.name}\n`;
+        const caption = `${ctx.i18n.t(LanguageTexts.character_profile)}\n\n${name}${sex}${age}${state}${race}`;
+        ctx.sendPhoto(
+            {
+                source: KNIGHT_IMAGE_PATH,
+            },
+            {
+                caption,
+                parse_mode: 'HTML',
+                ...Markup.keyboard([
+                    [
+                        BUTTON_ACTIONS.grimoire,
+                        BUTTON_ACTIONS.bio,
+                        BUTTON_ACTIONS.params,
+                    ],
+                    [BUTTON_ACTIONS.wallet, BUTTON_ACTIONS.inventory],
+                    [BUTTON_ACTIONS.myDevils, BUTTON_ACTIONS.mySpirits],
+                    [BUTTON_ACTIONS.back],
+                ]).resize(),
+            }
         );
-        console.log(character.background);
+    }
+
+    @Hears(BUTTON_ACTIONS.back)
+    async home(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(SceneIds.home);
+    }
+    @Hears(BUTTON_ACTIONS.grimoire)
+    async grimoire(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(SceneIds.grimoire);
+    }
+    @Hears(BUTTON_ACTIONS.bio)
+    async bio(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(SceneIds.bio);
+    }
+    @Hears(BUTTON_ACTIONS.params)
+    async params(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(SceneIds.characterParameters);
+    }
+    @Hears(BUTTON_ACTIONS.wallet)
+    async wallet(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(SceneIds.wallet);
+    }
+    @Hears(BUTTON_ACTIONS.inventory)
+    async inventory(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(SceneIds.inventory);
+    }
+    @Hears(BUTTON_ACTIONS.myDevils)
+    async myDevils(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(SceneIds.myDevils);
+    }
+
+    @Hears(BUTTON_ACTIONS.mySpirits)
+    async mySpirits(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(SceneIds.mySpirits);
+    }
+}
+
+/**
+ *     @SceneEnter()
+    async start(@Context() ctx: BotContext, @Sender() sender) {
+        const character = (
+            await this.characterService.getCharacterInfoByTgId(sender.id)
+        ).character;
         const content = `${ctx.i18n.t(LanguageTexts.character_profile)}${ctx.i18n.t(LanguageTexts.character_profile_name)}${character.background.name}${ctx.i18n.t(LanguageTexts.character_profile_age)}${character.background.age}${ctx.i18n.t(LanguageTexts.character_profile_sex)}${character.background.sex}${ctx.i18n.t(LanguageTexts.character_profile_state)}${character.background.state.name}${ctx.i18n.t(LanguageTexts.character_profile_race)}${character.background.race.name}`;
         await ctx.replyWithPhoto(
             { source: KNIGHT_IMAGE_PATH },
@@ -96,6 +163,5 @@ export class ProfileWizard {
                 break;
             }
         }
-        //await ctx.scene.leave();
     }
-}
+ */

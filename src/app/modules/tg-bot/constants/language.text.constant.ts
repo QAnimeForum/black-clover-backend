@@ -1,6 +1,13 @@
 export enum LanguageTexts {
     entry = 'entry',
-    back = 'back',
+    characterExists = 'characterExists',
+    startTravel = 'startTravel',
+    buttonsBack = 'buttons.back',
+    buttonsProfile = 'buttons.profile',
+    buttonsDevils = 'buttons.devils',
+    buttonsSpirits = 'buttons.spirits',
+    buttonsQuests = 'buttons.quests',
+    buttonsMap = 'buttons.map',
     chooseLanguage = 'chooseLanguage',
     character_create_entry = 'character.create.entry',
     character_create_name = 'character.create.name',
@@ -43,8 +50,8 @@ export enum LanguageTexts {
 
     grimoire_edit_magic = 'grimoire.edit.name',
     grimoire_edit_color = 'grimoire.edit.color',
-    grimoire_new_magic = 'grimoire.new.name',
-    grimoire_new_color = 'grimoire.new.color',
+    grimoire_new_magic = 'grimoire.new_magic',
+    grimoire_new_color = 'grimoire.new_color',
     grimoire_spell_create = 'grimoire.spell.create.title',
     spell_create_check_information = 'grimoire.spell.check_information',
 

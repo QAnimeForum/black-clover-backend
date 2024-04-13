@@ -278,14 +278,7 @@ export class CreateCharacterWizard {
                 if ('data' in ctx.callbackQuery) {
                     switch (ctx.callbackQuery.data) {
                         case 'EXIT': {
-                            ctx.reply(
-                                'вы можете увидеть, что есть',
-                                Markup.keyboard([
-                                    ['Профиль', 'Карта'],
-                                    ['Дьяволы', 'Духи'],
-                                ]).resize()
-                            );
-                            ctx.scene.leave();
+                            ctx.scene.enter(SceneIds.home);
                             break;
                         }
                     }

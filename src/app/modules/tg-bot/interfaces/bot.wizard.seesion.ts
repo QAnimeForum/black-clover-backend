@@ -6,4 +6,8 @@ export interface BotWizardSession extends Scenes.WizardSessionData {
     spell: SpellCreateDto;
     character: CharacterCreateDto;
     grimoire: GrimoireCreateDto;
+    devil_list: {
+        type: string;
+        devil_id: string;
+    },
 }

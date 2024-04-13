@@ -22,6 +22,7 @@ import { ENUM_CHARCACTER_TYPE } from '../constants/character.type.enum';
 import { WalletEntity } from '../../money/entity/wallet.entity';
 import { UserEntity } from '../../user/entities/user.entity';
 import { CashEntity } from '../../money/entity/cash.entity';
+import { CharacterNameEditDto } from '../dto/character.name-edit.dto';
 @Injectable()
 export class CharacterService {
     constructor(
@@ -217,18 +218,36 @@ export class CharacterService {
         //  character.background.race = dto.raceId;
     }
 
-    getCharacterInfo(dto: GetCharacterInfoDto) {
-        return this.characterRepository.findOne({
+    getCharacterInfoByTgId(telegramId: string) {
+        return this.userRepository.findOne({
             where: {
-                id: dto.characterId,
+                tgUserId: telegramId,
             },
             relations: {
-                background: {
-                    race: true,
-                    state: true,
+                character: {
+                    background: {
+                        race: true,
+                        state: true,
+                    },
                 },
             },
         });
+    }
+    async findBackgroundByTgId(telegramId: string) {
+        const user = await this.userRepository.findOne({
+            where: {
+                tgUserId: telegramId,
+            },
+            relations: {
+                character: {
+                    background: {
+                        race: true,
+                        state: true,
+                    },
+                },
+            },
+        });
+        return user.character.background;
     }
 
     async getCharacterById(characerId: string): Promise<CharacterEntity> {
@@ -341,5 +360,10 @@ export class CharacterService {
             },
         });
         return entity;
+    }
+    async changeCharacterName(dto: CharacterNameEditDto) {
+        const character = (await this.getCharacterInfoByTgId(dto.id)).character;
+        character.background.name = dto.name;
+        this.backgroundRepository.save(character.background);
     }
 }

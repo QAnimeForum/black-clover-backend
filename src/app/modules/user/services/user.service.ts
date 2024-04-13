@@ -20,6 +20,13 @@ export class UserService {
             character: dto.character,
         });
     }
+    async exists(telegramUserId: string): Promise<boolean> {
+        return this.userRepository.exists({
+            where: {
+                tgUserId: telegramUserId,
+            },
+        });
+    }
 }
 
 /**

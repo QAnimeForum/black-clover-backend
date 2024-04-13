@@ -1,6 +1,7 @@
 import { join } from 'path';
 
-const STATIC_IMAGE_BASE_PATH = `${join(__dirname, '..', '..', '..', '..', '..', '..', 'public')}`;
+//export const STATIC_IMAGE_BASE_PATH = `${join(__dirname, '..', '..', '..', '..', '..', '..', 'public')}`;
+export const STATIC_IMAGE_BASE_PATH = `${join(__dirname, '..', '..', '..', '..', '..', '..', 'Assets', 'images')}`;
 export const HELLO_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/hello.jpg`;
 
 export const SAMPLE_SPELL_URL =
@@ -14,7 +15,7 @@ export const CLOVER_SQUADS_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/clove
 export const GRIMOURE_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/default-grimoire.jpg`;
 export const KNIGHT_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/default-knight.jpg`;
 export const DEVILS_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/devils.webp`;
-export const DEVILS_QLIPOTH_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/qlipoth/qlipoth.png`;
+export const DEVILS_QLIPOTH_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/qlipoth/Tree_of_Qliphoth.webp`;
 export const LILITH_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/qlipoth/Lilith_profile.webp`;
 export const LUCIFERO_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/qlipoth/lucifero.webp`;
 export const INVENTORY_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/inventory.webp`;
