@@ -94,7 +94,7 @@ export default class DevilSeeder implements Seeder {
                     duration: union_25.spells[j].duration,
                     cost: union_25.spells[j].cost,
                     castTime: union_25.spells[j].castTime,
-                    union: devil_union_10,
+                    union: devil_union_25,
                 });
             }
 
@@ -106,7 +106,7 @@ export default class DevilSeeder implements Seeder {
                     duration: union_50.spells[j].duration,
                     cost: union_50.spells[j].cost,
                     castTime: union_50.spells[j].castTime,
-                    union: devil_union_10,
+                    union: devil_union_50,
                 });
             }
 
@@ -130,7 +130,7 @@ export default class DevilSeeder implements Seeder {
                     duration: union_80.spells[j].duration,
                     cost: union_80.spells[j].cost,
                     castTime: union_80.spells[j].castTime,
-                    union: union_80,
+                    union: devil_union_80,
                 });
             }
             for (let j = 0; j < union_100.spells.length; ++j) {

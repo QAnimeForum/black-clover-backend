@@ -4,7 +4,6 @@ import { HelperDateService } from './services/helper.date.service';
 import { HelperHashService } from './services/helper.hash.service';
 import { HelperNumberService } from './services/helper.number.service';
 import { HelperStringService } from './services/helper.string.service';
-import { HelperFileService } from './services/helper.file.service';
 @Global()
 @Module({
     providers: [
@@ -13,7 +12,6 @@ import { HelperFileService } from './services/helper.file.service';
         HelperHashService,
         HelperNumberService,
         HelperStringService,
-        HelperFileService,
     ],
     exports: [
         HelperArrayService,
@@ -21,7 +19,6 @@ import { HelperFileService } from './services/helper.file.service';
         HelperHashService,
         HelperNumberService,
         HelperStringService,
-        HelperFileService,
     ],
     controllers: [],
     imports: [],

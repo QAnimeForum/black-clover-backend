@@ -16,7 +16,6 @@ import { TgBotModule } from './modules/tg-bot/tg-bot.module';
 import { session } from 'telegraf';
 import { Postgres } from '@telegraf/session/pg';
 import { PostgresAdapter } from 'kysely';
-import { TgBotI18nService } from './modules/tg-bot/services/tg-bot-i18n.service';
 //import { AppMiddlewareModule } from 'src/app/middleware/app.middleware.module';
 @Module({
     controllers: [AppController],
@@ -132,16 +131,10 @@ import { TgBotI18nService } from './modules/tg-bot/services/tg-bot-i18n.service'
         CommonModule,
         TelegrafModule.forRootAsync({
             imports: [TgBotModule],
-            inject: [ConfigService, TgBotI18nService],
-            useFactory: (
-                config: ConfigService,
-                tgBotI18nService: TgBotI18nService
-            ) => ({
+            inject: [ConfigService],
+            useFactory: (config: ConfigService) => ({
                 token: process.env.TELEGRAM_BOT_TOKEN,
-                middlewares: [
-                    session({ store: store(config) }),
-                    tgBotI18nService.i18n.middleware(),
-                ],
+                middlewares: [session({ store: store(config) })],
             }),
         }),
         AppMiddlewareModule,
@@ -161,8 +154,6 @@ import { TgBotI18nService } from './modules/tg-bot/services/tg-bot-i18n.service'
     ],
 })
 export class AppModule {}
-
-
 
 const store = (config: ConfigService) => {
     return Postgres<PostgresAdapter>({

@@ -1,0 +1,13 @@
+import { Scenes, Context } from 'telegraf';
+import { Message } from 'telegraf/typings/core/types/typegram';
+import { BotSession } from './bot.session';
+import { BotWizardSession } from './bot.wizard.seesion';
+
+export interface BotContext extends Context {
+    myContextProp: string;
+    session: BotSession;
+    mediaGroup: Message[];
+    scene: Scenes.SceneContextScene<BotContext, BotWizardSession>;
+    wizard: Scenes.WizardContextWizard<BotContext>;
+  //  i18n: I18n;
+}

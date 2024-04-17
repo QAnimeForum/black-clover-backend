@@ -35,6 +35,7 @@ export default class MapSeeder implements Seeder {
                     name: states[i].name,
                     fullName: states[i].fullName,
                     symbol: states[i].symbol,
+                    image: states[i].image,
                     //  coverSymbol: ENUM_STATE_SYMBOL[states[i].coverSymbol],
                     description: states[i].description,
                     form: formEntity[0],
@@ -53,6 +54,7 @@ export default class MapSeeder implements Seeder {
                 const province = await provinceRepository.insert({
                     shortName: states[i].provinces[j].shortName,
                     fullName: states[i].provinces[j].shortName,
+                    image: states[i].provinces[j].image,
                     form: provinceformEntity[0],
                     state: stateEntity,
                 });
@@ -62,6 +64,7 @@ export default class MapSeeder implements Seeder {
                         name: states[i].provinces[j].burgs[k].name,
                         description:
                             states[i].provinces[j].burgs[k].description,
+                        image: states[i].provinces[j].burgs[k].image,
                         province: province[0],
                     });
                 }

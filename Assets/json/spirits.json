@@ -1,0 +1,1007 @@
+{
+  "spirits": [
+    {
+      "name": "Салалмандра",
+      "description": "Элементальный дух огня.",
+      "image": "spirits\\salamandra.jpg",
+      "stages": [
+        {
+          "name": "Саламандра 1-го уровня",
+          "description": "После заключении контракта с Саламандрой, вы можете отправить Саламандру в бой. Вы можете использовать свои заклинания через него. Если хиты Саламандры упадут до 0, он исчезнет. Вы можете повторно вызвать Саламандру после короткого отдыха. Его статистика обновляется вместе с вами, как показано на каждом уровне.",
+          "appearance": "Маленький Дракон",
+          "alignment": "Нейтральный",
+          "hp": "0",
+          "speedFlight": "15 футов",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "Сила, Телосложение",
+          "skills": "Навыки Акробатика +4, Тайна +2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "Мультиатака",
+              "description": "Саламандра совершает 2 атаки когтями."
+            },
+            {
+              "name": "Коготь",
+              "description": "Рукопашная атака оружием: +4 к попаданию, досягаемость 5 футов, одна цель. Попадание: рубящий урон 1d4+4."
+            }
+          ]
+        },
+        {
+          "name": "Саламандра 2-го уровня",
+          "description": "На 3-м уровне Саламандра теперь имеет средний размер, и в качестве реакции Саламандра может прыгнуть между вами и атакующим, вместо этого направляя атаку на Сламандру.",
+          "appearance": "Средний Дракон",
+          "alignment": "Нейтральный",
+          "hp": "  Модификатор Жизни ПК + модификатор мастерства ПК",
+          "speedFlight": "20 футов",
+          "proficiency": "",
+          "strength": {
+            "score": 22,
+            "modifier": 6
+          },
+          "dexterity": {
+            "score": 18,
+            "modifier": 4
+          },
+          "constitution": {
+            "score": 22,
+            "modifier": 6
+          },
+          "intelligence": {
+            "score": 12,
+            "modifier": 1
+          },
+          "wisdom": {
+            "score": 12,
+            "modifier": 1
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "   Спасброски Сила, Телосложение",
+          "skills": "Акробатика +6, Тайна +3",
+          "damageResistance": "Огонь",
+          "passivePerception": 11,
+          "actions": [
+            {
+              "name": "Мультиатака",
+              "description": "Саламандра совершает 3 атаки когтями."
+            },
+            {
+              "name": "Когоь",
+              "description": "Рукопашная атака оружием: +6 к попаданию, досягаемость 5 футов, одна цель. Попадание: рубящий урон 1d4+6."
+            },
+            {
+              "name": "Дыхание Саламандры.",
+              "description": "Саламандра выпускает огненное дыхание в 15-футовом конусе. Каждое существо в радиусе действия должно совершить спасбросок Ловкости. В случае неудачи цели получают 4d4 урона огнем или половину урона в случае успеха."
+            }
+          ]
+        },
+        {
+          "name": "Саламандра 3-го уровня",
+          "description": "На 11 уровне Саламандра эволюционирует. Вы также можете действием сесть на Саламандру.",
+          "appearance": "Большой Дракон",
+          "alignment": "Нейтральный",
+          "hp": "0",
+          "speedFlight": "30 футов",
+          "proficiency": "",
+          "strength": {
+            "score": 26,
+            "modifier": 8
+          },
+          "dexterity": {
+            "score": 22,
+            "modifier": 6
+          },
+          "constitution": {
+            "score": 24,
+            "modifier": 7
+          },
+          "intelligence": {
+            "score": 16,
+            "modifier": 3
+          },
+          "wisdom": {
+            "score": 16,
+            "modifier": 3
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "Сила, Телосложение",
+          "skills": "Акробатика +10, Тайны +7, Восприятие +7",
+          "damageResistance": "Немагические рубящие, дробящие и колющие удары",
+          "damageImmunities": "Огонь",
+          "passivePerception": 17,
+          "actions": [
+            {
+              "name": "Мультиатака",
+              "description": "Саламандра совершает 4 атаки когтями."
+            },
+            {
+              "name": "Коготь. Рукопашная атака оружием",
+              "description": "+8 к попаданию, досягаемость 5 футов, одна цель. Попадание: рубящий урон 2d4+8."
+            },
+            {
+              "name": "Дыхание Саламандры.",
+              "description": "Саламандра выпускает огненное дыхание в 20-футовом конусе. Каждое существо в радиусе действия должно совершить спасбросок Ловкости. В случае неудачи цели получают урон огнём 6d4 или половину урона в случае успеха."
+            },
+            {
+              "name": "Коготь Саламандры.Дальнобойная атака заклинанием",
+              "description": "+7 к попаданию, дальность 60 футов, одна цель. Попадание: урон огнём 2d6+7."
+            }
+          ]
+        },
+        {
+          "name": "Совершенная Саламандра",
+          "description": "На 18 уровне Саламандр достигает своей последней стадии и полностью завершен.",
+          "appearance": "Большой дракон",
+          "alignment": "Нейтральный",
+          "hp": "0",
+          "speedFlight": "50 ft",
+          "proficiency": "",
+          "strength": {
+            "score": 30,
+            "modifier": 10
+          },
+          "dexterity": {
+            "score": 25,
+            "modifier": 7
+          },
+          "constitution": {
+            "score": 28,
+            "modifier": 9
+          },
+          "intelligence": {
+            "score": 18,
+            "modifier": 4
+          },
+          "wisdom": {
+            "score": 18,
+            "modifier": 4
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "",
+          "skills": "Акробатика +13, Тайны +10, Восприятие +10.",
+          "damageResistance": "Немагические рубящие, дробящие и колющие удары",
+          "damageImmunities": "Огонь",
+          "passivePerception": 20,
+          "actions": [
+            {
+              "name": "Мультиатака.",
+              "description": "Саламандра совершает 4 атаки когтями."
+            },
+            {
+              "name": "Коготь. Рукопашная атака оружием:",
+              "description": "+10 к попаданию, досягаемость 10 футов, одна цель. Попадание: рубящий урон 4d4+10."
+            },
+            {
+              "name": "Дыхание Саламандры",
+              "description": "Саламандра выпускает огненное дыхание в 30-футовом конусе. Каждое существо в радиусе действия должно совершить спасбросок Ловкости. В случае неудачи цели получают 8d4+9 урона огнем или половину урона в случае успеха."
+            }, 
+            {
+            "name": "Коготь Саламандры.Дальнобойная атака заклинанием:",
+            "description":" +9 к попаданию, дальность 60 футов, одна цель. Попадание: урон огнём 4d6+9."
+          }
+          ]
+        }   
+      ]
+    },
+    {
+      "name": "Сильфида",
+      "description": "Элементальный дух воздуха.",
+      "image": "spirits\\sylph.jpg",
+      "stages": [
+        {
+          "name": "Я",
+          "description": "",
+          "appearance": "М",
+          "alignment": "",
+          "hp": "0",
+          "speedFlight": "",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "",
+          "skills": "",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "",
+              "description": ""
+            },
+            {
+              "name": "",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "",
+          "description": "",
+          "appearance": "",
+          "alignment": "",
+          "hp": "0",
+          "speedFlight": "",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "",
+          "skills": "2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "",
+              "description": ""
+            },
+            {
+              "name": "Когоь",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "Ярость Саламандры",
+          "description": "После заключении контракта с Саламандрой, вы можете отправить Саламандру в бой. Вы можете использовать свои заклинания через него. Если хиты Саламандры упадут до 0, он исчезнет. Вы можете повторно вызвать Саламандру после короткого отдыха. Его статистика обновляется вместе с вами, как показано на каждом уровне.",
+          "appearance": "Маленький Дракон",
+          "alignment": "Нейтральный",
+          "hp": "0",
+          "speedFlight": "15 футов",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "Сила, Телосложение",
+          "skills": "Навыки Акробатика +4, Тайна +2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "Мультиатака",
+              "description": "Саламандра совершает 2 атаки когтями."
+            },
+            {
+              "name": "Коготь",
+              "description": "Рукопашная атака оружием: +4 к попаданию, досягаемость 5 футов, одна цель. Попадание: рубящий урон 1d4+4."
+            }
+          ]
+        },
+        {
+          "name": "",
+          "description": "",
+          "appearance": "",
+          "alignment": "",
+          "hp": "0",
+          "speedFlight": "",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "",
+          "skills": "2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "",
+              "description": ""
+            },
+            {
+              "name": "Когоь",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "Ярость Саламандры",
+          "description": "После заключении контракта с Саламандрой, вы можете отправить Саламандру в бой. Вы можете использовать свои заклинания через него. Если хиты Саламандры упадут до 0, он исчезнет. Вы можете повторно вызвать Саламандру после короткого отдыха. Его статистика обновляется вместе с вами, как показано на каждом уровне.",
+          "appearance": "Маленький Дракон",
+          "alignment": "Нейтральный",
+          "hp": "0",
+          "speedFlight": "15 футов",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "Сила, Телосложение",
+          "skills": "Навыки Акробатика +4, Тайна +2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "Мультиатака",
+              "description": "Саламандра совершает 2 атаки когтями."
+            },
+            {
+              "name": "Коготь",
+              "description": "Рукопашная атака оружием: +4 к попаданию, досягаемость 5 футов, одна цель. Попадание: рубящий урон 1d4+4."
+            }
+          ]
+        },
+        {
+          "name": "",
+          "description": "",
+          "appearance": "",
+          "alignment": "",
+          "hp": "0",
+          "speedFlight": "",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "",
+          "skills": "2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "",
+              "description": ""
+            },
+            {
+              "name": "Когоь",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "Ярость Саламандры",
+          "description": "После заключении контракта с Саламандрой, вы можете отправить Саламандру в бой. Вы можете использовать свои заклинания через него. Если хиты Саламандры упадут до 0, он исчезнет. Вы можете повторно вызвать Саламандру после короткого отдыха. Его статистика обновляется вместе с вами, как показано на каждом уровне.",
+          "appearance": "Маленький Дракон",
+          "alignment": "Нейтральный",
+          "hp": "0",
+          "speedFlight": "15 футов",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "Сила, Телосложение",
+          "skills": "Навыки Акробатика +4, Тайна +2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "Мультиатака",
+              "description": "Саламандра совершает 2 атаки когтями."
+            },
+            {
+              "name": "Коготь",
+              "description": "Рукопашная атака оружием: +4 к попаданию, досягаемость 5 футов, одна цель. Попадание: рубящий урон 1d4+4."
+            }
+          ]
+        },
+        {
+          "name": "",
+          "description": "",
+          "appearance": "",
+          "alignment": "",
+          "hp": "0",
+          "speedFlight": "",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "",
+          "skills": "2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "",
+              "description": ""
+            },
+            {
+              "name": "Когоь",
+              "description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ундина",
+      "description": "Жлементальный дух воды.",
+      "image": "spirits\\undina.jpg",
+      "stages": [
+        {
+          "name": "Ярость Саламандры",
+          "description": "После заключении контракта с Саламандрой, вы можете отправить Саламандру в бой. Вы можете использовать свои заклинания через него. Если хиты Саламандры упадут до 0, он исчезнет. Вы можете повторно вызвать Саламандру после короткого отдыха. Его статистика обновляется вместе с вами, как показано на каждом уровне.",
+          "appearance": "Маленький Дракон",
+          "alignment": "Нейтральный",
+          "hp": "0",
+          "speedFlight": "15 футов",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "Сила, Телосложение",
+          "skills": "Навыки Акробатика +4, Тайна +2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "Мультиатака",
+              "description": "Саламандра совершает 2 атаки когтями."
+            },
+            {
+              "name": "Коготь",
+              "description": "Рукопашная атака оружием: +4 к попаданию, досягаемость 5 футов, одна цель. Попадание: рубящий урон 1d4+4."
+            }
+          ]
+        },
+        {
+          "name": "",
+          "description": "",
+          "appearance": "",
+          "alignment": "",
+          "hp": "0",
+          "speedFlight": "",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "",
+          "skills": "2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "",
+              "description": ""
+            },
+            {
+              "name": "Когоь",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "Ярость Саламандры",
+          "description": "После заключении контракта с Саламандрой, вы можете отправить Саламандру в бой. Вы можете использовать свои заклинания через него. Если хиты Саламандры упадут до 0, он исчезнет. Вы можете повторно вызвать Саламандру после короткого отдыха. Его статистика обновляется вместе с вами, как показано на каждом уровне.",
+          "appearance": "Маленький Дракон",
+          "alignment": "Нейтральный",
+          "hp": "0",
+          "speedFlight": "15 футов",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "Сила, Телосложение",
+          "skills": "Навыки Акробатика +4, Тайна +2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "Мультиатака",
+              "description": "Саламандра совершает 2 атаки когтями."
+            },
+            {
+              "name": "Коготь",
+              "description": "Рукопашная атака оружием: +4 к попаданию, досягаемость 5 футов, одна цель. Попадание: рубящий урон 1d4+4."
+            }
+          ]
+        },
+        {
+          "name": "",
+          "description": "",
+          "appearance": "",
+          "alignment": "",
+          "hp": "0",
+          "speedFlight": "",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "",
+          "skills": "2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "",
+              "description": ""
+            },
+            {
+              "name": "Когоь",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "Ярость Саламандры",
+          "description": "После заключении контракта с Саламандрой, вы можете отправить Саламандру в бой. Вы можете использовать свои заклинания через него. Если хиты Саламандры упадут до 0, он исчезнет. Вы можете повторно вызвать Саламандру после короткого отдыха. Его статистика обновляется вместе с вами, как показано на каждом уровне.",
+          "appearance": "Маленький Дракон",
+          "alignment": "Нейтральный",
+          "hp": "0",
+          "speedFlight": "15 футов",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "Сила, Телосложение",
+          "skills": "Навыки Акробатика +4, Тайна +2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "Мультиатака",
+              "description": "Саламандра совершает 2 атаки когтями."
+            },
+            {
+              "name": "Коготь",
+              "description": "Рукопашная атака оружием: +4 к попаданию, досягаемость 5 футов, одна цель. Попадание: рубящий урон 1d4+4."
+            }
+          ]
+        },
+        {
+          "name": "",
+          "description": "",
+          "appearance": "",
+          "alignment": "",
+          "hp": "0",
+          "speedFlight": "",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "",
+          "skills": "2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "",
+              "description": ""
+            },
+            {
+              "name": "Когоь",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "Ярость Саламандры",
+          "description": "После заключении контракта с Саламандрой, вы можете отправить Саламандру в бой. Вы можете использовать свои заклинания через него. Если хиты Саламандры упадут до 0, он исчезнет. Вы можете повторно вызвать Саламандру после короткого отдыха. Его статистика обновляется вместе с вами, как показано на каждом уровне.",
+          "appearance": "Маленький Дракон",
+          "alignment": "Нейтральный",
+          "hp": "0",
+          "speedFlight": "15 футов",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "Сила, Телосложение",
+          "skills": "Навыки Акробатика +4, Тайна +2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "Мультиатака",
+              "description": "Саламандра совершает 2 атаки когтями."
+            },
+            {
+              "name": "Коготь",
+              "description": "Рукопашная атака оружием: +4 к попаданию, досягаемость 5 футов, одна цель. Попадание: рубящий урон 1d4+4."
+            }
+          ]
+        },
+        {
+          "name": "",
+          "description": "",
+          "appearance": "",
+          "alignment": "",
+          "hp": "0",
+          "speedFlight": "",
+          "proficiency": "",
+          "strength": {
+            "score": 18,
+            "modifier": 4
+          },
+          "dexterity": {
+            "score": 14,
+            "modifier": 2
+          },
+          "constitution": {
+            "score": 18,
+            "modifier": 4
+          },
+          "intelligence": {
+            "score": 10,
+            "modifier": 0
+          },
+          "wisdom": {
+            "score": 10,
+            "modifier": 0
+          },
+          "charisma": {
+            "score": 10,
+            "modifier": 0
+          },
+          "armorClass": 0,
+          "savingThrows": "",
+          "skills": "2",
+          "damageResistance": "Огонь",
+          "passivePerception": 10,
+          "actions": [
+            {
+              "name": "",
+              "description": ""
+            },
+            {
+              "name": "Когоь",
+              "description": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

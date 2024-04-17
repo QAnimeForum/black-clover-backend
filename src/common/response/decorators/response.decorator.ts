@@ -14,7 +14,6 @@ import {
     RESPONSE_SERIALIZATION_META_KEY,
 } from 'src/common/response/constants/response.constant';
 import { ResponseInterceptor } from 'src/common/response/interceptors/response.interceptor';
-import { ResponseFileExcelInterceptor } from 'src/common/response/interceptors/response.file.interceptor';
 import { ResponsePagingInterceptor } from 'src/common/response/interceptors/response.paging.interceptor';
 import {
     IResponseOptions,
@@ -30,27 +29,6 @@ export function Response<T>(
         UseInterceptors(ResponseInterceptor<T>),
         SetMetadata(RESPONSE_MESSAGE_PATH_META_KEY, messagePath),
         SetMetadata(RESPONSE_SERIALIZATION_META_KEY, options?.serialization),
-        SetMetadata(
-            RESPONSE_MESSAGE_PROPERTIES_META_KEY,
-            options?.messageProperties
-        )
-    );
-}
-
-export function ResponseFileExcel<T>(
-    options?: IResponseFileExcelOptions<T>
-): MethodDecorator {
-    return applyDecorators(
-        UseInterceptors(ResponseFileExcelInterceptor),
-        SetMetadata(
-            RESPONSE_FILE_EXCEL_SERIALIZATION_META_KEY,
-            options?.serialization
-        ),
-        SetMetadata(
-            RESPONSE_FILE_EXCEL_TYPE_META_KEY,
-            options?.type ?? ENUM_HELPER_FILE_EXCEL_TYPE.CSV
-        ),
-        SetMetadata(RESPONSE_FILE_EXCEL_PASSWORD_META_KEY, options?.password),
         SetMetadata(
             RESPONSE_MESSAGE_PROPERTIES_META_KEY,
             options?.messageProperties

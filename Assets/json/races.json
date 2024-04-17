@@ -1,7 +1,7 @@
 {
   "races": [
     {
-      "name": "Человек",
+      "name": "Люди",
       "description": "Обычный челвоек"
     },
     {
@@ -10,10 +10,6 @@
     },
     {
       "name": "Гном",
-      "description": ""
-    },
-    {
-      "name": "Демон",
       "description": ""
     }
   ]

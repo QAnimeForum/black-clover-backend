@@ -1,10 +1,21 @@
 {
   "clover": {
-    "name": "Организация рыцарей чародеев",
-    "description": "Защищает королевство",
+    "name": "Организация рыцарей-чародеев",
+    "description": "Защищают королевство от различных угроз",
     "ranks": [
       {
-        "name": "",
+        "name": "Король магов",
+        "description": "Управляет военной мощью королевства Клевера.",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Великий рыцарь-чародей 1-го ранга",
         "description": "",
         "salary": {
           "cooper": 0,
@@ -13,7 +24,218 @@
           "gold": 0,
           "platinum": 0
         }
-      }    
+      },
+      {
+        "name": "Великий рыцарь-чародей 2-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Великий рыцарь-чародей 3-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Великий рыцарь-чародей 4-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      
+      {
+        "name": "Великий рыцарь-чародей 5-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Старший рыцарь-чародей 1-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Старший рыцарь-чародей 2-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      
+      {
+        "name": "Старший рыцарь-чародей 3-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Старший рыцарь-чародей 4-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Старший рыцарь-чародей 5-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Средний рыцарь-чародей 1-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Средний рыцарь-чародей 2-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Средний рыцарь-чародей 3-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Средний рыцарь-чародей 4-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Средний рыцарь-чародей 5-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Младший рыцарь-чародей 1-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Младший рыцарь-чародей 2-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Младший рыцарь-чародей 3-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Младший рыцарь-чародей 4-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      },
+      {
+        "name": "Младший рыцарь-чародей 5-го ранга",
+        "description": "",
+        "salary": {
+          "cooper": 0,
+          "silver": 0,
+          "eclevtrum": 0,
+          "gold": 0,
+          "platinum": 0
+        }
+      }
     ]
   }
 }
