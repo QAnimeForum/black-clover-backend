@@ -6,8 +6,8 @@ import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
-import { CharacterService } from 'src/app/modules/character/services/character.service';
-import { UserService } from 'src/app/modules/user/services/user.service';
+import { CharacterService } from '../../../../modules/character/services/character.service';
+import { UserService } from '../../../../modules/user/services/user.service';
 import { BUTTON_ACTIONS } from '../../constants/actions';
 
 @Scene(SceneIds.mySpirits)

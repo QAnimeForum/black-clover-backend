@@ -3,11 +3,10 @@ import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
 import { Inject, Injectable } from '@nestjs/common';
 import { Telegraf, Scenes, Composer } from 'telegraf';
 import { message } from 'telegraf/filters';
-import { LanguageTexts } from '../../../constants/language.text.constant';
 import { SceneIds } from '../../../constants/scenes.id';
 import { BotContext } from '../../../interfaces/bot.context';
 import { TgBotService } from '../../../services/tg-bot.service';
-import { GrimoireService } from 'src/app/modules/grimoire/services/grimoire.service';
+import { GrimoireService } from '../../../../grimoire/services/grimoire.service';
 
 //@Wizard(SceneIds.createCharacter)
 //@UseFilters(TelegrafExceptionFilter)
@@ -53,15 +52,15 @@ export class EditGrimoireMagicColorWizard {
                 const msg = ctx.update?.message.text;
                 const user = ctx.update?.message.from.id;
                 const grimoire =
-                    await this.grimoireService.findGrimoireByUserId(
+                    await this.grimoireService.findGrimoireByUserTgId(
                         user.toString()
                     );
-                await this.grimoireService.updateGrimoreMagicColor(
+               /* await this.grimoireService.updateGrimoreMagicColor(
                     grimoire.id,
                     {
                         magicColor: msg,
                     }
-                );
+                );*/
                 await ctx.scene.enter(SceneIds.grimoire);
             });
         });

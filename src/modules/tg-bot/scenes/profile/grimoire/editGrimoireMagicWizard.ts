@@ -11,7 +11,7 @@ import {
 import { UseFilters } from '@nestjs/common';
 import { SceneIds } from '../../../constants/scenes.id';
 import { BotContext } from '../../../interfaces/bot.context';
-import { GrimoireService } from 'src/app/modules/grimoire/services/grimoire.service';
+import { GrimoireService } from '../../../../grimoire/services/grimoire.service';
 import { TelegrafExceptionFilter } from '../../../filters/tg-bot.filter';
 import { BUTTON_ACTIONS } from '../../../constants/actions';
 
@@ -38,7 +38,7 @@ export class EditGrimoireMagicNameWizard {
             ctx.wizard.back();
             return;
         }
-        const grimoire = await this.grimoireService.findGrimoireByUserId(
+        const grimoire = await this.grimoireService.findGrimoireByUserTgId(
             sender.id
         );
         await this.grimoireService.updateGrimoreMagicName(grimoire.id, {

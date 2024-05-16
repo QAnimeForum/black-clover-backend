@@ -20,6 +20,7 @@ import { FactionMemberEntity } from '../../jobs/judicial.system/entity/faction.m
 import { SquadMemberEntity } from '../../jobs/squards/entity/squad.member.entity';
 import { ENUM_CHARCACTER_TYPE } from '../constants/character.type.enum';
 import { UserEntity } from '../../user/entities/user.entity';
+import { ArmedForcesRequestEntity } from '../../jobs/squards/entity/armed.forces.request.entity';
 @Entity('character')
 export class CharacterEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -80,4 +81,10 @@ export class CharacterEntity {
 
     @OneToOne(() => UserEntity)
     user: UserEntity;
+
+    @OneToMany(
+        () => ArmedForcesRequestEntity,
+        (requests) => requests.armedForces
+    )
+    requests: Array<ArmedForcesRequestEntity>;
 }

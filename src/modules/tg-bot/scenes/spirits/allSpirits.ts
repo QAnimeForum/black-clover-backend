@@ -10,7 +10,7 @@ import {
     SPIRITS_IMAGE_PATH,
     STATIC_IMAGE_BASE_PATH,
 } from '../../constants/images';
-import { SpiritService } from 'src/app/modules/spirits/service/spirit.service';
+import { SpiritService } from '../../../spirits/service/spirit.service';
 
 @Scene(SceneIds.allSpirits)
 @UseFilters(TelegrafExceptionFilter)

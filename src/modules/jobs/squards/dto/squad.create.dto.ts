@@ -7,6 +7,5 @@ export class SquadCreateDto {
     @ApiProperty({ example: '' })
     @IsNotEmpty()
     description: string;
-
     forces_id: string;
 }

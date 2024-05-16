@@ -58,6 +58,7 @@
     "nestjs-command": "^3.1.4",
     "nestjs-i18n": "^10.4.5",
     "nestjs-i18n-telegraf": "^10.3.0",
+    "nestjs-paginate": "^8.6.2",
     "nestjs-telegraf": "^2.7.0",
     "pg": "^8.11.3",
     "rxjs": "^7.8.1",

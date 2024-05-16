@@ -26,7 +26,6 @@ export class DevilsService {
         rank: Record<string, any>,
         floor: Record<string, any>
     ): Promise<[DevilEntity[], number]> {
-        console.log(rank, floor);
         const [entities, total] = await this.devilRepository.findAndCount({
             skip: dto._offset * dto._limit,
             take: dto._limit,

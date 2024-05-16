@@ -1,12 +1,12 @@
 import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
-import { DevilEntity } from '../app/modules/devils/entity/devil.entity';
+import { DevilEntity } from '../modules/devils/entity/devil.entity';
 import { devils } from '../../Assets/json/devlis.json';
-import { DevilSpellEntity } from '../app/modules/devils/entity/devil.spell.entity';
-import { DevilUnionEntity } from '../app/modules/devils/entity/devil.union.entity';
-import { DevilUnionsPercentEnum } from '../app/modules/devils/constants/devil.union.percent.enum';
-import { ENUM_DEVIL_RANK } from '../app/modules/devils/constants/devil.ranks.enum';
-import { ENUM_DEVIL_FLOOR } from '../app/modules/devils/constants/devil.floor.enum';
+import { DevilSpellEntity } from '../modules/devils/entity/devil.spell.entity';
+import { DevilUnionEntity } from '../modules/devils/entity/devil.union.entity';
+import { DevilUnionsPercentEnum } from '../modules/devils/constants/devil.union.percent.enum';
+import { ENUM_DEVIL_RANK } from '../modules/devils/constants/devil.ranks.enum';
+import { ENUM_DEVIL_FLOOR } from '../modules/devils/constants/devil.floor.enum';
 export default class DevilSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<any> {
         const devilRepository = dataSource.getRepository(DevilEntity);

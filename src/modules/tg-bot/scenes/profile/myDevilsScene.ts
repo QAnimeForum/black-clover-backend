@@ -1,13 +1,13 @@
 import { Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
-import { DEVILS_IMAGE_PATH, SPIRITS_IMAGE_PATH } from '../../constants/images';
+import { DEVILS_IMAGE_PATH } from '../../constants/images';
 import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
-import { CharacterService } from 'src/app/modules/character/services/character.service';
-import { UserService } from 'src/app/modules/user/services/user.service';
+import { CharacterService } from '../../../character/services/character.service';
+import { UserService } from '../../../user/services/user.service';
 import { BUTTON_ACTIONS } from '../../constants/actions';
 
 @Scene(SceneIds.myDevils)

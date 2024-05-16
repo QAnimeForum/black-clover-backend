@@ -23,6 +23,7 @@ import { WalletEntity } from '../../money/entity/wallet.entity';
 import { UserEntity } from '../../user/entities/user.entity';
 import { CashEntity } from '../../money/entity/cash.entity';
 import { CharacterNameEditDto } from '../dto/character.name-edit.dto';
+import { ENUM_IS_GRIMOIRE_APPROVED } from 'src/modules/grimoire/constants/grimoire.enum.constant';
 @Injectable()
 export class CharacterService {
     constructor(
@@ -97,9 +98,9 @@ export class CharacterService {
 
         const grimoireEntity = (
             await this.grimoireRepository.insert({
-                magicName: 'не выбрана',
-                //   coverSymbol: CardSymbolsEnum.CLOVER,
-                magicColor: 'не выбран',
+                magicName: dto.magic,
+                coverSymbol: states[0].symbol,
+                status: ENUM_IS_GRIMOIRE_APPROVED.NOT_APPROVED,
             })
         ).raw[0];
         const proficiency = (
@@ -112,8 +113,8 @@ export class CharacterService {
         // const strength: AbilityEntity = new AbilityEntity();
         const strengthEntity = (
             await this.abilityRepository.insert({
-                name: 'Сила',
-                abbr: '💪',
+                //       name: 'Сила',
+                //       abbr: '💪',
                 score: 10,
                 modifier: 0,
                 //   characterCharacteristics: characteristitcsEntity,
@@ -122,8 +123,8 @@ export class CharacterService {
 
         const dexterityEntity = (
             await this.abilityRepository.insert({
-                name: 'Ловкость',
-                abbr: '🏃',
+                //      name: 'Ловкость',
+                //     abbr: '🏃',
                 score: 10,
                 modifier: 0,
             })
@@ -131,8 +132,8 @@ export class CharacterService {
 
         const constitutionEntity = (
             await this.abilityRepository.insert({
-                name: 'Телосложение',
-                abbr: '🏋️',
+                //     name: 'Телосложение',
+                //     abbr: '🏋️',
                 score: 10,
                 modifier: 0,
             })
@@ -140,8 +141,8 @@ export class CharacterService {
 
         const intelligenceEntity = (
             await this.abilityRepository.insert({
-                name: 'Интеллект',
-                abbr: '🎓',
+                //    name: 'Интеллект',
+                //    abbr: '🎓',
                 score: 10,
                 modifier: 0,
             })
@@ -149,8 +150,8 @@ export class CharacterService {
 
         const wisdomEntity = (
             await this.abilityRepository.insert({
-                name: 'Мудрость',
-                abbr: '📚',
+                //    name: 'Мудрость',
+                //    abbr: '📚',
                 score: 10,
                 modifier: 0,
             })
@@ -158,8 +159,8 @@ export class CharacterService {
 
         const charismaEntity = (
             await this.abilityRepository.insert({
-                name: 'Харизма',
-                abbr: '🗣',
+                //  name: 'Харизма',
+                //   abbr: '🗣',
                 score: 10,
                 modifier: 0,
             })
@@ -218,7 +219,7 @@ export class CharacterService {
         //  character.background.race = dto.raceId;
     }
 
-    getCharacterInfoByTgId(telegramId: string) {
+    getCharacterBacgroundByTgId(telegramId: string) {
         return this.userRepository.findOne({
             where: {
                 tgUserId: telegramId,
@@ -232,6 +233,19 @@ export class CharacterService {
                 },
             },
         });
+    }
+
+    async getCharacterIdByTgId(telegramId: string) {
+        return (
+            await this.userRepository.findOne({
+                where: {
+                    tgUserId: telegramId,
+                },
+                relations: {
+                    character: true,
+                },
+            })
+        ).character;
     }
     async findBackgroundByTgId(telegramId: string) {
         const user = await this.userRepository.findOne({
@@ -312,6 +326,12 @@ export class CharacterService {
         });
     }
 
+    findCharacterById(characterId: string) {
+        return this.characterRepository.findOneBy({
+            id: characterId,
+        });
+    }
+
     async findFullCharacterInfoByTgId(tg_id: string): Promise<CharacterEntity> {
         const entity = await this.userRepository.findOne({
             where: {
@@ -388,10 +408,25 @@ export class CharacterService {
         return entity;
     }
     async changeCharacterName(dto: CharacterNameEditDto) {
-        const character = (await this.getCharacterInfoByTgId(dto.id)).character;
+        const character = (await this.getCharacterBacgroundByTgId(dto.id))
+            .character;
         character.background.name = dto.name;
         this.backgroundRepository.save(character.background);
     }
 
-   
+    async getStateByTgId(tg_id: string) {
+        const entity = await this.userRepository.findOne({
+            where: {
+                tgUserId: tg_id,
+            },
+            relations: {
+                character: {
+                    background: {
+                        state: true,
+                    },
+                },
+            },
+        });
+        return entity.character.background.state;
+    }
 }

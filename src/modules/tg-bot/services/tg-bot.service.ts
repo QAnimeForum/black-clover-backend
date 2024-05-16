@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { join } from 'path';
 import { unlink, writeFile } from 'fs/promises';
@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BotContext } from '../interfaces/bot.context';
 import { getFileMimeType } from 'src/utils/utils';
+import { ForbiddenError } from '@casl/ability';
 
 @Injectable()
 export class TgBotService {
@@ -50,6 +51,10 @@ export class TgBotService {
     async catchException(exception: Error, ctx: BotContext, logger?: Logger) {
         if (exception instanceof Error) {
             logger?.error(`${exception.message} \n ${exception.stack}`);
+        }
+        if (exception instanceof ForbiddenException) {
+            await ctx.reply('Тебе туда нельзя...');
+            return;
         }
         await ctx.reply('Попробуйте позже');
         //  await ctx.reply(ctx.i18n.t(LanguageTexts.tryLater));

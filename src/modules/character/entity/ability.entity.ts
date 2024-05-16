@@ -3,14 +3,14 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 export class AbilityEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
-    @Column({
+    /*@Column({
         type: 'varchar',
     })
     name: string;
     @Column({
         type: 'varchar',
     })
-    abbr: string;
+    abbr: string;*/
     @Column({
         type: 'int',
     })

@@ -14,7 +14,7 @@ import { VehicleCreateDto } from '../dto/vehicle.create.dto';
 import { ToolKitCreateDto } from '../dto/toolkit.create.dto';
 import { WeaponCreateDto } from '../dto/weapon.create.dto';
 import { ArmorCreateDto } from '../dto/armor.create.dto';
-import { InventoryEntity } from 'src/app/modules/character/entity/inventory.entity';
+import { InventoryEntity } from '../../../character/entity/inventory.entity';
 @Injectable()
 export class BusinessService {
     constructor(

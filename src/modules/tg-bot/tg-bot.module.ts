@@ -12,7 +12,7 @@ import { UserModule } from '../user/user.module';
 import { DevilsModule } from '../devils/devils.module';
 import { GrimoireModule } from '../grimoire/grimoire.module';
 import { EditGrimoireMagicNameWizard } from './scenes/profile/grimoire/editGrimoireMagicWizard';
-import { EditGrimoireMagicColorWizard } from './scenes/profile/grimoire/editMagicColorWizard';
+
 import { CreateSpellWizard } from './scenes/profile/grimoire/characterCreateSpellWizard';
 import { ProfileScene } from './scenes/profile/profileScene';
 import { WalletScene } from './scenes/profile/walletScene';
@@ -26,32 +26,58 @@ import {
     AllDevilsByRankScene,
     AllDevilsScene,
 } from './scenes/devils/allDevilsScene';
-import { AdminScene } from './scenes/admin/adminScene';
+import {
+    AddAdminWizard,
+    AdminScene,
+    DeleteAdminWizard,
+} from './scenes/admin/adminScene';
 import { HelpScene } from './scenes/helpScene';
 import { GrimoreScene } from './scenes/profile/grimoire/grimoireScene';
-import { SpiritsModules } from '../spirits/spirits.module';
-import { ArmedForcesScene } from './scenes/organizations/armedForces';
+import { SpiritsModule } from '../spirits/spirits.module';
 import { OrganizationsScene } from './scenes/organizations/organizationScene';
 import { EntryScene } from './scenes/entryScene';
 import { HomeScene } from './scenes/homeScene';
-import { MagicParlamentScene } from './scenes/organizations/magicParlament';
+import {
+    MagicParlamentScene,
+    RequestToParlamentWizard,
+} from './scenes/organizations/magicParlament';
 import { MinesScene } from './scenes/organizations/minesWizard';
-import { MineService } from '../jobs/mines/services/mine.service';
 import { MinesModule } from '../jobs/mines/mines.module';
+import { SquadsModule } from '../jobs/squards/squads.module';
+import { AcceptRequestWizard, ArmedForcesScene, RejectrequestWizard } from './scenes/organizations/armedForcesScene';
+import { JudicialSystemModule } from '../jobs/judicial.system/judicial.system.module';
+import { PermissionModule } from 'src/common/permission/permission.module';
+import { APP_GUARD } from '@nestjs/core';
+import { TelegrafThrottlerGuard } from './common/guards/TelegrafThrottlerGuard';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { CreateSquadWizard } from './scenes/organizations/createSquadWizard';
 @Module({
     imports: [
+        ThrottlerModule.forRoot([
+            {
+                limit: 1,
+                ttl: 1000,
+            },
+        ]),
         TypeOrmModule.forFeature([]),
+        PermissionModule,
         CharacterModule,
         GrimoireModule,
         RaceModule,
         MapModule,
         UserModule,
         DevilsModule,
-        SpiritsModules,
+        SpiritsModule,
         MinesModule,
+        SquadsModule,
+        JudicialSystemModule,
     ],
     providers: [
+        AcceptRequestWizard,
+        RejectrequestWizard,
         AdminScene,
+        AddAdminWizard,
+        DeleteAdminWizard,
         ArmedForcesScene,
         OrganizationsScene,
         HelpScene,
@@ -61,11 +87,11 @@ import { MinesModule } from '../jobs/mines/mines.module';
         AllSpiritsScene,
         MapWizard,
         HomeScene,
+        RequestToParlamentWizard,
         CharacterParamsScene,
         CreateSpellWizard,
         CreateCharacterWizard,
         GrimoreScene,
-        EditGrimoireMagicColorWizard,
         EditGrimoireMagicNameWizard,
         InventoryScene,
         BioScene,
@@ -79,6 +105,11 @@ import { MinesModule } from '../jobs/mines/mines.module';
         TgBotService,
         EditCharactreName,
         MagicParlamentScene,
+        CreateSquadWizard,
+        {
+            provide: APP_GUARD,
+            useClass: TelegrafThrottlerGuard,
+        },
     ],
 })
 export class TgBotModule {}

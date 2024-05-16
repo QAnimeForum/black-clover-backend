@@ -35,7 +35,6 @@ export class CharacterController {
     })
     @Post('/character/create')
     async createCharacter(@Body() dto: CreatePlayableCharacterDto) {
-        console.log(dto);
         const create =
             await this.characterService.createPlayableCharacterDto(dto);
         return {

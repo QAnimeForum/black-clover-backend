@@ -1,23 +1,65 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, In, Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entities/user.entity';
+import { options, string, number, boolean } from 'joi';
+import { create } from 'lodash';
+import { async, find } from 'rxjs';
+import { ENUM_ROLE_TYPE } from '../constants/role.enum.constant';
+import { ENUM_USER_SIGN_UP_FROM } from '../constants/user.enum.constant';
 import { UserCreateDto } from '../dtos/user.create.dto';
-
+import { UserImportDto } from '../dtos/user.import.dto';
 //implements IUserService
 @Injectable()
 export class UserService {
     constructor(
+        @InjectDataSource()
+        private readonly connection: DataSource,
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>
-        // private readonly helperDateService: HelperDateService,
-        //  private readonly configService: ConfigService
     ) {}
+
+    async findUserById(id: string): Promise<UserEntity> {
+        return await this.userRepository.findOneBy({
+            id,
+        });
+    }
+
+    async findUsersByExistingIds(userIds: number[]): Promise<UserEntity[]> {
+        if (userIds.length === 0) return [];
+        const uniqueIds = Array.from(new Set(userIds));
+        const records = await this.userRepository.findBy({
+            id: In(uniqueIds),
+        });
+        const map = Object.fromEntries(
+            records.map((record) => [record.id, record])
+        );
+        return userIds.map((userId) => map[userId]);
+    }
+
+    async userExists(id: string): Promise<boolean> {
+        return (await this.userRepository.countBy({ id })) !== 0;
+    }
+
+    async getUserList(
+        sortBy: 'acceptedProblemCount' | 'rating',
+        skipCount: number,
+        takeCount: number
+    ): Promise<[users: UserEntity[], count: number]> {
+        return await this.userRepository.findAndCount({
+            order: {
+                [sortBy]: 'DESC',
+            },
+            skip: skipCount,
+            take: takeCount,
+        });
+    }
 
     async createUser(dto: UserCreateDto) {
         this.userRepository.insert({
             tgUserId: dto.tgUserId,
             character: dto.character,
+            role: dto.role,
         });
     }
     async exists(telegramUserId: string): Promise<boolean> {
@@ -27,10 +69,62 @@ export class UserService {
             },
         });
     }
-}
 
-/**
- * 
+    async findByTgId(telegramUserId: string): Promise<UserEntity> {
+        return this.userRepository.findOneBy({
+            tgUserId: telegramUserId,
+        });
+    }
+    async isShowAdminButton(userTgId: string): Promise<boolean> {
+        const user = await this.userRepository.findOneBy({
+            tgUserId: userTgId,
+        });
+        return (
+            user.role == ENUM_ROLE_TYPE.SUPER_ADMIN ||
+            user.role == ENUM_ROLE_TYPE.ADMIN
+        );
+    }
+
+    async getSuperAdmins(): Promise<Array<UserEntity>> {
+        const users = await this.userRepository.find({
+            where: {
+                role: ENUM_ROLE_TYPE.SUPER_ADMIN,
+            },
+            select: {
+                id: true,
+                tgUserId: true,
+            },
+        });
+        return users;
+    }
+
+    async getAdmins(): Promise<Array<UserEntity>> {
+        const users = await this.userRepository.find({
+            where: {
+                role: ENUM_ROLE_TYPE.ADMIN,
+            },
+            select: {
+                id: true,
+                tgUserId: true,
+            },
+        });
+        return users;
+    }
+
+    async changeUserRole(
+        tgUserId: string,
+        userRole: ENUM_ROLE_TYPE
+    ): Promise<UserEntity> {
+        const user = await this.userRepository.findOne({
+            where: {
+                tgUserId: tgUserId,
+            },
+        });
+        user.role = userRole;
+        return this.userRepository.save(user);
+    }
+}
+/*
     async findAll<T = IUserDoc>(
         find?: Record<string, any>,
         options?: IDatabaseFindAllOptions

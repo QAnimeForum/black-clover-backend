@@ -1,24 +1,25 @@
 import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
 import { clover } from '../../Assets/json/armedForces/clover-armed-forces.json';
-import { ArmedForcesEntity } from '../app/modules/jobs/squards/entity/armed.forces.entity';
-import { SquadRankEntity } from '../app/modules/jobs/squards/entity/squad.rank.entity';
-import { StateEntity } from '../app/modules/map/enitity/state.entity';
-import { SalaryEntity } from '../app/modules/money/entity/amount.entity';
+import { squads } from '../../Assets/json/armedForces/default-squad.json';
+import { ArmedForcesEntity } from '../modules/jobs/squards/entity/armed.forces.entity';
+import { StateEntity } from '../modules/map/enitity/state.entity';
+import { SalaryEntity } from '../modules/money/entity/amount.entity';
+import { SquadEntity } from '../modules/jobs/squards/entity/squad.entity';
+import { ArmedForcesRankEntity } from '../modules/jobs/squards/entity/armed.forces.rank.entity';
 export default class ArmedForcesSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<any> {
         const armedForcesRepository =
             dataSource.getRepository(ArmedForcesEntity);
         const salaryRepository = dataSource.getRepository(SalaryEntity);
-
         const statesRepository = dataSource.getRepository(StateEntity);
+        const squadsRepository = dataSource.getRepository(SquadEntity);
+        const rankRepository = dataSource.getRepository(ArmedForcesRankEntity);
         const state = await statesRepository.findOne({
             where: {
                 name: 'Клевер',
             },
         });
-        //  const squadsRepository = dataSource.getRepository(SquadEntity);
-        const rankRepository = dataSource.getRepository(SquadRankEntity);
         const cloverArmedForcesEntity = (
             await armedForcesRepository.insert({
                 name: clover.name,
@@ -43,6 +44,15 @@ export default class ArmedForcesSeeder implements Seeder {
                 description: rank.description,
                 armorForces: cloverArmedForcesEntity,
                 salary: salary,
+            });
+        }
+
+        for (let i = 0; i < squads.length; ++i) {
+            await squadsRepository.insert({
+                name: squads[i].name,
+                description: squads[i].description,
+                image: squads[i].image,
+                armorForces: cloverArmedForcesEntity,
             });
         }
     }

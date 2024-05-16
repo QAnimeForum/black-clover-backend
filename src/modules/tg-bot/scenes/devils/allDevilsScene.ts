@@ -10,11 +10,11 @@ import {
     DEVILS_QLIPOTH_IMAGE_PATH,
     STATIC_IMAGE_BASE_PATH,
 } from '../../constants/images';
-import { DevilsService } from 'src/app/modules/devils/services/devils.service';
-import { ENUM_DEVIL_FLOOR } from 'src/app/modules/devils/constants/devil.floor.enum';
-import { ENUM_DEVIL_RANK } from 'src/app/modules/devils/constants/devil.ranks.enum';
-import { DevilEntity } from 'src/app/modules/devils/entity/devil.entity';
-import { DevilUnionEntity } from 'src/app/modules/devils/entity/devil.union.entity';
+import { DevilsService } from '../../../devils/services/devils.service';
+import { ENUM_DEVIL_FLOOR } from '../../../devils/constants/devil.floor.enum';
+import { ENUM_DEVIL_RANK } from '../../../devils/constants/devil.ranks.enum';
+import { DevilEntity } from '../../../devils/entity/devil.entity';
+import { DevilUnionEntity } from '../../../devils/entity/devil.union.entity';
 
 async function devilsList(
     ctx: BotContext,
@@ -628,10 +628,10 @@ import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
-import { ENUM_DEVIL_FLOOR } from 'src/app/modules/devils/constants/devil.floor.enum';
-import { ENUM_DEVIL_RANK } from 'src/app/modules/devils/constants/devil.ranks.enum';
-import { DevilsService } from 'src/app/modules/devils/services/devils.service';
-import { DevilEntity } from 'src/app/modules/devils/entity/devil.entity';
+import { ENUM_DEVIL_FLOOR } from '../../../devils/constants/devil.floor.enum';
+import { ENUM_DEVIL_RANK } from '../../../devils/constants/devil.ranks.enum';
+import { DevilsService } from '../../../devils/services/devils.service';
+import { DevilEntity } from '../../../devils/entity/devil.entity';
 import { LanguageTexts } from '../../constants/language.text.constant';
 import { Markup } from 'telegraf';
 import { WizardContext } from 'telegraf/typings/scenes';

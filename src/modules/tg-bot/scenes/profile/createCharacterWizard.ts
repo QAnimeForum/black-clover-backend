@@ -1,16 +1,17 @@
 import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
-import { WORLD_MAP_IMAGE_PATH } from '../../constants/images';
+import { RULES, WORLD_MAP_IMAGE_PATH } from '../../constants/images';
 import { SceneIds } from '../../constants/scenes.id';
 import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
 import { Inject, Injectable } from '@nestjs/common';
-import { CharacterService } from 'src/app/modules/character/services/character.service';
-import { MapService } from 'src/app/modules/map/service/map.service';
-import { RaceService } from 'src/app/modules/race/race.service';
+import { CharacterService } from '../../../character/services/character.service';
+import { MapService } from '../../../map/service/map.service';
+import { RaceService } from '../../../race/race.service';
 import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from 'src/common/pagination/constants/pagination.enum.constant';
 import { message } from 'telegraf/filters';
 import { Telegraf, Scenes, Composer, Markup } from 'telegraf';
-import { UserService } from 'src/app/modules/user/services/user.service';
+import { UserService } from '../../../user/services/user.service';
+import { ENUM_ROLE_TYPE } from 'src/modules/user/constants/role.enum.constant';
 
 //@Wizard(SceneIds.createCharacter)
 //@UseFilters(TelegrafExceptionFilter)
@@ -38,7 +39,6 @@ export class CreateCharacterWizard {
             this.step5(),
             this.step6(),
             this.step7(),
-            this.step8(),
         ];
         this.scene = new Scenes.WizardScene<BotContext>(
             SceneIds.createCharacter,
@@ -77,10 +77,11 @@ export class CreateCharacterWizard {
                 }
                 ctx.scene.session.character = {
                     name: msg,
-                    age: 0,
+                    age: 15,
                     sex: '',
                     state: '',
                     race: '',
+                    magic: '',
                 };
                 const dto: any = {
                     _search: undefined,
@@ -171,11 +172,17 @@ export class CreateCharacterWizard {
         return this.tgBotService.createComposer(async (composer) => {
             composer.on(message('text'), async (ctx) => {
                 const msg = ctx.update?.message.text;
-                if (msg.length < 1) {
+                if (msg.length < 1 || Number.isInteger(msg)) {
                     ctx.reply('возраст введён некорректно');
-                    return;
+                    ctx.wizard.back();
                 }
-                ctx.scene.session.character.age = Number(msg);
+                const age = Number(msg);
+                if (age < 15) {
+                    ctx.reply('вам должно быть больше 15');
+                    ctx.wizard.back();
+
+                }
+                ctx.scene.session.character.age = age;
                 ctx.reply('Выберите пол персонажа', {
                     reply_markup: {
                         inline_keyboard: [
@@ -190,7 +197,6 @@ export class CreateCharacterWizard {
             });
         });
     }
-    // STEP - 6 Get location, save discount
     step6() {
         return this.tgBotService.createComposer((composer) => {
             composer.use(async (ctx) => {
@@ -199,39 +205,16 @@ export class CreateCharacterWizard {
                     ctx.scene.session.character.sex = ctx.callbackQuery.data;
                 } else ctx.scene.leave();
 
-                const race = await this.raceService.getRaceById(
-                    ctx.scene.session.character.race
-                );
-                const state = await this.mapService.findStateById(
-                    ctx.scene.session.character.state
-                );
-
-                const title = `Проверьте, вы правильно заполнили базувую информацию о себе\n\n`;
-                const nameLine = `<strong>Имя</strong>: ${ctx.scene.session.character.name}\n`;
-                const ageLine = `<strong>Возраст</strong>: ${ctx.scene.session.character.age}\n`;
-                const sexLine = `<strong>Пол</strong>: ${ctx.scene.session.character.sex}\n`;
-                const stateLine = `<strong>Страна происхождения</strong>: ${state.name}\n`;
-                const raceLine = `<strong>Раса</strong>: ${race.name}\n`;
-                const content = `${title}\n${nameLine}${ageLine}${sexLine}${stateLine}${raceLine}\n`;
-                ctx.reply(content, {
-                    parse_mode: 'HTML',
-                    reply_markup: {
-                        inline_keyboard: [
-                            [
-                                { text: 'да', callback_data: '1' },
-                                { text: 'да (пока)', callback_data: '1' },
-                            ],
-                        ],
-                    },
-                });
-                await ctx.wizard.next();
+                ctx.reply('Введите желаемый магический атрибут');
+                ctx.wizard.next();
             });
         });
     }
+
     step7() {
-        return this.tgBotService.createComposer((composer) => {
-            composer.use(async (ctx) => {
-                await ctx.answerCbQuery();
+        return this.tgBotService.createComposer(async (composer) => {
+            composer.on(message('text'), async (ctx) => {
+                const msg = ctx.update?.message.text;
                 const character = (
                     await this.characterService.createPlayableCharacterDto({
                         name: ctx.scene.session.character.name,
@@ -239,25 +222,58 @@ export class CreateCharacterWizard {
                         age: ctx.scene.session.character.age,
                         raceId: ctx.scene.session.character.race,
                         countryId: ctx.scene.session.character.state,
+                        magic: msg,
                     })
                 ).raw[0];
                 const dto = {
                     tgUserId: String(ctx.from.id),
                     character: character,
+                    role: ENUM_ROLE_TYPE.USER,
                 };
                 this.userService.createUser(dto);
-                ctx.reply(
-                    `Поздравляем! Вы заполнили базовую информацию о персонаже. \n Для того, чтобы принимать активное участие в мире клевера, вам необходимо иметь гримуар. \n Посмотрите, по ссылкам ниже шаблон гримуара и шаблон заклинаний.\nУ вас 3 варианта:\n1. Создать гримуар самому и отравить его на проверку админу\n2. Выбрать магический атрибут и позволить админам самим выбрать для вас заклинания\n3. Позволить сделать всё за вас админам.`,
-                    Markup.inlineKeyboard([
-                        [Markup.button.callback('Мне надо подумать', 'EXIT')],
-                    ])
-                );
-                ctx.wizard.next();
-                //   await ctx.scene.leave();
+                ctx.scene.enter(SceneIds.home);
             });
         });
     }
-    step8() {
+}
+
+/**
+ * 
+ * /*
+ * 
+ * 
+ * 
+ *   await ctx.scene.leave();
+                /**
+                 *   Markup.inlineKeyboard([
+                        [Markup.button.url('Как выглядит гримуар', RULES)],
+                        [
+                            Markup.button.callback(
+                                'Выбрать магию и её "цветовую гамму"',
+                                'CHOSE_MAGIC'
+                            ),
+                        ],
+                        [Markup.button.callback('Мне надо подумать', 'EXIT')],
+                    ])
+                 
+                const race = await this.raceService.getRaceById(
+                    ctx.scene.session.character.race
+                );
+                const state = await this.mapService.findStateById(
+                    ctx.scene.session.character.state
+                );*/
+                /**
+ * 
+                const title = `Проверьте, правильно ли заполнили базувую информацию о себе\n`;
+                const nameLine = `<strong>Имя</strong>: ${ctx.scene.session.character.name}\n`;
+                const ageLine = `<strong>Возраст</strong>: ${ctx.scene.session.character.age}\n`;
+                const sexLine = `<strong>Пол</strong>: ${ctx.scene.session.character.sex}\n`;
+                const stateLine = `<strong>Страна происхождения</strong>: ${state.name}\n`;
+                const raceLine = `<strong>Раса</strong>: ${race.name}\n`;
+                const content = `${title}\n${nameLine}${ageLine}${sexLine}${stateLine}${raceLine}\n`;
+                await ctx.answerCbQuery();
+ 
+  step7() {
         return this.tgBotService.createComposer(async (composer) => {
             composer.use(async (ctx) => {
                 await ctx.answerCbQuery();
@@ -275,7 +291,6 @@ export class CreateCharacterWizard {
             });
         });
     }
-}
 
 /**
  * 

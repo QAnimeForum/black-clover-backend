@@ -9,6 +9,7 @@ export class TelegrafExceptionFilter implements ExceptionFilter {
     constructor(private readonly tgBotService: TgBotService) {}
 
     async catch(exception: Error, host: ArgumentsHost): Promise<void> {
+        console.log(exception);
         const telegrafHost = TelegrafArgumentsHost.create(host);
         const ctx = telegrafHost.getContext<BotContext>();
         await this.tgBotService.catchException(exception, ctx, this.logger);

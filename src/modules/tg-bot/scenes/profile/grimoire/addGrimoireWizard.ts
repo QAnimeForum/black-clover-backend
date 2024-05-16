@@ -1,13 +1,12 @@
 import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
 
 import { Inject, Injectable } from '@nestjs/common';
-import { CharacterService } from 'src/app/modules/character/services/character.service';
-import { MapService } from 'src/app/modules/map/service/map.service';
-import { RaceService } from 'src/app/modules/race/race.service';
+import { CharacterService } from '../../../../character/services/character.service';
+import { MapService } from '../../../../map/service/map.service';
+import { RaceService } from '../../../../race/race.service';
 import { Telegraf, Scenes, Composer } from 'telegraf';
-import { UserService } from 'src/app/modules/user/services/user.service';
+import { UserService } from '../../../../user/services/user.service';
 import { message } from 'telegraf/filters';
-import { LanguageTexts } from '../../../constants/language.text.constant';
 import { SceneIds } from '../../../constants/scenes.id';
 import { BotContext } from '../../../interfaces/bot.context';
 import { TgBotService } from '../../../services/tg-bot.service';

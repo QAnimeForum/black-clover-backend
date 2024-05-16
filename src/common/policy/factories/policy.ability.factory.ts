@@ -12,9 +12,8 @@ import {
     IPolicyRule,
     PolicyHandler,
 } from '../interfaces/policy.interface';
-import { UserPayloadPermissionSerialization } from 'src/app/modules/user/serializations/user.payload.serialization';
-import { ENUM_ROLE_TYPE } from 'src/app/modules/role/constants/role.enum.constant';
-
+import { UserPayloadPermissionSerialization } from '../../../modules/user/serializations/user.payload.serialization';
+import { ENUM_ROLE_TYPE } from 'src/modules/user/constants/role.enum.constant';
 @Injectable()
 export class PolicyAbilityFactory {
     constructor(private readonly helperNumberService: HelperNumberService) {}

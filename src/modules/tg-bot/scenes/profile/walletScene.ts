@@ -5,8 +5,8 @@ import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
-import { CharacterService } from 'src/app/modules/character/services/character.service';
 import { BUTTON_ACTIONS } from '../../constants/actions';
+import { CharacterService } from '../../../character/services/character.service';
 
 @Scene(SceneIds.wallet)
 @UseFilters(TelegrafExceptionFilter)

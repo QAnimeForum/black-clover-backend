@@ -4,6 +4,7 @@ export class CreatePlayableCharacterDto {
     sex: string;
     raceId: string;
     countryId: string;
+    magic: string;
     //  magicName: string;
     // userId: string;
     // age: number;

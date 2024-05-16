@@ -5,7 +5,7 @@ import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
-import { MapService } from 'src/app/modules/map/service/map.service';
+import { MapService } from '../../../map/service/map.service';
 import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from 'src/common/pagination/constants/pagination.enum.constant';
 
 @Wizard(SceneIds.map)

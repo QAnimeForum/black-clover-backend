@@ -7,19 +7,23 @@ import { UseFilters } from '@nestjs/common';
 import { HELLO_IMAGE_PATH } from '../constants/images';
 import { UserService } from '../../user/services/user.service';
 import { Markup } from 'telegraf';
-import { LanguageTexts } from '../constants/language.text.constant';
-
+import { ConfigService } from '@nestjs/config';
 @Scene(SceneIds.entry)
 @UseFilters(TelegrafExceptionFilter)
 export class EntryScene {
-    constructor(private readonly userService: UserService) {}
+    constructor(
+        private readonly configService: ConfigService,
+        private readonly userService: UserService
+    ) {}
 
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
         const telegramUserId = sender.id;
-        console.log(telegramUserId);
+
         const isUserExist = await this.userService.exists(telegramUserId);
         if (isUserExist) {
+            ctx.session.user =
+                await this.userService.findByTgId(telegramUserId);
             await ctx.scene.enter(SceneIds.home);
             return;
         }
@@ -30,9 +34,13 @@ export class EntryScene {
             },
             {
                 caption,
-                ...Markup.removeKeyboard(),
                 ...Markup.inlineKeyboard([
-                    [Markup.button.callback('Начать путь', `ACTION_TRAVEL`)],
+                    [
+                        Markup.button.callback(
+                            'Начать путешествие',
+                            `ACTION_TRAVEL`
+                        ),
+                    ],
                 ]),
             }
         );

@@ -7,4 +7,4 @@ import { SpiritService } from './service/spirit.service';
     providers: [SpiritService],
     exports: [SpiritService],
 })
-export class SpiritsModules {}
+export class SpiritsModule {}

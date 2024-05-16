@@ -1,4 +1,5 @@
 import { CharacterEntity } from '../../character/entity/character.entity';
+import { ENUM_ROLE_TYPE } from '../constants/role.enum.constant';
 
 export class UserCreateDto {
     /* @ApiProperty({
@@ -11,4 +12,5 @@ export class UserCreateDto {
     tgUserId: string;
 
     character: CharacterEntity;
+    role: ENUM_ROLE_TYPE;
 }

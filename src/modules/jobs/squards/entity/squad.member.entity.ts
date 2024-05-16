@@ -5,21 +5,20 @@ import {
     OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
-import { CharacterEntity } from '../../../character/entity/character.entity';
 import { SquadEntity } from './squad.entity';
-import { SquadRankEntity } from './squad.rank.entity';
+import { ArmedForcesMemberEntity } from './armed.forces.member.entity';
 
 @Entity('squad_member')
 export class SquadMemberEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @OneToOne(() => CharacterEntity)
+    @OneToOne(() => ArmedForcesMemberEntity)
     @JoinColumn({
-        name: 'character_id',
+        name: 'armed_forces_member_id',
         referencedColumnName: 'id',
     })
-    character: CharacterEntity;
+    armedForcesMember: ArmedForcesMemberEntity;
 
     @ManyToOne(() => SquadEntity, (squad) => squad.members)
     @JoinColumn({
@@ -27,11 +26,4 @@ export class SquadMemberEntity {
         referencedColumnName: 'id',
     })
     squad: SquadEntity;
-
-    @ManyToOne(() => SquadRankEntity, (rank) => rank.members)
-    @JoinColumn({
-        name: 'rank_id',
-        referencedColumnName: 'id',
-    })
-    rank: SquadRankEntity;
 }

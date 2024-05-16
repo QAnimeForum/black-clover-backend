@@ -4,10 +4,10 @@ import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { UseFilters } from '@nestjs/common';
-import { CharacterService } from 'src/app/modules/character/services/character.service';
+import { CharacterService } from '../../../character/services/character.service';
 import { Markup } from 'telegraf';
 import { BUTTON_ACTIONS } from '../../constants/actions';
-import { MapService } from 'src/app/modules/map/service/map.service';
+import { MapService } from '../../../map/service/map.service';
 
 @Scene(SceneIds.organizations)
 @UseFilters(TelegrafExceptionFilter)

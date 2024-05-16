@@ -1,11 +1,11 @@
-import { StateEntity } from '../app/modules/map/enitity/state.entity';
+import { StateEntity } from '../modules/map/enitity/state.entity';
 import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
-import { CreateStateFormDto } from '../app/modules/map/dto/create-state-form.dto';
-import { StateFormEntity } from '../app/modules/map/enitity/state.form.entity';
-import { ProvinceFormEntity } from '../app/modules/map/enitity/province.form.entity';
-import { ProvinceEntity } from '../app/modules/map/enitity/province.entity';
-import { BurgEntity } from '../app/modules/map/enitity/burg.entity';
+import { CreateStateFormDto } from '../modules/map/dto/create-state-form.dto';
+import { StateFormEntity } from '../modules/map/enitity/state.form.entity';
+import { ProvinceFormEntity } from '../modules/map/enitity/province.form.entity';
+import { ProvinceEntity } from '../modules/map/enitity/province.entity';
+import { BurgEntity } from '../modules/map/enitity/burg.entity';
 import { stateForms } from '../../Assets/json/map/state.form.json';
 import { provincesForms } from '../../Assets/json/map/province.form.json';
 import { states } from '../../Assets/json/map/map.json';

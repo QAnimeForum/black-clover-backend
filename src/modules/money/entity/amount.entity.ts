@@ -1,5 +1,5 @@
+import { ArmedForcesRankEntity } from '../../jobs/squards/entity/armed.forces.rank.entity';
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { SquadRankEntity } from '../../jobs/squards/entity/squad.rank.entity';
 
 @Entity('salary')
 export class SalaryEntity {
@@ -29,6 +29,6 @@ export class SalaryEntity {
     })
     platinum: number;
 
-    @OneToOne(() => SquadRankEntity)
-    squadRank: SquadRankEntity;
+    @OneToOne(() => ArmedForcesRankEntity)
+    squadRank: ArmedForcesRankEntity;
 }

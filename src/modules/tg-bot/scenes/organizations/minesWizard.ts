@@ -7,7 +7,7 @@ import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
 import { BUTTON_ACTIONS } from '../../constants/actions';
 import { Markup } from 'telegraf';
-import { MineService } from 'src/app/modules/jobs/mines/services/mine.service';
+import { MineService } from '../../../jobs/mines/services/mine.service';
 
 @Scene(SceneIds.mines)
 @UseFilters(TelegrafExceptionFilter)

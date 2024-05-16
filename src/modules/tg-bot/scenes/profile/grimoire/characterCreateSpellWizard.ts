@@ -2,17 +2,13 @@ import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
 import { Inject, Injectable } from '@nestjs/common';
 import { Telegraf, Scenes, Composer } from 'telegraf';
 import { message } from 'telegraf/filters';
-import { GrimoireService } from 'src/app/modules/grimoire/services/grimoire.service';
-import { LanguageTexts } from '../../../constants/language.text.constant';
+import { GrimoireService } from '../../../../grimoire/services/grimoire.service';
 import { SceneIds } from '../../../constants/scenes.id';
 import { BotContext } from '../../../interfaces/bot.context';
 import { TgBotService } from '../../../services/tg-bot.service';
 
-//@Wizard(SceneIds.createCharacter)
-//@UseFilters(TelegrafExceptionFilter)
 @Injectable()
 export class CreateSpellWizard {
-    //   private readonly logger = new Logger(AddDiscountWizard.name)
     readonly scene: Scenes.WizardScene<BotContext>;
     readonly steps: Composer<BotContext>[] = [];
     constructor(
@@ -145,7 +141,7 @@ export class CreateSpellWizard {
                         await ctx.answerCbQuery();
                         if ('data' in ctx.callbackQuery) {
                             const grimoire =
-                                await this.grimoireService.findGrimoireByUserId(
+                                await this.grimoireService.findGrimoireByUserTgId(
                                     ctx.callbackQuery.from.id.toString()
                                 );
                             await this.grimoireService.createSpell(

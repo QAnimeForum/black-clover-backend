@@ -28,7 +28,7 @@ export default registerAs(
                 ? Number.parseInt(process.env.HTTP_PORT)
                 : 3000,
         },
-
+        superAdminId: process.env.SUPER_ADMIN_ID,
         jobEnable: process.env.JOB_ENABLE === 'true' ?? false,
     })
 );

@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { SpellEntity } from '../entity/spell.entity';
 import { GrimoireEntity } from '../entity/grimoire.entity';
 import { GrimoireUpdateNameDto } from '../dto/grimoire.update-name.dto';
-import { GrimoireUpdateColorDto } from '../dto/grimoire.update-color.dto';
 import { GrimoireCreateDto } from '../dto/grimoire.create.dto';
 import { SpellCreateDto } from '../dto/spell.create.dto';
 import { SpellUpdateNameDto } from '../dto/spell.update-name.dto';
@@ -44,7 +43,10 @@ export class GrimoireService {
         return [entities, total];
     }
 
-    async findGrimoireByUserId(tg_id: string): Promise<GrimoireEntity> {
+    async grimoireIsApproved() {
+
+    }
+    async findGrimoireByUserTgId(tg_id: string): Promise<GrimoireEntity> {
         const entity = await this.userRepository.findOne({
             where: {
                 tgUserId: tg_id,
@@ -65,11 +67,10 @@ export class GrimoireService {
         return entity;
     }
 
-    async createEmptyGrimoire() {
+    async createEmptyGrimoire(coverSymbol: string) {
         const insert = await this.grimoireRepository.insert({
             magicName: 'не выбрана',
-            //   coverSymbol: coverSymbol,
-            magicColor: 'не выбран',
+            coverSymbol: coverSymbol,
         });
         return insert.raw[0].id;
     }
@@ -77,8 +78,7 @@ export class GrimoireService {
     async createGrimoire(dto: GrimoireCreateDto) {
         const insert = await this.grimoireRepository.insert({
             magicName: dto.magicName,
-            //  coverSymbol: CardSymbolsEnum[dto.coverSymbol],
-            magicColor: dto.magicColor,
+            coverSymbol: dto.coverSymbol,
         });
         return insert.raw[0].id;
     }
@@ -111,12 +111,6 @@ export class GrimoireService {
         grimoire.magicName = dto.magicName;
         await this.grimoireRepository.save(grimoire);
     }
-    async updateGrimoreMagicColor(id: string, dto: GrimoireUpdateColorDto) {
-        const grimoire = await this.findGrimoireById(id);
-        grimoire.magicColor = dto.magicColor;
-        await this.grimoireRepository.save(grimoire);
-    }
-
     async updateSpellName(id: string, dto: SpellUpdateNameDto) {
         const spell = await this.findSpellById(id);
         spell.name = dto.name;

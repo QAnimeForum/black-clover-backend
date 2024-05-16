@@ -12,7 +12,7 @@ import configs from 'src/config';
 import { AppMiddlewareModule } from './middleware/app.middleware.module';
 import { RouterModule } from 'src/router/router.module';
 import { TelegrafModule } from 'nestjs-telegraf';
-import { TgBotModule } from './modules/tg-bot/tg-bot.module';
+import { TgBotModule } from '../modules/tg-bot/tg-bot.module';
 import { session } from 'telegraf';
 import { Postgres } from '@telegraf/session/pg';
 import { PostgresAdapter } from 'kysely';
@@ -34,6 +34,7 @@ import { PostgresAdapter } from 'kysely';
                     .valid(...Object.values(ENUM_APP_ENVIRONMENT))
                     .default('development')
                     .required(),
+                SUPER_ADMIN_ID: Joi.string().required(),
                 APP_TZ: Joi.string().required(),
                 APP_MAINTENANCE: Joi.boolean().default(false).required(),
 

@@ -8,7 +8,8 @@ import {
 } from 'typeorm';
 import { SquadEntity } from './squad.entity';
 import { StateEntity } from '../../../map/enitity/state.entity';
-import { SquadRankEntity } from './squad.rank.entity';
+import { ArmedForcesRequestEntity } from './armed.forces.request.entity';
+import { ArmedForcesMemberEntity } from './armed.forces.member.entity';
 
 @Entity('armer_forces')
 export class ArmedForcesEntity {
@@ -25,6 +26,13 @@ export class ArmedForcesEntity {
     })
     descripiton: string;
 
+    /**
+    *  @Column({
+        type: 'varchar',
+        nullable: true,
+    })
+    leader: string;
+    */
     @OneToOne(() => StateEntity)
     @JoinColumn({
         name: 'state_id',
@@ -34,6 +42,17 @@ export class ArmedForcesEntity {
     @OneToMany(() => SquadEntity, (squad) => squad.armorForces)
     squads: Array<SquadEntity>;
 
-    @OneToMany(() => SquadRankEntity, (rank) => rank.armorForces)
-    ranks: Array<SquadRankEntity>;
+    @OneToMany(() => ArmedForcesMemberEntity, (member) => member.armedForces)
+    members: Array<ArmedForcesMemberEntity>;
+
+
+    /*
+    @OneToMany(() => ArmedForcesMemberEntity, (rank) => rank.armorForces)
+    ranks: Array<ArmedForcesMemberEntity>;*/
+
+    @OneToMany(
+        () => ArmedForcesRequestEntity,
+        (requests) => requests.armedForces
+    )
+    requests: Array<ArmedForcesRequestEntity>;
 }

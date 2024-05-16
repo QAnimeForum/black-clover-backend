@@ -7,10 +7,10 @@ import {
     JoinColumn,
 } from 'typeorm';
 import { SpellEntity } from './spell.entity';
-import { ENUM_GRIMOIRE_SYMBOL } from '../constants/grimoire.symbol.enum';
 import { ManaZoneEntity } from './mana.zone.entity';
 import { ManaSkinEntity } from './mana.skin.entity';
 import { CharacterEntity } from '../../character/entity/character.entity';
+import { ENUM_IS_GRIMOIRE_APPROVED } from '../constants/grimoire.enum.constant';
 
 @Entity('grimoire')
 export class GrimoireEntity {
@@ -24,15 +24,22 @@ export class GrimoireEntity {
 
     @Column({
         type: 'enum',
+        enum: ENUM_IS_GRIMOIRE_APPROVED,
+        default: ENUM_IS_GRIMOIRE_APPROVED.NOT_APPROVED,
+    })
+    status: ENUM_IS_GRIMOIRE_APPROVED;
+    /*
+    @Column({
+        type: 'enum',
         enum: ENUM_GRIMOIRE_SYMBOL,
         default: ENUM_GRIMOIRE_SYMBOL.CLOVER,
     })
-    coverSymbol: ENUM_GRIMOIRE_SYMBOL;
+    coverSymbol: ENUM_GRIMOIRE_SYMBOL;*/
 
     @Column({
         type: 'varchar',
     })
-    magicColor: string;
+    coverSymbol: string;
 
     @OneToOne(() => ManaSkinEntity)
     @JoinColumn({

@@ -7,19 +7,17 @@ import {
 import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
-import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
-import { CharacterService } from 'src/app/modules/character/services/character.service';
+import { CharacterService } from '../../../character/services/character.service';
 import { Markup } from 'telegraf';
 import { BUTTON_ACTIONS } from '../../constants/actions';
 import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from 'src/common/pagination/constants/pagination.enum.constant';
-import { GrimoireService } from 'src/app/modules/grimoire/services/grimoire.service';
+import { GrimoireService } from '../../../grimoire/services/grimoire.service';
 
 @Scene(SceneIds.profile)
 @UseFilters(TelegrafExceptionFilter)
 export class ProfileScene {
     constructor(
-        private readonly tgBotService: TgBotService,
         private readonly characterService: CharacterService,
         private readonly grimoireService: GrimoireService
     ) {}
@@ -35,25 +33,27 @@ export class ProfileScene {
         const age = `<strong>Возраст</strong>: ${background.age}\n`;
         const state = `<strong>Страна происхождения</strong>: ${background.state.name}\n`;
         const race = `<strong>Раса</strong>: ${background.race.name}\n`;
-        const title = `Профиль\n\n`;
+        const title = `<strong><u>ПРОФИЛЬ</u></strong>\n\n`;
         const owner = `<strong>Владелец</strong>: @${username}\n`;
+        const userId = `<strong>Ваш id</strong> <code>${senderId}</code>\n`;
+        const magicTypeBlock = `<strong>Магический атрибут</strong>: ${character.grimoire.magicName}\т`;
         const delimiter = `_____________\n`;
 
         const characteristics = character.characterCharacteristics;
         const levelBlock = `<strong>Уровень персонажа</strong>: ${characteristics.currentLevel}/${characteristics.maxLevel}\n`;
         const hpBlock = `<strong>♥️</strong>: ${characteristics.currentHealth}/${characteristics.maxHealth}\n`;
         const magicPowerBlock = `<strong>Магичесая сила</strong>: 500/500\n`;
-        const strengthBlock = `<strong>${characteristics.strength.abbr}${characteristics.strength.name}</strong>: ${characteristics.strength.score}\n`;
-        const dexterityBlock = `<strong>${characteristics.dexterity.abbr}${characteristics.dexterity.name}</strong>: ${characteristics.dexterity.score}\n`;
-        const constitutionBlock = `<strong>${characteristics.constitution.abbr}${characteristics.constitution.name}</strong>: ${characteristics.constitution.score}\n`;
-        const intelligenceBlock = `<strong>${characteristics.intelligence.abbr}${characteristics.intelligence.name}</strong>: ${characteristics.intelligence.score}\n`;
-        const wisdomBlock = `<strong>${characteristics.wisdom.abbr}${characteristics.wisdom.name}</strong>: ${characteristics.wisdom.score}\n`;
-        const charismaBlock = `<strong>${characteristics.charisma.abbr}${characteristics.charisma.name}</strong>: ${characteristics.charisma.score}\n`;
+        const strengthBlock = `<strong>💪Сила</strong>: ${characteristics.strength.score}\n`;
+        const dexterityBlock = `<strong>🏃Ловкость</strong>: ${characteristics.dexterity.score}\n`;
+        const constitutionBlock = `<strong>🏋️Телосложение</strong>: ${characteristics.constitution.score}\n`;
+        const intelligenceBlock = `<strong>🎓Интеллект</strong>: ${characteristics.intelligence.score}\n`;
+        const wisdomBlock = `<strong>📚Мудрость</strong>: ${characteristics.wisdom.score}\n`;
+        const charismaBlock = `<strong>🗣Харизма</strong>: ${characteristics.charisma.score}\n`;
         //   const armorClassBlock = `${characteristics.armorClass.}${characteristics.armorClassBlock.name}${characteristics.armorClassBlock.score}`;
+
         const characteristicsTitle = `\n<strong><u>Характеристики персонажа</u></strong>\n\n`;
         const characteristicsBlock = `${characteristicsTitle}${levelBlock}${hpBlock}${magicPowerBlock}${strengthBlock}${dexterityBlock}${constitutionBlock}${intelligenceBlock}${wisdomBlock}${charismaBlock}`;
-        const caption = `${title}${owner}${delimiter}${name}${sex}${age}${state}${race}${delimiter}${characteristicsBlock}`;
-
+        const caption = `${title}${owner}${userId}${name}${sex}${age}${state}${race}${magicTypeBlock}${characteristicsBlock}`;
         ctx.sendPhoto(
             {
                 source: KNIGHT_IMAGE_PATH,
@@ -69,7 +69,7 @@ export class ProfileScene {
                     ],
                     [BUTTON_ACTIONS.WALLET, BUTTON_ACTIONS.INVENTORY],
                     [BUTTON_ACTIONS.myDevils, BUTTON_ACTIONS.mySpirits],
-                    [BUTTON_ACTIONS.back],
+                    [BUTTON_ACTIONS.profile, BUTTON_ACTIONS.back],
                 ]).resize(),
             }
         );
@@ -81,7 +81,7 @@ export class ProfileScene {
     }
     @Hears(BUTTON_ACTIONS.grimoire)
     async grimoire(@Ctx() ctx: BotContext, @Sender() sender) {
-        const grimoire = await this.grimoireService.findGrimoireByUserId(
+        const grimoire = await this.grimoireService.findGrimoireByUserTgId(
             sender.id
         );
         const [spellEntities] = await this.grimoireService.findAllSpells(
@@ -101,7 +101,8 @@ export class ProfileScene {
 
         const title = '<strong><u>ГРИМУАР</u></strong>\n\n';
         const magicBlock = `<strong>Магия</strong>: ${grimoire.magicName}\n`;
-        let caption = `${title}${magicBlock}<strong>Обложка</strong>: ${grimoire.coverSymbol}\n<strong>Цвет магии</strong>: ${grimoire.magicColor}\n`;
+        let caption = `${title}${magicBlock}<strong>Обложка</strong>: ${grimoire.coverSymbol}\n`;
+        //<strong>Цвет магии</strong>: ${grimoire.magicColor}
         const spellListMessages: Array<{
             id: string;
             text: string;

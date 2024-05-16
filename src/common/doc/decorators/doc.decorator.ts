@@ -13,7 +13,6 @@ import {
     getSchemaPath,
 } from '@nestjs/swagger';
 import { APP_LANGUAGE } from 'src/app/constants/app.constant';
-import { ENUM_ROLE_STATUS_CODE_ERROR } from 'src/app/modules/role/constants/role.status-code.constant';
 import { ENUM_DOC_REQUEST_BODY_TYPE } from 'src/common/doc/constants/doc.enum.constant';
 import {
     IDocGuardOptions,
@@ -366,14 +365,14 @@ export function DocGuard(options?: IDocGuardOptions) {
             messagePath: 'request.error.timestampInvalid',
         });
     }
-
+/*
     if (options?.role) {
         oneOfForbidden.push({
             statusCode:
                 ENUM_ROLE_STATUS_CODE_ERROR.ROLE_PAYLOAD_TYPE_INVALID_ERROR,
             messagePath: 'role.error.typeForbidden',
         });
-    }
+    }*/
 
     if (options?.policy) {
         oneOfForbidden.push({

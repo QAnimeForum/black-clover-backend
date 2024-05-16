@@ -8,7 +8,6 @@ import {
     OneToOne,
 } from 'typeorm';
 import { SquadMemberEntity } from './squad.member.entity';
-import { StateEntity } from '../../../map/enitity/state.entity';
 import { ArmedForcesEntity } from './armed.forces.entity';
 import { SquadPositionsEntity } from './squad.positions.entity';
 @Entity('squads')
@@ -24,12 +23,16 @@ export class SquadEntity {
     @Column({
         type: 'varchar',
     })
-    descripiton: string;
+    description: string;
 
+    @Column({
+        type: 'varchar',
+    })
+    image: string;
     @OneToMany(() => SquadMemberEntity, (member) => member.squad)
     members: Array<SquadMemberEntity>;
 
-    @ManyToOne(() => StateEntity)
+    @ManyToOne(() => ArmedForcesEntity)
     @JoinColumn({
         name: 'forces_id',
         referencedColumnName: 'id',

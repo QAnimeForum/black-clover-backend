@@ -1,7 +1,7 @@
 import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
-import { GrimoireService } from 'src/app/modules/grimoire/services/grimoire.service';
+import { GrimoireService } from '../../../../grimoire/services/grimoire.service';
 import { BUTTON_ACTIONS } from '../../../constants/actions';
 import { GRIMOURE_IMAGE_PATH } from '../../../constants/images';
 import { SceneIds } from '../../../constants/scenes.id';
@@ -15,7 +15,7 @@ export class GrimoreScene {
     constructor(private readonly grimoireService: GrimoireService) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
-        const grimoire = await this.grimoireService.findGrimoireByUserId(
+        const grimoire = await this.grimoireService.findGrimoireByUserTgId(
             sender.id
         );
         const [spellEntities] = await this.grimoireService.findAllSpells(
@@ -35,7 +35,8 @@ export class GrimoreScene {
 
         const title = '<strong><u>ГРИМУАР</u></strong>\n\n';
         const magicBlock = `<strong>Магия</strong>: ${grimoire.magicName}\n`;
-        let caption = `${title}${magicBlock}<strong>Обложка</strong>: ${grimoire.coverSymbol}\n<strong>Цвет магии</strong>: ${grimoire.magicColor}\n`;
+        let caption = `${title}${magicBlock}<strong>Обложка</strong>: ${grimoire.coverSymbol}\n`;
+        //<strong>Цвет магии</strong>: ${grimoire.magicColor}
         const spellListMessages: Array<{
             id: string;
             text: string;

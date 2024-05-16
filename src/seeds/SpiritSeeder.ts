@@ -1,7 +1,7 @@
-import { SpiritEntity } from '../app/modules/spirits/entity/spirit.entity';
 import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
 import { spirits } from '../../Assets/json/spirits.json';
+import { SpiritEntity } from '../modules/spirits/entity/spirit.entity';
 export default class SprirtSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<any> {
         const spiritRepository = dataSource.getRepository(SpiritEntity);

@@ -3,8 +3,8 @@ import {
     ENUM_POLICY_SUBJECT,
     ENUM_POLICY_ACTION,
 } from '../constants/policy.enum.constant';
-import { ENUM_ROLE_TYPE } from 'src/app/modules/role/constants/role.enum.constant';
-import { UserPayloadPermissionSerialization } from 'src/app/modules/user/serializations/user.payload.serialization';
+import { UserPayloadPermissionSerialization } from 'src/modules/user/serializations/user.payload.serialization';
+import { ENUM_ROLE_TYPE } from 'src/modules/user/constants/role.enum.constant';
 export interface IPolicyRule {
     subject: ENUM_POLICY_SUBJECT;
     action: ENUM_POLICY_ACTION[];

@@ -1,7 +1,7 @@
 import { join } from 'path';
 
 //export const STATIC_IMAGE_BASE_PATH = `${join(__dirname, '..', '..', '..', '..', '..', '..', 'public')}`;
-export const STATIC_IMAGE_BASE_PATH = `${join(__dirname, '..', '..', '..', '..', '..', '..', 'Assets', 'images')}`;
+export const STATIC_IMAGE_BASE_PATH = `${join(__dirname, '..', '..', '..', '..', '..', 'Assets', 'images')}`;
 export const HELLO_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/hello.jpg`;
 
 export const SAMPLE_SPELL_URL =
@@ -10,6 +10,8 @@ export const SAMPLE_GRIMOURE_URL =
     'https://telegra.ph/Grimuar-i-zaklinaniya-02-03';
 export const RULES = 'https://telegra.ph/Vers-CHernyj-Klever-v-QForum-08-11';
 export const DEVIL_HOSTS_RULES = 'https://telegra.ph/Host-dyavola-01-13';
+
+export const ADMIN_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/settings.jpg`;
 export const BIO_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/bio.webp`;
 export const CLOVER_SQUADS_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/clover-squads.jpg`;
 export const GRIMOURE_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/default-grimoire.jpg`;
