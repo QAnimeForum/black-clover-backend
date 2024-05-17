@@ -10,52 +10,34 @@ import {
     Put,
 } from '@nestjs/common';
 import { DevilsService } from '../services/devils.service';
-import {
-    IResponse,
-    IResponsePaging,
-} from 'src/common/response/interfaces/response.interface';
-import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
-import {
-    ResponsePaging,
-    Response,
-} from 'src/common/response/decorators/response.decorator';
-import { DevilListSerialization } from '../serializations/devil.list.serialization';
-import { PaginationService } from 'src/common/pagination/services/pagination.service';
-import {
-    PaginationQuery,
-    PaginationQueryFilterInEnum,
-} from 'src/common/pagination/decorators/pagination.decorator';
+import { IResponse } from 'src/common/response/interfaces/response.interface';
+import { Response } from 'src/common/response/decorators/response.decorator';
 
 import { ResponseIdSerialization } from 'src/common/response/serializations/response.id.serialization';
 import { ENUM_DEVIL_STATUS_CODE_ERROR } from '../constants/devil.status-code.constant';
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
 import { DevilGetSerialization } from '../serializations/devil.get.serialization';
 import { DevilRequestDto } from '../dtos/devil.request.dto';
-import {
-    DEVIL_DEFAULT_AVAILABLE_ORDER_BY,
-    DEVIL_DEFAULT_AVAILABLE_SEARCH,
-    DEVIL_DEFAULT_ORDER_BY,
-    DEVIL_DEFAULT_ORDER_DIRECTION,
-    DEVIL_DEFAULT_PER_PAGE,
-    DEVIL_FLOOR_DEFAULT_TYPE,
-    DEVIL_RANK_DEFAULT_TYPE,
-} from '../constants/devil.list.constant';
 import { DevilUpdateNameDto } from '../dtos/devil.update-name.dto';
 import { DevilUpdateDescriptionDto } from '../dtos/devil.update-description.dto';
 import { DevilCreateDto } from '../dtos/devil.create.dto';
-import { ENUM_DEVIL_RANK } from '../constants/devil.ranks.enum';
-import { ENUM_DEVIL_FLOOR } from '../constants/devil.floor.enum';
+import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import { DevilEntity } from '../entity/devil.entity';
 
 @Controller({
     version: VERSION_NEUTRAL,
     path: '/devils',
 })
 export class DevilsController {
-    constructor(
-        private readonly devilService: DevilsService,
-        private readonly paginationService: PaginationService
-    ) {}
+    constructor(private readonly devilService: DevilsService) {}
 
+    @Get()
+    public findAll(
+        @Paginate() query: PaginateQuery
+    ): Promise<Paginated<DevilEntity>> {
+        return this.devilService.findAll(query);
+    }
+    /*
     @ResponsePaging('devil.list', {
         serialization: DevilListSerialization,
     })
@@ -96,7 +78,7 @@ export class DevilsController {
             _pagination: { totalPage, total },
             data: states,
         };
-    }
+    }*/
 
     @Response('devil.create', {
         serialization: ResponseIdSerialization,

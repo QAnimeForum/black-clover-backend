@@ -10,6 +10,7 @@ import { DevilUpdateNameDto } from '../dtos/devil.update-name.dto';
 import { DevilUpdateDescriptionDto } from '../dtos/devil.update-description.dto';
 import { ENUM_DEVIL_RANK } from '../constants/devil.ranks.enum';
 import { ENUM_DEVIL_FLOOR } from '../constants/devil.floor.enum';
+import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 @Injectable()
 export class DevilsService {
     constructor(
@@ -21,36 +22,17 @@ export class DevilsService {
         private readonly devilSpellRepository: Repository<DevilSpellEntity>
     ) {}
 
-    async findAllDevils(
-        dto: PaginationListDto,
-        rank: Record<string, any>,
-        floor: Record<string, any>
-    ): Promise<[DevilEntity[], number]> {
-        const [entities, total] = await this.devilRepository.findAndCount({
-            skip: dto._offset * dto._limit,
-            take: dto._limit,
-            order: dto._availableOrderBy?.reduce(
-                (accumulator, sort) => ({
-                    ...accumulator,
-                    [sort]: dto._order,
-                }),
-                {}
-            ),
-        });
-        return [entities, total];
-    }
-    findByRank(rank: ENUM_DEVIL_RANK): Promise<DevilEntity[]> {
-        return this.devilRepository.find({
-            where: {
-                rank: rank,
-            },
-        });
-    }
 
-    findByFloor(floor: ENUM_DEVIL_FLOOR): Promise<DevilEntity[]> {
-        return this.devilRepository.find({
-            where: {
-                floor: floor,
+    public findAll(query: PaginateQuery): Promise<Paginated<DevilEntity>> {
+        return paginate(query, this.devilRepository, {
+            sortableColumns: ['id', 'name', 'floor'],
+            nullSort: 'last',
+            defaultSortBy: [['name', 'DESC']],
+            searchableColumns: ['name', 'floor'],
+            select: ['id', 'name', 'floor'],
+            filterableColumns: {
+                name: true,
+                floor: true,
             },
         });
     }

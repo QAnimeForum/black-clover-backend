@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { IsInt, IsEnum, ArrayUnique } from 'class-validator';
-import { UserPrivilegeType } from '../entities/user-privilege.entity';
-
+import { UserPrivilegeType } from '../entities/user-prviliege.entity';
 
 export class SetUserPrivilegesRequestDto {
     @ApiProperty()

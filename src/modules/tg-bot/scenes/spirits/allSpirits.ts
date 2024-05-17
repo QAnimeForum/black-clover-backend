@@ -11,6 +11,7 @@ import {
     STATIC_IMAGE_BASE_PATH,
 } from '../../constants/images';
 import { SpiritService } from '../../../spirits/service/spirit.service';
+import { PaginateQuery } from 'nestjs-paginate';
 
 @Scene(SceneIds.allSpirits)
 @UseFilters(TelegrafExceptionFilter)
@@ -62,10 +63,15 @@ export class AllSpiritsScene {
 
     @Hears(BUTTON_ACTIONS.SHOW_SPIRITS)
     async showSpiritsInfo(@Ctx() ctx: BotContext) {
-        const [spirits] = await this.spiritsService.findAllSpirits();
+        const query: PaginateQuery = {
+            limit: 10,
+            path: '',
+        }
+
+        const spirits = await this.spiritsService.findAll(query);
         const caption = 'список всех духов мира клевера';
 
-        const spirit_buttons = spirits.map((item) => [
+        const spirit_buttons = spirits.data.map((item) => [
             Markup.button.callback(
                 `${item.name}`,
                 `GET_SPIRIT_INFO:${item.id}`

@@ -1,8 +1,7 @@
 import { Scenes, Context } from 'telegraf';
 import { Message } from 'telegraf/typings/core/types/typegram';
 import { BotSession } from './bot.session';
-import { BotWizardSession } from './bot.wizard.seesion';
-
+import { BotWizardSession } from './bot.wizard.session';
 export interface BotContext extends Context {
     session: BotSession;
     mediaGroup: Message[];

@@ -43,14 +43,17 @@ export class ProblemEntity {
     ownerId: string;
 
     @Column({ type: 'integer' })
-    submissionCount: number;
-
-    @Column({ type: 'integer' })
     acceptedSubmissionCount: number;
-
-    @Column({ type: 'string' })
-    judgeInfo: unknown;
 
     @Column({ type: 'boolean', default: true })
     submittable: boolean;
 }
+
+/**
+ *     @Column({ type: 'integer' })
+    submissionCount: number;
+
+    @Column({ type: 'string' })
+    judgeInfo: unknown;
+
+ */

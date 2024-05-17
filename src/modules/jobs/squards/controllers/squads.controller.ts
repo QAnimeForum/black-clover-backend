@@ -8,8 +8,7 @@ import {
     Body,
     ConflictException,
 } from '@nestjs/common';
-import { FilterOperator, FilterSuffix, Paginate, PaginateQuery, paginate, Paginated } from 'nestjs-paginate';
-import { PaginationService } from 'src/common/pagination/services/pagination.service';
+import { Paginate, PaginateQuery, Paginated } from 'nestjs-paginate';
 import { SquadsService } from '../service/squads.service';
 import {
     Response,
@@ -17,19 +16,8 @@ import {
 } from 'src/common/response/decorators/response.decorator';
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
 import { ArmedForcesListSerialization } from '../serializations/armed.forces.list.serialization';
-import { PaginationQuery } from 'src/common/pagination/decorators/pagination.decorator';
-import {
-    ARMED_FORCES_DEFAULT_AVAILABLE_ORDER_BY,
-    ARMED_FORCES_DEFAULT_AVAILABLE_SEARCH,
-    ARMED_FORCES_DEFAULT_ORDER_BY,
-    ARMED_FORCES_DEFAULT_ORDER_DIRECTION,
-    ARMED_FORCES_DEFAULT_PER_PAGE,
-} from '../constants/armed.forces.list.constant';
-import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
-import {
-    IResponse,
-    IResponsePaging,
-} from 'src/common/response/interfaces/response.interface';
+
+import { IResponse } from 'src/common/response/interfaces/response.interface';
 import { ArmedForcesGetSerialization } from '../serializations/armed.forces.get.serialization';
 import { ArmedForcesEntity } from '../entity/armed.forces.entity';
 import { ResponseIdSerialization } from 'src/common/response/serializations/response.id.serialization';
@@ -43,13 +31,6 @@ import { ENUM_ARMOR_STATUS_CODE_ERROR } from '../../business/constants/armor.sta
 import { ArmorListSerialization } from '../../business/serializations/armor.list.serialization';
 import { ENUM_SQUAD_MEMBER_STATUS_CODE_ERROR } from '../constants/squad.member.status-code.constant';
 import { SquadMemberCreateDto } from '../dto/squad.member.create.dto';
-import {
-    SQUAD_MEMBER_DEFAULT_AVAILABLE_ORDER_BY,
-    SQUAD_MEMBER_DEFAULT_AVAILABLE_SEARCH,
-    SQUAD_MEMBER_DEFAULT_ORDER_BY,
-    SQUAD_MEMBER_DEFAULT_ORDER_DIRECTION,
-    SQUAD_MEMBER_DEFAULT_PER_PAGE,
-} from '../constants/squad.member.list.constant';
 import { SquadRankRequestDto } from '../dto/squad.rank.request.dto';
 import { ENUM_SQUAD_RANK_STATUS_CODE_ERROR } from '../constants/squad.rank.status-code.constant';
 import { SquadRankCreateDto } from '../dto/squad.rank.create.dto';
@@ -60,39 +41,22 @@ import { SquadGetSerialization } from '../serializations/squad.get.serialization
 import { SquadRankForcesListSerialization } from '../serializations/rank.list.serialization';
 import { SquadEntity } from '../entity/squad.entity';
 import { ArmedForcesRankEntity } from '../entity/armed.forces.rank.entity';
+import { SquadMemberEntity } from '../entity/squad.member.entity';
 @Controller({
     version: VERSION_NEUTRAL,
     path: '/squads',
 })
 export class SquadsController {
-    constructor(
-        private readonly squadsService: SquadsService,
-        private readonly paginationService: PaginationService
-    ) {}
+    constructor(private readonly squadsService: SquadsService) {}
 
     @ResponsePaging('squads.armed_forces.list', {
         serialization: ArmedForcesListSerialization,
     })
     @Get('/armed_forces/list')
     async getAllArmedForces(
-        @PaginationQuery(
-            ARMED_FORCES_DEFAULT_PER_PAGE,
-            ARMED_FORCES_DEFAULT_ORDER_BY,
-            ARMED_FORCES_DEFAULT_ORDER_DIRECTION,
-            ARMED_FORCES_DEFAULT_AVAILABLE_SEARCH,
-            ARMED_FORCES_DEFAULT_AVAILABLE_ORDER_BY
-        )
-        dto: PaginationListDto
-    ): Promise<IResponsePaging> {
-        const [states, total] = await this.squadsService.getAllArmedForces(dto);
-        const totalPage: number = this.paginationService.totalPage(
-            total,
-            dto._limit
-        );
-        return {
-            _pagination: { totalPage, total },
-            data: states,
-        };
+        @Paginate() query
+    ): Promise<Paginated<ArmedForcesEntity>> {
+        return await this.squadsService.findAllArmedForces(query);
     }
 
     @Response('armed_forces.get', {
@@ -154,25 +118,9 @@ export class SquadsController {
     })
     @Get('/member/list')
     async getAllMembers(
-        @PaginationQuery(
-            SQUAD_MEMBER_DEFAULT_PER_PAGE,
-            SQUAD_MEMBER_DEFAULT_ORDER_BY,
-            SQUAD_MEMBER_DEFAULT_ORDER_DIRECTION,
-            SQUAD_MEMBER_DEFAULT_AVAILABLE_SEARCH,
-            SQUAD_MEMBER_DEFAULT_AVAILABLE_ORDER_BY
-        )
-        dto: PaginationListDto
-    ): Promise<IResponsePaging> {
-        const [states, total] =
-            await this.squadsService.getAllSquadMembers(dto);
-        const totalPage: number = this.paginationService.totalPage(
-            total,
-            dto._limit
-        );
-        return {
-            _pagination: { totalPage, total },
-            data: states,
-        };
+        @Paginate() query
+    ): Promise<Paginated<SquadMemberEntity>> {
+        return await this.squadsService.findAllSquadMembers(query);
     }
 
     @Response('squad.member.get', {

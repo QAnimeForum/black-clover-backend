@@ -6,7 +6,6 @@ import { FactionMemberEntity } from './entity/faction.member.entity';
 import { FactionRankEntity } from './entity/faction.rank.entity';
 import { GangZoneEntity } from './entity/gang.zone.entity';
 import { JudicialSystemController } from './controller/judicial.system.controller';
-import { JudicialSystemService } from './services/judicial.system.service';
 import { ArrestEntity } from './entity/arrest.entity';
 import { ProblemFileEntity } from './entity/problem-file.entity';
 import { ProblemJudgeInfoEntity } from './entity/problem-judge-info.entity';
@@ -14,11 +13,10 @@ import { ProblemTagEntity } from './entity/problem-tag.entity';
 import { ProblemEntity } from './entity/problem.entity';
 import { SubmissionDetailEntity } from './entity/submission-detail.entity';
 import { SubmissionEntity } from './entity/submission.entity';
-import { PermissionModule } from 'src/common/permission/permission.module';
 import { UserModule } from 'src/modules/user/user.module';
+import { ProblemSystemService } from './services/problem.system.service';
 @Module({
     imports: [
-        PermissionModule,
         UserModule,
         TypeOrmModule.forFeature([
             ProblemFileEntity,
@@ -36,7 +34,7 @@ import { UserModule } from 'src/modules/user/user.module';
         ]),
     ],
     controllers: [JudicialSystemController],
-    providers: [JudicialSystemService],
-    exports: [JudicialSystemService],
+    providers: [ProblemSystemService],
+    exports: [ProblemSystemService],
 })
 export class JudicialSystemModule {}

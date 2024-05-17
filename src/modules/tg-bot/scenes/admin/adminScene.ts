@@ -56,7 +56,7 @@ export class AdminScene {
 
     @Hears(BUTTON_ACTIONS.admin.PERMITIONS)
     async permitions(@Ctx() ctx: BotContext) {
-        const superAdmins = await this.userService.getSuperAdmins();
+        const superAdmins = await this.userService.getAdmins();
         const admins = await this.userService.getAdmins();
         let caption = 'Список суперадминов:\n\n';
         superAdmins.map(
@@ -136,7 +136,7 @@ export class AddAdminWizard {
             );
             ctx.wizard.back();
         } else {
-            this.userService.changeUserRole(message.text, ENUM_ROLE_TYPE.ADMIN);
+           // this.userService.changeUserRole(message.text, ENUM_ROLE_TYPE.ADMIN);
             await ctx.scene.enter(SceneIds.ADMIN);
         }
     }
@@ -170,7 +170,7 @@ export class DeleteAdminWizard {
             );
             ctx.wizard.back();
         }
-        this.userService.changeUserRole(message.text, ENUM_ROLE_TYPE.USER);
+       // this.userService.changeUserRole(message.text, ENUM_ROLE_TYPE.USER);
         await ctx.scene.enter(SceneIds.ADMIN);
     }
 }

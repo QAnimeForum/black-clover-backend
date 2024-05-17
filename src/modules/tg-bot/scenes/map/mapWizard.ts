@@ -6,7 +6,6 @@ import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
 import { MapService } from '../../../map/service/map.service';
-import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from 'src/common/pagination/constants/pagination.enum.constant';
 
 @Wizard(SceneIds.map)
 @UseFilters(TelegrafExceptionFilter)
@@ -18,25 +17,16 @@ export class MapWizard {
 
     @SceneEnter()
     async start(@Context() ctx: BotContext) {
-        const dto: any = {
-            _search: undefined,
-            _limit: 20,
-            _offset: 0,
-            _order: { name: 'ASC' },
-            _availableOrderBy: ['name'],
-            _availableOrderDirection: [
-                ENUM_PAGINATION_ORDER_DIRECTION_TYPE.ASC,
-                ENUM_PAGINATION_ORDER_DIRECTION_TYPE.DESC,
-            ],
-        };
-        const [states] = await this.mapService.getAllStates(dto);
+        const paginateStates = await this.mapService.findAllStates({
+            path: '',
+        });
         await ctx.replyWithPhoto(
             { source: WORLD_MAP_IMAGE_PATH },
             {
                 caption: 'выберите, куда вы хотите отправиться',
                 parse_mode: 'HTML',
                 reply_markup: {
-                    inline_keyboard: states.map((state) => [
+                    inline_keyboard: paginateStates.data.map((state) => [
                         { text: state.fullName, callback_data: state.id },
                     ]),
                 },
@@ -50,34 +40,27 @@ export class MapWizard {
             case 'callback_query': {
                 await ctx.answerCbQuery();
                 if ('data' in ctx.callbackQuery) {
-                    const dto: any = {
-                        _search: undefined,
-                        _limit: 20,
-                        _offset: 0,
-                        _order: { name: 'ASC' },
-                        _availableOrderBy: ['fullName'],
-                        _availableOrderDirection: [
-                            ENUM_PAGINATION_ORDER_DIRECTION_TYPE.ASC,
-                            ENUM_PAGINATION_ORDER_DIRECTION_TYPE.DESC,
-                        ],
-                    };
-                    const [provinces] =
-                        await this.mapService.getProvincesByState(
-                            ctx.callbackQuery.data,
-                            dto
-                        );
+                    const paginatedProvinces =
+                        await this.mapService.findAllPrivinces({
+                            path: '',
+                            filter: {
+                                state_id: ctx.callbackQuery.data,
+                            },
+                        });
                     await ctx.replyWithPhoto(
                         { source: WORLD_MAP_IMAGE_PATH },
                         {
                             caption: 'выберите, куда вы хотите отправиться',
                             parse_mode: 'HTML',
                             reply_markup: {
-                                inline_keyboard: provinces.map((state) => [
-                                    {
-                                        text: state.fullName,
-                                        callback_data: state.id,
-                                    },
-                                ]),
+                                inline_keyboard: paginatedProvinces.data.map(
+                                    (state) => [
+                                        {
+                                            text: state.fullName,
+                                            callback_data: state.id,
+                                        },
+                                    ]
+                                ),
                             },
                         }
                     );
@@ -102,34 +85,27 @@ export class MapWizard {
             case 'callback_query': {
                 await ctx.answerCbQuery();
                 if ('data' in ctx.callbackQuery) {
-                    const dto: any = {
-                        _search: undefined,
-                        _limit: 20,
-                        _offset: 0,
-                        _order: { name: 'ASC' },
-                        _availableOrderBy: ['name'],
-                        _availableOrderDirection: [
-                            ENUM_PAGINATION_ORDER_DIRECTION_TYPE.ASC,
-                            ENUM_PAGINATION_ORDER_DIRECTION_TYPE.DESC,
-                        ],
-                    };
-                    const [provinces] =
-                        await this.mapService.getBurgsByProvince(
-                            ctx.callbackQuery.data,
-                            dto
-                        );
+                    const paginatedProvinces =
+                        await this.mapService.findAllBurgs({
+                            path: '',
+                            filter: {
+                                province_id: ctx.callbackQuery.data,
+                            },
+                        });
                     await ctx.replyWithPhoto(
                         { source: WORLD_MAP_IMAGE_PATH },
                         {
                             caption: 'выберите, куда вы хотите отправиться',
                             parse_mode: 'HTML',
                             reply_markup: {
-                                inline_keyboard: provinces.map((state) => [
-                                    {
-                                        text: state.name,
-                                        callback_data: state.id,
-                                    },
-                                ]),
+                                inline_keyboard: paginatedProvinces.data.map(
+                                    (state) => [
+                                        {
+                                            text: state.name,
+                                            callback_data: state.id,
+                                        },
+                                    ]
+                                ),
                             },
                         }
                     );

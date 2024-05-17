@@ -35,6 +35,8 @@ import { RaceRequestDto } from './dto/race.request.dto';
 import { RaceGetSerialization } from './serializations/race.get.serialization';
 import { RaceListSerialization } from './serializations/race.list.serialization';
 import { ENUM_RACE_STATUS_CODE_ERROR } from './constants/race.status-code.constant';
+import { Paginate, Paginated } from 'nestjs-paginate';
+import { RaceEntity } from './entity/race.entity';
 
 @Controller({
     version: VERSION_NEUTRAL,
@@ -49,25 +51,8 @@ export class RaceController {
         serialization: RaceListSerialization,
     })
     @Get('/list')
-    async findAllRaces(
-        @PaginationQuery(
-            RACE_DEFAULT_PER_PAGE,
-            RACE_DEFAULT_ORDER_BY,
-            RACE_DEFAULT_ORDER_DIRECTION,
-            RACE_DEFAULT_AVAILABLE_SEARCH,
-            RACE_DEFAULT_AVAILABLE_ORDER_BY
-        )
-        dto: PaginationListDto
-    ): Promise<IResponsePaging> {
-        const [states, total] = await this.raceService.findAllRaces(dto);
-        const totalPage: number = this.paginationService.totalPage(
-            total,
-            dto._limit
-        );
-        return {
-            _pagination: { totalPage, total },
-            data: states,
-        };
+    async findAllRaces(@Paginate() query): Promise<Paginated<RaceEntity>> {
+        return await this.raceService.findAll(query);
     }
 
     @Response('race.create', {

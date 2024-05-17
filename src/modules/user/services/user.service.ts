@@ -59,7 +59,8 @@ export class UserService {
         this.userRepository.insert({
             tgUserId: dto.tgUserId,
             character: dto.character,
-            role: dto.role,
+            isAdmin: false,
+         //   role: dto.role,
         });
     }
     async exists(telegramUserId: string): Promise<boolean> {
@@ -79,29 +80,13 @@ export class UserService {
         const user = await this.userRepository.findOneBy({
             tgUserId: userTgId,
         });
-        return (
-            user.role == ENUM_ROLE_TYPE.SUPER_ADMIN ||
-            user.role == ENUM_ROLE_TYPE.ADMIN
-        );
-    }
-
-    async getSuperAdmins(): Promise<Array<UserEntity>> {
-        const users = await this.userRepository.find({
-            where: {
-                role: ENUM_ROLE_TYPE.SUPER_ADMIN,
-            },
-            select: {
-                id: true,
-                tgUserId: true,
-            },
-        });
-        return users;
+        return user.isAdmin;
     }
 
     async getAdmins(): Promise<Array<UserEntity>> {
         const users = await this.userRepository.find({
             where: {
-                role: ENUM_ROLE_TYPE.ADMIN,
+                isAdmin: true,
             },
             select: {
                 id: true,
@@ -110,7 +95,8 @@ export class UserService {
         });
         return users;
     }
-
+    /**
+ * 
     async changeUserRole(
         tgUserId: string,
         userRole: ENUM_ROLE_TYPE
@@ -123,6 +109,7 @@ export class UserService {
         user.role = userRole;
         return this.userRepository.save(user);
     }
+ */
 }
 /*
     async findAll<T = IUserDoc>(

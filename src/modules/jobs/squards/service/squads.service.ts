@@ -114,7 +114,6 @@ export class SquadsService {
         this.armedForcesRequestRepository.insert(request);
         return true;
     }
-    
     findSquadById(id: string): Promise<SquadEntity | null> {
         return this.squadRepository.findOneBy({ id });
     }
@@ -180,18 +179,21 @@ export class SquadsService {
         await this.rankRepository.delete(id);
     }
 
-    async getAllSquadMembers(
-        dto: PaginationListDto
-    ): Promise<[SquadMemberEntity[], number]> {
-        const [entities, total] = await this.squadMemberRepository.findAndCount(
-            {
-                skip: dto._offset * dto._limit,
-                take: dto._limit,
-                order: dto._order,
-            }
-        );
-        return [entities, total];
+    public findAllSquadMembers(
+        query: PaginateQuery
+    ): Promise<Paginated<SquadMemberEntity>> {
+        return paginate(query, this.squadMemberRepository, {
+            sortableColumns: ['id'],
+            nullSort: 'last',
+            defaultSortBy: [['id', 'DESC']],
+            searchableColumns: ['id'],
+            select: ['id', 'name'],
+            filterableColumns: {
+                name: [FilterOperator.EQ, FilterSuffix.NOT],
+            },
+        });
     }
+
     findSquadMemberById(id: string): Promise<SquadMemberEntity | null> {
         return this.squadMemberRepository.findOneBy({ id });
     }
@@ -227,17 +229,20 @@ export class SquadsService {
         await this.squadMemberRepository.delete(id);
     }
 
-    async getAllArmedForces(
-        dto: PaginationListDto
-    ): Promise<[ArmedForcesEntity[], number]> {
-        const [entities, total] = await this.armedForcesRepository.findAndCount(
-            {
-                skip: dto._offset * dto._limit,
-                take: dto._limit,
-                order: dto._order,
-            }
-        );
-        return [entities, total];
+    async findAllArmedForces(
+        query: PaginateQuery
+    ): Promise<Paginated<ArmedForcesEntity>> {
+        return paginate(query, this.armedForcesRepository, {
+            sortableColumns: ['id', 'name'],
+            nullSort: 'last',
+            defaultSortBy: [['id', 'DESC']],
+            searchableColumns: ['name'],
+            select: ['id', 'name'],
+            filterableColumns: {
+                name: [FilterOperator.EQ, FilterSuffix.NOT],
+                forces_id: true,
+            },
+        });
     }
     findArmedForcesById(id: string): Promise<ArmedForcesEntity | null> {
         return this.armedForcesRepository.findOneBy({ id });
@@ -281,7 +286,7 @@ export class SquadsService {
     }
 
     async isUserSquadMember(character: CharacterEntity): Promise<boolean> {
-      /*  return this.squadMemberRepository.exists({
+        /*  return this.squadMemberRepository.exists({
             where: {
                 character: character,
             },

@@ -2,13 +2,12 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
+import { UserService } from './user.service';
+import { SetUserPrivilegesResponseError } from '../dtos/set-user-privileges-response.dto';
 import {
     UserPrivilegeEntity,
     UserPrivilegeType,
-} from '../entities/user-privilege.entity';
-import { UserService } from './user.service';
-import { SetUserPrivilegesResponseError } from '../dtos/set-user-privileges-response.dto';
-import { ENUM_ROLE_TYPE } from '../constants/role.enum.constant';
+} from '../entities/user-prviliege.entity';
 
 @Injectable()
 export class UserPrivilegeService {
@@ -27,7 +26,7 @@ export class UserPrivilegeService {
     ): Promise<boolean> {
         return (
             user &&
-            (user.role == ENUM_ROLE_TYPE.SUPER_ADMIN ||
+            (user.isAdmin ||
                 (await this.userPrivilegeRepository.countBy({
                     userId: user.id,
                     privilegeType,

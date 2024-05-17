@@ -8,6 +8,7 @@ import { ProvinceFormEntity } from '../enitity/province.form.entity';
 import { StateFormEntity } from '../enitity/state.form.entity';
 import { ProvinceEntity } from '../enitity/province.entity';
 import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
+import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 
 @Injectable()
 export class MapService {
@@ -24,106 +25,49 @@ export class MapService {
         private readonly burgRepository: Repository<BurgEntity>
     ) {}
 
-    async getAllStates(
-        dto: PaginationListDto
-    ): Promise<[StateEntity[], number]> {
-        const [entities, total] = await this.stateRepository.findAndCount({
-            skip: dto._offset * dto._limit,
-            take: dto._limit,
-            order: dto._availableOrderBy?.reduce(
-                (accumulator, sort) => ({
-                    ...accumulator,
-                    [sort]: dto._order,
-                }),
-                {}
-            ),
-            relations: {
-                form: true,
+    public findAllStates(
+        query: PaginateQuery
+    ): Promise<Paginated<StateEntity>> {
+        return paginate(query, this.stateRepository, {
+            sortableColumns: ['id', 'name'],
+            nullSort: 'last',
+            defaultSortBy: [['id', 'DESC']],
+            searchableColumns: ['id'],
+            select: ['id', 'name'],
+            relations: ['form'],
+            filterableColumns: {
+                state_id: true,
             },
         });
-        return [entities, total];
     }
 
-    async getProvincesByState(
-        state_id: string,
-        dto: PaginationListDto
-    ): Promise<[ProvinceEntity[], number]> {
-        const country = await this.findStateById(state_id);
-        const [entities, total] = await this.provinceRepository.findAndCount({
-            skip: dto._offset * dto._limit,
-            take: dto._limit,
-            order: dto._availableOrderBy?.reduce(
-                (accumulator, sort) => ({
-                    ...accumulator,
-                    [sort]: dto._order,
-                }),
-                {}
-            ),
-            where: {
-                state: country,
-            },
-            relations: {
-                form: true,
+    public findAllPrivinces(
+        query: PaginateQuery
+    ): Promise<Paginated<ProvinceEntity>> {
+        return paginate(query, this.provinceRepository, {
+            sortableColumns: ['id', 'fullName'],
+            nullSort: 'last',
+            defaultSortBy: [['id', 'DESC']],
+            searchableColumns: ['id'],
+            select: ['id', 'fullName', 'state_id'],
+            relations: ['form'],
+            filterableColumns: {
+                state_id: true,
             },
         });
-        return [entities, total];
     }
 
-    async getAllProvincies(
-        dto: PaginationListDto
-    ): Promise<[ProvinceEntity[], number]> {
-        console.log(dto);
-        const entities = await this.provinceRepository.find({
-            skip: dto._offset * dto._limit,
-            take: dto._limit,
-            order: dto._availableOrderBy?.reduce(
-                (accumulator, sort) => ({
-                    ...accumulator,
-                    [sort]: dto._order,
-                }),
-                {}
-            ),
-            relations: {
-                form: true,
+    public findAllBurgs(query: PaginateQuery): Promise<Paginated<BurgEntity>> {
+        return paginate(query, this.burgRepository, {
+            sortableColumns: ['id', 'name'],
+            nullSort: 'last',
+            defaultSortBy: [['id', 'DESC']],
+            searchableColumns: ['id'],
+            select: ['id', 'name', 'province_id'],
+            filterableColumns: {
+                province_id: true,
             },
         });
-        return [entities, 10];
-    }
-
-    async getBurgsByProvince(
-        province_id: string,
-        dto: PaginationListDto
-    ): Promise<[BurgEntity[], number]> {
-        const province = await this.findStateById(province_id);
-        const [entities, total] = await this.burgRepository.findAndCount({
-            skip: dto._offset * dto._limit,
-            take: dto._limit,
-            order: dto._availableOrderBy?.reduce(
-                (accumulator, sort) => ({
-                    ...accumulator,
-                    [sort]: dto._order,
-                }),
-                {}
-            ),
-            where: {
-                province: province,
-            },
-        });
-        return [entities, total];
-    }
-    async getAllBurgs(dto: PaginationListDto): Promise<[BurgEntity[], number]> {
-        const [entities, total] = await this.burgRepository.findAndCount({
-            skip: dto._offset * dto._limit,
-            take: dto._limit,
-            order: dto._availableOrderBy?.reduce(
-                (accumulator, sort) => ({
-                    ...accumulator,
-                    [sort]: dto._order,
-                }),
-                {}
-            ),
-        });
-        return [entities, total];
     }
 
     async createState(data: CreateStateDto): Promise<StateEntity> {

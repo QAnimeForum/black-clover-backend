@@ -24,6 +24,7 @@ import { PaginateQuery } from 'nestjs-paginate';
 import { ArmedForcesRequestEntity } from 'src/modules/jobs/squards/entity/armed.forces.request.entity';
 import { UserService } from 'src/modules/user/services/user.service';
 import { ENUM_ARMED_FORCES_REQUEST } from 'src/modules/jobs/squards/constants/armed.forces.request.list';
+import { SQUAD_DEFAULT_PER_PAGE } from 'src/modules/jobs/squards/constants/squad.list.constant';
 @Scene(SceneIds.armedForces)
 @UseFilters(TelegrafExceptionFilter)
 export class ArmedForcesScene {
@@ -215,7 +216,7 @@ export class ArmedForcesScene {
     async showSquadsList(ctx: BotContext) {
         const armedForcesId = ctx.session.armed_forces_id;
         const query: PaginateQuery = {
-            limit: 10,
+            limit: SQUAD_DEFAULT_PER_PAGE,
             path: '',
             filter: {
                 forces_id: `$eq:${armedForcesId}`,
@@ -223,8 +224,7 @@ export class ArmedForcesScene {
         };
         const paginatedSquads = await this.squadsService.findAllSquads(query);
         const data = paginatedSquads.data;
-        const { itemsPerPage, totalItems, currentPage, totalPages } =
-            paginatedSquads.meta;
+        const { currentPage, totalPages } = paginatedSquads.meta;
         /**
          * const totalPage: number = this.paginationService.totalPage(
             total,

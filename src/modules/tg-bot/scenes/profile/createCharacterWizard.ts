@@ -1,5 +1,5 @@
 import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
-import { RULES, WORLD_MAP_IMAGE_PATH } from '../../constants/images';
+import { WORLD_MAP_IMAGE_PATH } from '../../constants/images';
 import { SceneIds } from '../../constants/scenes.id';
 import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
@@ -7,9 +7,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CharacterService } from '../../../character/services/character.service';
 import { MapService } from '../../../map/service/map.service';
 import { RaceService } from '../../../race/race.service';
-import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from 'src/common/pagination/constants/pagination.enum.constant';
 import { message } from 'telegraf/filters';
-import { Telegraf, Scenes, Composer, Markup } from 'telegraf';
+import { Telegraf, Scenes, Composer } from 'telegraf';
 import { UserService } from '../../../user/services/user.service';
 import { ENUM_ROLE_TYPE } from 'src/modules/user/constants/role.enum.constant';
 
@@ -83,20 +82,10 @@ export class CreateCharacterWizard {
                     race: '',
                     magic: '',
                 };
-                const dto: any = {
-                    _search: undefined,
-                    _limit: 20,
-                    _offset: 0,
-                    _order: { name: 'ASC' },
-                    _availableOrderBy: ['name'],
-                    _availableOrderDirection: [
-                        ENUM_PAGINATION_ORDER_DIRECTION_TYPE.ASC,
-                        ENUM_PAGINATION_ORDER_DIRECTION_TYPE.DESC,
-                    ],
-                };
-                const [states] = await this.mapService.getAllStates(dto);
-                console.log(states);
-                const buttons = states.map((item) => [
+                const paginateStates = await this.mapService.findAllStates({
+                    path: '',
+                });
+                const buttons = paginateStates.data.map((item) => [
                     { text: item.fullName, callback_data: item.id },
                 ]);
                 ctx.sendPhoto(
@@ -122,19 +111,10 @@ export class CreateCharacterWizard {
                 if ('data' in ctx.callbackQuery) {
                     ctx.scene.session.character.state = ctx.callbackQuery.data;
                 } else ctx.scene.leave();
-                const dto: any = {
-                    _search: undefined,
-                    _limit: 20,
-                    _offset: 0,
-                    _order: { name: 'ASC' },
-                    _availableOrderBy: ['name'],
-                    _availableOrderDirection: [
-                        ENUM_PAGINATION_ORDER_DIRECTION_TYPE.ASC,
-                        ENUM_PAGINATION_ORDER_DIRECTION_TYPE.DESC,
-                    ],
-                };
-                const [races] = await this.raceService.findAllRaces(dto);
-                const buttons = races.map((item) => [
+                const paginatedRaces = await this.raceService.findAll({
+                    path: '',
+                });
+                const buttons = paginatedRaces.data.map((item) => [
                     { text: item.name, callback_data: item.id },
                 ]);
                 ctx.sendPhoto(
@@ -180,7 +160,6 @@ export class CreateCharacterWizard {
                 if (age < 15) {
                     ctx.reply('вам должно быть больше 15');
                     ctx.wizard.back();
-
                 }
                 ctx.scene.session.character.age = age;
                 ctx.reply('Выберите пол персонажа', {
@@ -262,7 +241,7 @@ export class CreateCharacterWizard {
                 const state = await this.mapService.findStateById(
                     ctx.scene.session.character.state
                 );*/
-                /**
+/**
  * 
                 const title = `Проверьте, правильно ли заполнили базувую информацию о себе\n`;
                 const nameLine = `<strong>Имя</strong>: ${ctx.scene.session.character.name}\n`;

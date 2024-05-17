@@ -2,31 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
 import { RaceEntity } from './entity/race.entity';
 import { CreateRaceDto } from './dto/create-race.dto';
-
+import { PaginateQuery, Paginated, paginate } from 'nestjs-paginate';
 @Injectable()
 export class RaceService {
     constructor(
         @InjectRepository(RaceEntity)
         private readonly raceRepository: Repository<RaceEntity>
     ) {}
-    async findAllRaces(
-        dto: PaginationListDto
-    ): Promise<[RaceEntity[], number]> {
-        const [entities, total] = await this.raceRepository.findAndCount({
-            skip: dto._offset * dto._limit,
-            take: dto._limit,
-            order: dto._availableOrderBy?.reduce(
-                (accumulator, sort) => ({
-                    ...accumulator,
-                    [sort]: dto._order,
-                }),
-                {}
-            ),
+    public findAll(query: PaginateQuery): Promise<Paginated<RaceEntity>> {
+        return paginate(query, this.raceRepository, {
+            sortableColumns: ['id', 'name'],
+            nullSort: 'last',
+            defaultSortBy: [['id', 'DESC']],
+            searchableColumns: ['id'],
+            select: ['id', 'name'],
         });
-        return [entities, total];
     }
 
     async raceExistByName(name: string): Promise<boolean> {

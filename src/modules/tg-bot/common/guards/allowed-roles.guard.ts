@@ -17,11 +17,11 @@ export class RolesGuard implements CanActivate {
         if (!requiredRoles.length) return true;
         const execCtx = TelegrafExecutionContext.create(context);
         const ctx = execCtx.getContext<BotContext>();
-        const { user } = ctx.session;
+        /*   const { user } = ctx.session;
         const canPass = requiredRoles.some((role) => role === user.role);
         if (!canPass) {
             return false;
-        }
+        }*/
         return true;
     }
 }

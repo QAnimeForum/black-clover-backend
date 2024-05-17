@@ -1,6 +1,6 @@
 import { Scenes } from 'telegraf';
-import { BotWizardSession } from './bot.wizard.seesion';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
+import { BotWizardSession } from './bot.wizard.session';
 
 export interface BotSession extends Scenes.WizardSession<BotWizardSession> {
     devils_list: string;

@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, EntityManager, In, Repository } from 'typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 
 import { WantedEntity } from '../entity/wanted.entity';
@@ -9,7 +9,6 @@ import { ProblemEntity, ProblemType } from '../entity/problem.entity';
 
 import { ProblemTagEntity } from '../entity/problem-tag.entity';
 import { UserPrivilegeService } from 'src/modules/user/services/user-privilege.service';
-import { PermissionService } from 'src/common/permission/permission.service';
 import { CharacterEntity } from 'src/modules/character/entity/character.entity';
 import { ProblemStatementDto } from '../dto/problem-statement.dto';
 import { ProblemTagMapEntity } from '../entity/problem-tag-map.entity';
@@ -20,7 +19,7 @@ export interface ProblemJudgeInfo {}
 export interface SubmissionContent {}
 
 @Injectable()
-export class JudicialSystemService {
+export class ProblemSystemService {
     constructor(
         @InjectDataSource()
         private readonly connection: DataSource,
@@ -34,8 +33,6 @@ export class JudicialSystemService {
         private readonly problemFileRepository: Repository<ProblemFileEntity>,
         @InjectRepository(ProblemTagEntity)
         private readonly problemTagRepository: Repository<ProblemTagEntity>,
-        @Inject(forwardRef(() => PermissionService))
-        private readonly permissionService: PermissionService,
         @Inject(forwardRef(() => UserPrivilegeService))
         private readonly userPrivilegeService: UserPrivilegeService
     ) {}
@@ -120,11 +117,12 @@ export class JudicialSystemService {
     }
 
     // TODO
-    async updateProblemStatement(
+ 
+    /**   async updateProblemStatement(
         problem: ProblemEntity,
         request: UpdateProblemStatementRequestDto,
         tags: ProblemTagEntity[]
-    ): Promise<boolean> {}
+    ): Promise<boolean> {} */
     async setProblemTags(
         problem: ProblemEntity,
         problemTags: ProblemTagEntity[],
@@ -134,7 +132,8 @@ export class JudicialSystemService {
             problemId: problem.id,
         });
         if (problemTags.length === 0) return;
-        await transactionalEntityManager
+    /**
+     *     await transactionalEntityManager
             .createQueryBuilder()
             .insert()
             .into(ProblemTagMapEntity)
@@ -145,6 +144,7 @@ export class JudicialSystemService {
                 }))
             )
             .execute();
+     */
     }
 
     async setProblemDisplayId(
@@ -214,7 +214,7 @@ export class JudicialSystemService {
     // TODO
     async updateProblemTag(
         problemTag: ProblemTagEntity,
-        localizedNames: [Locale, string][],
+        name: string,
         color: string
     ): Promise<void> {}
 

@@ -22,8 +22,7 @@ import { InventoryScene } from './scenes/profile/inventoryScene';
 import { BioScene, EditCharactreName } from './scenes/profile/BioScene';
 import { CharacterParamsScene } from './scenes/profile/paramsScene';
 import {
-    AllDevilsByFloorScene,
-    AllDevilsByRankScene,
+
     AllDevilsScene,
 } from './scenes/devils/allDevilsScene';
 import {
@@ -44,9 +43,12 @@ import {
 import { MinesScene } from './scenes/organizations/minesWizard';
 import { MinesModule } from '../jobs/mines/mines.module';
 import { SquadsModule } from '../jobs/squards/squads.module';
-import { AcceptRequestWizard, ArmedForcesScene, RejectrequestWizard } from './scenes/organizations/armedForcesScene';
+import {
+    AcceptRequestWizard,
+    ArmedForcesScene,
+    RejectrequestWizard,
+} from './scenes/organizations/armedForcesScene';
 import { JudicialSystemModule } from '../jobs/judicial.system/judicial.system.module';
-import { PermissionModule } from 'src/common/permission/permission.module';
 import { APP_GUARD } from '@nestjs/core';
 import { TelegrafThrottlerGuard } from './common/guards/TelegrafThrottlerGuard';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -60,7 +62,6 @@ import { CreateSquadWizard } from './scenes/organizations/createSquadWizard';
             },
         ]),
         TypeOrmModule.forFeature([]),
-        PermissionModule,
         CharacterModule,
         GrimoireModule,
         RaceModule,
@@ -82,8 +83,8 @@ import { CreateSquadWizard } from './scenes/organizations/createSquadWizard';
         OrganizationsScene,
         HelpScene,
         AllDevilsScene,
-        AllDevilsByFloorScene,
-        AllDevilsByRankScene,
+       // AllDevilsByFloorScene,
+     //   AllDevilsByRankScene,
         AllSpiritsScene,
         MapWizard,
         HomeScene,

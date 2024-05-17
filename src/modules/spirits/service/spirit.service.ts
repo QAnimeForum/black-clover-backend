@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
 import { SpiritEntity } from '../entity/spirit.entity';
+import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 @Injectable()
 export class SpiritService {
     constructor(
@@ -28,10 +29,20 @@ export class SpiritService {
         return [entities, total];
     }*/
 
-    async findAllSpirits(): Promise<[SpiritEntity[], number]> {
-        const [entities, total] = await this.spiritRepository.findAndCount({});
-        return [entities, total];
+
+    public findAll(query: PaginateQuery): Promise<Paginated<SpiritEntity>> {
+        return paginate(query, this.spiritRepository, {
+            sortableColumns: ['id', 'name'],
+            nullSort: 'last',
+            defaultSortBy: [['name', 'DESC']],
+            searchableColumns: ['name'],
+            select: ['id', 'name', 'floor'],
+            filterableColumns: {
+                name: true,
+            },
+        });
     }
+
     async findSpiritById(spiritId: string): Promise<SpiritEntity> {
         return await this.spiritRepository.findOneBy({
             id: spiritId,

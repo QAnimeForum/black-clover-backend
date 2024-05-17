@@ -17,14 +17,12 @@ import { BotContext } from '../../interfaces/bot.context';
 import { UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 import { BUTTON_ACTIONS } from '../../constants/actions';
-import { JudicialSystemService } from 'src/modules/jobs/judicial.system/services/judicial.system.service';
+import { ProblemSystemService } from 'src/modules/jobs/judicial.system/services/problem.system.service';
 
 @Scene(SceneIds.magicParlament)
 @UseFilters(TelegrafExceptionFilter)
 export class MagicParlamentScene {
-    constructor(
-        private readonly judicialSystemService: JudicialSystemService
-    ) {}
+    constructor(private readonly problemSystemService: ProblemSystemService) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {
         const title = `<strong><u>Магический парламент</u></strong>`;
@@ -84,9 +82,7 @@ export class MagicParlamentScene {
 @Wizard(SceneIds.createRequestToParlament)
 @UseFilters(TelegrafExceptionFilter)
 export class RequestToParlamentWizard {
-    constructor(
-        private readonly judicialSystemService: JudicialSystemService
-    ) {}
+    constructor(private readonly problemSystemService: ProblemSystemService) {}
     @SceneEnter()
     async start(@Ctx() ctx: BotContext) {
         await ctx.reply(
@@ -153,7 +149,7 @@ export class RequestToParlamentWizard {
             ]),
         });
         await ctx.scene.enter(SceneIds.magicParlament);
-    } 
+    }
     @Action('CANCEL')
     @WizardStep(2)
     async cancel2(@Ctx() ctx: BotContext) {

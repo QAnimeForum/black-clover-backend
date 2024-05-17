@@ -81,7 +81,8 @@ export default class UserSeeder implements Seeder {
         await userRepository.insert({
             tgUserId: process.env.SUPER_ADMIN_ID,
             character: character,
-            role: ENUM_ROLE_TYPE.SUPER_ADMIN,
+            isAdmin: true,
+            //role: ENUM_ROLE_TYPE.SUPER_ADMIN,
         });
         /**
          * NPC
