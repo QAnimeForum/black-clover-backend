@@ -7,9 +7,9 @@ import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
 import { BUTTON_ACTIONS } from '../../constants/actions';
 import { Markup } from 'telegraf';
-import { MineService } from '../../../jobs/mines/services/mine.service';
+import { MineService } from '../../../mines/services/mine.service';
 import { PaginateQuery } from 'nestjs-paginate';
-import { MINE_DEFAULT_PER_PAGE } from 'src/modules/jobs/mines/constants/mine.list.constant';
+import { MINE_DEFAULT_PER_PAGE } from 'src/modules/mines/constants/mine.list.constant';
 
 @Scene(SceneIds.mines)
 @UseFilters(TelegrafExceptionFilter)

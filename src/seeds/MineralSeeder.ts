@@ -1,4 +1,4 @@
-import { MineralEntity } from '../modules/jobs/mines/entities/mineral.entity';
+import { MineralEntity } from '../modules/mines/entities/mineral.entity';
 import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
 import { minerals } from '../../Assets/json/items/mineral.json';

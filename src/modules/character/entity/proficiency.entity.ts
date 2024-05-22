@@ -1,4 +1,11 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import { CharacterCharacteristicsEntity } from './character.characteristics.entity';
 @Entity('proficiency')
 export class ProficiencyEntity {
@@ -17,4 +24,10 @@ export class ProficiencyEntity {
 
     @OneToOne(() => CharacterCharacteristicsEntity)
     characterCharacteristics: CharacterCharacteristicsEntity;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 }

@@ -1,10 +1,12 @@
 import {
     Column,
+    CreateDateColumn,
     Entity,
     JoinColumn,
     ManyToOne,
     OneToOne,
     PrimaryGeneratedColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import { StateEntity } from '../../map/enitity/state.entity';
 import { RaceEntity } from '../../race/entity/race.entity';
@@ -35,9 +37,14 @@ export class BackgroundEnity {
     sex: string;
 
     @Column({
-        type: 'int',
+        type: 'varchar',
     })
-    height: number;
+    history: string;
+
+    @Column({
+        type: 'varchar',
+    })
+    appearance: string;
 
     @ManyToOne(() => StateEntity, (state) => state.backgrounds)
     @JoinColumn({ name: 'state_id', referencedColumnName: 'id' })
@@ -45,4 +52,10 @@ export class BackgroundEnity {
 
     @OneToOne(() => CharacterEntity)
     character: CharacterEntity;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 }

@@ -1,9 +1,11 @@
 import {
     Column,
+    CreateDateColumn,
     Entity,
     JoinColumn,
     OneToOne,
     PrimaryGeneratedColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import { SkillEntity } from './skill.entity';
 
@@ -22,4 +24,10 @@ export class PassiveSkillEntity {
     @OneToOne(() => SkillEntity)
     @JoinColumn({ name: 'skill_id' })
     skill: SkillEntity;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 }

@@ -5,6 +5,8 @@ import {
     JoinColumn,
     PrimaryGeneratedColumn,
     ManyToOne,
+    CreateDateColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import { StateEntity } from './state.entity';
 import { BurgEntity } from './burg.entity';
@@ -40,4 +42,11 @@ export class ProvinceEntity {
 
     @OneToMany(() => BurgEntity, (burg) => burg.province)
     burgs: Array<BurgEntity>;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
+
 }

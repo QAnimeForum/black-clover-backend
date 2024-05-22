@@ -1,9 +1,11 @@
 import {
     Column,
+    CreateDateColumn,
     Entity,
     JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import { CharacterCharacteristicsEntity } from './character.characteristics.entity';
 @Entity('speed')
@@ -32,4 +34,10 @@ export class SpeedEntity {
         referencedColumnName: 'id',
     })
     characterCharacteristics: CharacterCharacteristicsEntity;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 }

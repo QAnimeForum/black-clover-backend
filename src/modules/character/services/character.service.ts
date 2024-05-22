@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CharacterEntity } from '../entity/character.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -17,16 +17,18 @@ import { ProficiencyEntity } from '../entity/proficiency.entity';
 import { AbilityEntity } from '../entity/ability.entity';
 import { ArmorClassEntity } from '../entity/armor.class.entity';
 import { SpeedEntity } from '../entity/speed.entity';
-import { ArmorEntity } from '../../jobs/business/entity/armor.entity';
+import { ArmorEntity } from '../../business/entity/armor.entity';
 import { ENUM_CHARCACTER_TYPE } from '../constants/character.type.enum';
 import { WalletEntity } from '../../money/entity/wallet.entity';
 import { UserEntity } from '../../user/entities/user.entity';
 import { CashEntity } from '../../money/entity/cash.entity';
 import { CharacterNameEditDto } from '../dto/character.name-edit.dto';
 import { ENUM_IS_GRIMOIRE_APPROVED } from 'src/modules/grimoire/constants/grimoire.enum.constant';
+import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
 @Injectable()
 export class CharacterService {
     constructor(
+        @Inject() readonly grimoireService: GrimoireService,
         @InjectRepository(CharacterEntity)
         private readonly characterRepository: Repository<CharacterEntity>,
         @InjectRepository(BackgroundEnity)

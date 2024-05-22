@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { BackgroundEnity } from '../../character/entity/background.entity';
 @Entity('race')
 export class RaceEntity {
@@ -17,4 +17,10 @@ export class RaceEntity {
 
     @OneToMany(() => BackgroundEnity, (background) => background.race)
     backgrounds: BackgroundEnity[];
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 }

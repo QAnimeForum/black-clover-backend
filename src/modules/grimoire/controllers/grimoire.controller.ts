@@ -47,7 +47,7 @@ import {
     GRIMOIRE_DEFAULT_PER_PAGE,
 } from '../constants/grimoire.list.constant';
 import { GrimoireListSerialization } from '../serializations/grimoire.list.serialization';
-import { ENUM_WEAPON_STATUS_CODE_ERROR } from '../../jobs/business/constants/weapon.status-code.constant';
+import { ENUM_WEAPON_STATUS_CODE_ERROR } from '../../business/constants/weapon.status-code.constant';
 
 @Controller({
     version: VERSION_NEUTRAL,

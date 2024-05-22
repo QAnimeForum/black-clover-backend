@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 @Entity('ability')
 export class AbilityEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -20,6 +26,12 @@ export class AbilityEntity {
         type: 'int',
     })
     modifier: number;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 
     /*@ManyToOne(
         () => CharacterCharacteristicsEntity,

@@ -41,14 +41,14 @@ import {
     RequestToParlamentWizard,
 } from './scenes/organizations/magicParlament';
 import { MinesScene } from './scenes/organizations/minesWizard';
-import { MinesModule } from '../jobs/mines/mines.module';
-import { SquadsModule } from '../jobs/squards/squads.module';
+import { MinesModule } from '../mines/mines.module';
+import { SquadsModule } from '../squards/squads.module';
 import {
     AcceptRequestWizard,
     ArmedForcesScene,
     RejectrequestWizard,
 } from './scenes/organizations/armedForcesScene';
-import { JudicialSystemModule } from '../jobs/judicial.system/judicial.system.module';
+import { JudicialSystemModule } from '../judicial.system/judicial.system.module';
 import { APP_GUARD } from '@nestjs/core';
 import { TelegrafThrottlerGuard } from './common/guards/TelegrafThrottlerGuard';
 import { ThrottlerModule } from '@nestjs/throttler';

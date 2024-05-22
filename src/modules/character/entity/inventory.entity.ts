@@ -1,9 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
-import { WeaponEntity } from '../../jobs/business/entity/weapon.entity';
-import { ArmorEntity } from '../../jobs/business/entity/armor.entity';
-import { ToolKitEnity } from '../../jobs/business/entity/toolkit.entity';
-import { VehicleEntity } from '../../jobs/business/entity/vehicle.entity';
-import { GearEntity } from '../../jobs/business/entity/gear.entity';
+import { Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { WeaponEntity } from '../../business/entity/weapon.entity';
+import { ArmorEntity } from '../../business/entity/armor.entity';
+import { ToolKitEnity } from '../../business/entity/toolkit.entity';
+import { VehicleEntity } from '../../business/entity/vehicle.entity';
+import { GearEntity } from '../../business/entity/gear.entity';
 @Entity('inventory')
 export class InventoryEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -34,4 +34,10 @@ export class InventoryEntity {
     @ManyToMany(() => VehicleEntity)
     @JoinTable()
     vehicles: Array<VehicleEntity>;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 }

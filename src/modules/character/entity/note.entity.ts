@@ -1,9 +1,11 @@
 import {
     Column,
+    CreateDateColumn,
     Entity,
     JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import { CharacterEntity } from './character.entity';
 
@@ -29,4 +31,10 @@ export class NoteEntity {
     @ManyToOne(() => CharacterEntity, (character) => character.notes)
     @JoinColumn({ name: 'character_id', referencedColumnName: 'id' })
     character: CharacterEntity;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 }

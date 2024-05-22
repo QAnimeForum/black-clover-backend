@@ -17,14 +17,14 @@ import { ARMED_FORCES, STATIC_IMAGE_BASE_PATH } from '../../constants/images';
 import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
-import { SquadsService } from 'src/modules/jobs/squards/service/squads.service';
+import { SquadsService } from 'src/modules/squards/service/squads.service';
 import { CharacterService } from 'src/modules/character/services/character.service';
-import { ArmedForcesRequestDto } from 'src/modules/jobs/squards/dto/armed.forces.request.dto';
+import { ArmedForcesRequestDto } from 'src/modules/squards/dto/armed.forces.request.dto';
 import { PaginateQuery } from 'nestjs-paginate';
-import { ArmedForcesRequestEntity } from 'src/modules/jobs/squards/entity/armed.forces.request.entity';
+import { ArmedForcesRequestEntity } from 'src/modules/squards/entity/armed.forces.request.entity';
 import { UserService } from 'src/modules/user/services/user.service';
-import { ENUM_ARMED_FORCES_REQUEST } from 'src/modules/jobs/squards/constants/armed.forces.request.list';
-import { SQUAD_DEFAULT_PER_PAGE } from 'src/modules/jobs/squards/constants/squad.list.constant';
+import { ENUM_ARMED_FORCES_REQUEST } from 'src/modules/squards/constants/armed.forces.request.list';
+import { SQUAD_DEFAULT_PER_PAGE } from 'src/modules/squards/constants/squad.list.constant';
 @Scene(SceneIds.armedForces)
 @UseFilters(TelegrafExceptionFilter)
 export class ArmedForcesScene {

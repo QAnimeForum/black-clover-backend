@@ -6,11 +6,13 @@ import {
     PrimaryGeneratedColumn,
     ManyToOne,
     OneToOne,
+    CreateDateColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import { ProvinceEntity } from './province.entity';
 import { StateFormEntity } from './state.form.entity';
 import { BackgroundEnity } from '../../character/entity/background.entity';
-import { ArmedForcesEntity } from '../../jobs/squards/entity/armed.forces.entity';
+import { ArmedForcesEntity } from '../../squards/entity/armed.forces.entity';
 
 @Entity('state')
 export class StateEntity {
@@ -65,4 +67,10 @@ export class StateEntity {
 
     @OneToOne(() => ArmedForcesEntity)
     forces: ArmedForcesEntity;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 }

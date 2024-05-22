@@ -1,9 +1,11 @@
 import {
     Column,
+    CreateDateColumn,
     Entity,
     JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import { DevilUnionEntity } from './devil.union.entity';
 @Entity('devil_spell')
@@ -44,4 +46,11 @@ export class DevilSpellEntity {
     @ManyToOne(() => DevilUnionEntity, (devilUnion) => devilUnion.spells)
     @JoinColumn({ name: 'union_id', referencedColumnName: 'id' })
     union: DevilUnionEntity;
+
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 }

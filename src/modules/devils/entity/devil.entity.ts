@@ -4,6 +4,8 @@ import {
     PrimaryGeneratedColumn,
     OneToOne,
     JoinColumn,
+    CreateDateColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import { DevilUnionEntity } from './devil.union.entity';
 import { ENUM_DEVIL_RANK } from '../constants/devil.ranks.enum';
@@ -86,4 +88,11 @@ export class DevilEntity {
         name: 'union_100_id',
     })
     union_100: DevilUnionEntity;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
+
 }

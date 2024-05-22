@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { SpellEntity } from '../entity/spell.entity';
 import { GrimoireEntity } from '../entity/grimoire.entity';
 import { GrimoireUpdateNameDto } from '../dto/grimoire.update-name.dto';
@@ -18,6 +18,8 @@ import { UserEntity } from '../../user/entities/user.entity';
 @Injectable()
 export class GrimoireService {
     constructor(
+        @InjectDataSource()
+        private readonly connection: DataSource,
         @InjectRepository(GrimoireEntity)
         private readonly grimoireRepository: Repository<GrimoireEntity>,
         @InjectRepository(SpellEntity)
@@ -43,9 +45,13 @@ export class GrimoireService {
         return [entities, total];
     }
 
-    async grimoireIsApproved() {
-
+    async findGrimoireById(id: string): Promise<GrimoireEntity> {
+        const entity = await this.grimoireRepository.findOneBy({
+            id: id,
+        });
+        return entity;
     }
+
     async findGrimoireByUserTgId(tg_id: string): Promise<GrimoireEntity> {
         const entity = await this.userRepository.findOne({
             where: {
@@ -58,13 +64,6 @@ export class GrimoireService {
             },
         });
         return entity.character.grimoire;
-    }
-
-    async findGrimoireById(id: string): Promise<GrimoireEntity> {
-        const entity = await this.grimoireRepository.findOneBy({
-            id: id,
-        });
-        return entity;
     }
 
     async createEmptyGrimoire(coverSymbol: string) {

@@ -4,7 +4,7 @@ import { Composer, Scenes, Telegraf } from 'telegraf';
 import { CharacterService } from 'src/modules/character/services/character.service';
 import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
 import { TgBotService } from '../../services/tg-bot.service';
-import { SquadsService } from 'src/modules/jobs/squards/service/squads.service';
+import { SquadsService } from 'src/modules/squards/service/squads.service';
 import { SceneIds } from '../../constants/scenes.id';
 import { message } from 'telegraf/filters';
 

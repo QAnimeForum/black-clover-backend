@@ -1,5 +1,12 @@
-import { ArmedForcesRankEntity } from '../../jobs/squards/entity/armed.forces.rank.entity';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ArmedForcesRankEntity } from '../../squards/entity/armed.forces.rank.entity';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('salary')
 export class SalaryEntity {
@@ -31,4 +38,10 @@ export class SalaryEntity {
 
     @OneToOne(() => ArmedForcesRankEntity)
     squadRank: ArmedForcesRankEntity;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 }

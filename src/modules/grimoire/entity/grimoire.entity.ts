@@ -4,13 +4,13 @@ import {
     PrimaryGeneratedColumn,
     OneToMany,
     OneToOne,
-    JoinColumn,
+    CreateDateColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import { SpellEntity } from './spell.entity';
-import { ManaZoneEntity } from './mana.zone.entity';
-import { ManaSkinEntity } from './mana.skin.entity';
 import { CharacterEntity } from '../../character/entity/character.entity';
 import { ENUM_IS_GRIMOIRE_APPROVED } from '../constants/grimoire.enum.constant';
+import { Expose } from 'class-transformer';
 
 @Entity('grimoire')
 export class GrimoireEntity {
@@ -28,6 +28,24 @@ export class GrimoireEntity {
         default: ENUM_IS_GRIMOIRE_APPROVED.NOT_APPROVED,
     })
     status: ENUM_IS_GRIMOIRE_APPROVED;
+
+    @Column({
+        type: 'varchar',
+        nullable: true,
+    })
+    cover: string;
+
+    @Expose({ name: 'cover_url' })
+    getAvatarImagePath(): string {
+        switch (process.env.disk) {
+            case 'local':
+                return `${process.env.APP_API_URL}/grimoire/${this.cover}`;
+            case 's3':
+                return `${process.env.AWS_BUCKET_URL}/grimoire/${this.cover}`;
+            default:
+                return null;
+        }
+    }
     /*
     @Column({
         type: 'enum',
@@ -41,7 +59,21 @@ export class GrimoireEntity {
     })
     coverSymbol: string;
 
-    @OneToOne(() => ManaSkinEntity)
+    @OneToMany(() => SpellEntity, (spell) => spell.grimoire)
+    spells: Array<SpellEntity>;
+
+    @OneToOne(() => CharacterEntity)
+    character: CharacterEntity;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
+}
+
+/**
+ *   @OneToOne(() => ManaSkinEntity)
     @JoinColumn({
         name: 'mana_skin_id',
         referencedColumnName: 'id',
@@ -53,9 +85,4 @@ export class GrimoireEntity {
         referencedColumnName: 'id',
     })
     manaZone: ManaZoneEntity;
-    @OneToMany(() => SpellEntity, (spell) => spell.grimoire)
-    spells: Array<SpellEntity>;
-
-    @OneToOne(() => CharacterEntity)
-    character: CharacterEntity;
-}
+ */

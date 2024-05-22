@@ -14,7 +14,6 @@ import { WalletEntity } from '../modules/money/entity/wallet.entity';
 import { CharacterEntity } from '../modules/character/entity/character.entity';
 import { ENUM_CHARCACTER_TYPE } from '../modules/character/constants/character.type.enum';
 import { UserEntity } from '../modules/user/entities/user.entity';
-import { ENUM_ROLE_TYPE } from '../modules/user/constants/role.enum.constant';
 import { ENUM_IS_GRIMOIRE_APPROVED } from '../modules/grimoire/constants/grimoire.enum.constant';
 import { CharacterCreateDto } from 'src/modules/character/dto/character.create.dto';
 import * as wizard_king from '../../Assets/json/nps/wizard_king.json';
@@ -127,9 +126,11 @@ export default class UserSeeder implements Seeder {
             await backgroundRepository.insert({
                 name: dto.name,
                 race: races[0],
-                height: dto.height,
+                // height: dto.height,
                 sex: dto.sex,
                 age: dto.age,
+                history: '',
+                appearance: '',
                 state: states[0],
             })
         ).raw[0];
@@ -261,6 +262,7 @@ export default class UserSeeder implements Seeder {
                 characterCharacteristics: characteristitcsEntity,
                 grimoire: grimoireEntity,
                 inventory: inventoryEntity,
+                prodigy: false,
                 wallet: wallet,
             })
         ).raw[0];

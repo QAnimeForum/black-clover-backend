@@ -2,11 +2,11 @@ import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
 import { clover } from '../../Assets/json/armedForces/clover-armed-forces.json';
 import { squads } from '../../Assets/json/armedForces/default-squad.json';
-import { ArmedForcesEntity } from '../modules/jobs/squards/entity/armed.forces.entity';
+import { ArmedForcesEntity } from '../modules/squards/entity/armed.forces.entity';
 import { StateEntity } from '../modules/map/enitity/state.entity';
 import { SalaryEntity } from '../modules/money/entity/amount.entity';
-import { SquadEntity } from '../modules/jobs/squards/entity/squad.entity';
-import { ArmedForcesRankEntity } from '../modules/jobs/squards/entity/armed.forces.rank.entity';
+import { SquadEntity } from '../modules/squards/entity/squad.entity';
+import { ArmedForcesRankEntity } from '../modules/squards/entity/armed.forces.rank.entity';
 export default class ArmedForcesSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<any> {
         const armedForcesRepository =

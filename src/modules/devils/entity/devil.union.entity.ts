@@ -1,4 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import { DevilUnionsPercentEnum } from '../constants/devil.union.percent.enum';
 import { DevilSpellEntity } from './devil.spell.entity';
 
@@ -16,4 +23,10 @@ export class DevilUnionEntity {
 
     @OneToMany(() => DevilSpellEntity, (devilSpell) => devilSpell.union)
     spells: Array<DevilSpellEntity>;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 }

@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    OneToOne,
+    JoinColumn,
+    CreateDateColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import { CashEntity } from './cash.entity';
 import { BankAccountEntity } from './bank.account.entity';
 import { CharacterEntity } from '../../character/entity/character.entity';
@@ -17,4 +24,10 @@ export class WalletEntity {
 
     @OneToOne(() => CharacterEntity)
     character: CharacterEntity;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 }

@@ -1,4 +1,11 @@
-import { Entity, Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Entity,
+    Column,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    CreateDateColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import { ProvinceEntity } from './province.entity';
 
 @Entity('burg')
@@ -22,6 +29,12 @@ export class BurgEntity {
 
     @ManyToOne(() => ProvinceEntity, (province) => province.burgs)
     province: ProvinceEntity;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 
     /**
     *  @OneToOne(() => StateEntity, (state) => state.capital) // specify inverse side as a second parameter

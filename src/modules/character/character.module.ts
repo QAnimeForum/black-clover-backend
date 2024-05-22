@@ -17,12 +17,12 @@ import { PassiveSkillEntity } from './entity/passive.skill.entity';
 import { ProficiencyEntity } from './entity/proficiency.entity';
 import { SkillEntity } from './entity/skill.entity';
 import { SpeedEntity } from './entity/speed.entity';
-import { WeaponEntity } from '../jobs/business/entity/weapon.entity';
-import { ArmorEntity } from '../jobs/business/entity/armor.entity';
-import { ToolKitEnity } from '../jobs/business/entity/toolkit.entity';
-import { VehicleEntity } from '../jobs/business/entity/vehicle.entity';
+import { WeaponEntity } from '../business/entity/weapon.entity';
+import { ArmorEntity } from '../business/entity/armor.entity';
+import { ToolKitEnity } from '../business/entity/toolkit.entity';
+import { VehicleEntity } from '../business/entity/vehicle.entity';
 import { CashEntity } from '../money/entity/cash.entity';
-import { GearEntity } from '../jobs/business/entity/gear.entity';
+import { GearEntity } from '../business/entity/gear.entity';
 import { UserEntity } from '../user/entities/user.entity';
 @Module({
     imports: [

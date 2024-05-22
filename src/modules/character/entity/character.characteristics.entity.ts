@@ -1,10 +1,12 @@
 import {
     Column,
+    CreateDateColumn,
     Entity,
     JoinColumn,
     OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import { CharacterEntity } from './character.entity';
 import { AbilityEntity } from './ability.entity';
@@ -111,6 +113,12 @@ export class CharacterCharacteristicsEntity {
 
     @OneToMany(() => SpeedEntity, (speed) => speed.characterCharacteristics)
     speeds: SpeedEntity[];
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 }
 
 /*

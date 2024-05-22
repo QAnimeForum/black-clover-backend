@@ -4,7 +4,6 @@ import { Entity, Index, ManyToOne, PrimaryColumn } from 'typeorm';
 export enum UserPrivilegeType {
     ManageUser = 'ManageUser',
     ManageUserGroup = 'ManageGrimoire',
-    ManageProblem = 'ManageProblem',
     ManageArmedForces = 'ManageSquads',
 }
 

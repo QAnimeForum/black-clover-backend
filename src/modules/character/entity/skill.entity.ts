@@ -4,6 +4,8 @@ import {
     Column,
     JoinColumn,
     OneToOne,
+    CreateDateColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import { AbilityEntity } from './ability.entity';
 import { ProficiencyEntity } from './proficiency.entity';
@@ -40,4 +42,11 @@ export class SkillEntity {
         type: 'int',
     })
     extraBonus: number;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+    
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
+
 }

@@ -1,6 +1,13 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import { CharacterCharacteristicsEntity } from './character.characteristics.entity';
-import { ArmorEntity } from '../../jobs/business/entity/armor.entity';
+import { ArmorEntity } from '../../business/entity/armor.entity';
 
 @Entity('armor_class')
 export class ArmorClassEntity {
@@ -19,4 +26,10 @@ export class ArmorClassEntity {
     characterCharacteristics: CharacterCharacteristicsEntity;
     @OneToOne(() => ArmorEntity)
     armor: ArmorEntity;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 }

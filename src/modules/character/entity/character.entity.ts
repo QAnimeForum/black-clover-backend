@@ -1,5 +1,6 @@
 import {
     Column,
+    CreateDateColumn,
     Entity,
     JoinColumn,
     JoinTable,
@@ -7,6 +8,7 @@ import {
     OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import { BackgroundEnity } from './background.entity';
 import { CharacterCharacteristicsEntity } from './character.characteristics.entity';
@@ -15,16 +17,36 @@ import { GrimoireEntity } from '../../grimoire/entity/grimoire.entity';
 import { NoteEntity } from './note.entity';
 import { WalletEntity } from '../../money/entity/wallet.entity';
 import { TaskEntity } from '../../events/entity/task.entity';
-import { BusinessEntity } from '../../jobs/business/entity/business.entity';
-import { FactionMemberEntity } from '../../jobs/judicial.system/entity/faction.member.entity';
-import { SquadMemberEntity } from '../../jobs/squards/entity/squad.member.entity';
+import { BusinessEntity } from '../../business/entity/business.entity';
+import { FactionMemberEntity } from '../../judicial.system/entity/faction.member.entity';
+import { SquadMemberEntity } from '../../squards/entity/squad.member.entity';
 import { ENUM_CHARCACTER_TYPE } from '../constants/character.type.enum';
 import { UserEntity } from '../../user/entities/user.entity';
-import { ArmedForcesRequestEntity } from '../../jobs/squards/entity/armed.forces.request.entity';
+import { ArmedForcesRequestEntity } from '../../squards/entity/armed.forces.request.entity';
+import { ProblemEntity } from '../../judicial.system/entity/problem.entity';
+import { Expose } from 'class-transformer';
 @Entity('character')
 export class CharacterEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
+
+    @Column({
+        type: 'varchar',
+        nullable: true,
+    })
+    avatar: string;
+
+    @Expose({ name: 'avatar_url' })
+    getAvatarImagePath(): string {
+        switch (process.env.disk) {
+            case 'local':
+                return `${process.env.APP_API_URL}/avatar/${this.avatar}`;
+            case 's3':
+                return `${process.env.AWS_BUCKET_URL}/avatar/${this.avatar}`;
+            default:
+                return null;
+        }
+    }
 
     @Column({
         type: 'enum',
@@ -32,6 +54,11 @@ export class CharacterEntity {
         default: ENUM_CHARCACTER_TYPE.PC,
     })
     type: ENUM_CHARCACTER_TYPE;
+
+    @Column({
+        type: 'boolean',
+    })
+    prodigy: boolean;
 
     @OneToOne(() => BackgroundEnity)
     @JoinColumn({
@@ -87,4 +114,13 @@ export class CharacterEntity {
         (requests) => requests.armedForces
     )
     requests: Array<ArmedForcesRequestEntity>;
+
+    @OneToMany(() => ProblemEntity, (problem) => problem.creator)
+    problems: Array<ProblemEntity>;
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
 }
