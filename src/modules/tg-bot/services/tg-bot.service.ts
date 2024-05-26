@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { join } from 'path';
 import { unlink, writeFile } from 'fs/promises';
@@ -9,22 +9,26 @@ import { Repository } from 'typeorm';
 import { BotContext } from '../interfaces/bot.context';
 import { getFileMimeType } from 'src/utils/utils';
 import { ForbiddenError } from '@casl/ability';
+import { UserService } from 'src/modules/user/services/user.service';
+import { UserEntity } from 'src/modules/user/entities/user.entity';
+import { CharacterService } from 'src/modules/character/services/character.service';
 
 @Injectable()
 export class TgBotService {
     constructor(
-      //  @InjectRepository(UserEntity)
-      //  private readonly userRepository: Repository<UserEntity>,
+        //  @InjectRepository(UserEntity)
+        //  private readonly userRepository: Repository<UserEntity>,
+        private readonly userService: UserService,
+        private readonly characterService: CharacterService,
         private readonly configService: ConfigService
         // private readonly dbLoggerService: DbLoggerService
     ) {}
 
-    async findTgUserById(tgId: string) {
-     /*   return this.userRepository.find({
-            where: {
-                tgUserId: tgId,
-            },
-        });*/
+    async findUserByTgId(tgId: string): Promise<UserEntity> {
+        return this.userService.findUserById(tgId);
+    }
+    async findCharacterByCharacterId(tgId: string): Promise<UserEntity> {
+        return this.userService.findUserById(tgId);
     }
 
     async downloadAndSaveLocalFile(filePath: string) {

@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { ProvinceEntity } from './province.entity';
 import { StateFormEntity } from './state.form.entity';
-import { BackgroundEnity } from '../../character/entity/background.entity';
+import { BackgroundEntity } from '../../character/entity/background.entity';
 import { ArmedForcesEntity } from '../../squards/entity/armed.forces.entity';
 
 @Entity('state')
@@ -56,8 +56,8 @@ export class StateEntity {
 
   */
 
-    @OneToMany(() => BackgroundEnity, (background) => background.state)
-    backgrounds: BackgroundEnity[];
+    @OneToMany(() => BackgroundEntity, (background) => background.state)
+    backgrounds: BackgroundEntity[];
     //  @OneToOne(() => StateFormEntity, (form) => form.state, { cascade: true })
     @ManyToOne(() => StateFormEntity, (stateForm) => stateForm.states)
     @JoinColumn({ name: 'form_id', referencedColumnName: 'id' })

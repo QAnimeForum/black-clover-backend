@@ -11,7 +11,6 @@ export class UserEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-
     @Column({
         type: 'boolean',
         name: 'is_admin',
@@ -20,6 +19,7 @@ export class UserEntity {
 
     @Column({
         type: 'varchar',
+        nullable: false,
     })
     tgUserId: string;
 
@@ -29,4 +29,11 @@ export class UserEntity {
         referencedColumnName: 'id',
     })
     character: CharacterEntity;
+
+    @Column({
+        type: 'varchar',
+        name: 'character_id',
+        nullable: false,
+    })
+    characterId: string;
 }

@@ -16,7 +16,6 @@ import {
 } from 'src/common/response/decorators/response.decorator';
 import { ArmorCreateDto } from '../dto/armor.create.dto';
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
-import { BusinessService } from '../service/business.service';
 import { ArmorRequestDto } from '../dto/armor.request.dto';
 import { ArmorGetSerialization } from '../serializations/armor.get.serialization';
 import { ResponseIdSerialization } from 'src/common/response/serializations/response.id.serialization';
@@ -46,22 +45,28 @@ import { WeaponEntity } from '../entity/weapon.entity';
 import { VehicleEntity } from '../entity/vehicle.entity';
 import { GearEntity } from '../entity/gear.entity';
 import { ToolKitEnity } from '../entity/toolkit.entity';
+import { ArmorService } from '../service/armor.service';
+import { GearService } from '../service/gear.service';
+import { ToolkitService } from '../service/toolkit.service';
+import { VehicleService } from '../service/vehicles.service';
+import { WeaponService } from '../service/weapon.service';
 @Controller({
     version: VERSION_NEUTRAL,
     path: '/business',
 })
 export class BusinessController {
-    constructor(
-        private readonly businessService: BusinessService,
-        private readonly paginationService: PaginationService
-    ) {}
+    constructor(private readonly armorService: ArmorService,
+        private readonly gearService: GearService,
+        private readonly toolkitService: ToolkitService,
+        private readonly vehicleService: VehicleService,
+        private readonly weaponService: WeaponService,    ) {}
 
     @ResponsePaging('armor.list', {
         serialization: ArmorListSerialization,
     })
     @Get('/armor/list')
     async getAllArmors(@Paginate() query): Promise<Paginated<ArmorEntity>> {
-        return this.businessService.findAllArmors(query);
+        return this.armorService.findAllArmors(query);
     }
 
     @Response('armor.get', {
@@ -70,7 +75,7 @@ export class BusinessController {
     @RequestParamGuard(ArmorRequestDto)
     @Get('/armor/get/:armor')
     async getOneArmor(@Param() params: ArmorRequestDto): Promise<IResponse> {
-        const armor = await this.businessService.findArmorById(params.armor);
+        const armor = await this.armorService.findArmorById(params.armor);
         if (!armor) {
             throw new ConflictException({
                 statusCode: ENUM_ARMOR_STATUS_CODE_ERROR.ARMOR_EXIST_ERROR,
@@ -91,7 +96,7 @@ export class BusinessController {
         dto: ArmorCreateDto
     ): Promise<IResponse> {
         try {
-            const armorEntity = await this.businessService.createArmor(dto);
+            const armorEntity = await this.armorService.createArmor(dto);
             return {
                 data: { _id: armorEntity.raw[0].id },
             };
@@ -107,7 +112,7 @@ export class BusinessController {
     @RequestParamGuard(ArmorRequestDto)
     @Delete('/delete/:armor')
     async deleteArmor(@Param() params: ArmorRequestDto): Promise<void> {
-        await this.businessService.deleteArmor(params.armor);
+        await this.armorService.deleteArmor(params.armor);
         return;
     }
 
@@ -116,7 +121,7 @@ export class BusinessController {
     })
     @Get('/gear/list')
     async getAllGears(@Paginate() query): Promise<Paginated<GearEntity>> {
-        return this.businessService.findAllGears(query);
+        return this.gearService.findAllGears(query);
     }
 
     @Response('gear.get', {
@@ -125,7 +130,7 @@ export class BusinessController {
     @RequestParamGuard(GearRequestDto)
     @Get('/gear/get/:gear')
     async getOneGear(@Param() params: GearRequestDto): Promise<IResponse> {
-        const gear = await this.businessService.findGearById(params.gear);
+        const gear = await this.gearService.findGearById(params.gear);
         if (!gear) {
             throw new ConflictException({
                 statusCode: ENUM_GEAR_STATUS_CODE_ERROR.GEAR_EXIST_ERROR,
@@ -146,7 +151,7 @@ export class BusinessController {
         dto: GearCreateDto
     ): Promise<IResponse> {
         try {
-            const gearEntity = await this.businessService.createGear(dto);
+            const gearEntity = await this.gearService.createGear(dto);
             return {
                 data: { _id: gearEntity.raw[0].id },
             };
@@ -162,7 +167,7 @@ export class BusinessController {
     @RequestParamGuard(GearRequestDto)
     @Delete('/gear/:gear')
     async deleteGear(@Param() params: GearRequestDto): Promise<void> {
-        await this.businessService.deleteGear(params.gear);
+        await this.gearService.deleteGear(params.gear);
         return;
     }
 
@@ -171,7 +176,7 @@ export class BusinessController {
     })
     @Get('/toolkit/list')
     async getAllToolkits(@Paginate() query): Promise<Paginated<ToolKitEnity>> {
-        return this.businessService.findAllToolkits(query);
+        return this.toolkitService.findAllToolkits(query);
     }
 
     @Response('toolkit.get', {
@@ -182,7 +187,7 @@ export class BusinessController {
     async getOneToolkit(
         @Param() params: ToolKitRequestDto
     ): Promise<IResponse> {
-        const toolkit = await this.businessService.findToolkitById(
+        const toolkit = await this.toolkitService.findToolkitById(
             params.toolkit
         );
         if (!toolkit) {
@@ -205,7 +210,7 @@ export class BusinessController {
         dto: ToolKitCreateDto
     ): Promise<IResponse> {
         try {
-            const toolkitEntity = await this.businessService.createToolkit(dto);
+            const toolkitEntity = await this.toolkitService.createToolkit(dto);
             return {
                 data: { _id: toolkitEntity.raw[0].id },
             };
@@ -221,7 +226,7 @@ export class BusinessController {
     @RequestParamGuard(ArmorRequestDto)
     @Delete('/toolkit/delete/:toolkit')
     async deleteToolkit(@Param() params: ToolKitRequestDto): Promise<void> {
-        await this.businessService.deleteTookit(params.toolkit);
+        await this.toolkitService.deleteTookit(params.toolkit);
         return;
     }
 
@@ -230,7 +235,7 @@ export class BusinessController {
     })
     @Get('/vehicle/list')
     async getAllVehicle(@Paginate() query): Promise<Paginated<VehicleEntity>> {
-        return this.businessService.findAllVehicles(query);
+        return this.vehicleService.findAllVehicles(query);
     }
 
     @Response('vehicle.get', {
@@ -241,7 +246,7 @@ export class BusinessController {
     async getOneVehicle(
         @Param() params: VehicleRequestDto
     ): Promise<IResponse> {
-        const vehicle = await this.businessService.findVehicleById(
+        const vehicle = await this.vehicleService.findVehicleById(
             params.vehicle
         );
         if (!vehicle) {
@@ -264,7 +269,7 @@ export class BusinessController {
         dto: VehicleCreateDto
     ): Promise<IResponse> {
         try {
-            const vehicleEntity = await this.businessService.createVehicle(dto);
+            const vehicleEntity = await this.vehicleService.createVehicle(dto);
             return {
                 data: { _id: vehicleEntity.raw[0].id },
             };
@@ -280,7 +285,7 @@ export class BusinessController {
     @RequestParamGuard(ArmorRequestDto)
     @Delete('/delete/:vehicle')
     async deleteVehicle(@Param() params: VehicleRequestDto): Promise<void> {
-        await this.businessService.deleteVehicle(params.vehicle);
+        await this.vehicleService.deleteVehicle(params.vehicle);
         return;
     }
 
@@ -289,7 +294,7 @@ export class BusinessController {
     })
     @Get('/weapon/list')
     async getAllWeapons(@Paginate() query): Promise<Paginated<WeaponEntity>> {
-        return await this.businessService.findAllWeapons(query);
+        return await this.weaponService.findAllWeapons(query);
     }
 
     @Response('weapon.get', {
@@ -298,7 +303,7 @@ export class BusinessController {
     @RequestParamGuard(ArmorRequestDto)
     @Get('/weapon/get/:weapon')
     async getOneWeapon(@Param() params: ArmorRequestDto): Promise<IResponse> {
-        const weapon = await this.businessService.findWeaponById(params.armor);
+        const weapon = await this.weaponService.findWeaponById(params.armor);
         if (!weapon) {
             throw new ConflictException({
                 statusCode: ENUM_WEAPON_STATUS_CODE_ERROR.WEAPON_EXIST_ERROR,
@@ -319,7 +324,7 @@ export class BusinessController {
         dto: WeaponCreateDto
     ): Promise<IResponse> {
         try {
-            const weaponEntity = await this.businessService.createWeapon(dto);
+            const weaponEntity = await this.weaponService.createWeapon(dto);
             return {
                 data: { _id: weaponEntity.raw[0].id },
             };
@@ -335,7 +340,7 @@ export class BusinessController {
     @RequestParamGuard(WeaponRequestDto)
     @Delete('/delete/:weapon')
     async deleteWeapon(@Param() params: WeaponRequestDto): Promise<void> {
-        await this.businessService.deleteWeapon(params.weapon);
+        await this.weaponService.deleteWeapon(params.weapon);
         return;
     }
 }

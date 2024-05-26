@@ -1,56 +1,51 @@
-import { Ctx, Hears, On, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
-import { TgBotService } from '../services/tg-bot.service';
+import { Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { BotContext } from '../interfaces/bot.context';
 import { TelegrafExceptionFilter } from '../filters/tg-bot.filter';
-import { SceneIds } from '../constants/scenes.id';
-import { UseFilters, UseGuards } from '@nestjs/common';
+import { Inject, Logger, UseFilters } from '@nestjs/common';
 
-import {
-    HELLO_IMAGE_PATH,
-    SPIRITS_IMAGE_PATH,
-    STATIC_IMAGE_BASE_PATH,
-} from '../constants/images';
+import { HELLO_IMAGE_PATH } from '../constants/images';
 import { Markup } from 'telegraf';
-import { BUTTON_ACTIONS } from '../constants/actions';
-import { SpiritService } from '../../spirits/service/spirit.service';
 import { UserService } from 'src/modules/user/services/user.service';
-import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
-import { RolesGuard } from '../common/guards/allowed-roles.guard';
 import { AllowedRoles } from '../common/decorators/allowed-roles.decorator';
 import { ENUM_ROLE_TYPE } from 'src/modules/user/constants/role.enum.constant';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { ENUM_SCENES_ID } from '../constants/scenes.id.enum';
+import {
+    ADMIN_PANEL_BUTTON_NAME,
+    ALL_DEVILS_BUTTON_NAME,
+    ALL_SPIRITS_BUTTON_NAME,
+    ANNOUNCEMENTS_BUTTON_NAME,
+    HELP_BUTTON_NAME,
+    MAP_BUTTON_NAME,
+    ORGANIZATIONS_BUTTON_NAME,
+    PROFILE_BUTTON_NAME,
+    QUESTS_BUTTON_NAME,
+} from '../constants/button-names.constant';
 
-@Scene(SceneIds.home)
+@Scene(ENUM_SCENES_ID.HOME_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
-@UseGuards(RolesGuard)
-@AllowedRoles(ENUM_ROLE_TYPE.SUPER_ADMIN)
 export class HomeScene {
     constructor(
         private readonly userSerivce: UserService,
-        private readonly grimoireService: GrimoireService,
-        private readonly spiritsService: SpiritService
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
 
-    @SceneEnter()
+    @SceneEnter(_BUTTON_NAME)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
-    async enter(@Ctx() ctx: BotContext, @Sender() sender) {
-        const userTgId = sender.id;
+    async enter(@Ctx() ctx: BotContext, @Sender('id') tgId: string) {
         const isShowAdminButton =
-            await this.userSerivce.isShowAdminButton(userTgId);
+            await this.userSerivce.isShowAdminButton(tgId);
         const caption = 'Привет, путник!';
         ctx.reply(
             `Поздравляем! Вы заполнили базовую информацию о персонаже. \n Для того, чтобы принимать активное участие в мире клевера, вам необходимо иметь гримуар. Перейдите во вкладку`
         );
         const buttons = [
-            [
-                BUTTON_ACTIONS.profile,
-                BUTTON_ACTIONS.ORGANIZATIONS,
-                BUTTON_ACTIONS.map,
-            ],
-            [BUTTON_ACTIONS.allDevils, BUTTON_ACTIONS.allSpirits],
-            [BUTTON_ACTIONS.quests, BUTTON_ACTIONS.help],
+            [PROFILE_BUTTON_NAME, ORGANIZATIONS_BUTTON_NAME, MAP_BUTTON_NAME],
+            [ALL_SPIRITS_BUTTON_NAME, ALL_DEVILS_BUTTON_NAME],
+            [ANNOUNCEMENTS_BUTTON_NAME, QUESTS_BUTTON_NAME, HELP_BUTTON_NAME],
         ];
         if (isShowAdminButton) {
-            buttons.push([BUTTON_ACTIONS.ADMIN_PANEL]);
+            buttons.push([ADMIN_PANEL_BUTTON_NAME]);
         }
         console.log(buttons);
         ctx.sendPhoto(
@@ -64,53 +59,54 @@ export class HomeScene {
         );
     }
 
-    @Hears(BUTTON_ACTIONS.ORGANIZATIONS)
+    @Hears(ORGANIZATIONS_BUTTON_NAME)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
     async armedForces(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.organizations);
+        await ctx.scene.enter(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID);
     }
 
-    @Hears(BUTTON_ACTIONS.ADMIN_PANEL)
+    @Hears(ADMIN_PANEL_BUTTON_NAME)
     @AllowedRoles(ENUM_ROLE_TYPE.ADMIN)
     async admin(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.ADMIN);
+        await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
     }
-    @Hears(BUTTON_ACTIONS.profile)
+    @Hears(PROFILE_BUTTON_NAME)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
     async profile(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.profile);
+        await ctx.scene.enter(ENUM_SCENES_ID.PROFILE_SCENE_ID);
     }
-    @Hears(BUTTON_ACTIONS.map)
+    @Hears(MAP_BUTTON_NAME)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
     async map(@Ctx() ctx: BotContext) {
-        ctx.reply('Карта пока выключена');
-        //  await ctx.scene.enter(SceneIds.map);
+        await ctx.scene.enter(ENUM_SCENES_ID.MAP_SCENE_ID);
     }
 
-    @Hears(BUTTON_ACTIONS.allDevils)
+    @Hears(ALL_DEVILS_BUTTON_NAME)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
     async devils(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.allDevils);
+        await ctx.scene.enter(ENUM_SCENES_ID.ALL_SPIRITS_SCENE_ID);
     }
 
-    @Hears(BUTTON_ACTIONS.allSpirits)
+    @Hears(ALL_SPIRITS_BUTTON_NAME)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
     async spirits(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.allSpirits);
+        await ctx.scene.enter(ENUM_SCENES_ID.ALL_SPIRITS_SCENE_ID);
     }
 
-    @Hears(BUTTON_ACTIONS.quests)
+    @Hears(ANNOUNCEMENTS_BUTTON_NAME)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
     async quests(@Ctx() ctx: BotContext) {
         ctx.reply('У вас нет квестов');
     }
-    @Hears(BUTTON_ACTIONS.help)
+    @Hears(HELP_BUTTON_NAME)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
     async help(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.help);
+        await ctx.scene.enter(ENUM_SCENES_ID.HELP_SCENE_ID);
     }
+}
 
-    @On('callback_query')
+/**
+ *   @On('callback_query')
     public async callbackQuery(@Ctx() ctx: BotContext) {
         if ('data' in ctx.callbackQuery) {
             const [action, value] = ctx.callbackQuery.data.split(':');
@@ -134,4 +130,4 @@ export class HomeScene {
             }
         }
     }
-}
+ */

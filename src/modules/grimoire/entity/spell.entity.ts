@@ -66,7 +66,7 @@ export class SpellEntity {
         type: 'varchar',
         name: 'cast_type',
     })
-    castTime: string;
+    castTime: number;
 
     /**
      * Длится 6 ходов, после этого использовать в бою невозможно, если не пройдет 12 ходов, то вообще не пойдет**
@@ -121,7 +121,17 @@ export class SpellEntity {
     updatedAt: Date;
 
     @ManyToOne(() => GrimoireEntity, (grimoire) => grimoire.spells)
+    @JoinColumn({
+        name: 'gromoire_id',
+        referencedColumnName: 'id',
+    })
     grimoire: GrimoireEntity;
+
+    @Column({
+        type: 'varchar',
+        name: 'grimoire_id',
+    })
+    grimoireId: string;
 }
 
 /* @Column({

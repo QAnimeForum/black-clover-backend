@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { SpellEntity } from './spell.entity';
 import { CharacterEntity } from '../../character/entity/character.entity';
-import { ENUM_IS_GRIMOIRE_APPROVED } from '../constants/grimoire.enum.constant';
 import { Expose } from 'class-transformer';
 
 @Entity('grimoire')
@@ -21,39 +20,26 @@ export class GrimoireEntity {
         type: 'varchar',
     })
     magicName: string;
-
-    @Column({
+    /**
+ *     @Column({
         type: 'enum',
         enum: ENUM_IS_GRIMOIRE_APPROVED,
         default: ENUM_IS_GRIMOIRE_APPROVED.NOT_APPROVED,
     })
     status: ENUM_IS_GRIMOIRE_APPROVED;
+ */
 
     @Column({
         type: 'varchar',
         nullable: true,
+        name: 'cover_image_url',
     })
-    cover: string;
+    coverImagePath: string;
 
-    @Expose({ name: 'cover_url' })
+    @Expose({ name: 'cover_image_url' })
     getAvatarImagePath(): string {
-        switch (process.env.disk) {
-            case 'local':
-                return `${process.env.APP_API_URL}/grimoire/${this.cover}`;
-            case 's3':
-                return `${process.env.AWS_BUCKET_URL}/grimoire/${this.cover}`;
-            default:
-                return null;
-        }
+        return `${process.env.FILES_PATH}/images/grimoire/${this.coverImagePath}`;
     }
-    /*
-    @Column({
-        type: 'enum',
-        enum: ENUM_GRIMOIRE_SYMBOL,
-        default: ENUM_GRIMOIRE_SYMBOL.CLOVER,
-    })
-    coverSymbol: ENUM_GRIMOIRE_SYMBOL;*/
-
     @Column({
         type: 'varchar',
     })
@@ -71,6 +57,27 @@ export class GrimoireEntity {
     @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
     updatedAt: Date;
 }
+
+/**
+ *     @Expose({ name: 'cover_url' })
+    getAvatarImagePath(): string {
+        switch (process.env.disk) {
+            case 'local':
+                return `${process.env.FILES_PATH}/images/grimoire/${this.coverImagePath}`;
+            case 's3':
+                return `${process.env.AWS_BUCKET_URL}/grimoire/${this.coverImagePath}`;
+            default:
+                return null;
+        }
+    }
+ */
+/*
+    @Column({
+        type: 'enum',
+        enum: ENUM_GRIMOIRE_SYMBOL,
+        default: ENUM_GRIMOIRE_SYMBOL.CLOVER,
+    })
+    coverSymbol: ENUM_GRIMOIRE_SYMBOL;*/
 
 /**
  *   @OneToOne(() => ManaSkinEntity)

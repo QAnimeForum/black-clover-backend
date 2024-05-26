@@ -2,7 +2,7 @@ import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
 import { RaceEntity } from '../modules/race/entity/race.entity';
 import { StateEntity } from '../modules/map/enitity/state.entity';
-import { BackgroundEnity } from '../modules/character/entity/background.entity';
+import { BackgroundEntity } from '../modules/character/entity/background.entity';
 import { InventoryEntity } from '../modules/character/entity/inventory.entity';
 import { GrimoireEntity } from '../modules/grimoire/entity/grimoire.entity';
 import { AbilityEntity } from '../modules/character/entity/ability.entity';
@@ -95,7 +95,7 @@ export default class UserSeeder implements Seeder {
     async insertCharacter(dto: CharacterCreateDto, dataSource: DataSource) {
         const raceRepository = dataSource.getRepository(RaceEntity);
         const stateRepository = dataSource.getRepository(StateEntity);
-        const backgroundRepository = dataSource.getRepository(BackgroundEnity);
+        const backgroundRepository = dataSource.getRepository(BackgroundEntity);
         const inventoryRepository = dataSource.getRepository(InventoryEntity);
         const grimoireRepository = dataSource.getRepository(GrimoireEntity);
         const abilityRepository = dataSource.getRepository(AbilityEntity);

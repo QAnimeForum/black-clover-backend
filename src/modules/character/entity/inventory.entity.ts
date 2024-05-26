@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { WeaponEntity } from '../../business/entity/weapon.entity';
-import { ArmorEntity } from '../../business/entity/armor.entity';
-import { ToolKitEnity } from '../../business/entity/toolkit.entity';
-import { VehicleEntity } from '../../business/entity/vehicle.entity';
-import { GearEntity } from '../../business/entity/gear.entity';
+import { WeaponEntity } from '../../items/entity/weapon.entity';
+import { ArmorEntity } from '../../items/entity/armor.entity';
+import { ToolKitEnity } from '../../items/entity/toolkit.entity';
+import { VehicleEntity } from '../../items/entity/vehicle.entity';
+import { GearEntity } from '../../items/entity/gear.entity';
 @Entity('inventory')
 export class InventoryEntity {
     @PrimaryGeneratedColumn('uuid')

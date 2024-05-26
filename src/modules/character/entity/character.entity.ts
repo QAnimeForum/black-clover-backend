@@ -10,14 +10,13 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { BackgroundEnity } from './background.entity';
+import { BackgroundEntity } from './background.entity';
 import { CharacterCharacteristicsEntity } from './character.characteristics.entity';
 import { InventoryEntity } from './inventory.entity';
 import { GrimoireEntity } from '../../grimoire/entity/grimoire.entity';
 import { NoteEntity } from './note.entity';
 import { WalletEntity } from '../../money/entity/wallet.entity';
 import { TaskEntity } from '../../events/entity/task.entity';
-import { BusinessEntity } from '../../business/entity/business.entity';
 import { FactionMemberEntity } from '../../judicial.system/entity/faction.member.entity';
 import { SquadMemberEntity } from '../../squards/entity/squad.member.entity';
 import { ENUM_CHARCACTER_TYPE } from '../constants/character.type.enum';
@@ -60,11 +59,18 @@ export class CharacterEntity {
     })
     prodigy: boolean;
 
-    @OneToOne(() => BackgroundEnity)
+    @OneToOne(() => BackgroundEntity)
     @JoinColumn({
         name: 'background_id',
+        referencedColumnName: 'id',
     })
-    background: BackgroundEnity;
+    background: BackgroundEntity;
+
+    @Column({
+        type: 'varchar',
+        name: 'background_id',
+    })
+    backgroundId: string;
 
     @OneToOne(() => CharacterCharacteristicsEntity)
     @JoinColumn({
@@ -73,12 +79,24 @@ export class CharacterEntity {
     })
     characterCharacteristics: CharacterCharacteristicsEntity;
 
+    @Column({
+        type: 'varchar',
+        name: 'characteristics_id',
+    })
+    characterCharacteristicsId: string;
+
     @OneToOne(() => GrimoireEntity)
     @JoinColumn({
         name: 'grimoire_id',
         referencedColumnName: 'id',
     })
     grimoire: GrimoireEntity;
+
+    @Column({
+        type: 'varchar',
+        name: 'grimoire_id',
+    })
+    grimoireId: string;
 
     @OneToMany(() => NoteEntity, (note) => note.character)
     notes: NoteEntity[];
@@ -90,12 +108,22 @@ export class CharacterEntity {
     })
     inventory: InventoryEntity;
 
+    @Column({
+        type: 'varchar',
+        name: 'invenetory_id',
+    })
+    inventoryId: string;
+
     @OneToOne(() => WalletEntity)
     @JoinColumn({ name: 'character_id', referencedColumnName: 'id' })
     wallet: WalletEntity;
 
-    @OneToOne(() => BusinessEntity)
-    business: BusinessEntity;
+    @Column({
+        type: 'varchar',
+        name: 'wallet_id',
+    })
+    walletId: string;
+
     @OneToOne(() => FactionMemberEntity)
     factionMember: FactionMemberEntity;
 

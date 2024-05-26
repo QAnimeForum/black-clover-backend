@@ -1,5 +1,12 @@
 import { InventoryEntity } from '../../character/entity/inventory.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToMany,
+    CreateDateColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 @Entity('armor')
 export class ArmorEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -52,5 +59,4 @@ export class ArmorEntity {
 
     @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
     updatedAt: Date;
-
 }

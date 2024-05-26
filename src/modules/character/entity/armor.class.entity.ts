@@ -7,7 +7,7 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 import { CharacterCharacteristicsEntity } from './character.characteristics.entity';
-import { ArmorEntity } from '../../business/entity/armor.entity';
+import { ArmorEntity } from '../../items/entity/armor.entity';
 
 @Entity('armor_class')
 export class ArmorClassEntity {

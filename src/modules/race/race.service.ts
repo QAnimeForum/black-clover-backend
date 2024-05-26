@@ -28,7 +28,7 @@ export class RaceService {
         return entity ? false : true;
     }
 
-    async getRaceById(raceId: string): Promise<RaceEntity> {
+    async findRaceById(raceId: string): Promise<RaceEntity> {
         const entity = await this.raceRepository.findOneBy({
             id: raceId,
         });

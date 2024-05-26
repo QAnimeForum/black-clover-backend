@@ -3,7 +3,6 @@ import { CharacterModule } from '../../modules/character/character.module';
 import { DevilsModule } from '../../modules/devils/devils.module';
 import { EventsModule } from '../../modules/events/event.module';
 import { GrimoireModule } from '../../modules/grimoire/grimoire.module';
-import { BuisnessModule } from '../../modules/business/business.module';
 import { JudicialSystemModule } from '../../modules/judicial.system/judicial.system.module';
 import { MinesModule } from '../../modules/mines/mines.module';
 import { SquadsModule } from '../../modules/squards/squads.module';
@@ -12,6 +11,7 @@ import { MoneyModule } from '../../modules/money/money.module';
 import { RaceModule } from '../../modules/race/race.module';
 import { SpiritsModule } from '../../modules/spirits/spirits.module';
 import { UserModule } from '../../modules/user/user.module';
+import { ItemsModule } from 'src/modules/items/items.module';
 
 @Module({
     controllers: [],
@@ -23,7 +23,7 @@ import { UserModule } from '../../modules/user/user.module';
         SpiritsModule,
         EventsModule,
         GrimoireModule,
-        BuisnessModule,
+        ItemsModule,
         JudicialSystemModule,
         MinesModule,
         SquadsModule,

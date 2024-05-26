@@ -13,7 +13,7 @@ import { RaceEntity } from '../../race/entity/race.entity';
 import { CharacterEntity } from './character.entity';
 
 @Entity('background')
-export class BackgroundEnity {
+export class BackgroundEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -25,6 +25,12 @@ export class BackgroundEnity {
     @ManyToOne(() => RaceEntity, (race) => race.backgrounds)
     @JoinColumn({ name: 'race_id', referencedColumnName: 'id' })
     race: RaceEntity;
+
+    @Column({
+        name: 'race_id',
+        type: 'string',
+    })
+    raceId: string;
 
     @Column({
         type: 'int',
@@ -49,6 +55,12 @@ export class BackgroundEnity {
     @ManyToOne(() => StateEntity, (state) => state.backgrounds)
     @JoinColumn({ name: 'state_id', referencedColumnName: 'id' })
     state: StateEntity;
+
+    @Column({
+        name: 'state_id',
+        type: 'string',
+    })
+    stateId: string;
 
     @OneToOne(() => CharacterEntity)
     character: CharacterEntity;

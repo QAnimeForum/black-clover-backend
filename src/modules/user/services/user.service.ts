@@ -2,13 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, In, Repository } from 'typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entities/user.entity';
-import { options, string, number, boolean } from 'joi';
-import { create } from 'lodash';
-import { async, find } from 'rxjs';
-import { ENUM_ROLE_TYPE } from '../constants/role.enum.constant';
-import { ENUM_USER_SIGN_UP_FROM } from '../constants/user.enum.constant';
 import { UserCreateDto } from '../dtos/user.create.dto';
-import { UserImportDto } from '../dtos/user.import.dto';
 //implements IUserService
 @Injectable()
 export class UserService {
@@ -22,6 +16,12 @@ export class UserService {
     async findUserById(id: string): Promise<UserEntity> {
         return await this.userRepository.findOneBy({
             id,
+        });
+    }
+
+    async findUserByTelegramId(telegramId: string): Promise<UserEntity> {
+        return await this.userRepository.findOneBy({
+            tgUserId: telegramId,
         });
     }
 
@@ -68,12 +68,6 @@ export class UserService {
             where: {
                 tgUserId: telegramUserId,
             },
-        });
-    }
-
-    async findByTgId(telegramUserId: string): Promise<UserEntity> {
-        return this.userRepository.findOneBy({
-            tgUserId: telegramUserId,
         });
     }
     async isShowAdminButton(userTgId: string): Promise<boolean> {

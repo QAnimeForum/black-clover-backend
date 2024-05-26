@@ -16,7 +16,28 @@ import { TgBotModule } from '../modules/tg-bot/tg-bot.module';
 import { session } from 'telegraf';
 import { Postgres } from '@telegraf/session/pg';
 import { PostgresAdapter } from 'kysely';
+import {
+    LOGGER_BOTCHECK,
+    LOGGER_ERROR,
+    LOGGER_EXCEPTION,
+    LOGGER_INFO,
+    winstonOptions,
+} from 'src/modules/tg-bot/utils/logger';
+import { WinstonModule } from 'nest-winston';
+import { existsSync, mkdirSync } from 'fs';
 //import { AppMiddlewareModule } from 'src/app/middleware/app.middleware.module';
+
+const logDir = 'logs/service/';
+const infoLogDir = `${logDir}${LOGGER_INFO}`;
+const errorLogDir = `${logDir}${LOGGER_ERROR}`;
+const botCheckLogDir = `${logDir}${LOGGER_BOTCHECK}`;
+const exceptionLogDir = `${logDir}${LOGGER_EXCEPTION}`;
+
+if (!existsSync(infoLogDir)) mkdirSync(infoLogDir);
+if (!existsSync(errorLogDir)) mkdirSync(errorLogDir);
+if (!existsSync(botCheckLogDir)) mkdirSync(botCheckLogDir);
+if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
+
 @Module({
     controllers: [AppController],
     providers: [],
@@ -84,6 +105,7 @@ import { PostgresAdapter } from 'kysely';
                 abortEarly: true,
             },
         }),
+        WinstonModule.forRoot(winstonOptions),
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
             inject: [ConfigService],

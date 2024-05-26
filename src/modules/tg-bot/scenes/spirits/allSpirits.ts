@@ -1,19 +1,19 @@
 import { Ctx, Hears, On, Scene, SceneEnter } from 'nestjs-telegraf';
-import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
-import { BUTTON_ACTIONS } from '../../constants/actions';
 import {
     SPIRITS_IMAGE_PATH,
     STATIC_IMAGE_BASE_PATH,
 } from '../../constants/images';
 import { SpiritService } from '../../../spirits/service/spirit.service';
 import { PaginateQuery } from 'nestjs-paginate';
+import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
+import { ALL_SPIRITS_BUTTON_NAME, BACK_BUTTON_NAME } from '../../constants/button-names.constant';
 
-@Scene(SceneIds.allSpirits)
+@Scene(ENUM_SCENES_ID.ALL_SPIRITS_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class AllSpiritsScene {
     constructor(
@@ -54,8 +54,8 @@ export class AllSpiritsScene {
                 caption: caption,
                 parse_mode: 'HTML',
                 ...Markup.keyboard([
-                    [BUTTON_ACTIONS.SHOW_SPIRITS],
-                    [BUTTON_ACTIONS.back],
+                    [ALL_SPIRITS_BUTTON_NAME],
+                    [BACK_BUTTON_NAME],
                 ]).resize(),
             }
         );

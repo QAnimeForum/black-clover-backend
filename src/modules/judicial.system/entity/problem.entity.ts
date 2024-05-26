@@ -47,7 +47,7 @@ export class ProblemEntity {
         name: 'creator_id',
         referencedColumnName: 'id',
     })
-    creator: Promise<CharacterEntity>;
+    creator: CharacterEntity;
 
     @Column({
         name: 'creator_id',

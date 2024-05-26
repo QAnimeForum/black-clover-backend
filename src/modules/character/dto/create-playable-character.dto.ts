@@ -3,7 +3,7 @@ export class CreatePlayableCharacterDto {
     age: number;
     sex: string;
     raceId: string;
-    countryId: string;
+    stateId: string;
     magic: string;
     //  magicName: string;
     // userId: string;

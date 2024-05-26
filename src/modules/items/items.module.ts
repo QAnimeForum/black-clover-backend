@@ -8,19 +8,20 @@ import { ToolKitEnity } from './entity/toolkit.entity';
 import { VehicleEntity } from './entity/vehicle.entity';
 import { ArmorClassEntity } from '../character/entity/armor.class.entity';
 import { BusinessEntity } from './entity/business.entity';
-import { JobEntity } from './entity/job.entity';
 import { InventoryEntity } from '../character/entity/inventory.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BusinessController } from './controller/business.controller';
-import { BusinessService } from './service/business.service';
 import { GearEntity } from './entity/gear.entity';
+import { ClothesService } from './service/clothes.service';
+import { GearService } from './service/gear.service';
+import { ArmorService } from './service/armor.service';
+import { ToolkitService } from './service/toolkit.service';
+import { WeaponService } from './service/weapon.service';
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             InventoryEntity,
             ArmorEntity,
-            BusinessEntity,
-            JobEntity,
             ArmorClassEntity,
             ClothesEntity,
             HouseEnity,
@@ -31,6 +32,12 @@ import { GearEntity } from './entity/gear.entity';
         ]),
     ],
     controllers: [BusinessController],
-    providers: [BusinessService],
+    providers: [
+        ArmorService,
+        ClothesService,
+        GearService,
+        ToolkitService,
+        WeaponService,
+    ],
 })
-export class BuisnessModule {}
+export class ItemsModule {}

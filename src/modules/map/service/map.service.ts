@@ -89,10 +89,23 @@ export class MapService {
         return this.stateRepository.create(create);
     }
 
-    async findStateById(state: string) {
+    async findStateById(stateId: string) {
         return await this.stateRepository.findOneBy({
-            id: state,
+            id: stateId,
         });
+    }
+
+    async findStateSymbolById(stateId: string): Promise<string> {
+        return (
+            await this.stateRepository.findOne({
+                where: {
+                    id: stateId,
+                },
+                select: {
+                    symbol: true,
+                },
+            })
+        ).symbol;
     }
     /**
  *     async createMany(

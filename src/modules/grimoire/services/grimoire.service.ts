@@ -9,12 +9,13 @@ import { SpellCreateDto } from '../dto/spell.create.dto';
 import { SpellUpdateNameDto } from '../dto/spell.update-name.dto';
 import { SpellUpdateDescriptionDto } from '../dto/spell.update-description.dto';
 import { SpellUpdateDurationDto } from '../dto/spell.update-duration.dto';
-import { SpellCastTimeDescriptionDto } from '../dto/spell.update-cast-time.dto';
 import { SpellUpdateRangeDto } from '../dto/spell.update-range.dto';
 import { SpellUpdateCostDto } from '../dto/spell.update-cost.dto';
-import { SpellUpdateDto } from '../dto/spell.update.dto';
-import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
 import { UserEntity } from '../../user/entities/user.entity';
+import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import { ENUM_SPELL_STATUS } from '../constants/spell.status.enum.constant';
+import { SpellRequirementsEntity } from '../entity/spell.requirements.entity';
+import { SpellUpdateTypeDto } from '../dto/spell.update-type.dto';
 @Injectable()
 export class GrimoireService {
     constructor(
@@ -28,21 +29,19 @@ export class GrimoireService {
         private readonly userRepository: Repository<UserEntity>
     ) {}
 
-    async findAllGrimoires(
-        dto: PaginationListDto
-    ): Promise<[SpellEntity[], number]> {
-        const [entities, total] = await this.spellRepository.findAndCount({
-            skip: dto._offset * dto._limit,
-            take: dto._limit,
-            order: dto._availableOrderBy?.reduce(
-                (accumulator, sort) => ({
-                    ...accumulator,
-                    [sort]: dto._order,
-                }),
-                {}
-            ),
+    public findAllGrimoires(
+        query: PaginateQuery
+    ): Promise<Paginated<GrimoireEntity>> {
+        return paginate(query, this.grimoireRepository, {
+            sortableColumns: ['id', 'coverSymbol', 'magicName'],
+            nullSort: 'last',
+            defaultSortBy: [['magicName', 'DESC']],
+            searchableColumns: ['coverSymbol', 'magicName'],
+            select: ['id', 'coverSymbol', 'magicName', 'coverImagePath'],
+            filterableColumns: {
+                magicName: true,
+            },
         });
-        return [entities, total];
     }
 
     async findGrimoireById(id: string): Promise<GrimoireEntity> {
@@ -52,10 +51,22 @@ export class GrimoireService {
         return entity;
     }
 
-    async findGrimoireByUserTgId(tg_id: string): Promise<GrimoireEntity> {
+    async findGrimoireByUserTgId(tgUserId: string): Promise<GrimoireEntity> {
+        const grimoire = await this.grimoireRepository
+            .createQueryBuilder('grimoire')
+            .innerJoinAndSelect(
+                'grimoire.character',
+                'charcter',
+                'character.tgUserId = :tgUserId',
+                { tgUserId: tgUserId }
+            )
+            .getOne();
+        return grimoire;
+        /**
+        *  
         const entity = await this.userRepository.findOne({
             where: {
-                tgUserId: tg_id,
+                tgUserId: tgUserId,
             },
             relations: {
                 character: {
@@ -63,108 +74,25 @@ export class GrimoireService {
                 },
             },
         });
-        return entity.character.grimoire;
+        return entity.character.grimoire;*/
     }
 
-    async createEmptyGrimoire(coverSymbol: string) {
-        const insert = await this.grimoireRepository.insert({
-            magicName: 'не выбрана',
-            coverSymbol: coverSymbol,
-        });
-        return insert.raw[0].id;
-    }
-
-    async createGrimoire(dto: GrimoireCreateDto) {
-        const insert = await this.grimoireRepository.insert({
-            magicName: dto.magicName,
+    async createGrimoire(dto: GrimoireCreateDto): Promise<GrimoireEntity> {
+        return await this.grimoireRepository.save({
+            magicName: dto?.magicName ?? 'не выбрана',
             coverSymbol: dto.coverSymbol,
+            coverImagePath: 'default-grimoire.jpg',
         });
-        return insert.raw[0].id;
     }
 
     async deleteGrimoire(id: string): Promise<void> {
         await this.grimoireRepository.delete(id);
     }
-    async findSpellById(id: string): Promise<SpellEntity> {
-        const entity = await this.spellRepository.findOneBy({
-            id: id,
-        });
-        return entity;
-    }
 
-    async createSpell(dto: SpellCreateDto, grimoire: GrimoireEntity) {
-        const insert = await this.spellRepository.insert({
-            name: dto.name,
-            description: dto.description,
-            range: dto.range,
-            duration: dto.duration,
-            cost: dto.cost,
-            castTime: dto.castTime,
-            grimoire: grimoire,
-        });
-        return insert.raw[0].id;
-    }
-
-    async updateGrimoreMagicName(id: string, dto: GrimoireUpdateNameDto) {
-        const grimoire = await this.findGrimoireById(id);
-        grimoire.magicName = dto.magicName;
-        await this.grimoireRepository.save(grimoire);
-    }
-    async updateSpellName(id: string, dto: SpellUpdateNameDto) {
-        const spell = await this.findSpellById(id);
-        spell.name = dto.name;
-        await this.grimoireRepository.save(spell);
-    }
-
-    async updateSpellDescription(id: string, dto: SpellUpdateDescriptionDto) {
-        const spell = await this.findSpellById(id);
-        spell.description = dto.description;
-        await this.grimoireRepository.save(spell);
-    }
-
-    async updateSpellDuration(id: string, dto: SpellUpdateDurationDto) {
-        const spell = await this.findSpellById(id);
-        spell.duration = dto.duration;
-        await this.grimoireRepository.save(spell);
-    }
-
-    async updateSpellCost(id: string, dto: SpellUpdateCostDto) {
-        const spell = await this.findSpellById(id);
-        spell.cost = dto.cost;
-        await this.grimoireRepository.save(spell);
-    }
-    async updateSpellRange(id: string, dto: SpellUpdateRangeDto) {
-        const spell = await this.findSpellById(id);
-        spell.range = dto.range;
-        await this.grimoireRepository.save(spell);
-    }
-
-    async updateSpellCastTime(id: string, dto: SpellCastTimeDescriptionDto) {
-        const spell = await this.findSpellById(id);
-        spell.castTime = dto.castTime;
-        await this.grimoireRepository.save(spell);
-    }
-
-    async updateSpell(id: string, dto: SpellUpdateDto) {
-        const spell = await this.findSpellById(id);
-        spell.name = dto.name;
-        spell.description = dto.description;
-        spell.duration = dto.duration;
-        spell.cost = dto.cost;
-        spell.range = dto.range;
-        spell.castTime = dto.castTime;
-        await this.grimoireRepository.save(spell);
-    }
-
-    async deleteSpell(id: string): Promise<void> {
-        await this.spellRepository.delete(id);
-    }
-
-    async findSpells(grimoireId: string) {
-        const grimoire = await this.findGrimoireById(grimoireId);
+    async findGrimoireSpells(grimoireId: string) {
         return this.spellRepository.find({
             where: {
-                grimoire: grimoire,
+                grimoireId: grimoireId,
             },
         });
     }
@@ -181,35 +109,108 @@ export class GrimoireService {
         });
     }
 
-    async findAllSpells(
-        dto: PaginationListDto,
-        grimoireId: string
-    ): Promise<[SpellEntity[], number]> {
-        const grimoire = await this.findGrimoireById(grimoireId);
-        const [entities, total] = await this.spellRepository.findAndCount({
-            skip: dto._offset * dto._limit,
-            take: dto._limit,
-            order: dto._availableOrderBy?.reduce(
-                (accumulator, sort) => ({
-                    ...accumulator,
-                    [sort]: dto._order,
-                }),
-                {}
-            ),
-            where: {
-                grimoire: grimoire,
+    public findAllSpells(
+        query: PaginateQuery
+    ): Promise<Paginated<SpellEntity>> {
+        /**
+         *   where: {
+                grimoire: grimoireId,
+            },
+         */
+        return paginate(query, this.spellRepository, {
+            sortableColumns: ['id', 'name'],
+            nullSort: 'last',
+            defaultSortBy: [['name', 'DESC']],
+            searchableColumns: ['name'],
+            select: ['id', 'name', 'description', 'grimoireId'],
+            filterableColumns: {
+                name: true,
             },
         });
-        return [entities, total];
     }
 
-    async getAllSpells(grimoireId: string): Promise<[SpellEntity[], number]> {
-        const grimoire = await this.findGrimoireById(grimoireId);
-        const [entities, total] = await this.spellRepository.findAndCount({
-            where: {
-                grimoire: grimoire,
-            },
+    async findSpellById(id: string): Promise<SpellEntity> {
+        const entity = await this.spellRepository.findOneBy({
+            id: id,
         });
-        return [entities, total];
+        return entity;
+    }
+
+    async createSpell(dto: SpellCreateDto) {
+        let spellEntity: SpellEntity;
+        await this.connection.transaction(
+            async (transactionalEntityManager) => {
+                // execute queries using transactionalEntityManager
+                const requirementsEntity = new SpellRequirementsEntity();
+                requirementsEntity.minimalLevel = dto.minLevel;
+                requirementsEntity.magicalAttributes = [];
+                transactionalEntityManager.save(requirementsEntity);
+
+                spellEntity = new SpellEntity();
+                spellEntity.name = dto.name;
+                spellEntity.description = dto.description;
+                spellEntity.damage = dto.damage;
+                spellEntity.range = dto.range;
+                spellEntity.duration = dto.duration;
+                spellEntity.cost = dto.cost;
+                spellEntity.castTime = dto.castTime;
+                spellEntity.cooldown = dto.cooldown;
+                spellEntity.type = dto.type;
+                spellEntity.goals = dto.goals;
+                spellEntity.status = ENUM_SPELL_STATUS.DRAFT;
+                spellEntity.grimoireId = dto.grimoireId;
+                spellEntity.requirements = requirementsEntity;
+                transactionalEntityManager.save(spellEntity);
+            }
+        );
+    }
+
+    async updateGrimoreMagicName(id: string, dto: GrimoireUpdateNameDto) {
+        const grimoire = await this.findGrimoireById(id);
+        grimoire.magicName = dto.magicName;
+        return await this.grimoireRepository.save(grimoire);
+    }
+    async updateSpellName(id: string, dto: SpellUpdateNameDto) {
+        const spell = await this.findSpellById(id);
+        spell.name = dto.name;
+        return await this.grimoireRepository.save(spell);
+    }
+
+    async updateSpellDescription(id: string, dto: SpellUpdateDescriptionDto) {
+        const spell = await this.findSpellById(id);
+        spell.description = dto.description;
+        return await this.grimoireRepository.save(spell);
+    }
+
+    async updateSpellDuration(id: string, dto: SpellUpdateDurationDto) {
+        const spell = await this.findSpellById(id);
+        spell.duration = dto.duration;
+        return await this.grimoireRepository.save(spell);
+    }
+
+    async updateSpellCost(id: string, dto: SpellUpdateCostDto) {
+        const spell = await this.findSpellById(id);
+        spell.cost = dto.cost;
+        return await this.grimoireRepository.save(spell);
+    }
+    async updateSpellRange(id: string, dto: SpellUpdateRangeDto) {
+        const spell = await this.findSpellById(id);
+        spell.range = dto.range;
+        return await this.grimoireRepository.save(spell);
+    }
+
+    async updateSpellType(id: string, dto: SpellUpdateTypeDto) {
+        const spell = await this.findSpellById(id);
+        spell.type = dto.type;
+        return await this.grimoireRepository.save(spell);
+    }
+    async updateSpellCastTime(id: string, dto: SpellCastTimeDto) {
+        const spell = await this.findSpellById(id);
+        spell.castTime = dto.castTime;
+        return await this.grimoireRepository.save(spell);
+    }
+
+    async deleteSpell(id: string): Promise<void> {
+        return await this.spellRepository.delete(id);
     }
 }
