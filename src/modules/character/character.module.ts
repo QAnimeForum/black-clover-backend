@@ -27,6 +27,12 @@ import { UserEntity } from '../user/entities/user.entity';
 import { BackgroundService } from './services/background.service';
 import { CharacteristicService } from './services/characteristics.service';
 import { WalletService } from './services/wallet.service';
+import { GrimoireModule } from '../grimoire/grimoire.module';
+import { ItemsModule } from '../items/items.module';
+import { MapModule } from '../map/map.module';
+import { RaceModule } from '../race/race.module';
+import { MoneyModule } from '../money/money.module';
+
 @Module({
     imports: [
         TypeOrmModule.forFeature(
@@ -48,7 +54,6 @@ import { WalletService } from './services/wallet.service';
                 InventoryEntity,
                 GrimoireEntity,
                 SpellEntity,
-
                 WeaponEntity,
                 ArmorEntity,
                 ToolKitEnity,
@@ -60,14 +65,24 @@ import { WalletService } from './services/wallet.service';
             ],
             process.env.DATABASE_NAME
         ),
+        GrimoireModule,
+        ItemsModule,
+        MapModule,
+        RaceModule,
+        MoneyModule,
     ],
     controllers: [CharacterController],
     providers: [
+        BackgroundService,
+        CharacteristicService,
+        WalletService,
+        CharacterService,
+    ],
+    exports: [
         CharacterService,
         BackgroundService,
         CharacteristicService,
         WalletService,
     ],
-    exports: [CharacterService],
 })
 export class CharacterModule {}

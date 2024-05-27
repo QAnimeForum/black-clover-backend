@@ -55,11 +55,13 @@ import { WeaponService } from '../service/weapon.service';
     path: '/business',
 })
 export class BusinessController {
-    constructor(private readonly armorService: ArmorService,
+    constructor(
+        private readonly armorService: ArmorService,
         private readonly gearService: GearService,
         private readonly toolkitService: ToolkitService,
         private readonly vehicleService: VehicleService,
-        private readonly weaponService: WeaponService,    ) {}
+        private readonly weaponService: WeaponService
+    ) {}
 
     @ResponsePaging('armor.list', {
         serialization: ArmorListSerialization,

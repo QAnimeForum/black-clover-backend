@@ -7,7 +7,6 @@ import { HouseEnity } from './entity/house.entity';
 import { ToolKitEnity } from './entity/toolkit.entity';
 import { VehicleEntity } from './entity/vehicle.entity';
 import { ArmorClassEntity } from '../character/entity/armor.class.entity';
-import { BusinessEntity } from './entity/business.entity';
 import { InventoryEntity } from '../character/entity/inventory.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BusinessController } from './controller/business.controller';
@@ -17,6 +16,9 @@ import { GearService } from './service/gear.service';
 import { ArmorService } from './service/armor.service';
 import { ToolkitService } from './service/toolkit.service';
 import { WeaponService } from './service/weapon.service';
+import { InventoryService } from './service/inventory.service';
+import { EquipmentEntity } from './entity/equipment.entity';
+import { VehicleService } from './service/vehicles.service';
 @Module({
     imports: [
         TypeOrmModule.forFeature([
@@ -29,6 +31,7 @@ import { WeaponService } from './service/weapon.service';
             ToolKitEnity,
             VehicleEntity,
             WeaponEntity,
+            EquipmentEntity,
         ]),
     ],
     controllers: [BusinessController],
@@ -38,6 +41,17 @@ import { WeaponService } from './service/weapon.service';
         GearService,
         ToolkitService,
         WeaponService,
+        VehicleService,
+        InventoryService,
+    ],
+    exports: [
+        ArmorService,
+        ClothesService,
+        GearService,
+        ToolkitService,
+        WeaponService,
+        VehicleService,
+        InventoryService,
     ],
 })
 export class ItemsModule {}

@@ -1,5 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
-s;
+import { Injectable } from '@nestjs/common';
+
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 
@@ -36,7 +36,7 @@ export class WalletService {
         return entity;
     }
 
-    async findGrimoireByUserTgId(tgUserId: string): Promise<GrimoireEntity> {
+    async findWalletByUserTgId(tgUserId: string): Promise<WalletEntity> {
         const grimoire = await this.walletRepository
             .createQueryBuilder('wallet')
             .innerJoinAndSelect(

@@ -25,6 +25,24 @@ import {
 } from 'src/modules/tg-bot/utils/logger';
 import { WinstonModule } from 'nest-winston';
 import { existsSync, mkdirSync } from 'fs';
+import { ErrorModule } from 'src/common/error/error.module';
+import { MessageModule } from 'src/common/message/message.module';
+import { PaginationModule } from 'src/common/pagination/pagination.module';
+import { RequestModule } from 'src/common/request/request.module';
+import { ResponseModule } from 'src/common/response/response.module';
+import { CharacterModule } from 'src/modules/character/character.module';
+import { DevilsModule } from 'src/modules/devils/devils.module';
+import { EventsModule } from 'src/modules/events/event.module';
+import { GrimoireModule } from 'src/modules/grimoire/grimoire.module';
+import { ItemsModule } from 'src/modules/items/items.module';
+import { JudicialSystemModule } from 'src/modules/judicial.system/judicial.system.module';
+import { MapModule } from 'src/modules/map/map.module';
+import { MinesModule } from 'src/modules/mines/mines.module';
+import { MoneyModule } from 'src/modules/money/money.module';
+import { RaceModule } from 'src/modules/race/race.module';
+import { SpiritsModule } from 'src/modules/spirits/spirits.module';
+import { SquadsModule } from 'src/modules/squards/squads.module';
+import { UserModule } from 'src/modules/user/user.module';
 //import { AppMiddlewareModule } from 'src/app/middleware/app.middleware.module';
 
 const logDir = 'logs/service/';
@@ -42,7 +60,6 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
     controllers: [AppController],
     providers: [],
     imports: [
-        CommonModule,
         ConfigModule.forRoot({
             load: configs,
             isGlobal: true,
@@ -88,17 +105,7 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
                 DATABASE_SSL_ENABLED: Joi.bool().required(),
                 DATABASE_REJECT_UNAUTHORIZED: Joi.bool().required(),
                 TELEGRAM_BOT_TOKEN: Joi.string().required(),
-                /**
-        *          DATABASE_HOST: Joi.string()
-                    .default('mongodb://localhost:27017')
-                    .required(),
-                DATABASE_NAME: Joi.string().default('ack').required(),
-                DATABASE_USER: Joi.string().allow(null, '').optional(),
-                DATABASE_PASSWORD: Joi.string().allow(null, '').optional(),
-                DATABASE_DEBUG: Joi.boolean().default(false).required(),
-                DATABASE_OPTIONS: Joi.string().allow(null, '').optional(),
-                
-        */
+     
             }),
             validationOptions: {
                 allowUnknown: true,
@@ -151,7 +158,29 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
                 return new DataSource(options).initialize();
             },
         }),
-        CommonModule,
+        MessageModule,
+        HelperModule,
+        PaginationModule,
+        ErrorModule,
+        ResponseModule,
+        RequestModule,
+
+        GrimoireModule,
+        EventsModule,
+        DevilsModule,
+        SpiritsModule,
+        ItemsModule,
+        MapModule,
+        RaceModule,
+        MoneyModule,
+        JudicialSystemModule,
+        MinesModule,
+        SquadsModule,
+        MapModule,
+        MoneyModule,
+        RaceModule,
+        UserModule,
+        CharacterModule,
         TelegrafModule.forRootAsync({
             imports: [TgBotModule],
             inject: [ConfigService],
@@ -159,21 +188,7 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
                 token: process.env.TELEGRAM_BOT_TOKEN,
                 middlewares: [session({ store: store(config) })],
             }),
-        }),
-        AppMiddlewareModule,
-
-        // Jobs
-        //   JobsModule.forRoot(),
-
-        // Routes
-        RouterModule.forRoot(),
-        HelperModule,
-        // Jobs
-        ///    JobsModule.forRoot(),
-
-        // Routes
-        //  InventoryModule,
-        //   RouterModule.forRoot(),
+        })
     ],
 })
 export class AppModule {}

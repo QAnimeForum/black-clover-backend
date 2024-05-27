@@ -10,26 +10,26 @@ import {
     Command,
 } from 'nestjs-telegraf';
 import { ADMIN_IMAGE_PATH } from '../../constants/images';
-import { SceneIds } from '../../constants/scenes.id';
+
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
-import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
-import { CharacterService } from '../../../character/services/character.service';
-import {  Markup } from 'telegraf';
-import { BUTTON_ACTIONS } from '../../constants/actions';
+import { Markup } from 'telegraf';
 import { UserService } from 'src/modules/user/services/user.service';
-import { message } from 'telegraf/filters';
-import { ENUM_ROLE_TYPE } from 'src/modules/user/constants/role.enum.constant';
-import { InvalidAnswerFilter } from '../../filters/invalid-answer.filter';
-@Scene(SceneIds.ADMIN)
+
+import {
+    ANNOUNCEMENTS_BUTTON,
+    BACK_BUTTON,
+    GRIMOIRE_BUTTON,
+    GRIMOIRE_REQUESTS_BUTTON,
+    PERMITIONS_BUTTON,
+    QUESTS_BUTTON,
+} from '../../constants/button-names.constant';
+import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
+@Scene(ENUM_SCENES_ID.ADMIN_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class AdminScene {
-    constructor(
-        private readonly tgBotService: TgBotService,
-        private readonly characterService: CharacterService,
-        private readonly userService: UserService
-    ) {}
+    constructor(private readonly userService: UserService) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {
         const caption = 'Админская панель';
@@ -40,21 +40,15 @@ export class AdminScene {
             {
                 caption,
                 ...Markup.keyboard([
-                    [
-                        BUTTON_ACTIONS.admin.PERMITIONS,
-                        BUTTON_ACTIONS.admin.GRIMOIRE_REQUESTS,
-                    ],
-                    [
-                        BUTTON_ACTIONS.admin.ANNOUNCEMENTS,
-                        BUTTON_ACTIONS.admin.EVENTS,
-                    ],
-                    [BUTTON_ACTIONS.back],
+                    [PERMITIONS_BUTTON, GRIMOIRE_REQUESTS_BUTTON],
+                    [ANNOUNCEMENTS_BUTTON, QUESTS_BUTTON],
+                    [BACK_BUTTON],
                 ]).resize(),
             }
         );
     }
 
-    @Hears(BUTTON_ACTIONS.admin.PERMITIONS)
+    @Hears(PERMITIONS_BUTTON)
     async permitions(@Ctx() ctx: BotContext) {
         const superAdmins = await this.userService.getAdmins();
         const admins = await this.userService.getAdmins();
@@ -89,27 +83,27 @@ export class AdminScene {
             const action = ctx.callbackQuery.data;
             switch (action) {
                 case 'ACTION_ADD_ADMIN': {
-                    await ctx.scene.enter(SceneIds.ADD_ADMIN);
+                    await ctx.scene.enter(ENUM_SCENES_ID.ADD_ADMIN_SCENE_ID);
                     break;
                 }
                 case 'ACTION_DELETE_ADMIN': {
-                    await ctx.scene.enter(SceneIds.DELETE_ADMIN);
+                    await ctx.scene.enter(ENUM_SCENES_ID.DELETE_ADMIN_SCENE_ID);
                     break;
                 }
             }
         }
     }
-    @Hears(BUTTON_ACTIONS.back)
+    @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.home);
+        await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
     }
-    @Hears(BUTTON_ACTIONS.grimoire)
+    @Hears(GRIMOIRE_BUTTON)
     async grimoire(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.grimoire);
+        await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_SCENE_ID);
     }
 }
 
-@Wizard(SceneIds.ADD_ADMIN)
+@Wizard(ENUM_SCENES_ID.ADD_ADMIN_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class AddAdminWizard {
     constructor(private readonly userService: UserService) {}
@@ -123,11 +117,11 @@ export class AddAdminWizard {
 
     @Command('cancel')
     async cancel(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.ADMIN);
+        await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
     }
     @On('text')
     @WizardStep(1)
-    async getTgId(@Ctx() ctx: BotContext, @Message() message) {    
+    async getTgId(@Ctx() ctx: BotContext, @Message() message) {
         const isUserExists = await this.userService.exists(message.text);
         console.log(isUserExists);
         if (!isUserExists) {
@@ -136,13 +130,13 @@ export class AddAdminWizard {
             );
             ctx.wizard.back();
         } else {
-           // this.userService.changeUserRole(message.text, ENUM_ROLE_TYPE.ADMIN);
-            await ctx.scene.enter(SceneIds.ADMIN);
+            // this.userService.changeUserRole(message.text, ENUM_ROLE_TYPE.ADMIN);
+            await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
         }
     }
 }
 
-@Wizard(SceneIds.DELETE_ADMIN)
+@Wizard(ENUM_SCENES_ID.DELETE_ADMIN_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class DeleteAdminWizard {
     constructor(private readonly userService: UserService) {}
@@ -157,7 +151,7 @@ export class DeleteAdminWizard {
     @Command('cancel')
     @WizardStep(1)
     async cancel(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.ADMIN);
+        await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
     }
     @On('text')
     @WizardStep(1)
@@ -170,7 +164,7 @@ export class DeleteAdminWizard {
             );
             ctx.wizard.back();
         }
-       // this.userService.changeUserRole(message.text, ENUM_ROLE_TYPE.USER);
-        await ctx.scene.enter(SceneIds.ADMIN);
+        // this.userService.changeUserRole(message.text, ENUM_ROLE_TYPE.USER);
+        await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
     }
 }

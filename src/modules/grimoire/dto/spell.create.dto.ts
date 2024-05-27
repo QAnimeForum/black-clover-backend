@@ -8,8 +8,8 @@ export class SpellCreateDto {
     range: string;
     duration: string;
     cost: number;
-    castTime: number;
-    cooldown: number;
+    castTime: string;
+    cooldown: string;
     type: ENUM_SPELL_TYPE;
     goals: string;
     minLevel: number;

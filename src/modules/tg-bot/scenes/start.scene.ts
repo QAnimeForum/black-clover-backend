@@ -1,19 +1,19 @@
 import { Action, Ctx, On, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { BotContext } from '../interfaces/bot.context';
 import { TelegrafExceptionFilter } from '../filters/tg-bot.filter';
-import { Inject, Logger, UseFilters } from '@nestjs/common';
+import { Inject, UseFilters } from '@nestjs/common';
 
 import { HELLO_IMAGE_PATH } from '../constants/images';
 import { UserService } from '../../user/services/user.service';
 import { Markup } from 'telegraf';
-import { ConfigService } from '@nestjs/config';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { LOGGER_EXCEPTION } from '../utils/logger';
 import { CALLBACK_QUERY_ACTIONS } from '../constants/callback.query.actions.enum';
 import { ENUM_SCENES_ID } from '../constants/scenes.id.enum';
-@Scene(ENUM_SCENES_ID.START_SCENE_ID)
+import { Logger } from 'winston';
+@Scene('START_SCENE_ID')
 @UseFilters(TelegrafExceptionFilter)
-export class EntryScene {
+export class StartScene {
     constructor(
         private readonly userService: UserService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
@@ -21,6 +21,7 @@ export class EntryScene {
 
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender('id') senderId) {
+        console.log("wtf");
         const isUserExist = await this.userService.exists(senderId);
         if (isUserExist) {
             ctx.session.user = await this.userService.findUserById(senderId);

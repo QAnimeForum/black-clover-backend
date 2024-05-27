@@ -1,20 +1,28 @@
 import { Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { KNIGHT_IMAGE_PATH } from '../../constants/images';
-import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
-import { UseFilters } from '@nestjs/common';
+import { Inject, UseFilters } from '@nestjs/common';
 import { CharacterService } from '../../../character/services/character.service';
 import { Markup } from 'telegraf';
-import { BUTTON_ACTIONS } from '../../constants/actions';
 import { MapService } from '../../../map/service/map.service';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
+import { Logger } from 'winston';
+import {
+    ARMED_FORCES_BUTTON,
+    BACK_BUTTON,
+    MAGIC_PARLAMENT_BUTTON,
+    MINES_BUTTON,
+} from '../../constants/button-names.constant';
 
-@Scene(SceneIds.organizations)
+@Scene(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class OrganizationsScene {
     constructor(
         private readonly characterService: CharacterService,
-        private readonly mapService: MapService
+        private readonly mapService: MapService,
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
@@ -36,34 +44,30 @@ export class OrganizationsScene {
                 caption,
                 parse_mode: 'HTML',
                 ...Markup.keyboard([
-                    [
-                        BUTTON_ACTIONS.MAGIC_PARLAMENT,
-                        BUTTON_ACTIONS.ARMED_FORCES,
-                        BUTTON_ACTIONS.MINES,
-                    ],
-                    [BUTTON_ACTIONS.back],
+                    [MAGIC_PARLAMENT_BUTTON, ARMED_FORCES_BUTTON, MINES_BUTTON],
+                    [BACK_BUTTON],
                 ]).resize(),
             }
         );
     }
 
-    @Hears(BUTTON_ACTIONS.back)
+    @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.home);
+        await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
     }
 
-    @Hears(BUTTON_ACTIONS.MAGIC_PARLAMENT)
+    @Hears(MAGIC_PARLAMENT_BUTTON)
     async magicParlament(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.magicParlament);
+        await ctx.scene.enter(ENUM_SCENES_ID.MAGIC_PARLAMENT_SCENE_ID);
     }
 
-    @Hears(BUTTON_ACTIONS.ARMED_FORCES)
+    @Hears(ARMED_FORCES_BUTTON)
     async armedForces(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.armedForces);
+        await ctx.scene.enter(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID);
     }
 
-    @Hears(BUTTON_ACTIONS.MINES)
+    @Hears(MINES_BUTTON)
     async mines(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.mines);
+        await ctx.scene.enter(ENUM_SCENES_ID.MINES_SCENE_ID);
     }
 }

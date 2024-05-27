@@ -1,5 +1,5 @@
 import { Action, Ctx, Hears, Scene, SceneEnter } from 'nestjs-telegraf';
-import { SceneIds } from '../../constants/scenes.id';
+import { ENUM_SCENES_ID } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { UseFilters } from '@nestjs/common';
@@ -38,7 +38,7 @@ async function devilsList(
         }
     );
 }
-@Scene(SceneIds.allDevils)
+@Scene(ENUM_SCENES_ID.allDevils)
 @UseFilters(TelegrafExceptionFilter)
 export class AllDevilsScene {
     constructor() {}
@@ -59,28 +59,28 @@ export class AllDevilsScene {
                         BUTTON_ACTIONS.DEVIL_TYPE_SORT_FLOOR,
                         BUTTON_ACTIONS.DEVIL_TYPE_SORT_RANK,
                     ],
-                    [BUTTON_ACTIONS.back],
+                    [BACK_BUTTON],
                 ]).resize(),
             }
         );
     }
 
-    @Hears(BUTTON_ACTIONS.back)
+    @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.home);
+        await ctx.scene.enter(ENUM_SCENES_ID.home);
     }
 
     @Hears(BUTTON_ACTIONS.DEVIL_TYPE_SORT_FLOOR)
     async floor(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.allDevilsByFloor);
+        await ctx.scene.enter(ENUM_SCENES_ID.allDevilsByFloor);
     }
 
     @Hears(BUTTON_ACTIONS.DEVIL_TYPE_SORT_RANK)
     async rank(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.allDevilsByRank);
+        await ctx.scene.enter(ENUM_SCENES_ID.allDevilsByRank);
     }
 }
-@Scene(SceneIds.allDevilsByRank)
+@Scene(ENUM_SCENES_ID.allDevilsByRank)
 @UseFilters(TelegrafExceptionFilter)
 export class AllDevilsByRankScene {
     constructor(private readonly devilService: DevilsService) {}
@@ -101,15 +101,15 @@ export class AllDevilsByRankScene {
                         BUTTON_ACTIONS.DEVIL_TYPE_SORT_FLOOR,
                         BUTTON_ACTIONS.DEVIL_TYPE_SORT_RANK,
                     ],
-                    [BUTTON_ACTIONS.back],
+                    [BACK_BUTTON],
                 ]).resize(),
             }
         );
     }
 
-    @Hears(BUTTON_ACTIONS.back)
+    @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.allDevils);
+        await ctx.scene.enter(ENUM_SCENES_ID.allDevils);
     }
 
     @Hears(BUTTON_ACTIONS.DEVIL_TYPE_SORT_RANK)
@@ -122,7 +122,7 @@ export class AllDevilsByRankScene {
                 ...Markup.keyboard([
                     [BUTTON_ACTIONS.DEVIL_RANK_1, BUTTON_ACTIONS.DEVIL_RANK_2],
                     [BUTTON_ACTIONS.DEVIL_RANK_3, BUTTON_ACTIONS.DEVIL_RANK_4],
-                    [BUTTON_ACTIONS.back],
+                    [BACK_BUTTON],
                 ]).resize(),
             }
         );
@@ -202,7 +202,7 @@ export class AllDevilsByRankScene {
                                 ],
                                 [
                                     Markup.button.callback(
-                                        BUTTON_ACTIONS.back,
+                                        BACK_BUTTON,
                                         `BACK_TO_DEVIL_LIST`
                                     ),
                                 ],
@@ -344,7 +344,7 @@ export class AllDevilsByRankScene {
     }
 }
 
-@Scene(SceneIds.allDevilsByFloor)
+@Scene(ENUM_SCENES_ID.allDevilsByFloor)
 @UseFilters(TelegrafExceptionFilter)
 export class AllDevilsByFloorScene {
     constructor(private readonly devilService: DevilsService) {}
@@ -369,15 +369,15 @@ export class AllDevilsByFloorScene {
                         BUTTON_ACTIONS.DEVIL_FLOOR_5,
                         BUTTON_ACTIONS.DEVIL_FLOOR_6,
                     ],
-                    [BUTTON_ACTIONS.DEVIL_FLOOR_7, BUTTON_ACTIONS.back],
+                    [BUTTON_ACTIONS.DEVIL_FLOOR_7, BACK_BUTTON],
                 ]).resize(),
             }
         );
     }
 
-    @Hears(BUTTON_ACTIONS.back)
+    @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.allDevils);
+        await ctx.scene.enter(ENUM_SCENES_ID.allDevils);
     }
 
     @Hears(BUTTON_ACTIONS.DEVIL_FLOOR_1)
@@ -635,7 +635,7 @@ import {
     DEVILS_QLIPOTH_IMAGE_PATH,
     LUCIFERO_IMAGE_PATH,
 } from '../../constants/images';
-import { SceneIds } from '../../constants/scenes.id';
+import { ENUM_SCENES_ID } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
@@ -809,7 +809,7 @@ enum ALL_DEVILS_ACTIONS {
     MID = 'MID',
     LOW = 'LOW',
 }
-@Wizard(SceneIds.allDevils)
+@Wizard(ENUM_SCENES_ID.allDevils)
 @UseFilters(TelegrafExceptionFilter)
 export class AllDevilsWizard {
     constructor(

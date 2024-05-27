@@ -1,23 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
 import { BackgroundEntity } from '../entity/background.entity';
-import { RaceEntity } from 'src/modules/race/entity/race.entity';
-import { StateEntity } from 'src/modules/map/enitity/state.entity';
 import { CreatePlayableCharacterDto } from '../dto/create-playable-character.dto';
 @Injectable()
 export class BackgroundService {
     constructor(
-        @InjectDataSource()
-        private readonly connection: DataSource,
-        @Inject() readonly grimoireService: GrimoireService,
+        @Inject(GrimoireService) readonly grimoireService: GrimoireService,
         @InjectRepository(BackgroundEntity)
-        private readonly backgroundRepository: Repository<BackgroundEntity>,
-        @InjectRepository(RaceEntity)
-        private readonly raceRepository: Repository<RaceEntity>,
-        @InjectRepository(StateEntity)
-        private readonly stateRepository: Repository<StateEntity>
+        private readonly backgroundRepository: Repository<BackgroundEntity>
     ) {}
 
     async createBackground(

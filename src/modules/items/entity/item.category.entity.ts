@@ -7,6 +7,7 @@ import {
     OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ItemEntity } from './item.entity';
 
 @Entity('item_category')
 export class ItemCategoryEntity {
@@ -37,8 +38,8 @@ export class ItemCategoryEntity {
     createdAt: Date;
 
     @OneToMany((type) => ItemCategoryEntity, (category) => category.parent)
-    children!: ItemCategoryEntity[];
+    children: ItemCategoryEntity[];
 
-    @OneToMany((type) => ItemCategoryEntity, (item) => item.category)
-    items!: ItemCategoryEntity[];
+    @OneToMany((type) => ItemEntity, (item) => item.category)
+    items: ItemEntity[];
 }

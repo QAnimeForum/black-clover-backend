@@ -31,8 +31,8 @@ export class CharacteristicService {
     constructor(
         @InjectDataSource()
         private readonly connection: DataSource,
-        @Inject() readonly grimoireService: GrimoireService,
-        @Inject() readonly inventoryService: InventoryService,
+        @Inject(GrimoireService) readonly grimoireService: GrimoireService,
+        @Inject(InventoryService) readonly inventoryService: InventoryService,
         @InjectRepository(CharacterCharacteristicsEntity)
         private readonly characteristicsRepository: Repository<CharacterCharacteristicsEntity>,
         @InjectRepository(ProficiencyEntity)

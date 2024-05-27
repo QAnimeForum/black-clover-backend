@@ -2,7 +2,7 @@ import { Ctx, Hears, On, Scene, SceneEnter } from 'nestjs-telegraf';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
-import { UseFilters } from '@nestjs/common';
+import { Inject, Logger, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 import {
     SPIRITS_IMAGE_PATH,
@@ -11,14 +11,18 @@ import {
 import { SpiritService } from '../../../spirits/service/spirit.service';
 import { PaginateQuery } from 'nestjs-paginate';
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
-import { ALL_SPIRITS_BUTTON_NAME, BACK_BUTTON_NAME } from '../../constants/button-names.constant';
+import {
+    ALL_SPIRITS_BUTTON,
+    BACK_BUTTON,
+} from '../../constants/button-names.constant';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @Scene(ENUM_SCENES_ID.ALL_SPIRITS_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class AllSpiritsScene {
     constructor(
-        private readonly tgBotService: TgBotService,
-        private readonly spiritsService: SpiritService
+        private readonly spiritsService: SpiritService,
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {
@@ -27,7 +31,7 @@ export class AllSpiritsScene {
             {
                 caption: caption,
                 parse_mode: 'HTML',
-                ...Markup.keyboard([BUTTON_ACTIONS.back]),
+                ...Markup.keyboard([BACK_BUTTON]),
             }
         );*/
         /* await ctx.replyWithPhoto(
@@ -47,26 +51,26 @@ export class AllSpiritsScene {
             }
         );*/
 
-        const caption =  '';
+        const caption = '';
         await ctx.replyWithPhoto(
             { source: SPIRITS_IMAGE_PATH },
             {
                 caption: caption,
                 parse_mode: 'HTML',
                 ...Markup.keyboard([
-                    [ALL_SPIRITS_BUTTON_NAME],
-                    [BACK_BUTTON_NAME],
+                    [ALL_SPIRITS_BUTTON],
+                    [BACK_BUTTON],
                 ]).resize(),
             }
         );
     }
 
-    @Hears(BUTTON_ACTIONS.SHOW_SPIRITS)
+    @Hears(ALL_SPIRITS_BUTTON)
     async showSpiritsInfo(@Ctx() ctx: BotContext) {
         const query: PaginateQuery = {
             limit: 10,
             path: '',
-        }
+        };
 
         const spirits = await this.spiritsService.findAll(query);
         const caption = 'список всех духов мира клевера';
@@ -86,9 +90,9 @@ export class AllSpiritsScene {
             }
         );
     }
-    @Hears(BUTTON_ACTIONS.back)
+    @Hears(BACK_BUTTON)
     async profile(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.home);
+        await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
     }
 
     @On('callback_query')

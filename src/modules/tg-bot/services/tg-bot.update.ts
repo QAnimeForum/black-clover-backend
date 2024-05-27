@@ -1,50 +1,47 @@
 import { Context, Help, Start, Update, Command } from 'nestjs-telegraf';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BotContext } from '../interfaces/bot.context';
-import { SceneIds } from '../constants/scenes.id';
 import { Telegraf } from 'telegraf';
 import { SAMPLE_SPELL_URL } from '../constants/images';
+import { ENUM_SCENES_ID } from '../constants/scenes.id.enum';
 
 @Injectable()
 @Update()
+//export class TgBotUpdate extends Telegraf<BotContext> {
 export class TgBotUpdate extends Telegraf<BotContext> {
-
-    private readonly logger = new Logger(TgBotUpdate.name);
-
-    //constructor(private readonly tgBotService: TgBotService) {}
-
     @Start()
     async onStart(@Context() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.entry);
+        console.log('what');
+        await ctx.scene.enter('START_SCENE_ID');
     }
     @Command('profile')
     async profile(@Context() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.profile);
+        await ctx.scene.enter(ENUM_SCENES_ID.PROFILE_SCENE_ID);
     }
 
     @Command('map')
     async map(@Context() ctx: BotContext) {
         ctx.reply('карта пока недоступка');
-        //   await ctx.scene.enter(SceneIds.map);
+        //   await ctx.scene.enter(ENUM_SCENES_ID.map);
     }
 
     @Command('underworld')
     async allDevils(@Context() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.allDevils);
+        await ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
     }
 
     @Command('profile')
     async spirits(@Context() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.profile);
+        await ctx.scene.enter(ENUM_SCENES_ID.PROFILE_SCENE_ID);
     }
 
     @Command('equipment')
     async equipment(@Context() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.profile);
+        await ctx.scene.enter(ENUM_SCENES_ID.PROFILE_SCENE_ID);
     }
     @Help()
     async helps(@Context() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.help);
+        await ctx.scene.enter(ENUM_SCENES_ID.HELP_SCENE_ID);
     }
 
     @Command('about')
@@ -85,6 +82,6 @@ bot.command('roll', ctx => ctx.scene.enter(ROLL_SCENE));
  * 
  * @param ctx     @Command('spirits')
     async allSpirits(@Context() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.allSpirits);
+        await ctx.scene.enter(ENUM_SCENES_ID.allSpirits);
     }
  */

@@ -80,7 +80,7 @@ export class RaceController {
     @RequestParamGuard(RaceRequestDto)
     @Get('/get/:race')
     async getRace(@Param() params: RaceRequestDto): Promise<IResponse> {
-        const race = await this.raceService.getRaceById(params.race);
+        const race = await this.raceService.findRaceById(params.race);
         if (!race) {
             throw new ConflictException({
                 statusCode: ENUM_RACE_STATUS_CODE_ERROR.RACE_EXIST_ERROR,

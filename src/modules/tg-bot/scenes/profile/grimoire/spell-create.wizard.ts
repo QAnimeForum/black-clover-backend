@@ -7,19 +7,23 @@ import {
     Message,
     On,
 } from 'nestjs-telegraf';
-import { UseFilters } from '@nestjs/common';
+import { Inject, UseFilters } from '@nestjs/common';
 import { GrimoireService } from '../../../../grimoire/services/grimoire.service';
-import { SceneIds } from '../../../constants/scenes.id';
 import { BotContext } from '../../../interfaces/bot.context';
 import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
 import { ENUM_SPELL_TYPE } from 'src/modules/grimoire/constants/spell.type.enum';
 import { Logger } from 'winston';
 import { Markup } from 'telegraf';
+import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
-@Wizard(SceneIds.createSpell)
+@Wizard(ENUM_SCENES_ID.CREATE_SPELL_FORM_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
-export class CreateSpellWizard {
-    constructor(private readonly grimoireService: GrimoireService) {}
+export class SpellCreateWizard {
+    constructor(
+        private readonly grimoireService: GrimoireService,
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    ) {}
     @SceneEnter()
     async start(@Context() ctx: BotContext) {
         ctx.scene.session.spell = {
@@ -30,8 +34,8 @@ export class CreateSpellWizard {
             range: 'не заполнено',
             duration: 'не заполнено',
             cost: 0,
-            castTime: 1,
-            cooldown: 0,
+            castTime: '1',
+            cooldown: '0',
             goals: 'не заполнено',
             minLevel: 1,
             requipments: [],
@@ -139,8 +143,8 @@ export class CreateSpellWizard {
     }
 
     @WizardStep(4)
-    async step4(@Context() ctx: BotContext , @Message('text') text: string) {
-        ctx.scene.session.spell.damage = text;
+    async step4(@Context() ctx: BotContext, @Message('text') text: string) {
+        ctx.scene.session.spell.damage = Number.parseInt(text);
         await ctx.reply(
             'Область действия заклинания заклинания\n(Пример: не определено/на самого персонажа/в области на опрелеённом расстоянии персонажа)'
         );
@@ -149,7 +153,7 @@ export class CreateSpellWizard {
 
     @WizardStep(5)
     async step5(@Context() ctx: BotContext, @Message('text') text: string) {
-        ctx.scene.session.spell = text;
+        ctx.scene.session.spell.range = text;
         await ctx.reply('Продолжительность заклинания \n ()');
         ctx.wizard.next();
     }
@@ -163,6 +167,7 @@ export class CreateSpellWizard {
 
     @WizardStep(7)
     async step7(@Context() ctx: BotContext, @Message('text') text: string) {
+        ctx.scene.session.spell.cost = Number.parseInt(text);
         await ctx.reply(
             'Сколько времени нужно для создания заклинания \n (Пример: мгновенно/)'
         );
@@ -171,11 +176,13 @@ export class CreateSpellWizard {
 
     @WizardStep(8)
     async step8(@Context() ctx: BotContext, @Message('text') text: string) {
+        ctx.scene.session.spell.castTime = text;
         await ctx.reply('Время отката заклинания:');
         ctx.wizard.next();
     }
     @WizardStep(9)
     async step9(@Context() ctx: BotContext, @Message('text') text: string) {
+        ctx.scene.session.spell.castTime = text;
         await ctx.reply(
             'Цели заклинания. (не опредено/сам пользователь/до 3-х людей в доступном диапазоне)'
         );
@@ -183,11 +190,13 @@ export class CreateSpellWizard {
     }
     @WizardStep(10)
     async step10(@Context() ctx: BotContext, @Message('text') text: string) {
+        ctx.scene.session.spell.goals = text;
         await ctx.reply('Минимальный уровень персонажа для каста заклинания');
         ctx.wizard.next();
     }
     @WizardStep(11)
     async step11(@Context() ctx: BotContext, @Message('text') text: string) {
+        ctx.scene.session.spell.requipments.push(text);
         await ctx.reply('Дополнительные требования для заклинания');
         ctx.wizard.next();
     }
@@ -275,7 +284,7 @@ export class CreateSpellWizard {
                                 ctx.scene.session.spell,
                                 grimoire
                             );
-                            await ctx.scene.enter(SceneIds.grimoire);
+                            await ctx.scene.enter(ENUM_SCENES_ID.grimoire);
                         } else ctx.scene.leave();
                         break;
                     }
@@ -305,7 +314,7 @@ export class CreateSpellWizard {
     ) {
 
         this.scene = new Scenes.WizardScene<BotContext>(
-            SceneIds.createSpell,
+            ENUM_SCENES_ID.createSpell,
             this.start(),
             this.step1(),
             this.step2(),
@@ -437,7 +446,7 @@ export class CreateSpellWizard {
                                 ctx.scene.session.spell,
                                 grimoire
                             );
-                            await ctx.scene.enter(SceneIds.grimoire);
+                            await ctx.scene.enter(ENUM_SCENES_ID.grimoire);
                         } else ctx.scene.leave();
                         break;
                     }

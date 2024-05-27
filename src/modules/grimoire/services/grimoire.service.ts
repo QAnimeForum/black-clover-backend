@@ -16,6 +16,7 @@ import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { ENUM_SPELL_STATUS } from '../constants/spell.status.enum.constant';
 import { SpellRequirementsEntity } from '../entity/spell.requirements.entity';
 import { SpellUpdateTypeDto } from '../dto/spell.update-type.dto';
+import { SpellCastEditDto } from '../dto/spell.update-cast-time.dto';
 @Injectable()
 export class GrimoireService {
     constructor(
@@ -24,9 +25,7 @@ export class GrimoireService {
         @InjectRepository(GrimoireEntity)
         private readonly grimoireRepository: Repository<GrimoireEntity>,
         @InjectRepository(SpellEntity)
-        private readonly spellRepository: Repository<SpellEntity>,
-        @InjectRepository(UserEntity)
-        private readonly userRepository: Repository<UserEntity>
+        private readonly spellRepository: Repository<SpellEntity>
     ) {}
 
     public findAllGrimoires(
@@ -60,8 +59,10 @@ export class GrimoireService {
                 'character.tgUserId = :tgUserId',
                 { tgUserId: tgUserId }
             )
+            .leftJoinAndSelect('grimoire.spells', 'spell')
             .getOne();
         return grimoire;
+
         /**
         *  
         const entity = await this.userRepository.findOne({
@@ -204,13 +205,13 @@ export class GrimoireService {
         spell.type = dto.type;
         return await this.grimoireRepository.save(spell);
     }
-    async updateSpellCastTime(id: string, dto: SpellCastTimeDto) {
+    async updateSpellCastTime(id: string, dto: SpellCastEditDto) {
         const spell = await this.findSpellById(id);
         spell.castTime = dto.castTime;
         return await this.grimoireRepository.save(spell);
     }
 
-    async deleteSpell(id: string): Promise<void> {
+    async deleteSpell(id: string) {
         return await this.spellRepository.delete(id);
     }
 }

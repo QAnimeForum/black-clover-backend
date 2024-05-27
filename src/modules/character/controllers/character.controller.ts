@@ -38,7 +38,7 @@ export class CharacterController {
         const create =
             await this.characterService.createPlayableCharacterDto(dto);
         return {
-            data: { _id: create.raw[0].id },
+            data: { _id: create.id },
         };
     }
 

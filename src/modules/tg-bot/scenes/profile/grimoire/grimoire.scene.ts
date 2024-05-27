@@ -1,38 +1,32 @@
 import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
-import { UseFilters } from '@nestjs/common';
+import { Inject, Logger, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 import { GrimoireService } from '../../../../grimoire/services/grimoire.service';
-import { BUTTON_ACTIONS } from '../../../constants/actions';
 import { GRIMOURE_IMAGE_PATH } from '../../../constants/images';
-import { SceneIds } from '../../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../../filters/tg-bot.filter';
 import { BotContext } from '../../../interfaces/bot.context';
-import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from 'src/common/pagination/constants/pagination.enum.constant';
+import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import {
+    BACK_BUTTON,
+    CREATE_SPELL_BUTTON,
+    EDIT_GRIMOIRE_BUTTON,
+    EDIT_MAGIC_NAME_BUTTON,
+    EDIT_SPELL_BUTTON,
+} from 'src/modules/tg-bot/constants/button-names.constant';
 
-@Scene(SceneIds.grimoire)
+@Scene(ENUM_SCENES_ID.GRIMOIRE_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class GrimoreScene {
-    constructor(private readonly grimoireService: GrimoireService) {}
+    constructor(
+        private readonly grimoireService: GrimoireService,
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    ) {}
     @SceneEnter()
-    async enter(@Ctx() ctx: BotContext, @Sender() sender) {
-        const grimoire = await this.grimoireService.findGrimoireByUserTgId(
-            sender.id
-        );
-        const [spellEntities] = await this.grimoireService.findAllSpells(
-            {
-                _search: undefined,
-                _limit: 20,
-                _offset: 0,
-                _order: { name: ENUM_PAGINATION_ORDER_DIRECTION_TYPE.ASC },
-                _availableOrderBy: ['name'],
-                _availableOrderDirection: [
-                    ENUM_PAGINATION_ORDER_DIRECTION_TYPE.ASC,
-                    ENUM_PAGINATION_ORDER_DIRECTION_TYPE.DESC,
-                ],
-            },
-            grimoire.id
-        );
-
+    async enter(@Ctx() ctx: BotContext, @Sender('id') tgId) {
+        const grimoire =
+            await this.grimoireService.findGrimoireByUserTgId(tgId);
+        const spells = grimoire.spells;
         const title = '<strong><u>ГРИМУАР</u></strong>\n\n';
         const magicBlock = `<strong>Магия</strong>: ${grimoire.magicName}\n`;
         let caption = `${title}${magicBlock}<strong>Обложка</strong>: ${grimoire.coverSymbol}\n`;
@@ -41,14 +35,14 @@ export class GrimoreScene {
             id: string;
             text: string;
         }> = [];
-        if (spellEntities.length === 0) {
+        if (spells.length === 0) {
             caption = caption.concat(`У вас нет заклинаний`);
         } else {
             let spellListBlock = '';
             spellListBlock = spellListBlock.concat(
                 `<strong>Список заклинаний</strong>\n`
             );
-            spellEntities.map((spell, index) => {
+            spells.map((spell, index) => {
                 spellListBlock = spellListBlock.concat(
                     `${index + 1}) ${spell.name}\n`
                 );
@@ -77,20 +71,14 @@ export class GrimoreScene {
                 ...Markup.inlineKeyboard([
                     [
                         Markup.button.callback(
-                            BUTTON_ACTIONS.CREATE_SPELL,
-                            BUTTON_ACTIONS.CREATE_SPELL
+                            CREATE_SPELL_BUTTON,
+                            CREATE_SPELL_BUTTON
                         ),
                     ],
                     [
                         Markup.button.callback(
-                            BUTTON_ACTIONS.EDIT_MAGIC_NAME,
-                            BUTTON_ACTIONS.EDIT_MAGIC_NAME
-                        ),
-                    ],
-                    [
-                        Markup.button.callback(
-                            BUTTON_ACTIONS.EDIT_MAGIC_COLOR,
-                            BUTTON_ACTIONS.EDIT_MAGIC_COLOR
+                            EDIT_MAGIC_NAME_BUTTON,
+                            EDIT_MAGIC_NAME_BUTTON
                         ),
                     ],
                 ]),
@@ -103,7 +91,7 @@ export class GrimoreScene {
                     ...Markup.inlineKeyboard([
                         [
                             Markup.button.callback(
-                                BUTTON_ACTIONS.EDIT_SPELL,
+                                EDIT_SPELL_BUTTON,
                                 `EDIT_SPELL:${spell.id}`
                             ),
                         ],
@@ -112,35 +100,27 @@ export class GrimoreScene {
         );
     }
 
-    @Hears(BUTTON_ACTIONS.EDIT_GRIMOIRE)
+    @Hears(EDIT_GRIMOIRE_BUTTON)
     async editGrimoire(@Ctx() ctx: BotContext) {
         ctx.reply('вы попали в меню редактирования гримуара', {
             ...Markup.keyboard([
-                [
-                    BUTTON_ACTIONS.CREATE_SPELL,
-                    BUTTON_ACTIONS.EDIT_MAGIC_NAME,
-                    BUTTON_ACTIONS.EDIT_MAGIC_COLOR,
-                ],
-                [BUTTON_ACTIONS.back],
+                [CREATE_SPELL_BUTTON, EDIT_MAGIC_NAME_BUTTON],
+                [BACK_BUTTON],
             ]),
         });
     }
-    @Action(BUTTON_ACTIONS.CREATE_SPELL)
+    @Action(CREATE_SPELL_BUTTON)
     async createSpell(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.createSpell);
+        await ctx.scene.enter(ENUM_SCENES_ID.CREATE_SPELL_FORM_SCENE_ID);
     }
 
-    @Action(BUTTON_ACTIONS.EDIT_MAGIC_NAME)
+    @Action(EDIT_MAGIC_NAME_BUTTON)
     async editMagicName(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.grimoireEditMagicName);
+        await ctx.scene.enter(ENUM_SCENES_ID.EDIT_MAGIC_NAME_SCENE_ID);
     }
 
-    @Action(BUTTON_ACTIONS.EDIT_MAGIC_COLOR)
-    async editMagicColor(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.grimoireEditMagicColor);
-    }
-    @Hears(BUTTON_ACTIONS.back)
+    @Hears(BACK_BUTTON)
     async profile(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.profile);
+        await ctx.scene.enter(ENUM_SCENES_ID.PROFILE_SCENE_ID);
     }
 }

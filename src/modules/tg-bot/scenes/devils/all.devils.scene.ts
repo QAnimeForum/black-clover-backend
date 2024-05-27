@@ -7,12 +7,10 @@ import {
     Scene,
     SceneEnter,
 } from 'nestjs-telegraf';
-import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
-import { UseFilters } from '@nestjs/common';
+import { Inject, Logger, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
-import { BUTTON_ACTIONS } from '../../constants/actions';
 import {
     DEVILS_IMAGE_PATH,
     DEVILS_QLIPOTH_IMAGE_PATH,
@@ -26,11 +24,32 @@ import { DevilEntity } from 'src/modules/devils/entity/devil.entity';
 import { DevilUnionEntity } from 'src/modules/devils/entity/devil.union.entity';
 import { ENUM_DEVIL_LIST_BACK_TYPE } from '../../interfaces/bot.wizard.session';
 import { ENUM_DEVIL_RANK } from 'src/modules/devils/constants/devil.ranks.enum';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
+import {
+    BACK_BUTTON,
+    DEVIL_FLOOR_1_BUTTON,
+    DEVIL_FLOOR_2_BUTTON,
+    DEVIL_FLOOR_3_BUTTON,
+    DEVIL_FLOOR_4_BUTTON,
+    DEVIL_FLOOR_5_BUTTON,
+    DEVIL_FLOOR_6_BUTTON,
+    DEVIL_FLOOR_7_BUTTON,
+    DEVIL_RANK_1_BUTTON,
+    DEVIL_RANK_2_BUTTON,
+    DEVIL_RANK_3_BUTTON,
+    DEVIL_RANK_4_BUTTON,
+    DEVIL_TYPE_SORT_FLOOR_BUTTON,
+    DEVIL_TYPE_SORT_RANK_BUTTON,
+} from '../../constants/button-names.constant';
 
-@Scene(SceneIds.allDevils)
+@Scene(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class AllDevilsScene {
-    constructor(private readonly devilService: DevilsService) {}
+    constructor(
+        private readonly devilService: DevilsService,
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    ) {}
 
     async showEntryButtons(ctx: BotContext) {
         ctx.scene.session.devilsList = {
@@ -43,11 +62,8 @@ export class AllDevilsScene {
                 caption: `Вы попали в преисподнюю`,
                 parse_mode: 'HTML',
                 ...Markup.keyboard([
-                    [
-                        BUTTON_ACTIONS.DEVIL_TYPE_SORT_FLOOR,
-                        BUTTON_ACTIONS.DEVIL_TYPE_SORT_RANK,
-                    ],
-                    [BUTTON_ACTIONS.back],
+                    [DEVIL_TYPE_SORT_FLOOR_BUTTON, DEVIL_TYPE_SORT_RANK_BUTTON],
+                    [BACK_BUTTON],
                 ]).resize(),
             }
         );
@@ -57,12 +73,12 @@ export class AllDevilsScene {
         this.showEntryButtons(ctx);
     }
 
-    @Hears(BUTTON_ACTIONS.back)
+    @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
         const backStatus = ctx.scene.session.devilsList.backStatus;
         switch (backStatus) {
             case ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_HOME: {
-                await ctx.scene.enter(SceneIds.home);
+                await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
                 break;
             }
             case ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_SORT_TYPE: {
@@ -78,7 +94,7 @@ export class AllDevilsScene {
         }
     }
 
-    @Hears(BUTTON_ACTIONS.DEVIL_TYPE_SORT_FLOOR)
+    @Hears(DEVIL_TYPE_SORT_FLOOR_BUTTON)
     async floor(@Ctx() ctx: BotContext) {
         ctx.scene.session.devilsList.backStatus =
             ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_SORT_TYPE;
@@ -88,26 +104,17 @@ export class AllDevilsScene {
                 caption: `Информация о дьяволах, собранная по этажам`,
                 parse_mode: 'HTML',
                 ...Markup.keyboard([
-                    [
-                        BUTTON_ACTIONS.DEVIL_FLOOR_1,
-                        BUTTON_ACTIONS.DEVIL_FLOOR_2,
-                    ],
-                    [
-                        BUTTON_ACTIONS.DEVIL_FLOOR_3,
-                        BUTTON_ACTIONS.DEVIL_FLOOR_4,
-                    ],
-                    [
-                        BUTTON_ACTIONS.DEVIL_FLOOR_5,
-                        BUTTON_ACTIONS.DEVIL_FLOOR_6,
-                    ],
-                    [BUTTON_ACTIONS.DEVIL_FLOOR_7, BUTTON_ACTIONS.back],
+                    [DEVIL_FLOOR_1_BUTTON, DEVIL_FLOOR_2_BUTTON],
+                    [DEVIL_FLOOR_3_BUTTON, DEVIL_FLOOR_4_BUTTON],
+                    [DEVIL_FLOOR_5_BUTTON, DEVIL_FLOOR_6_BUTTON],
+                    [DEVIL_FLOOR_7_BUTTON, BACK_BUTTON],
                 ]).resize(),
             }
         );
-        // await ctx.scene.enter(SceneIds.allDevilsByFloor);
+        // await ctx.scene.enter(ENUM_SCENES_ID.allDevilsByFloor);
     }
 
-    @Hears(BUTTON_ACTIONS.DEVIL_TYPE_SORT_RANK)
+    @Hears(DEVIL_TYPE_SORT_RANK_BUTTON)
     async rank(@Ctx() ctx: BotContext) {
         ctx.scene.session.devilsList.backStatus =
             ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_SORT_TYPE;
@@ -117,13 +124,13 @@ export class AllDevilsScene {
                 caption: `Список дьяволов по рангам`,
                 parse_mode: 'HTML',
                 ...Markup.keyboard([
-                    [BUTTON_ACTIONS.DEVIL_RANK_1, BUTTON_ACTIONS.DEVIL_RANK_2],
-                    [BUTTON_ACTIONS.DEVIL_RANK_3, BUTTON_ACTIONS.DEVIL_RANK_4],
-                    [BUTTON_ACTIONS.back],
+                    [DEVIL_RANK_1_BUTTON, DEVIL_RANK_2_BUTTON],
+                    [DEVIL_RANK_3_BUTTON, DEVIL_RANK_4_BUTTON],
+                    [BACK_BUTTON],
                 ]).resize(),
             }
         );
-        // await ctx.scene.enter(SceneIds.allDevilsByRank);
+        // await ctx.scene.enter(ENUM_SCENES_ID.allDevilsByRank);
     }
 
     @Hears(/(Первый|Второй|Третий|Четвёртый|Пятый|Шестой|Седьмой) этаж/g)
@@ -138,49 +145,49 @@ export class AllDevilsScene {
             },
         };
         switch (text) {
-            case BUTTON_ACTIONS.DEVIL_FLOOR_1: {
+            case DEVIL_FLOOR_1_BUTTON: {
                 query.filter = {
                     floor: `$eq:${ENUM_DEVIL_FLOOR.ONE}`,
                 };
                 caption = 'Список дьяволов первого этажа';
                 break;
             }
-            case BUTTON_ACTIONS.DEVIL_FLOOR_2: {
+            case DEVIL_FLOOR_2_BUTTON: {
                 query.filter = {
                     floor: `$eq:${ENUM_DEVIL_FLOOR.TWO}`,
                 };
                 caption = 'Список дьяволов второго этажа';
                 break;
             }
-            case BUTTON_ACTIONS.DEVIL_FLOOR_3: {
+            case DEVIL_FLOOR_3_BUTTON: {
                 query.filter = {
                     floor: `$eq:${ENUM_DEVIL_FLOOR.THREE}`,
                 };
                 caption = 'Список дьяволов третьего этажа';
                 break;
             }
-            case BUTTON_ACTIONS.DEVIL_FLOOR_4: {
+            case DEVIL_FLOOR_4_BUTTON: {
                 query.filter = {
                     floor: `$eq:${ENUM_DEVIL_FLOOR.FOUR}`,
                 };
                 caption = 'Список дьяволов четвёртого этажа';
                 break;
             }
-            case BUTTON_ACTIONS.DEVIL_FLOOR_5: {
+            case DEVIL_FLOOR_5_BUTTON: {
                 query.filter = {
                     floor: `$eq:${ENUM_DEVIL_FLOOR.FIVE}`,
                 };
                 caption = 'Список дьяволов пятого этажа';
                 break;
             }
-            case BUTTON_ACTIONS.DEVIL_FLOOR_6: {
+            case DEVIL_FLOOR_6_BUTTON: {
                 query.filter = {
                     floor: `$eq:${ENUM_DEVIL_FLOOR.SIX}`,
                 };
                 caption = 'Список дьяволов шестого этажа';
                 break;
             }
-            case BUTTON_ACTIONS.DEVIL_FLOOR_7: {
+            case DEVIL_FLOOR_7_BUTTON: {
                 query.filter = {
                     floor: `$eq:${ENUM_DEVIL_FLOOR.SEVEN}`,
                 };
@@ -209,28 +216,28 @@ export class AllDevilsScene {
             },
         };
         switch (text) {
-            case BUTTON_ACTIONS.DEVIL_RANK_1: {
+            case DEVIL_RANK_1_BUTTON: {
                 query.filter = {
                     rank: `$eq:${ENUM_DEVIL_RANK.LOW}`,
                 };
                 caption = 'Список низкоранговых дьяволов';
                 break;
             }
-            case BUTTON_ACTIONS.DEVIL_RANK_2: {
+            case DEVIL_RANK_2_BUTTON: {
                 query.filter = {
                     rank: `$eq:${ENUM_DEVIL_RANK.MID}`,
                 };
                 caption = `Список среднеранговых дьяволов`;
                 break;
             }
-            case BUTTON_ACTIONS.DEVIL_RANK_3: {
+            case DEVIL_RANK_3_BUTTON: {
                 query.filter = {
                     rank: `$eq:${ENUM_DEVIL_RANK.HIGH}`,
                 };
                 caption = `Список высокоранговых дьяволов`;
                 break;
             }
-            case BUTTON_ACTIONS.DEVIL_RANK_4: {
+            case DEVIL_RANK_4_BUTTON: {
                 query.filter = {
                     rank: `$eq:${ENUM_DEVIL_RANK.HIGHEST}`,
                 };
@@ -280,7 +287,7 @@ export class AllDevilsScene {
                         ],
                         [
                             Markup.button.callback(
-                                BUTTON_ACTIONS.back,
+                                BACK_BUTTON,
                                 `BACK_TO_DEVIL_LIST`
                             ),
                         ],
@@ -325,7 +332,7 @@ export class AllDevilsScene {
                                 ],
                                 [
                                     Markup.button.callback(
-                                        BUTTON_ACTIONS.back,
+                                        BACK_BUTTON,
                                         `BACK_TO_DEVIL_LIST`
                                     ),
                                 ],

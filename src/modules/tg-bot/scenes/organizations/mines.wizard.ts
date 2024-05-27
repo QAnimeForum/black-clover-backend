@@ -1,22 +1,28 @@
 import { Ctx, Hears, On, Scene, SceneEnter } from 'nestjs-telegraf';
 import { MINES_PATH, STATIC_IMAGE_BASE_PATH } from '../../constants/images';
-import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
-import { UseFilters } from '@nestjs/common';
-import { BUTTON_ACTIONS } from '../../constants/actions';
+import { Inject, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 import { MineService } from '../../../mines/services/mine.service';
 import { PaginateQuery } from 'nestjs-paginate';
 import { MINE_DEFAULT_PER_PAGE } from 'src/modules/mines/constants/mine.list.constant';
+import {
+    BACK_BUTTON,
+    MINERALS_BUTTON,
+} from '../../constants/button-names.constant';
+import { Logger } from 'winston';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 
-@Scene(SceneIds.mines)
+@Scene(ENUM_SCENES_ID.MINES_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class MinesScene {
     constructor(
         private readonly tgBotService: TgBotService,
-        private readonly mineralsService: MineService
+        private readonly mineralsService: MineService,
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {
@@ -27,24 +33,21 @@ export class MinesScene {
             },
             {
                 caption,
-                ...Markup.keyboard([
-                    [BUTTON_ACTIONS.MINERALS],
-                    [BUTTON_ACTIONS.back],
-                ]).resize(),
+                ...Markup.keyboard([[MINERALS_BUTTON], [BACK_BUTTON]]).resize(),
             }
         );
         this.showButtonMenu(ctx);
     }
 
-    @Hears(BUTTON_ACTIONS.MINERALS)
+    @Hears(MINERALS_BUTTON)
     async minerals(@Ctx() ctx: BotContext) {
         /*const [minerals, total] =
             await this.mineralsService.findMineralsNames();*/
     }
 
-    @Hears(BUTTON_ACTIONS.back)
+    @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.organizations);
+        await ctx.scene.enter(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID);
     }
 
     @On('callback_query')
@@ -79,7 +82,7 @@ export class MinesScene {
                 ...Markup.inlineKeyboard([
                     [
                         Markup.button.callback(
-                            BUTTON_ACTIONS.back,
+                            BACK_BUTTON,
                             `BACK_TO_MINERALS_LIST`
                         ),
                     ],

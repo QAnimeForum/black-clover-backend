@@ -3,6 +3,7 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
@@ -10,7 +11,7 @@ import {
 import { ItemCategoryEntity } from './item.category.entity';
 import { ENUM_ITEM_RARITY } from '../constants/item.entity.enum';
 
-@Entity('Item')
+@Entity('item')
 export class ItemEntity {
     @ApiProperty()
     @PrimaryGeneratedColumn()
@@ -38,8 +39,17 @@ export class ItemEntity {
     @ManyToOne((type) => ItemCategoryEntity, (category) => category.items, {
         eager: true,
     })
+    @JoinColumn({
+        name: 'caterogry_id',
+        referencedColumnName: 'id',
+    })
     category: ItemCategoryEntity;
 
+    @Column({
+        type: 'varchar',
+        name: 'category_id',
+    })
+    categoryId: string;
     @ApiProperty({
         enum: ENUM_ITEM_RARITY,
     })

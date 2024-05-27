@@ -15,21 +15,6 @@ import { CharacterService } from 'src/modules/character/services/character.servi
 
 @Injectable()
 export class TgBotService {
-    constructor(
-        //  @InjectRepository(UserEntity)
-        //  private readonly userRepository: Repository<UserEntity>,
-        private readonly userService: UserService,
-        private readonly characterService: CharacterService,
-        private readonly configService: ConfigService
-        // private readonly dbLoggerService: DbLoggerService
-    ) {}
-
-    async findUserByTgId(tgId: string): Promise<UserEntity> {
-        return this.userService.findUserById(tgId);
-    }
-    async findCharacterByCharacterId(tgId: string): Promise<UserEntity> {
-        return this.userService.findUserById(tgId);
-    }
 
     async downloadAndSaveLocalFile(filePath: string) {
         //  const botToken = this.configService.get(EnvVariablesKeys.tgBotToken);

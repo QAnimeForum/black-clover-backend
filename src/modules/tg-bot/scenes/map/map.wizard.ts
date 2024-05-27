@@ -1,18 +1,21 @@
 import { Context, SceneEnter, Wizard, WizardStep } from 'nestjs-telegraf';
 import { WORLD_MAP_IMAGE_PATH } from '../../constants/images';
-import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
-import { UseFilters } from '@nestjs/common';
+import { Inject, UseFilters } from '@nestjs/common';
 import { MapService } from '../../../map/service/map.service';
+import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
-@Wizard(SceneIds.map)
+@Wizard(ENUM_SCENES_ID.MAP_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class MapWizard {
     constructor(
         private readonly tgBotService: TgBotService,
-        private readonly mapService: MapService
+        private readonly mapService: MapService,
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
 
     @SceneEnter()

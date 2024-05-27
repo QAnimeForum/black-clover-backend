@@ -1,22 +1,25 @@
-import { Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
+import { Hears, Scene, SceneEnter, Sender, Context } from 'nestjs-telegraf';
 import { MONEY_IMAGE_PATH } from '../../constants/images';
-import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
-import { UseFilters } from '@nestjs/common';
+import { Inject, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
-import { BUTTON_ACTIONS } from '../../constants/actions';
-import { CharacterService } from '../../../character/services/character.service';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
+import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
+import { BACK_BUTTON } from '../../constants/button-names.constant';
+import { WalletService } from 'src/modules/character/services/wallet.service';
 
-@Scene(SceneIds.wallet)
+@Scene(ENUM_SCENES_ID.WALLET_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class WalletScene {
-    constructor(private readonly characterService: CharacterService) {}
+    constructor(
+        private readonly walletService: WalletService,
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    ) {}
     @SceneEnter()
-    async enter(@Ctx() ctx: BotContext, @Sender() sender) {
-        const user = await this.characterService.getWalletByCharacter(
-            sender.id
-        );
+    async enter(@Context() ctx: BotContext, @Sender('id') tgId) {
+        const user = await this.walletService.findWalletByUserTgId(tgId);
         const wallet = user.character.wallet;
         const cash = wallet.cash;
         const cooperText = ` Медные: ${cash.cooper}\n`;
@@ -31,13 +34,13 @@ export class WalletScene {
             },
             {
                 caption,
-                ...Markup.keyboard([[BUTTON_ACTIONS.back]]).resize(),
+                ...Markup.keyboard([[BACK_BUTTON]]).resize(),
             }
         );
     }
 
-    @Hears(BUTTON_ACTIONS.back)
-    async profile(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.profile);
+    @Hears(BACK_BUTTON)
+    async profile(@Context() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.PROFILE_SCENE_ID);
     }
 }

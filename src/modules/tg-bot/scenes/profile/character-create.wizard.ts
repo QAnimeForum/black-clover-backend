@@ -1,22 +1,71 @@
-import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
-import { WORLD_MAP_IMAGE_PATH } from '../../constants/images';
-import { SceneIds } from '../../constants/scenes.id';
 import { BotContext } from '../../interfaces/bot.context';
-import { TgBotService } from '../../services/tg-bot.service';
-import { Inject, Injectable } from '@nestjs/common';
 import { CharacterService } from '../../../character/services/character.service';
-import { MapService } from '../../../map/service/map.service';
-import { RaceService } from '../../../race/race.service';
-import { message } from 'telegraf/filters';
-import { Telegraf, Scenes, Composer } from 'telegraf';
-import { UserService } from '../../../user/services/user.service';
-import { ENUM_ROLE_TYPE } from 'src/modules/user/constants/role.enum.constant';
 
-//@Wizard(SceneIds.createCharacter)
+import { Inject, UseFilters } from '@nestjs/common';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import {
+    Context,
+    Hears,
+    Message,
+    On,
+    SceneEnter,
+    Sender,
+    Wizard,
+    WizardStep,
+} from 'nestjs-telegraf';
+import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
+import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
+import { Logger } from 'winston';
+
+//@Wizard(ENUM_SCENES_ID.createCharacter)
 //@UseFilters(TelegrafExceptionFilter)
-@Injectable()
+
+@Wizard(ENUM_SCENES_ID.CREATE_CHARACTER_FORM_SCENE_ID)
+@UseFilters(TelegrafExceptionFilter)
+export class CharacterCreateWizard {
+    constructor(
+        private readonly characterService: CharacterService,
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    ) {}
+
+    @SceneEnter()
+    async start(@Context() ctx: BotContext) {
+        await ctx.reply(
+            'Привет, путешественник!\nЗаполните краткую информацию о себе'
+        );
+        await ctx.reply('Пора представиться! Напишите своё имя.');
+    }
+
+    @WizardStep(1)
+    @On(['text'])
+    async changeName(
+        @Context() ctx: BotContext,
+        @Sender('id') id,
+        @Message('text') msg: string
+    ) {
+        ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
+    }
+
+    @WizardStep(2)
+    @On(['text'])
+    async saveCharacter(
+        @Context() ctx: BotContext,
+        @Sender('id') id,
+        @Message('text') msg: string
+    ) {
+        ctx.scene.enter(ENUM_SCENES_ID.PROFILE_SCENE_ID);
+    }
+    @Hears(/^\/?(cancel)$/i)
+    async onCancel(@Context() ctx: BotContext) {
+        await ctx.reply('Имя не изменено.');
+        await ctx.scene.leave();
+    }
+}
+
+/**
+ * @Injectable()
 export class CreateCharacterWizard {
-    //   private readonly logger = new Logger(AddDiscountWizard.name)
+
     readonly scene: Scenes.WizardScene<BotContext>;
     readonly steps: Composer<BotContext>[] = [];
     constructor(
@@ -29,7 +78,6 @@ export class CreateCharacterWizard {
         private readonly userService: UserService,
         private readonly tgBotService: TgBotService
     ) {
-        // Create scene and add steps
         this.steps = [
             this.step1(),
             this.step2(),
@@ -40,15 +88,15 @@ export class CreateCharacterWizard {
             this.step7(),
         ];
         this.scene = new Scenes.WizardScene<BotContext>(
-            SceneIds.createCharacter,
+            ENUM_SCENES_ID.createCharacter,
             ...this.steps
         );
-        // Register add discount wizard
+    
         this.stage.register(this.scene);
         bot.use(stage.middleware());
         bot.catch((err: Error, ctx) => {
             console.log(err);
-            // this.tgBotService.catchException(err, ctx, this.logger)
+    
         });
     }
 
@@ -210,11 +258,12 @@ export class CreateCharacterWizard {
                     role: ENUM_ROLE_TYPE.USER,
                 };
                 this.userService.createUser(dto);
-                ctx.scene.enter(SceneIds.home);
+                ctx.scene.enter(ENUM_SCENES_ID.home);
             });
         });
     }
 }
+ */
 
 /**
  * 
@@ -259,7 +308,7 @@ export class CreateCharacterWizard {
                 if ('data' in ctx.callbackQuery) {
                     switch (ctx.callbackQuery.data) {
                         case 'EXIT': {
-                            ctx.scene.enter(SceneIds.home);
+                            ctx.scene.enter(ENUM_SCENES_ID.home);
                             break;
                         }
                     }

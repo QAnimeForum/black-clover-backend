@@ -66,7 +66,7 @@ export class SpellEntity {
         type: 'varchar',
         name: 'cast_type',
     })
-    castTime: number;
+    castTime: string;
 
     /**
      * Длится 6 ходов, после этого использовать в бою невозможно, если не пройдет 12 ходов, то вообще не пойдет**

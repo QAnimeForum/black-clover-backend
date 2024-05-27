@@ -1,5 +1,4 @@
 import { Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
-import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { TgBotService } from '../../services/tg-bot.service';
@@ -7,10 +6,20 @@ import { UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 import { CharacterService } from '../../../character/services/character.service';
 import { UserService } from '../../../user/services/user.service';
-import { BUTTON_ACTIONS } from '../../constants/actions';
 import { KNIGHT_IMAGE_PATH } from '../../constants/images';
+import {
+    BACK_BUTTON,
+    BACKGROUND_BUTTON,
+    GRIMOIRE_BUTTON,
+    INVENTORY_BUTTON,
+    MY_DEVILS_BUTTON,
+    MY_SPIRITS_BUTTON,
+    PARAMS_BUTTON,
+    WALLET_BUTTON,
+} from '../../constants/button-names.constant';
+import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 
-@Scene(SceneIds.characterParameters)
+@Scene(ENUM_SCENES_ID.CHARACTER_PARAMETERS_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class CharacterParamsScene {
     constructor(
@@ -46,50 +55,45 @@ export class CharacterParamsScene {
                 caption,
                 parse_mode: 'HTML',
                 ...Markup.keyboard([
-                    [
-                        BUTTON_ACTIONS.grimoire,
-                        BUTTON_ACTIONS.BIO,
-                        BUTTON_ACTIONS.params,
-                    ],
-                    [BUTTON_ACTIONS.WALLET, BUTTON_ACTIONS.INVENTORY],
-                    [BUTTON_ACTIONS.myDevils, BUTTON_ACTIONS.mySpirits],
-                    [BUTTON_ACTIONS.back],
+                    [GRIMOIRE_BUTTON, BACKGROUND_BUTTON, PARAMS_BUTTON],
+                    [WALLET_BUTTON, INVENTORY_BUTTON],
+                    [MY_DEVILS_BUTTON, MY_SPIRITS_BUTTON],
+                    [BACK_BUTTON],
                 ]).resize(),
             }
         );
     }
-
-    @Hears(BUTTON_ACTIONS.back)
+    @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.home);
+        await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
     }
-    @Hears(BUTTON_ACTIONS.grimoire)
+    @Hears(GRIMOIRE_BUTTON)
     async grimoire(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.grimoire);
+        await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_SCENE_ID);
     }
-    @Hears(BUTTON_ACTIONS.BIO)
+    @Hears(BACKGROUND_BUTTON)
     async bio(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.bio);
+        await ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
     }
-    @Hears(BUTTON_ACTIONS.params)
+    @Hears(PARAMS_BUTTON)
     async params(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.characterParameters);
+        await ctx.scene.enter(ENUM_SCENES_ID.CHARACTER_PARAMETERS_SCENE_ID);
     }
-    @Hears(BUTTON_ACTIONS.WALLET)
+    @Hears(WALLET_BUTTON)
     async wallet(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.wallet);
+        await ctx.scene.enter(ENUM_SCENES_ID.WALLET_SCENE_ID);
     }
-    @Hears(BUTTON_ACTIONS.INVENTORY)
+    @Hears(INVENTORY_BUTTON)
     async inventory(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.inventory);
+        await ctx.scene.enter(ENUM_SCENES_ID.INVENTORY_SCENE_ID);
     }
-    @Hears(BUTTON_ACTIONS.myDevils)
+    @Hears(MY_DEVILS_BUTTON)
     async myDevils(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.myDevils);
+        await ctx.scene.enter(ENUM_SCENES_ID.MY_DEVILS_SCENE_ID);
     }
 
-    @Hears(BUTTON_ACTIONS.mySpirits)
+    @Hears(MY_SPIRITS_BUTTON)
     async mySpirits(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.mySpirits);
+        await ctx.scene.enter(ENUM_SCENES_ID.MY_SPIRITS_SCENE_ID);
     }
 }

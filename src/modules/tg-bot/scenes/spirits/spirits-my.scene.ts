@@ -1,23 +1,16 @@
 import { Ctx, Hears, Scene, SceneEnter } from 'nestjs-telegraf';
 import { SPIRITS_IMAGE_PATH } from '../../constants/images';
-import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
-import { TgBotService } from '../../services/tg-bot.service';
 import { UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
-import { CharacterService } from '../../../../modules/character/services/character.service';
-import { UserService } from '../../../../modules/user/services/user.service';
-import { BUTTON_ACTIONS } from '../../constants/actions';
+import { BACK_BUTTON } from '../../constants/button-names.constant';
+import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 
-@Scene(SceneIds.mySpirits)
+@Scene(ENUM_SCENES_ID.MY_SPIRITS_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class MySpiritsScene {
-    constructor(
-        private readonly tgBotService: TgBotService,
-        private readonly characterService: CharacterService,
-        private readonly userService: UserService
-    ) {}
+    constructor() {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {
         const caption = 'мои духи';
@@ -27,13 +20,13 @@ export class MySpiritsScene {
             },
             {
                 caption,
-                ...Markup.keyboard([[BUTTON_ACTIONS.back]]).resize(),
+                ...Markup.keyboard([[BACK_BUTTON]]).resize(),
             }
         );
     }
 
-    @Hears(BUTTON_ACTIONS.back)
+    @Hears(BACK_BUTTON)
     async profile(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.profile);
+        await ctx.scene.enter(ENUM_SCENES_ID.PROFILE_SCENE_ID);
     }
 }

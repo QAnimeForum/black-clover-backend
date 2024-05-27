@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    ManyToMany,
+    JoinTable,
+    CreateDateColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import { WeaponEntity } from '../../items/entity/weapon.entity';
 import { ArmorEntity } from '../../items/entity/armor.entity';
 import { ToolKitEnity } from '../../items/entity/toolkit.entity';

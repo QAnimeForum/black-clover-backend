@@ -17,20 +17,6 @@ import { ItemsModule } from 'src/modules/items/items.module';
     controllers: [],
     providers: [],
     exports: [],
-    imports: [
-        CharacterModule,
-        DevilsModule,
-        SpiritsModule,
-        EventsModule,
-        GrimoireModule,
-        ItemsModule,
-        JudicialSystemModule,
-        MinesModule,
-        SquadsModule,
-        MapModule,
-        MoneyModule,
-        RaceModule,
-        UserModule,
-    ],
+    imports: [],
 })
 export class RoutesPublicModule {}

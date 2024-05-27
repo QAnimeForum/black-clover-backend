@@ -8,10 +8,7 @@ import {
     Post,
     VERSION_NEUTRAL,
 } from '@nestjs/common';
-import {
-    Response,
-    ResponsePaging,
-} from 'src/common/response/decorators/response.decorator';
+import { Response } from 'src/common/response/decorators/response.decorator';
 import { PaginationService } from 'src/common/pagination/services/pagination.service';
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
 import { GrimoireRequestDto } from '../../grimoire/dto/grimoire.request.dto';
@@ -19,34 +16,13 @@ import { GrimoireService } from '../services/grimoire.service';
 import { RaceGetSerialization } from '../../race/serializations/race.get.serialization';
 import { ENUM_GRIMOIRE_STATUS_CODE_ERROR } from '../constants/grimoire.status-code.constant';
 import { SpellRequestDto } from '../dto/spell.request.dto';
-import { SpellCreateDto } from '../dto/spell.create.dto';
 import { ResponseIdSerialization } from 'src/common/response/serializations/response.id.serialization';
-import {
-    IResponse,
-    IResponsePaging,
-} from 'src/common/response/interfaces/response.interface';
+import { IResponse } from 'src/common/response/interfaces/response.interface';
 import { ENUM_SPELL_STATUS_CODE_ERROR } from '../constants/spell.status-code.constant';
 import { SpellGetSerialization } from '../serializations/spell.get.serialization';
-import {
-    SPELL_DEFAULT_AVAILABLE_ORDER_BY,
-    SPELL_DEFAULT_AVAILABLE_SEARCH,
-    SPELL_DEFAULT_ORDER_BY,
-    SPELL_DEFAULT_ORDER_DIRECTION,
-    SPELL_DEFAULT_PER_PAGE,
-} from '../constants/spell.list.constant';
-import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
-import { PaginationQuery } from 'src/common/pagination/decorators/pagination.decorator';
-import { SpellListSerialization } from '../serializations/spell.list.serialization';
 import { GrimoireCreateDto } from '../dto/grimoire.create.dto';
 import { GrimoireGetSerialization } from '../serializations/grimoire.get.serialization';
-import {
-    GRIMOIRE_DEFAULT_AVAILABLE_ORDER_BY,
-    GRIMOIRE_DEFAULT_AVAILABLE_SEARCH,
-    GRIMOIRE_DEFAULT_ORDER_BY,
-    GRIMOIRE_DEFAULT_ORDER_DIRECTION,
-    GRIMOIRE_DEFAULT_PER_PAGE,
-} from '../constants/grimoire.list.constant';
-import { GrimoireListSerialization } from '../serializations/grimoire.list.serialization';
+
 import { ENUM_WEAPON_STATUS_CODE_ERROR } from '../../items/constants/weapon.status-code.constant';
 
 @Controller({
@@ -80,7 +56,9 @@ export class GrimoireController {
         };
     }
 
-    @ResponsePaging('grimoire.list', {
+    /**
+  * 
+  * @param params    @ResponsePaging('grimoire.list', {
         serialization: GrimoireListSerialization,
     })
     @Get('/grimoire/list')
@@ -106,6 +84,8 @@ export class GrimoireController {
         };
     }
 
+  * @returns 
+  */
     @Response('grimoire.get', {
         serialization: GrimoireGetSerialization,
     })
@@ -133,14 +113,14 @@ export class GrimoireController {
         serialization: ResponseIdSerialization,
     })
     @Post('/grimoire/create')
-    async createWeapon(
+    async createGrimoire(
         @Body()
         dto: GrimoireCreateDto
     ): Promise<IResponse> {
         try {
-            const weaponEntity = await this.grimoireService.createGrimoire(dto);
+            const grimoire = await this.grimoireService.createGrimoire(dto);
             return {
-                data: { _id: weaponEntity.raw[0].id },
+                data: grimoire,
             };
         } catch (err) {
             throw new ConflictException({
@@ -158,22 +138,16 @@ export class GrimoireController {
         return;
     }
 
-    @ResponsePaging('spell.list', {
+    /**
+  * 
+  * @param params    @ResponsePaging('spell.list', {
         serialization: SpellListSerialization,
     })
     @Get('/spell/list/:grimoireId')
     async getAllSpells(
-        @PaginationQuery(
-            SPELL_DEFAULT_PER_PAGE,
-            SPELL_DEFAULT_ORDER_BY,
-            SPELL_DEFAULT_ORDER_DIRECTION,
-            SPELL_DEFAULT_AVAILABLE_SEARCH,
-            SPELL_DEFAULT_AVAILABLE_ORDER_BY
-        )
-        dto: PaginationListDto,
         @Param() params: GrimoireRequestDto
-    ): Promise<IResponsePaging> {
-        const [spells, total] = await this.grimoireService.findAllSpells(
+    ): Promise<Paginated<SpellEntity>> {
+        const spells = await this.grimoireService.findAllSpells(
             dto,
             params.grimoire
         );
@@ -186,6 +160,8 @@ export class GrimoireController {
             data: spells,
         };
     }
+  * @returns 
+  */
 
     @Response('spell.get', {
         serialization: SpellGetSerialization,
@@ -205,7 +181,9 @@ export class GrimoireController {
         };
     }
 
-    @Response('spell.create', {
+    /**
+  * 
+  * @param params    @Response('spell.create', {
         serialization: ResponseIdSerialization,
     })
     @Post('/spell/create/:grimoireId')
@@ -230,6 +208,8 @@ export class GrimoireController {
             });
         }
     }
+  * @returns 
+  */
 
     @Response('grimoire.spell.delete')
     @RequestParamGuard(SpellRequestDto)

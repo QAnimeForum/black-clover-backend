@@ -7,15 +7,15 @@ import { RaceService } from '../../../../race/race.service';
 import { Telegraf, Scenes, Composer } from 'telegraf';
 import { UserService } from '../../../../user/services/user.service';
 import { message } from 'telegraf/filters';
-import { SceneIds } from '../../../constants/scenes.id';
 import { BotContext } from '../../../interfaces/bot.context';
 import { TgBotService } from '../../../services/tg-bot.service';
 
-//@Wizard(SceneIds.createCharacter)
+//@Wizard(ENUM_SCENES_ID.createCharacter)
 //@UseFilters(TelegrafExceptionFilter)
-@Injectable()
+/**
+ * @Injectable()
 export class CreateSpellWizard {
-    //   private readonly logger = new Logger(AddDiscountWizard.name)
+
     readonly scene: Scenes.WizardScene<BotContext>;
     readonly steps: Composer<BotContext>[] = [];
     constructor(
@@ -28,7 +28,7 @@ export class CreateSpellWizard {
         private readonly userService: UserService,
         private readonly tgBotService: TgBotService
     ) {
-        // Create scene and add steps
+
         this.steps = [
             this.start(),
             this.step1(),
@@ -37,7 +37,7 @@ export class CreateSpellWizard {
             this.exit(),
         ];
         this.scene = new Scenes.WizardScene<BotContext>(
-            SceneIds.createSpell,
+            ENUM_SCENES_ID.createSpell,
             ...this.steps
         );
         // Register add discount wizard
@@ -45,7 +45,6 @@ export class CreateSpellWizard {
         bot.use(stage.middleware());
         bot.catch((err: Error, ctx) => {
             console.log(err);
-            // this.tgBotService.catchException(err, ctx, this.logger)
         });
     }
 
@@ -75,7 +74,7 @@ export class CreateSpellWizard {
                 const msg = ctx.update?.message.text;
                 ctx.scene.session.spell.range = msg;
                 await ctx.reply(
-                   'Введите количество урона, которое наносит заклинание:'
+                    'Введите количество урона, которое наносит заклинание:'
                 );
                 ctx.wizard.next();
             });
@@ -98,7 +97,7 @@ export class CreateSpellWizard {
                 const msg = ctx.update?.message.text;
                 ctx.scene.session.spell.cost = msg;
                 await ctx.reply(
-                   'Пожалуйста, введите продолжительность заклинания:'
+                    'Пожалуйста, введите продолжительность заклинания:'
                 );
                 ctx.wizard.next();
             });
@@ -109,9 +108,7 @@ export class CreateSpellWizard {
             composer.on(message('text'), async (ctx) => {
                 const msg = ctx.update?.message.text;
                 ctx.scene.session.spell.duration = msg;
-                await ctx.reply(
-                'Введите описание заклинания:'
-                );
+                await ctx.reply('Введите описание заклинания:');
                 ctx.wizard.next();
             });
         });
@@ -143,7 +140,7 @@ export class CreateSpellWizard {
                 switch (ctx.updateType) {
                     case 'callback_query': {
                         if ('data' in ctx.callbackQuery) {
-                            await ctx.scene.enter(SceneIds.grimoire);
+                            await ctx.scene.enter(ENUM_SCENES_ID.grimoire);
                         } else ctx.scene.leave();
                         break;
                     }
@@ -160,3 +157,5 @@ export class CreateSpellWizard {
         });
     }
 }
+
+ */

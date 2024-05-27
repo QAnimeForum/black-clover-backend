@@ -48,7 +48,6 @@ async function bootstrap() {
 
     // Listen
     await app.listen(port, host);
-
     logger.log(`==========================================================`);
 
     logger.log(`Environment Variable`, 'Black clover application');

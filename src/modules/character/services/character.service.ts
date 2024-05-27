@@ -32,40 +32,23 @@ export class CharacterService {
     constructor(
         @InjectDataSource()
         private readonly connection: DataSource,
-        @Inject() readonly grimoireService: GrimoireService,
-        @Inject() readonly inventoryService: InventoryService,
-        @Inject() readonly characteristicsService: CharacteristicService,
-        @Inject() readonly backgroundService: BackgroundService,
-        @Inject() readonly mapService: MapService,
-        @Inject() readonly walletService: WalletService,
+        @Inject(GrimoireService) readonly grimoireService: GrimoireService,
+        @Inject(InventoryService)
+        readonly inventoryService: InventoryService,
+        @Inject(CharacteristicService)
+        readonly characteristicsService: CharacteristicService,
+        @Inject(BackgroundService)
+        readonly backgroundService: BackgroundService,
+        @Inject(MapService) readonly mapService: MapService,
+        @Inject(WalletService) readonly walletService: WalletService,
         @InjectRepository(CharacterEntity)
         private readonly characterRepository: Repository<CharacterEntity>,
         @InjectRepository(BackgroundEntity)
         private readonly backgroundRepository: Repository<BackgroundEntity>,
         @InjectRepository(CharacterCharacteristicsEntity)
         private readonly characteristicsRepository: Repository<CharacterCharacteristicsEntity>,
-        @InjectRepository(ProficiencyEntity)
-        private readonly proficiencyRepository: Repository<ProficiencyEntity>,
-        @InjectRepository(AbilityEntity)
-        private readonly abilityRepository: Repository<AbilityEntity>,
-        @InjectRepository(ArmorEntity)
-        private readonly armorRepository: Repository<ArmorEntity>,
-        @InjectRepository(ArmorClassEntity)
-        private readonly armorClassRepository: Repository<ArmorClassEntity>,
-        @InjectRepository(InventoryEntity)
-        private readonly inventoryRepository: Repository<InventoryEntity>,
-        @InjectRepository(GrimoireEntity)
-        private readonly grimoireRepository: Repository<GrimoireEntity>,
         @InjectRepository(RaceEntity)
         private readonly raceRepository: Repository<RaceEntity>,
-        @InjectRepository(StateEntity)
-        private readonly stateRepository: Repository<StateEntity>,
-        @InjectRepository(SpeedEntity)
-        private readonly speedEntity: Repository<SpeedEntity>,
-        @InjectRepository(WalletEntity)
-        private readonly walletRepository: Repository<WalletEntity>,
-        @InjectRepository(CashEntity)
-        private readonly cashRepository: Repository<CashEntity>,
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>
     ) {}

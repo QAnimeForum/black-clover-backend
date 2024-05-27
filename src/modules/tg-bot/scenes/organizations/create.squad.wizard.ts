@@ -2,12 +2,31 @@ import { Inject, Injectable } from '@nestjs/common';
 import { BotContext } from '../../interfaces/bot.context';
 import { Composer, Scenes, Telegraf } from 'telegraf';
 import { CharacterService } from 'src/modules/character/services/character.service';
-import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
+import { Context, InjectBot, SceneEnter, TELEGRAF_STAGE, Wizard } from 'nestjs-telegraf';
 import { TgBotService } from '../../services/tg-bot.service';
 import { SquadsService } from 'src/modules/squards/service/squads.service';
-import { SceneIds } from '../../constants/scenes.id';
 import { message } from 'telegraf/filters';
+import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
+import { Logger } from 'winston';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
+@Wizard(ENUM_SCENES_ID.CREATE_SQUAD_SCENE_ID)
+export class CreateScquadWizard {
+    constructor(
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    ) {}
+    @SceneEnter()
+    async enter(@Context() ctx: BotContext) {
+        ctx.scene.session.squad = {
+            name: '',
+            description: '',
+            forces_id: ctx.session.armedForcesId,
+        };
+        await ctx.reply('Введите название отряда');
+        ctx.wizard.next();
+    }
+}
+/*
 @Injectable()
 export class CreateSquadWizard {
     readonly scene: Scenes.WizardScene<BotContext>;
@@ -20,18 +39,16 @@ export class CreateSquadWizard {
         private readonly squadService: SquadsService,
         private readonly tgBotService: TgBotService
     ) {
-        // Create scene and add steps
+    
         this.steps = [this.start(), this.step1(), this.exit()];
         this.scene = new Scenes.WizardScene<BotContext>(
-            SceneIds.createSquad,
+            ENUM_SCENES_ID.createSquad,
             ...this.steps
         );
-        // Register add discount wizard
         this.stage.register(this.scene);
         bot.use(stage.middleware());
         bot.catch((err: Error, ctx) => {
             console.log(err);
-            // this.tgBotService.catchException(err, ctx, this.logger)
         });
     }
 
@@ -70,8 +87,9 @@ export class CreateSquadWizard {
                     ctx.scene.session.squad
                 );
                 console.log(squad);
-                ctx.scene.enter(SceneIds.armedForces);
+                ctx.scene.enter(ENUM_SCENES_ID.armedForces);
             });
         });
     }
 }
+*/

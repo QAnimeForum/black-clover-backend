@@ -10,11 +10,9 @@ import {
     Message,
     Command,
 } from 'nestjs-telegraf';
-import { UseFilters } from '@nestjs/common';
+import { Inject, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
-import { BUTTON_ACTIONS } from '../../constants/actions';
 import { ARMED_FORCES, STATIC_IMAGE_BASE_PATH } from '../../constants/images';
-import { SceneIds } from '../../constants/scenes.id';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { SquadsService } from 'src/modules/squards/service/squads.service';
@@ -25,12 +23,24 @@ import { ArmedForcesRequestEntity } from 'src/modules/squards/entity/armed.force
 import { UserService } from 'src/modules/user/services/user.service';
 import { ENUM_ARMED_FORCES_REQUEST } from 'src/modules/squards/constants/armed.forces.request.list';
 import { SQUAD_DEFAULT_PER_PAGE } from 'src/modules/squards/constants/squad.list.constant';
-@Scene(SceneIds.armedForces)
+import { Logger } from 'winston';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
+import {
+    BACK_BUTTON,
+    CREATE_SQUAD_BUTTON,
+    JOIN_TO_ARMED_FORCES_BUTTON,
+    MY_SQUAD_BUTTON,
+    SHOW_SQUAD_REQUESTS_BUTTON,
+    SQUAD_LIST_BUTTON,
+} from '../../constants/button-names.constant';
+@Scene(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class ArmedForcesScene {
     constructor(
         private readonly characterService: CharacterService,
-        private readonly squadsService: SquadsService
+        private readonly squadsService: SquadsService,
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
@@ -40,7 +50,7 @@ export class ArmedForcesScene {
         const state = await this.characterService.getStateByTgId(sender.id);
         const armedForces =
             await this.squadsService.findArmedForcesByState(state);
-        ctx.session.armed_forces_id = armedForces.id;
+        ctx.session.armedForcesId = armedForces.id;
         const [ranks] =
             await this.squadsService.findRanksByArmedForces(armedForces);
         const isUserSquadMember =
@@ -53,13 +63,13 @@ export class ArmedForcesScene {
         const caption = `${nameBlock}\n\n${descripitonBlock}\n${ranksBlock}`;
         const buttons = [];
         if (isUserSquadMember) {
-            buttons.push([BUTTON_ACTIONS.MY_SQUAD]);
+            buttons.push([MY_SQUAD_BUTTON]);
         } else {
-            buttons.push([BUTTON_ACTIONS.JOIN_TO_ARMED_FORCES]);
+            buttons.push([JOIN_TO_ARMED_FORCES_BUTTON]);
         }
         buttons.push(
-            [BUTTON_ACTIONS.SHOW_SQUAD_REQUESTS, BUTTON_ACTIONS.SQUAD_LIST],
-            [BUTTON_ACTIONS.back]
+            [SHOW_SQUAD_REQUESTS_BUTTON, SQUAD_LIST_BUTTON],
+            [BACK_BUTTON]
         );
         ctx.sendPhoto(
             {
@@ -73,7 +83,7 @@ export class ArmedForcesScene {
         );
     }
 
-    @Hears(BUTTON_ACTIONS.JOIN_TO_ARMED_FORCES)
+    @Hears(JOIN_TO_ARMED_FORCES_BUTTON)
     async joinToArmedForces(@Ctx() ctx: BotContext, @Sender() sender) {
         const tgUserId: string = sender.id;
         const tgUsername: string = sender.username;
@@ -93,7 +103,7 @@ export class ArmedForcesScene {
             return;
         }
         const dto: ArmedForcesRequestDto = {
-            armedForcesId: ctx.session.armed_forces_id,
+            armedForcesId: ctx.session.armedForcesId,
             characterId: character.id,
             tgUserId: tgUserId,
             tgUsername: tgUsername,
@@ -104,24 +114,24 @@ export class ArmedForcesScene {
         );
     }
 
-    @Hears(BUTTON_ACTIONS.CREATE_SQUAD)
+    @Hears(CREATE_SQUAD_BUTTON)
     async createSquad(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.createSquad);
+        await ctx.scene.enter(ENUM_SCENES_ID.CREATE_SQUAD_SCENE_ID);
     }
 
-    @Hears(BUTTON_ACTIONS.SQUAD_LIST)
+    @Hears(SQUAD_LIST_BUTTON)
     async squadList(@Ctx() ctx: BotContext) {
         this.showSquadsList(ctx);
     }
 
-    @Hears(BUTTON_ACTIONS.SHOW_SQUAD_REQUESTS)
+    @Hears(SHOW_SQUAD_REQUESTS_BUTTON)
     async squadRequests(@Ctx() ctx: BotContext) {
         this.showArmedForcesRequest(ctx);
     }
 
-    @Hears(BUTTON_ACTIONS.back)
+    @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.organizations);
+        await ctx.scene.enter(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID);
     }
 
     @On('callback_query')
@@ -139,11 +149,15 @@ export class ArmedForcesScene {
                     break;
                 }
                 case 'APPROVAL_REQUEST': {
-                    await ctx.scene.enter(SceneIds.ARMY_REQUEST_ACCEPT);
+                    await ctx.scene.enter(
+                        ENUM_SCENES_ID.ARMY_REQUEST_ACCEPT_SCENE_ID
+                    );
                     break;
                 }
                 case 'REJECT_REQUEST': {
-                    await ctx.scene.enter(SceneIds.ARMY_REQUEST_REJECT);
+                    await ctx.scene.enter(
+                        ENUM_SCENES_ID.ARMY_REQUEST_REJECT_SCENE_ID
+                    );
                     break;
                 }
             }
@@ -151,7 +165,7 @@ export class ArmedForcesScene {
     }
 
     async showArmedForcesRequest(ctx: BotContext) {
-        const armedForcesId = ctx.session.armed_forces_id;
+        const armedForcesId = ctx.session.armedForcesId;
         const query: PaginateQuery = {
             limit: 10,
             path: '',
@@ -205,7 +219,7 @@ export class ArmedForcesScene {
                 ...Markup.inlineKeyboard([
                     [
                         Markup.button.callback(
-                            BUTTON_ACTIONS.back,
+                            BACK_BUTTON,
                             `BACK_TO_SQUADS_LIST`
                         ),
                     ],
@@ -214,7 +228,7 @@ export class ArmedForcesScene {
         );
     }
     async showSquadsList(ctx: BotContext) {
-        const armedForcesId = ctx.session.armed_forces_id;
+        const armedForcesId = ctx.session.armedForcesId;
         const query: PaginateQuery = {
             limit: SQUAD_DEFAULT_PER_PAGE,
             path: '',
@@ -262,7 +276,7 @@ export class ArmedForcesScene {
     }
 }
 
-@Wizard(SceneIds.ARMY_REQUEST_REJECT)
+@Wizard(ENUM_SCENES_ID.ARMY_REQUEST_REJECT_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class RejectrequestWizard {
     constructor(
@@ -279,7 +293,7 @@ export class RejectrequestWizard {
 
     @Command('cancel')
     async cancel(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.armedForces);
+        await ctx.scene.enter(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID);
     }
     @On('text')
     @WizardStep(1)
@@ -301,12 +315,12 @@ export class RejectrequestWizard {
                 tgChatId,
                 'Вашу заявку в боевые маги не одобрили.'
             );
-            await ctx.scene.enter(SceneIds.armedForces);
+            await ctx.scene.enter(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID);
         }
     }
 }
 
-@Wizard(SceneIds.ARMY_REQUEST_ACCEPT)
+@Wizard(ENUM_SCENES_ID.ARMY_REQUEST_ACCEPT_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class AcceptRequestWizard {
     constructor(
@@ -323,7 +337,7 @@ export class AcceptRequestWizard {
 
     @Command('cancel')
     async cancel(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(SceneIds.armedForces);
+        await ctx.scene.enter(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID);
     }
     @On('text')
     @WizardStep(1)
@@ -345,7 +359,7 @@ export class AcceptRequestWizard {
                 tgChatId,
                 'Вашу заявку в боевые маги одобрили.'
             );
-            await ctx.scene.enter(SceneIds.armedForces);
+            await ctx.scene.enter(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID);
         }
     }
 }
