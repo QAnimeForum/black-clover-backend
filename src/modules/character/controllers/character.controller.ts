@@ -30,17 +30,17 @@ export class CharacterController {
         private readonly paginationService: PaginationService
     ) {}
 
-    @Response('character.create', {
+  /*  @Response('character.create', {
         serialization: ResponseIdSerialization,
     })
     @Post('/character/create')
     async createCharacter(@Body() dto: CreatePlayableCharacterDto) {
-        const create =
+           const create =
             await this.characterService.createPlayableCharacterDto(dto);
         return {
             data: { _id: create.id },
         };
-    }
+    }*/
 
     @Response('character.get', {
         serialization: RaceGetSerialization,

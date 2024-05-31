@@ -51,6 +51,7 @@
     "@telegraf/session": "^2.0.0-beta.7",
     "bcryptjs": "^2.4.3",
     "crypto-js": "^4.2.0",
+    "fs": "^0.0.1-security",
     "helmet": "^7.1.0",
     "joi": "^17.12.2",
     "kysely": "^0.27.2",

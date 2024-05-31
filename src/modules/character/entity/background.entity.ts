@@ -49,6 +49,19 @@ export class BackgroundEntity {
 
     @Column({
         type: 'varchar',
+        nullable: true,
+    })
+    hobbies: string;
+    @Column({
+        type: 'varchar',
+        array: true,
+    })
+    goals: string[];
+
+    @Column({ name: 'quotes', type: 'varchar', array: true, nullable: true })
+    quotes: string[];
+    @Column({
+        type: 'varchar',
     })
     appearance: string;
 

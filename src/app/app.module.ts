@@ -1,7 +1,5 @@
 import { Module, NotFoundException } from '@nestjs/common';
-//import { JobsModule } from 'src/jobs/jobs.module';
 import { AppController } from './controllers/app.controller';
-import { CommonModule } from 'src/common/common.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import Joi from 'joi';
@@ -9,8 +7,6 @@ import { HelperModule } from 'src/common/helper/helper.module';
 import { DataSourceOptions, DataSource } from 'typeorm';
 import { ENUM_APP_ENVIRONMENT } from './constants/app.enum.constant';
 import configs from 'src/config';
-import { AppMiddlewareModule } from './middleware/app.middleware.module';
-import { RouterModule } from 'src/router/router.module';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { TgBotModule } from '../modules/tg-bot/tg-bot.module';
 import { session } from 'telegraf';
@@ -43,7 +39,6 @@ import { RaceModule } from 'src/modules/race/race.module';
 import { SpiritsModule } from 'src/modules/spirits/spirits.module';
 import { SquadsModule } from 'src/modules/squards/squads.module';
 import { UserModule } from 'src/modules/user/user.module';
-//import { AppMiddlewareModule } from 'src/app/middleware/app.middleware.module';
 
 const logDir = 'logs/service/';
 const infoLogDir = `${logDir}${LOGGER_INFO}`;
@@ -105,7 +100,6 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
                 DATABASE_SSL_ENABLED: Joi.bool().required(),
                 DATABASE_REJECT_UNAUTHORIZED: Joi.bool().required(),
                 TELEGRAM_BOT_TOKEN: Joi.string().required(),
-     
             }),
             validationOptions: {
                 allowUnknown: true,
@@ -116,8 +110,6 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
-            // Use useFactory, useClass, or useExisting
-            // to configure the DataSourceOptions.
             useFactory: (configService: ConfigService) => ({
                 type: 'postgres',
                 url: configService.get('database.url', { infer: true }),
@@ -146,8 +138,6 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
                     subscribersDir: 'subscriber',
                 },
                 extra: {
-                    // based on https://node-postgres.com/apis/pool
-                    // max connection pool size
                     max: configService.get('database.maxConnections', {
                         infer: true,
                     }),
@@ -188,7 +178,7 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
                 token: process.env.TELEGRAM_BOT_TOKEN,
                 middlewares: [session({ store: store(config) })],
             }),
-        })
+        }),
     ],
 })
 export class AppModule {}

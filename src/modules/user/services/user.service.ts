@@ -1,14 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { DataSource, In, Repository } from 'typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { UserCreateDto } from '../dtos/user.create.dto';
+import { CharacterService } from 'src/modules/character/services/character.service';
 //implements IUserService
 @Injectable()
 export class UserService {
     constructor(
         @InjectDataSource()
         private readonly connection: DataSource,
+        @Inject(CharacterService)
+        readonly characterService: CharacterService,
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>
     ) {}
@@ -56,12 +59,25 @@ export class UserService {
     }
 
     async createUser(dto: UserCreateDto) {
-        this.userRepository.insert({
-            tgUserId: dto.tgUserId,
-            character: dto.character,
-            isAdmin: false,
-         //   role: dto.role,
-        });
+        let user: UserEntity;
+        this.connection.transaction(
+            'READ UNCOMMITTED',
+            async (transactionManager) => {
+                const character =
+                    await this.characterService.createPlayableCharacterDto(
+                        transactionManager,
+                        dto.character
+                    );
+                console.log(character);
+                user = new UserEntity();
+                user.tgUserId = dto.tgUserId;
+                user.characterId = character.id;
+                user.isAdmin = false;
+                console.log(user);
+                await transactionManager.save(user);
+            }
+        );
+        return user;
     }
     async exists(telegramUserId: string): Promise<boolean> {
         return this.userRepository.exists({

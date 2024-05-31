@@ -1,24 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CharacterEntity } from '../entity/character.entity';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { BackgroundEntity } from '../entity/background.entity';
 import { RaceEntity } from '../../race/entity/race.entity';
-import { StateEntity } from '../../map/enitity/state.entity';
 import { CreatePlayableCharacterDto } from '../dto/create-playable-character.dto';
-import { InventoryEntity } from '../entity/inventory.entity';
 import { GetCharacteristicsDto } from '../dto/query-character-info.dto';
-import { GrimoireEntity } from '../../grimoire/entity/grimoire.entity';
 import { CharacterCharacteristicsEntity } from '../entity/character.characteristics.entity';
-import { ProficiencyEntity } from '../entity/proficiency.entity';
-import { AbilityEntity } from '../entity/ability.entity';
-import { ArmorClassEntity } from '../entity/armor.class.entity';
-import { SpeedEntity } from '../entity/speed.entity';
-import { ArmorEntity } from '../../items/entity/armor.entity';
 import { ENUM_CHARCACTER_TYPE } from '../constants/character.type.enum';
-import { WalletEntity } from '../../money/entity/wallet.entity';
 import { UserEntity } from '../../user/entities/user.entity';
-import { CashEntity } from '../../money/entity/cash.entity';
 import { CharacterNameEditDto } from '../dto/character.name-edit.dto';
 import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
 import { InventoryService } from 'src/modules/items/service/inventory.service';
@@ -26,7 +16,10 @@ import { CharacteristicService } from './characteristics.service';
 import { BackgroundService } from './background.service';
 import { MapService } from 'src/modules/map/service/map.service';
 import { WalletService } from './wallet.service';
-
+import { getFileMimeType } from 'src/utils/utils';
+import { join } from 'path';
+import fs from 'fs';
+import { KNIGHT_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
 @Injectable()
 export class CharacterService {
     constructor(
@@ -52,49 +45,69 @@ export class CharacterService {
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>
     ) {}
-    async createPlayableCharacterDto(dto: CreatePlayableCharacterDto) {
-        let character: CharacterEntity;
-        this.connection.transaction(
-            'READ UNCOMMITTED',
-            async (transactionManager) => {
-                /**
-                 * Создание инвенторя
-                 */
-                const inventory =
-                    await this.inventoryService.createInventory(
-                        transactionManager
-                    );
-                /**
-                 * Создание истории персонажа
-                 */
-                const coverSymbol = await this.mapService.findStateSymbolById(
-                    dto.stateId
-                );
-                const grimoire = await this.grimoireService.createGrimoire({
-                    magicName: dto.magic,
-                    coverSymbol: coverSymbol,
-                });
-                const background =
-                    await this.backgroundService.createBackground(
-                        dto,
-                        transactionManager
-                    );
-                const characteristics =
-                    await this.characteristicsService.createCharacteristics(
-                        transactionManager
-                    );
-                const wallet =
-                    await this.walletService.creeateWallet(transactionManager);
-                character = new CharacterEntity();
-                character.type = ENUM_CHARCACTER_TYPE.PC;
-                character.background = background;
-                character.characterCharacteristics = characteristics;
-                character.grimoire = grimoire;
-                character.inventory = inventory;
-                character.wallet = wallet;
-            }
+    async createPlayableCharacterDto(
+        transactionManager: EntityManager,
+        dto: CreatePlayableCharacterDto
+    ) {
+        /**
+         * Создание инвенторя
+         */
+        const inventory =
+            await this.inventoryService.createInventory(transactionManager);
+        /**
+         * Создание истории персонажа
+         */
+        const coverSymbol = await this.mapService.findStateSymbolById(
+            dto.stateId
         );
+        const grimoire = await this.grimoireService.createGrimoire({
+            //      magicName: dto.magic,
+            magicName: 'не выбран',
+            coverSymbol: coverSymbol,
+        });
+        const background = await this.backgroundService.createBackground(
+            dto,
+            transactionManager
+        );
+        const characteristics =
+            await this.characteristicsService.createCharacteristics(
+                transactionManager
+            );
+        const wallet =
+            await this.walletService.creeateWallet(transactionManager);
+
+        const inStr = fs.createReadStream('/your/path/to/file');
+        const outStr = fs.createWriteStream('/your/path/to/destination');
+
+        inStr.pipe(outStr);
+        const character = new CharacterEntity();
+        character.type = ENUM_CHARCACTER_TYPE.PC;
+        character.avatar = await this.copyDefaultAvatar();
+        character.backgroundId = background.id;
+        character.characterCharacteristicsId = characteristics.id;
+        character.grimoireId = grimoire.id;
+        character.inventoryId = inventory.id;
+        character.walletId = wallet.id;
+        character.prodigy = false;
+        await transactionManager.save(character);
         return character;
+    }
+
+    async copyDefaultAvatar() {
+        const fileMimeType = getFileMimeType(KNIGHT_IMAGE_PATH);
+        const fileName = `avatar.${fileMimeType}`;
+        const relativeFilePath = join('media/images', fileName);
+        const absoluteFilePath = join(
+            `${process.env.APP_API_URL}/avatar/`,
+            relativeFilePath
+        );
+
+        // File destination.txt will be created or overwritten by default.
+        fs.copyFile(KNIGHT_IMAGE_PATH, absoluteFilePath, (err) => {
+            if (err) throw err;
+            console.log('avatar was copied to destination.txt');
+        });
+        return fileName;
     }
 
     getCharacterBacgroundByTgId(telegramId: string) {

@@ -17,7 +17,14 @@ export class RaceService {
             nullSort: 'last',
             defaultSortBy: [['id', 'DESC']],
             searchableColumns: ['id'],
-            select: ['id', 'name'],
+            select: [
+                'id',
+                'name',
+                'description',
+                'bonusHp',
+                'bonusMagicPower',
+                'naturalMana',
+            ],
         });
     }
 

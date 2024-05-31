@@ -11,8 +11,8 @@ import { ENUM_SCENES_ID } from '../constants/scenes.id.enum';
 export class TgBotUpdate extends Telegraf<BotContext> {
     @Start()
     async onStart(@Context() ctx: BotContext) {
-        console.log('what');
-        await ctx.scene.enter('START_SCENE_ID');
+
+        await ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID);
     }
     @Command('profile')
     async profile(@Context() ctx: BotContext) {

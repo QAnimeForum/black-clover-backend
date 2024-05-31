@@ -7,5 +7,5 @@ export interface BotContext extends Context {
     mediaGroup: Message[];
     scene: Scenes.SceneContextScene<BotContext, BotWizardSession>;
     wizard: Scenes.WizardContextWizard<BotContext>;
-  //  i18n: I18n;
+    //  i18n: I18n;
 }

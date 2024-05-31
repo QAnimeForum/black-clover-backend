@@ -5,8 +5,10 @@ export class CharacterCreateDto {
     type?: ENUM_CHARCACTER_TYPE;
     age?: number;
     sex?: string;
-    state?: string;
-    race?: string;
+    stateId?: string;
+    stateName?: string;
+    raceId?: string;
+    raceName?: string;
     magic?: string;
     height?: number;
     maxHealth?: number;

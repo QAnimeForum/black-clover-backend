@@ -15,7 +15,7 @@ import { CharacterService } from 'src/modules/character/services/character.servi
 
 @Injectable()
 export class TgBotService {
-
+    
     async downloadAndSaveLocalFile(filePath: string) {
         //  const botToken = this.configService.get(EnvVariablesKeys.tgBotToken);
         const botToken = process.env.TELEGRAM_BOT_TOKEN;

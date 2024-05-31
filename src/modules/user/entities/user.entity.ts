@@ -31,7 +31,7 @@ export class UserEntity {
     character: CharacterEntity;
 
     @Column({
-        type: 'varchar',
+        type: 'uuid',
         name: 'character_id',
         nullable: false,
     })

@@ -67,7 +67,7 @@ export class CharacterEntity {
     background: BackgroundEntity;
 
     @Column({
-        type: 'varchar',
+        type: 'uuid',
         name: 'background_id',
     })
     backgroundId: string;
@@ -80,7 +80,7 @@ export class CharacterEntity {
     characterCharacteristics: CharacterCharacteristicsEntity;
 
     @Column({
-        type: 'varchar',
+        type: 'uuid',
         name: 'characteristics_id',
     })
     characterCharacteristicsId: string;
@@ -93,7 +93,7 @@ export class CharacterEntity {
     grimoire: GrimoireEntity;
 
     @Column({
-        type: 'varchar',
+        type: 'uuid',
         name: 'grimoire_id',
     })
     grimoireId: string;
@@ -109,7 +109,7 @@ export class CharacterEntity {
     inventory: InventoryEntity;
 
     @Column({
-        type: 'varchar',
+        type: 'uuid',
         name: 'invenetory_id',
     })
     inventoryId: string;
@@ -119,7 +119,7 @@ export class CharacterEntity {
     wallet: WalletEntity;
 
     @Column({
-        type: 'varchar',
+        type: 'uuid',
         name: 'wallet_id',
     })
     walletId: string;

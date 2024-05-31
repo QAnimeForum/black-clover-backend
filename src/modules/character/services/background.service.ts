@@ -20,10 +20,13 @@ export class BackgroundService {
         background.name = dto.name;
         background.raceId = dto.raceId;
         background.stateId = dto.stateId;
-        background.appearance = '';
-        background.history = '';
-        background.sex = '';
+        background.appearance = 'нет';
+        background.history = 'нет';
+        background.sex = dto.sex;
         background.age = dto.age;
+        background.goals = ['нет цели'];
+        background.quotes = [];
+        background.hobbies = 'нет хобби';
         transactionalEntityManager.save(background);
         return background;
         /**

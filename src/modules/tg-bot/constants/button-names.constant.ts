@@ -1,6 +1,7 @@
 //export enum ENUM_BUTTONS
 //COMMON
-export const START_TREVEL_BUTTON = 'начать путешествие';
+export const START_TREVEL_BUTTON = '🌍 Начать путешествие';
+export const GO_TO_HOME = '🌍 На главное меню';
 export const BACK_BUTTON = '◀️Назад';
 export const HELP_BUTTON = '❓Помощь';
 export const KNOWLEGE_BASE_BUTTON = '🗂 База знаний';
