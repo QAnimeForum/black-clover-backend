@@ -12,6 +12,10 @@ export enum ENUM_DEVIL_LIST_BACK_TYPE {
 }
 export interface BotWizardSession extends Scenes.WizardSessionData {
     spell: SpellCreateDto;
+    announcement: {
+        name: string;
+        description: string;
+    }
     character: CharacterCreateDto;
     grimoire: GrimoireCreateDto;
     squad: SquadCreateDto;

@@ -2,28 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CharacterEntity } from '../entity/character.entity';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
-import { BackgroundEntity } from '../entity/background.entity';
-import { RaceEntity } from '../../race/entity/race.entity';
-import { StateEntity } from '../../map/enitity/state.entity';
-import { CreatePlayableCharacterDto } from '../dto/create-playable-character.dto';
-import { InventoryEntity } from '../entity/inventory.entity';
-import {
-    GetCharacterInfoDto,
-    GetCharacteristicsDto,
-} from '../dto/query-character-info.dto';
-import { GrimoireEntity } from '../../grimoire/entity/grimoire.entity';
 import { CharacterCharacteristicsEntity } from '../entity/character.characteristics.entity';
 import { ProficiencyEntity } from '../entity/proficiency.entity';
 import { AbilityEntity } from '../entity/ability.entity';
 import { ArmorClassEntity } from '../entity/armor.class.entity';
-import { SpeedEntity } from '../entity/speed.entity';
-import { ArmorEntity } from '../../items/entity/armor.entity';
-import { ENUM_CHARCACTER_TYPE } from '../constants/character.type.enum';
-import { WalletEntity } from '../../money/entity/wallet.entity';
-import { UserEntity } from '../../user/entities/user.entity';
-import { CashEntity } from '../../money/entity/cash.entity';
-import { CharacterNameEditDto } from '../dto/character.name-edit.dto';
-import { ENUM_IS_GRIMOIRE_APPROVED } from 'src/modules/grimoire/constants/grimoire.enum.constant';
 import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
 import { InventoryService } from 'src/modules/items/service/inventory.service';
 @Injectable()

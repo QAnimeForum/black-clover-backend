@@ -8,7 +8,6 @@ import {
     VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { CharacterService } from '../services/character.service';
-import { CreatePlayableCharacterDto } from '../dto/create-playable-character.dto';
 import { Response } from 'src/common/response/decorators/response.decorator';
 import { IResponse } from 'src/common/response/interfaces/response.interface';
 import { PaginationService } from 'src/common/pagination/services/pagination.service';

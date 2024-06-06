@@ -60,7 +60,7 @@ export class ProfileScene {
         const race = `<strong>Раса</strong>: ${background.race.name}\n`;
         const title = `<strong><u>ПРОФИЛЬ</u></strong>\n\n`;
         const owner = `<strong>Владелец</strong>: @${username}\n`;
-        const userId = `<strong>Ваш id</strong> <code>${senderId}</code>\n`;
+        const userId = `<strong>Ваш id</strong>: <code>${senderId}</code>\n`;
         const magicTypeBlock = `<strong>Магический атрибут</strong>: ${character.grimoire.magicName}\т`;
         const delimiter = `_____________\n`;
 

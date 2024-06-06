@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TaskController } from './controllers/tasks.controller';
-import { TaskEntity } from './entity/task.entity';
-import { TasksService } from './services/tasks.service';
+import { AnnouncementEntity } from './entity/announcement.entity';
+import { AnnouncementService } from './services/announcement.service';
 @Module({
-    imports: [TypeOrmModule.forFeature([TaskEntity])],
+    imports: [TypeOrmModule.forFeature([AnnouncementEntity])],
     controllers: [TaskController],
-    providers: [TasksService],
+    providers: [AnnouncementService],
+    exports: [AnnouncementService],
 })
-export class EventsModule {}
+export class AnnouncementModule {}

@@ -7,6 +7,7 @@ export const HELP_BUTTON = '❓Помощь';
 export const KNOWLEGE_BASE_BUTTON = '🗂 База знаний';
 export const GUIDES_BUTTON = '📚 Гайды';
 export const QUESTS_BUTTON = '📜Квесты';
+export const CHRONICLE_BUTTON = '📰 Хроника';
 export const ANNOUNCEMENTS_BUTTON = '📜Объявления';
 //announcement
 //SPIRITS
@@ -34,14 +35,27 @@ export const PROFILE_BUTTON = '👤Профиль';
 export const BACKGROUND_BUTTON = 'ℹБиография';
 export const PARAMS_BUTTON = '⚙️Параметры';
 // BACKGROUND
-export const EDIT_NAME_BUTTON = '✏️Редактировать имя';
-export const EDIT_AVATAR_BUTTON = '✏️Редактировать фотографию';
-export const EDIT_HISTORY_BUTTON = '✏️Редактировать историю персонажа';
+export const SHOW_FULL_BACKGROUND_BUTTON = '📚 Показать всю информацию';
+export const EDIT_BUTTON = '✏️Редактировать информацию';
+export const EDIT_NAME_BUTTON = '✏️изменить имя';
+export const EDIT_AVATAR_BUTTON = '✏️Изменить фотографию';
+export const EDIT_HISTORY_BUTTON = '✏️изменить историю';
+export const EDIT_HOBBIES_BUTTON = '✏️изменить хобби';
+export const EDIT_GOALS_BUTTON = '✏️изменить цели';
+export const EDIT_WORLDVIEW_BUTTON = '✏️изменить мировоззрение';
+export const EDIT_CHRACTER_TRAITS_BUTTON = '✏️изменить черты характера';
+export const EDIT_IDEALS_BUTTON = '✏️изменить идеалы';
+export const EDIT_ATTACHMENTS_BUTTON = '✏️изменить привязанности';
+export const EDIT_WEAKNESS_BUTTON = '✏️изменить слабости';
+export const ADD_QUOTES_BUTTON = '➕ Добавить цитату';
+export const REMOVE_QUOTES_BUTTON = '➖ Удалить цитату';
+export const EDIT_QUOTE_BUTTON = '✏️изменить цитату';
+export const EDIT_APPEARANCE_BUTTON = '✏️изменить внешность';
+
 //GRIMOIRE
 export const GRIMOIRE_BUTTON = '📕 Гримуар';
 export const CREATE_SPELL_BUTTON = '✏️Создать заклинание';
 export const EDIT_GRIMOIRE_BUTTON = '✏️Редактировать гримуар';
-export const EDIT_SPELL_BUTTON = '✏️Редактировать заклинание';
 export const EDIT_MAGIC_NAME_BUTTON = '✏️Изменить название магии';
 export const EDIT_MAGIC_COLOR_BUTTON = '✏️Изменить цвет магии';
 //INVENTORY
@@ -94,8 +108,18 @@ export const MY_COURY_CASE_BUTTON = '⚖️Мои судебные заявки'
 export const REQUEST_TO_PARLAMENT_BUTTON = '✏️Написать судебное прошение';
 // ADMIN
 export const ADMIN_PANEL_BUTTON = '⚙️Панель админа';
-export const PERMITIONS_BUTTON = 'Выдача прав';
-export const GRIMOIRE_REQUESTS_BUTTON = 'Запросы на гримуары';
+export const PERMITIONS_BUTTON = '👤Выдача прав';
+export const MONEY_BUTTON = '🏦Деньги';
+export const TRANSACTIONS_BUTTON = '💸Все транзакции';
+export const GIVE_MONEY_BUTTON = '💸Начислить деньги';
+export const FINE_MONEY_BUTTON = '💸Оштрафовать';
+export const CHARACTERS_LIST = '👤Список персонажей';
+export const GRIMOIRES_BUTTON = '📖Гримуары';
+export const EDIT_SPELL_BUTTON = '✏️Редактировать заклинание';
+export const ADD_SPELL_BUTTON = '➕ Добавить заклинание';
+export const REMOVE_REMOVE_BUTTON = '➖ Удалить заклинание';
 export const ADD_ANNOUNCEMENT_BUTTON = 'Объявления';
 export const ADD_EVENT_BUTTON = 'события';
 export const ADD_QUEST_BUTTON = 'квест';
+export const GRIMOIRE_LIST_BUTTON = '📚Список гримуаров';
+export const FIND_GRIMOIRE_BY_TG_BUTTON = '🔎Поиск гримуара по id';

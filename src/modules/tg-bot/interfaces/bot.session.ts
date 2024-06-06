@@ -6,5 +6,6 @@ export interface BotSession extends Scenes.WizardSession<BotWizardSession> {
     devilsList: string;
     devilId: string;
     armedForcesId: string;
+    grimoireId: string | null;
     user: UserEntity;
 }

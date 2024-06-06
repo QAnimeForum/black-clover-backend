@@ -11,7 +11,7 @@ import { message } from 'telegraf/filters';
 import { Logger } from 'winston';
 
 @Injectable()
-export class CharacterNameEditWizard {
+export class EditCharacterNameWizard {
     readonly scene: Scenes.WizardScene<BotContext>;
     readonly steps: Composer<BotContext>[] = [];
     constructor(

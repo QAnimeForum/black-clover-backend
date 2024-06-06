@@ -45,7 +45,7 @@ export class CharacterService {
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>
     ) {}
-    async createPlayableCharacterDto(
+    async createPlayableCharacter(
         transactionManager: EntityManager,
         dto: CreatePlayableCharacterDto
     ) {
@@ -76,10 +76,6 @@ export class CharacterService {
         const wallet =
             await this.walletService.creeateWallet(transactionManager);
 
-        const inStr = fs.createReadStream('/your/path/to/file');
-        const outStr = fs.createWriteStream('/your/path/to/destination');
-
-        inStr.pipe(outStr);
         const character = new CharacterEntity();
         character.type = ENUM_CHARCACTER_TYPE.PC;
         character.avatar = await this.copyDefaultAvatar();
@@ -96,16 +92,20 @@ export class CharacterService {
     async copyDefaultAvatar() {
         const fileMimeType = getFileMimeType(KNIGHT_IMAGE_PATH);
         const fileName = `avatar.${fileMimeType}`;
-        const relativeFilePath = join('media/images', fileName);
+        const relativeFilePath = join('avatar', fileName);
         const absoluteFilePath = join(
-            `${process.env.APP_API_URL}/avatar/`,
+            process.env.APP_API_URL,
             relativeFilePath
         );
-
+        console.log(KNIGHT_IMAGE_PATH, absoluteFilePath);
         // File destination.txt will be created or overwritten by default.
-        fs.copyFile(KNIGHT_IMAGE_PATH, absoluteFilePath, (err) => {
+        // fs.copyFileSync(KNIGHT_IMAGE_PATH, absoluteFilePath);
+        fs.readFile(KNIGHT_IMAGE_PATH, function (err, data) {
             if (err) throw err;
-            console.log('avatar was copied to destination.txt');
+            fs.writeFile(absoluteFilePath, data, 'base64', function (err) {
+                if (err) throw err;
+                console.log("It's saved!");
+            });
         });
         return fileName;
     }

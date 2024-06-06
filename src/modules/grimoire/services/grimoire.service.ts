@@ -11,12 +11,12 @@ import { SpellUpdateDescriptionDto } from '../dto/spell.update-description.dto';
 import { SpellUpdateDurationDto } from '../dto/spell.update-duration.dto';
 import { SpellUpdateRangeDto } from '../dto/spell.update-range.dto';
 import { SpellUpdateCostDto } from '../dto/spell.update-cost.dto';
-import { UserEntity } from '../../user/entities/user.entity';
 import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { ENUM_SPELL_STATUS } from '../constants/spell.status.enum.constant';
 import { SpellRequirementsEntity } from '../entity/spell.requirements.entity';
 import { SpellUpdateTypeDto } from '../dto/spell.update-type.dto';
 import { SpellCastEditDto } from '../dto/spell.update-cast-time.dto';
+import { where } from 'sequelize';
 @Injectable()
 export class GrimoireService {
     constructor(
@@ -32,11 +32,17 @@ export class GrimoireService {
         query: PaginateQuery
     ): Promise<Paginated<GrimoireEntity>> {
         return paginate(query, this.grimoireRepository, {
-            sortableColumns: ['id', 'coverSymbol', 'magicName'],
+            sortableColumns: ['id', 'coverSymbol', 'magicName', 'status'],
             nullSort: 'last',
             defaultSortBy: [['magicName', 'DESC']],
-            searchableColumns: ['coverSymbol', 'magicName'],
-            select: ['id', 'coverSymbol', 'magicName', 'coverImagePath'],
+            searchableColumns: ['coverSymbol', 'magicName', 'status'],
+            select: [
+                'id',
+                'coverSymbol',
+                'magicName',
+                'coverImagePath',
+                'status',
+            ],
             filterableColumns: {
                 magicName: true,
             },
@@ -44,8 +50,13 @@ export class GrimoireService {
     }
 
     async findGrimoireById(id: string): Promise<GrimoireEntity> {
-        const entity = await this.grimoireRepository.findOneBy({
-            id: id,
+        const entity = await this.grimoireRepository.findOne({
+            where: {
+                id: id,
+            },
+            relations: {
+                spells: true,
+            },
         });
         return entity;
     }
@@ -145,7 +156,9 @@ export class GrimoireService {
                 const requirementsEntity = new SpellRequirementsEntity();
                 requirementsEntity.minimalLevel = dto.minLevel;
                 requirementsEntity.magicalAttributes = [];
-                transactionalEntityManager.save(requirementsEntity);
+                const requirementsEntityId = (
+                    await transactionalEntityManager.save(requirementsEntity)
+                ).id;
 
                 spellEntity = new SpellEntity();
                 spellEntity.name = dto.name;
@@ -159,9 +172,12 @@ export class GrimoireService {
                 spellEntity.type = dto.type;
                 spellEntity.goals = dto.goals;
                 spellEntity.status = ENUM_SPELL_STATUS.DRAFT;
+                const grimoire = await this.findGrimoireById(dto.grimoireId);
+                spellEntity.grimoire = grimoire;
                 spellEntity.grimoireId = dto.grimoireId;
                 spellEntity.requirements = requirementsEntity;
-                transactionalEntityManager.save(spellEntity);
+                spellEntity.requirementsId = requirementsEntityId;
+                await transactionalEntityManager.save(spellEntity);
             }
         );
     }
@@ -174,41 +190,41 @@ export class GrimoireService {
     async updateSpellName(id: string, dto: SpellUpdateNameDto) {
         const spell = await this.findSpellById(id);
         spell.name = dto.name;
-        return await this.grimoireRepository.save(spell);
+        return await this.spellRepository.save(spell);
     }
 
     async updateSpellDescription(id: string, dto: SpellUpdateDescriptionDto) {
         const spell = await this.findSpellById(id);
         spell.description = dto.description;
-        return await this.grimoireRepository.save(spell);
+        return await this.spellRepository.save(spell);
     }
 
     async updateSpellDuration(id: string, dto: SpellUpdateDurationDto) {
         const spell = await this.findSpellById(id);
         spell.duration = dto.duration;
-        return await this.grimoireRepository.save(spell);
+        return await this.spellRepository.save(spell);
     }
 
     async updateSpellCost(id: string, dto: SpellUpdateCostDto) {
         const spell = await this.findSpellById(id);
         spell.cost = dto.cost;
-        return await this.grimoireRepository.save(spell);
+        return await this.spellRepository.save(spell);
     }
     async updateSpellRange(id: string, dto: SpellUpdateRangeDto) {
         const spell = await this.findSpellById(id);
         spell.range = dto.range;
-        return await this.grimoireRepository.save(spell);
+        return await this.spellRepository.save(spell);
     }
 
     async updateSpellType(id: string, dto: SpellUpdateTypeDto) {
         const spell = await this.findSpellById(id);
         spell.type = dto.type;
-        return await this.grimoireRepository.save(spell);
+        return await this.spellRepository.save(spell);
     }
     async updateSpellCastTime(id: string, dto: SpellCastEditDto) {
         const spell = await this.findSpellById(id);
         spell.castTime = dto.castTime;
-        return await this.grimoireRepository.save(spell);
+        return await this.spellRepository.save(spell);
     }
 
     async deleteSpell(id: string) {

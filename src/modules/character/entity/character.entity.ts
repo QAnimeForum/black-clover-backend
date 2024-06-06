@@ -16,7 +16,6 @@ import { InventoryEntity } from './inventory.entity';
 import { GrimoireEntity } from '../../grimoire/entity/grimoire.entity';
 import { NoteEntity } from './note.entity';
 import { WalletEntity } from '../../money/entity/wallet.entity';
-import { TaskEntity } from '../../events/entity/task.entity';
 import { FactionMemberEntity } from '../../judicial.system/entity/faction.member.entity';
 import { SquadMemberEntity } from '../../squards/entity/squad.member.entity';
 import { ENUM_CHARCACTER_TYPE } from '../constants/character.type.enum';
@@ -129,10 +128,6 @@ export class CharacterEntity {
 
     @OneToOne(() => SquadMemberEntity)
     squadMember: SquadMemberEntity;
-
-    @ManyToMany(() => TaskEntity)
-    @JoinTable()
-    tasks: Array<TaskEntity>;
 
     @OneToOne(() => UserEntity)
     user: UserEntity;

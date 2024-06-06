@@ -258,9 +258,7 @@ export class AllDevilsScene {
     @On('callback_query')
     public async callbackQuery(@Ctx() ctx: BotContext) {
         if ('data' in ctx.callbackQuery) {
-            console.log(ctx.callbackQuery);
             const selectedId = ctx.callbackQuery.data.split(':')[1];
-            console.log(selectedId);
             ctx.scene.session.devilsList.selectedId = selectedId;
             const devil_information =
                 await this.devilService.findDevilByIdWithUnions(selectedId);

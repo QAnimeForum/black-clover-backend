@@ -1,308 +1,23 @@
-import {
-    SceneEnter,
-    Wizard,
-    Context,
-    Hears,
-    WizardStep,
-    Message,
-    On,
-} from 'nestjs-telegraf';
-import { Inject, UseFilters } from '@nestjs/common';
-import { GrimoireService } from '../../../../grimoire/services/grimoire.service';
-import { BotContext } from '../../../interfaces/bot.context';
-import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
-import { ENUM_SPELL_TYPE } from 'src/modules/grimoire/constants/spell.type.enum';
-import { Logger } from 'winston';
-import { Markup } from 'telegraf';
-import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
+import { Inject, Injectable } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-
-@Wizard(ENUM_SCENES_ID.CREATE_SPELL_FORM_SCENE_ID)
-@UseFilters(TelegrafExceptionFilter)
-export class SpellCreateWizard {
-    constructor(
-        private readonly grimoireService: GrimoireService,
-        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
-    ) {}
-    @SceneEnter()
-    async start(@Context() ctx: BotContext) {
-        ctx.scene.session.spell = {
-            name: 'не заполнено',
-            description: 'не заполнено',
-            type: ENUM_SPELL_TYPE.OTHER,
-            damage: 0,
-            range: 'не заполнено',
-            duration: 'не заполнено',
-            cost: 0,
-            castTime: '1',
-            cooldown: '0',
-            goals: 'не заполнено',
-            minLevel: 1,
-            requipments: [],
-        };
-        const title = '<strong><u>Шаблон заклинания</u></strong>';
-        const name = `<strong>Название: </strong>`;
-        const type = `<strong>Тип: </strong>`;
-        const damage = '<strong>Урон: </strong>';
-        const range = '<strong>Область действия заклинания: </strong>';
-        const duration = '<strong>Продолжительность: </strong>';
-        const cost = '<strong>Стоимость: </strong>';
-        const castTime =
-            '<strong>Сколько времени нужно для создания заклинания: </strong>';
-        const cooldown = '<strong>Время отката заклинания: </strong>';
-        const goals = '<strong>Цели: </strong>';
-        const minLevel = '<strong>Минимальный уровень персонажа: </strong>';
-        const requipments = '<strong>Требования: </strong>';
-        const description = `<strong>Описание</strong>`;
-        const template = `${title}\n${name}\n${type}\n${damage}\n${range}\n${duration}\n${cost}\n${castTime}\n${cooldown}\b${goals}\n${minLevel}\n${requipments}${description}`;
-        await ctx.reply(template, {
-            parse_mode: 'HTML',
-        });
-
-        await ctx.reply(
-            'Давайте заполним форму.\nДля того, чтобы выйти из формы, нажмите на "/cancel (черновик заклинания сохранится)". \n\nНазвание заклинания'
-        );
-        ctx.wizard.next();
-    }
-
-    @WizardStep(1)
-    async step1(@Context() ctx: BotContext, @Message('text') text: string) {
-        ctx.scene.session.spell.name = text;
-        await ctx.reply('Тип заклинания', {
-            ...Markup.inlineKeyboard([
-                [
-                    Markup.button.callback(
-                        'Магия созидания',
-                        ENUM_SPELL_TYPE.CREATION
-                    ),
-                    Markup.button.callback(
-                        'Магия исцеления',
-                        ENUM_SPELL_TYPE.HEALING
-                    ),
-                ],
-                [
-                    Markup.button.callback(
-                        'Магия усиления',
-                        ENUM_SPELL_TYPE.REINFORCEMENT
-                    ),
-                    Markup.button.callback(
-                        'Магия ограничения',
-                        ENUM_SPELL_TYPE.RESTRAINING
-                    ),
-                ],
-                [
-                    Markup.button.callback('Печать', ENUM_SPELL_TYPE.SEAL),
-                    Markup.button.callback('Ловушка', ENUM_SPELL_TYPE.TRAP),
-                ],
-                [
-                    Markup.button.callback(
-                        'Комибнированная магия',
-                        ENUM_SPELL_TYPE.COMPOUND
-                    ),
-                    Markup.button.callback(
-                        'Магия проклятий',
-                        ENUM_SPELL_TYPE.CURSE
-                    ),
-                ],
-                [
-                    Markup.button.callback(
-                        'Запретная магия',
-                        ENUM_SPELL_TYPE.FORBIDDEN
-                    ),
-                    Markup.button.callback('Проклятие', ENUM_SPELL_TYPE.CURSE),
-                ],
-                [
-                    Markup.button.callback(
-                        'Другой вариант',
-                        ENUM_SPELL_TYPE.OTHER
-                    ),
-                ],
-            ]),
-        });
-        ctx.wizard.next();
-    }
-
-    @On('callback_query')
-    @WizardStep(2)
-    async step2(@Context() ctx: BotContext) {
-        try {
-            ctx.scene.session.spell.type = ctx.callbackQuery['data'];
-        } catch (err) {
-            console.log(err);
-        }
-        await ctx.reply('Описание заклинания');
-        ctx.wizard.next();
-    }
-
-    @On('callback_query')
-    @WizardStep(3)
-    async step3(@Context() ctx: BotContext, @Message('text') text: string) {
-        ctx.scene.session.spell.description = text;
-        await ctx.reply('Урон заклинания');
-        ctx.wizard.next();
-    }
-
-    @WizardStep(4)
-    async step4(@Context() ctx: BotContext, @Message('text') text: string) {
-        ctx.scene.session.spell.damage = Number.parseInt(text);
-        await ctx.reply(
-            'Область действия заклинания заклинания\n(Пример: не определено/на самого персонажа/в области на опрелеённом расстоянии персонажа)'
-        );
-        ctx.wizard.next();
-    }
-
-    @WizardStep(5)
-    async step5(@Context() ctx: BotContext, @Message('text') text: string) {
-        ctx.scene.session.spell.range = text;
-        await ctx.reply('Продолжительность заклинания \n ()');
-        ctx.wizard.next();
-    }
-
-    @WizardStep(6)
-    async step6(@Context() ctx: BotContext, @Message('text') text: string) {
-        ctx.scene.session.spell.castTime = text;
-        await ctx.reply('Затраты магической силы');
-        ctx.wizard.next();
-    }
-
-    @WizardStep(7)
-    async step7(@Context() ctx: BotContext, @Message('text') text: string) {
-        ctx.scene.session.spell.cost = Number.parseInt(text);
-        await ctx.reply(
-            'Сколько времени нужно для создания заклинания \n (Пример: мгновенно/)'
-        );
-        ctx.wizard.next();
-    }
-
-    @WizardStep(8)
-    async step8(@Context() ctx: BotContext, @Message('text') text: string) {
-        ctx.scene.session.spell.castTime = text;
-        await ctx.reply('Время отката заклинания:');
-        ctx.wizard.next();
-    }
-    @WizardStep(9)
-    async step9(@Context() ctx: BotContext, @Message('text') text: string) {
-        ctx.scene.session.spell.castTime = text;
-        await ctx.reply(
-            'Цели заклинания. (не опредено/сам пользователь/до 3-х людей в доступном диапазоне)'
-        );
-        ctx.wizard.next();
-    }
-    @WizardStep(10)
-    async step10(@Context() ctx: BotContext, @Message('text') text: string) {
-        ctx.scene.session.spell.goals = text;
-        await ctx.reply('Минимальный уровень персонажа для каста заклинания');
-        ctx.wizard.next();
-    }
-    @WizardStep(11)
-    async step11(@Context() ctx: BotContext, @Message('text') text: string) {
-        ctx.scene.session.spell.requipments.push(text);
-        await ctx.reply('Дополнительные требования для заклинания');
-        ctx.wizard.next();
-    }
-
-    @WizardStep(12)
-    async exit(@Context() ctx: BotContext) {
-        ctx.scene.leave();
-    }
-    @Hears(/^\/?(cancel)$/i)
-    async onCancel(@Context() ctx: BotContext) {
-        await ctx.reply('Создание заклинания отменено');
-        await ctx.scene.leave();
-    }
-}
-
-/*
-
-
-    step3() {
-        return this.tgBotService.createComposer(async (composer) => {
-            composer.on(message('text'), async (ctx) => {
-                const msg = ctx.update?.message.text;
-                ctx.scene.session.spell.castTime = msg;
-                await ctx.reply('Введите дальность заклинания:');
-                ctx.wizard.next();
-            });
-        });
-    }
-
-    step4() {
-        return this.tgBotService.createComposer(async (composer) => {
-            composer.on(message('text'), async (ctx) => {
-                const msg = ctx.update?.message.text;
-                ctx.scene.session.spell.cost = msg;
-                await ctx.reply(
-                    ' Пожалуйста, введите продолжительность заклинания:'
-                );
-                ctx.wizard.next();
-            });
-        });
-    }
-    step5() {
-        return this.tgBotService.createComposer(async (composer) => {
-            composer.on(message('text'), async (ctx) => {
-                const msg = ctx.update?.message.text;
-                ctx.scene.session.spell.duration = msg;
-                await ctx.reply('Пожалуйста, введите затраты маны:');
-                ctx.wizard.next();
-            });
-        });
-    }
-
-    step6() {
-        return this.tgBotService.createComposer((composer) => {
-            composer.on(message('text'), async (ctx) => {
-                const msg = ctx.update?.message.text;
-                ctx.scene.session.spell.description = msg;
-                const content = `Проверьте, вы правильно заполнили параметры заклинания\n\nНазвание заклинания:${ctx.scene.session.spell.name}\nОписание заклинания:${ctx.scene.session.spell.description}`;
-                await ctx.reply(content, {
-                    reply_markup: {
-                        inline_keyboard: [
-                            [
-                                { text: 'да', callback_data: '1' },
-                                { text: 'да', callback_data: '1' },
-                            ],
-                        ],
-                    },
-                });
-                await ctx.wizard.next();
-            });
-        });
-    }
-    exit() {
-        return this.tgBotService.createComposer(async (composer) => {
-            composer.use(async (ctx) => {
-                switch (ctx.updateType) {
-                    case 'callback_query': {
-                        await ctx.answerCbQuery();
-                        if ('data' in ctx.callbackQuery) {
-                            const grimoire =
-                                await this.grimoireService.findGrimoireByUserTgId(
-                                    ctx.callbackQuery.from.id.toString()
-                                );
-                            await this.grimoireService.createSpell(
-                                ctx.scene.session.spell,
-                                grimoire
-                            );
-                            await ctx.scene.enter(ENUM_SCENES_ID.grimoire);
-                        } else ctx.scene.leave();
-                        break;
-                    }
-                    case 'message': {
-                        ctx.scene.leave();
-                        break;
-                    }
-                    case 'inline_query': {
-                        ctx.scene.leave();
-                        break;
-                    }
-                }
-            });
-        });
-    }
+import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
+import { BackgroundService } from 'src/modules/character/services/background.service';
+import { ENUM_SPELL_TYPE } from 'src/modules/grimoire/constants/spell.type.enum';
+import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
+import {
+    ADD_SPELL_BUTTON,
+    EDIT_GRIMOIRE_BUTTON,
+    EDIT_NAME_BUTTON,
+} from 'src/modules/tg-bot/constants/button-names.constant';
+import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
+import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
+import { LOGGER_INFO } from 'src/modules/tg-bot/utils/logger';
+import { Composer, Markup, Scenes, Telegraf } from 'telegraf';
+import { message } from 'telegraf/filters';
+import { Logger } from 'winston';
 
 @Injectable()
-export class CreateSpellWizard {
+export class SpellCreateWizard {
     readonly scene: Scenes.WizardScene<BotContext>;
     readonly steps: Composer<BotContext>[] = [];
     constructor(
@@ -310,157 +25,343 @@ export class CreateSpellWizard {
         @Inject(TELEGRAF_STAGE)
         private readonly stage: Scenes.Stage<BotContext>,
         private readonly grimoireService: GrimoireService,
-        private readonly tgBotService: TgBotService
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {
-
         this.scene = new Scenes.WizardScene<BotContext>(
-            ENUM_SCENES_ID.createSpell,
-            this.start(),
+            ENUM_SCENES_ID.CREATE_SPELL_FORM_SCENE_ID,
             this.step1(),
             this.step2(),
             this.step3(),
             this.step4(),
             this.step5(),
             this.step6(),
-            this.exit(),
+            this.step7(),
+            this.step8(),
+            this.step9(),
+            this.step10(),
+            this.step11(),
+            this.step12()
         );
-    
+        this.scene.enter(this.start());
         this.stage.register(this.scene);
+
         bot.use(stage.middleware());
-        bot.catch((err: Error, ctx) => {
-            console.log(err);
-    
-        });
     }
-
     start() {
-        return this.tgBotService.createComposer(async (composer) => {
-            composer.use(async (ctx) => {
-                ctx.scene.session.spell = {
-                    name: '',
-                    description: '',
-                    damage: 0,
-                    range: '',
-                    duration: '',
-                    cost: 0,
-                    castTime: 1,
-                    cooldown: 0,
-                    type: ENUM_SPELL_TYPE.CREATION,
-                    goals: '',
-                    minLevel: 1,
-                    requipments: [],
-                };
-
-                await ctx.reply('Введите название заклинания');
-                ctx.wizard.next();
+        return async (ctx: BotContext) => {
+            ctx.scene.session.spell = {
+                name: 'не заполнено',
+                description: 'не заполнено',
+                type: ENUM_SPELL_TYPE.OTHER,
+                damage: 0,
+                range: 'не заполнено',
+                duration: 'не заполнено',
+                cost: 0,
+                castTime: '1',
+                cooldown: '0',
+                goals: 'не заполнено',
+                minLevel: 1,
+                requipments: 'нет',
+                grimoireId: ctx.session.grimoireId,
+            };
+            const title = '<strong><u>Шаблон заклинания</u></strong>';
+            const name = `<strong>Название: </strong>`;
+            const type = `<strong>Тип: </strong>`;
+            const damage = '<strong>Урон: </strong>';
+            const range = '<strong>Область действия заклинания: </strong>';
+            const duration = '<strong>Продолжительность: </strong>';
+            const cost = '<strong>Стоимость: </strong>';
+            const castTime =
+                '<strong>Сколько времени нужно для создания заклинания: </strong>';
+            const cooldown = '<strong>Время отката заклинания: </strong>';
+            const goals = '<strong>Цели: </strong>';
+            const minLevel = '<strong>Минимальный уровень персонажа: </strong>';
+            const requipments = '<strong>Требования: </strong>';
+            const description = `<strong>Описание</strong>`;
+            const template = `${title}\n${name}\n${type}\n${damage}\n${range}\n${duration}\n${cost}\n${castTime}\n${cooldown}\b${goals}\n${minLevel}\n${requipments}${description}`;
+            await ctx.reply(template, {
+                parse_mode: 'HTML',
             });
-        });
+            await ctx.reply(
+                'Введите название заклинания. \n Для того, чтобы выйти из формы, нажмите на /cancel (черновик заклинания сохранится)".'
+            );
+        };
     }
-
     step1() {
-        return this.tgBotService.createComposer(async (composer) => {
-            composer.on(message('text'), async (ctx) => {
-                const msg = ctx.update?.message.text;
-                ctx.scene.session.spell.name = msg;
-                await ctx.reply('Введите описание заклинания:');
-                ctx.wizard.next();
-            });
+        const composer = new Composer<BotContext>();
+        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+        composer.command('cancel', async (ctx) => {
+            await ctx.reply('Имя не изменено.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
         });
+        composer.on(message('text'), async (ctx) => {
+            ctx.scene.session.spell.name = ctx.update.message.text;
+            await ctx.reply('Тип заклинания', {
+                ...Markup.inlineKeyboard([
+                    [
+                        Markup.button.callback(
+                            'Магия созидания',
+                            'MAGIC_TYPE:' + ENUM_SPELL_TYPE.CREATION
+                        ),
+                        Markup.button.callback(
+                            'Магия исцеления',
+                            'MAGIC_TYPE:' + ENUM_SPELL_TYPE.HEALING
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            'Магия усиления',
+                            'MAGIC_TYPE:' + ENUM_SPELL_TYPE.REINFORCEMENT
+                        ),
+                        Markup.button.callback(
+                            'Магия ограничения',
+                            'MAGIC_TYPE:' + ENUM_SPELL_TYPE.RESTRAINING
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            'Печать',
+                            'MAGIC_TYPE:' + ENUM_SPELL_TYPE.SEAL
+                        ),
+                        Markup.button.callback(
+                            'Ловушка',
+                            'MAGIC_TYPE:' + ENUM_SPELL_TYPE.TRAP
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            'Комибнированная магия',
+                            'MAGIC_TYPE:' + ENUM_SPELL_TYPE.COMPOUND
+                        ),
+                        Markup.button.callback(
+                            'Магия проклятий',
+                            'MAGIC_TYPE:' + ENUM_SPELL_TYPE.CURSE
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            'Запретная магия',
+                            'MAGIC_TYPE:' + ENUM_SPELL_TYPE.FORBIDDEN
+                        ),
+                        Markup.button.callback(
+                            'Проклятие',
+                            'MAGIC_TYPE:' + ENUM_SPELL_TYPE.CURSE
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            'Другой вариант',
+                            'MAGIC_TYPE:' + ENUM_SPELL_TYPE.OTHER
+                        ),
+                    ],
+                ]),
+            });
+            ctx.wizard.next();
+        });
+        return composer;
     }
+
     step2() {
-        return this.tgBotService.createComposer(async (composer) => {
-            composer.on(message('text'), async (ctx) => {
-                const msg = ctx.update?.message.text;
-                ctx.scene.session.spell.range = msg;
-                await ctx.reply('Введите время каста заклинания:');
-                ctx.wizard.next();
-            });
+        const composer = new Composer<BotContext>();
+        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+        composer.command('cancel', async (ctx) => {
+            await ctx.reply('Тип не сохранён.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
         });
+        composer.action(/^(MAGIC_TYPE.*)$/, async (ctx) => {
+            try {
+                ctx.scene.session.spell.type =
+                    ctx.callbackQuery['data'].split(':')[1];
+            } catch (err) {
+                console.log(err);
+            }
+            await ctx.reply('Описание заклинания');
+            ctx.wizard.next();
+        });
+        return composer;
     }
+
     step3() {
-        return this.tgBotService.createComposer(async (composer) => {
-            composer.on(message('text'), async (ctx) => {
-                const msg = ctx.update?.message.text;
-                ctx.scene.session.spell.castTime = msg;
-                await ctx.reply('Введите дальность заклинания:');
-                ctx.wizard.next();
-            });
+        const composer = new Composer<BotContext>();
+        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+        composer.command('cancel', async (ctx) => {
+            await ctx.reply('Имя не изменено.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
         });
+        composer.on(message('text'), async (ctx) => {
+            ctx.scene.session.spell.description = ctx.update.message.text;
+            await ctx.reply('Урон заклинания');
+            ctx.wizard.next();
+        });
+        return composer;
     }
 
     step4() {
-        return this.tgBotService.createComposer(async (composer) => {
-            composer.on(message('text'), async (ctx) => {
-                const msg = ctx.update?.message.text;
-                ctx.scene.session.spell.cost = msg;
-                await ctx.reply(
-                    ' Пожалуйста, введите продолжительность заклинания:'
-                );
-                ctx.wizard.next();
-            });
+        const composer = new Composer<BotContext>();
+        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+        composer.command('cancel', async (ctx) => {
+            await ctx.reply('Имя не изменено.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
         });
+        composer.on(message('text'), async (ctx) => {
+            ctx.scene.session.spell.damage = Number.parseInt(
+                ctx.update.message.text
+            );
+            await ctx.reply(
+                'Область действия заклинания заклинания\n(Пример: не определено/на самого персонажа/в области на опрелеённом расстоянии персонажа)'
+            );
+            ctx.wizard.next();
+        });
+        return composer;
     }
+
     step5() {
-        return this.tgBotService.createComposer(async (composer) => {
-            composer.on(message('text'), async (ctx) => {
-                const msg = ctx.update?.message.text;
-                ctx.scene.session.spell.duration = msg;
-                await ctx.reply('Пожалуйста, введите затраты маны:');
-                ctx.wizard.next();
-            });
+        const composer = new Composer<BotContext>();
+        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+        composer.command('cancel', async (ctx) => {
+            await ctx.reply('Имя не изменено.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
         });
+        composer.on(message('text'), async (ctx) => {
+            ctx.scene.session.spell.range = ctx.update.message.text;
+            await ctx.reply('Продолжительность заклинания \n ()');
+            ctx.wizard.next();
+        });
+        return composer;
     }
 
     step6() {
-        return this.tgBotService.createComposer((composer) => {
-            composer.on(message('text'), async (ctx) => {
-                const msg = ctx.update?.message.text;
-                ctx.scene.session.spell.description = msg;
-                const content = `Проверьте, вы правильно заполнили параметры заклинания\n\nНазвание заклинания:${ctx.scene.session.spell.name}\nОписание заклинания:${ctx.scene.session.spell.description}`;
-                await ctx.reply(content, {
-                    reply_markup: {
-                        inline_keyboard: [
-                            [
-                                { text: 'да', callback_data: '1' },
-                                { text: 'да', callback_data: '1' },
-                            ],
-                        ],
-                    },
-                });
-                await ctx.wizard.next();
-            });
+        const composer = new Composer<BotContext>();
+        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+        composer.command('cancel', async (ctx) => {
+            await ctx.reply('Имя не изменено.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
         });
+        composer.on(message('text'), async (ctx) => {
+            ctx.scene.session.spell.castTime = ctx.update.message.text;
+            await ctx.reply('Затраты магической силы');
+            ctx.wizard.next();
+        });
+        return composer;
     }
-    exit() {
-        return this.tgBotService.createComposer(async (composer) => {
-            composer.use(async (ctx) => {
-                switch (ctx.updateType) {
-                    case 'callback_query': {
-                        await ctx.answerCbQuery();
-                        if ('data' in ctx.callbackQuery) {
-                            const grimoire =
-                                await this.grimoireService.findGrimoireByUserTgId(
-                                    ctx.callbackQuery.from.id.toString()
-                                );
-                            await this.grimoireService.createSpell(
-                                ctx.scene.session.spell,
-                                grimoire
-                            );
-                            await ctx.scene.enter(ENUM_SCENES_ID.grimoire);
-                        } else ctx.scene.leave();
-                        break;
-                    }
-                    case 'message': {
-                        ctx.scene.leave();
-                        break;
-                    }
-                    case 'inline_query': {
-                        ctx.scene.leave();
-                        break;
-                    }
-                }
-            });
+
+    step7() {
+        const composer = new Composer<BotContext>();
+        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+        composer.command('cancel', async (ctx) => {
+            await ctx.reply('Имя не изменено.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
         });
+        composer.on(message('text'), async (ctx) => {
+            ctx.scene.session.spell.cost = Number.parseInt(
+                ctx.update.message.text
+            );
+            await ctx.reply(
+                'Сколько времени нужно для создания заклинания \n (Пример: мгновенно/)'
+            );
+            ctx.wizard.next();
+        });
+        return composer;
+    }
+
+    step8() {
+        const composer = new Composer<BotContext>();
+        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+        composer.command('cancel', async (ctx) => {
+            await ctx.reply('Имя не изменено.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+        });
+        composer.on(message('text'), async (ctx) => {
+            ctx.scene.session.spell.castTime = ctx.update.message.text;
+            await ctx.reply('Время отката заклинания:');
+            ctx.wizard.next();
+        });
+        return composer;
+    }
+
+    step9() {
+        const composer = new Composer<BotContext>();
+        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+        composer.command('cancel', async (ctx) => {
+            await ctx.reply('Имя не изменено.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+        });
+        composer.on(message('text'), async (ctx) => {
+            ctx.scene.session.spell.castTime = ctx.update.message.text;
+            await ctx.reply(
+                'Цели заклинания. (не опредено/сам пользователь/до 3-х людей в доступном диапазоне)'
+            );
+            ctx.wizard.next();
+        });
+        return composer;
+    }
+
+    step10() {
+        const composer = new Composer<BotContext>();
+        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+        composer.command('cancel', async (ctx) => {
+            await ctx.reply('Имя не изменено.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+        });
+        composer.on(message('text'), async (ctx) => {
+            ctx.scene.session.spell.goals = ctx.update.message.text;
+            await ctx.reply(
+                'Минимальный уровень персонажа для каста заклинания'
+            );
+            ctx.wizard.next();
+        });
+        return composer;
+    }
+
+    step11() {
+        const composer = new Composer<BotContext>();
+        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+        composer.command('cancel', async (ctx) => {
+            await ctx.reply('Имя не изменено.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+        });
+        composer.on(message('text'), async (ctx) => {
+            ctx.scene.session.spell.minLevel = Number.parseInt(
+                ctx.update.message.text
+            );
+            await ctx.reply('Дополнительные требования для заклинания');
+            ctx.wizard.next();
+        });
+        return composer;
+    }
+
+    step12() {
+        const composer = new Composer<BotContext>();
+        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+        composer.command('cancel', async (ctx) => {
+            await ctx.reply('Имя не изменено.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+        });
+        composer.on(message('text'), async (ctx) => {
+            ctx.scene.session.spell.requipments = ctx.update.message.text;
+            const spell = ctx.scene.session.spell;
+            const title = '<strong><u>Заклинание</u></strong>';
+            const name = `<strong>Название: </strong> ${spell.name}`;
+            const type = `<strong>Тип: </strong> ${spell.type}`;
+            const damage = `<strong>Урон: </strong> ${spell.damage}`;
+            const range = `<strong>Область действия заклинания: </strong> ${spell.range}`;
+            const duration = `<strong>Продолжительность: </strong> ${spell.duration}`;
+            const cost = `<strong>Стоимость: </strong> ${spell.cost}`;
+            const castTime = `<strong>Сколько времени нужно для создания заклинания: </strong> ${spell.castTime}`;
+            const cooldown = `<strong>Время отката заклинания: </strong> ${spell.cooldown}`;
+            const goals = `<strong>Цели: </strong> ${spell.goals}`;
+            const minLevel = `<strong>Минимальный уровень персонажа: </strong> ${spell.minLevel}`;
+            const requipments = '<strong>Требования: </strong>';
+            const description = `<strong>Описание</strong>\n ${spell.description}`;
+            const template = `${title}\n${name}\n${type}\n${damage}\n${range}\n${duration}\n${cost}\n${castTime}\n${cooldown}\b${goals}\n${minLevel}\n${requipments}${description}`;
+            await ctx.reply(template, {
+                parse_mode: 'HTML',
+            });
+
+            await this.grimoireService.createSpell(spell);
+
+            ctx.scene.enter(ENUM_SCENES_ID.EDIT_GRIMOIRES_SCENE_ID);
+        });
+        return composer;
     }
 }
-*/

@@ -14,7 +14,6 @@ import { WalletEntity } from '../modules/money/entity/wallet.entity';
 import { CharacterEntity } from '../modules/character/entity/character.entity';
 import { ENUM_CHARCACTER_TYPE } from '../modules/character/constants/character.type.enum';
 import { UserEntity } from '../modules/user/entities/user.entity';
-import { ENUM_IS_GRIMOIRE_APPROVED } from '../modules/grimoire/constants/grimoire.enum.constant';
 import { CharacterCreateDto } from 'src/modules/character/dto/character.create.dto';
 import * as wizard_king from '../../Assets/json/nps/wizard_king.json';
 export default class UserSeeder implements Seeder {

@@ -41,6 +41,12 @@ export class ArmedForcesEntity {
         referencedColumnName: 'id',
     })
     state: StateEntity;
+
+    @Column({
+        type: 'varchar',
+        name: 'state_id',
+    })
+    stateId: string;
     @OneToMany(() => SquadEntity, (squad) => squad.armorForces)
     squads: Array<SquadEntity>;
 

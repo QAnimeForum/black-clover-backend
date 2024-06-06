@@ -10,6 +10,7 @@ import {
 import { SpellEntity } from './spell.entity';
 import { CharacterEntity } from '../../character/entity/character.entity';
 import { Expose } from 'class-transformer';
+import { ENUM_GRIMOIRE_STATUS } from '../constants/grimoire.enum.constant';
 
 @Entity('grimoire')
 export class GrimoireEntity {
@@ -20,14 +21,14 @@ export class GrimoireEntity {
         type: 'varchar',
     })
     magicName: string;
-    /**
- *     @Column({
+
+    @Column({
         type: 'enum',
-        enum: ENUM_IS_GRIMOIRE_APPROVED,
-        default: ENUM_IS_GRIMOIRE_APPROVED.NOT_APPROVED,
+        enum: ENUM_GRIMOIRE_STATUS,
+        default: ENUM_GRIMOIRE_STATUS.NOT_APPROVED,
     })
-    status: ENUM_IS_GRIMOIRE_APPROVED;
- */
+    status: ENUM_GRIMOIRE_STATUS;
+
 
     @Column({
         type: 'varchar',

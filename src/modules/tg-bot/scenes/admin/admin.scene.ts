@@ -8,28 +8,39 @@ import {
     Wizard,
     WizardStep,
     Command,
+    Action,
 } from 'nestjs-telegraf';
 import { ADMIN_IMAGE_PATH } from '../../constants/images';
 
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
-import { UseFilters } from '@nestjs/common';
+import { Inject, Logger, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 import { UserService } from 'src/modules/user/services/user.service';
 
 import {
     ANNOUNCEMENTS_BUTTON,
     BACK_BUTTON,
+    CHRONICLE_BUTTON,
+    FINE_MONEY_BUTTON,
+    GIVE_MONEY_BUTTON,
     GRIMOIRE_BUTTON,
-    GRIMOIRE_REQUESTS_BUTTON,
+    GRIMOIRES_BUTTON,
+    MONEY_BUTTON,
     PERMITIONS_BUTTON,
-    QUESTS_BUTTON,
+    TRANSACTIONS_BUTTON,
 } from '../../constants/button-names.constant';
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { AnnouncementService } from 'src/modules/events/services/announcement.service';
 @Scene(ENUM_SCENES_ID.ADMIN_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class AdminScene {
-    constructor(private readonly userService: UserService) {}
+    constructor(
+        private readonly userService: UserService,
+        private readonly announcementService: AnnouncementService,
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {
         const caption = 'Админская панель';
@@ -40,8 +51,9 @@ export class AdminScene {
             {
                 caption,
                 ...Markup.keyboard([
-                    [PERMITIONS_BUTTON, GRIMOIRE_REQUESTS_BUTTON],
-                    [ANNOUNCEMENTS_BUTTON, QUESTS_BUTTON],
+                    [PERMITIONS_BUTTON],
+                    [GRIMOIRES_BUTTON, MONEY_BUTTON],
+                    [ANNOUNCEMENTS_BUTTON, CHRONICLE_BUTTON],
                     [BACK_BUTTON],
                 ]).resize(),
             }
@@ -76,30 +88,82 @@ export class AdminScene {
         });
     }
 
-    @On('callback_query')
-    public async callbackQuery(@Ctx() ctx: BotContext) {
-        await ctx.answerCbQuery();
-        if ('data' in ctx.callbackQuery) {
-            const action = ctx.callbackQuery.data;
-            switch (action) {
-                case 'ACTION_ADD_ADMIN': {
-                    await ctx.scene.enter(ENUM_SCENES_ID.ADD_ADMIN_SCENE_ID);
-                    break;
-                }
-                case 'ACTION_DELETE_ADMIN': {
-                    await ctx.scene.enter(ENUM_SCENES_ID.DELETE_ADMIN_SCENE_ID);
-                    break;
-                }
-            }
-        }
+    @Hears(ANNOUNCEMENTS_BUTTON)
+    async annoncements(@Ctx() ctx: BotContext) {
+        ctx.reply('Меню по управлению объявлениями', {
+            ...Markup.inlineKeyboard([
+                [
+                    Markup.button.callback(
+                        'Создать новое объявление',
+                        `ADD_NEW_ANNOUNCEMENT`
+                    ),
+                ],
+                [
+                    Markup.button.callback(
+                        'Список объявлений',
+                        `SHOW_LIST_ANNOUNCEMENTS`
+                    ),
+                ],
+            ]),
+        });
     }
+    @Action('ADD_NEW_ANNOUNCEMENT')
+    async addAnnouncement(@Ctx() ctx: BotContext) {
+        ctx.scene.enter(ENUM_SCENES_ID.ANNOUNCEMENT_CREATE_SCENE_ID);
+    }
+
+    @Action('SHOW_LIST_ANNOUNCEMENTS')
+    async showAnnouncement(@Ctx() ctx: BotContext) {
+        const announcements =
+            await this.announcementService.findAllAnnouncements({
+                path: '',
+            });
+        const caption = `Объявления\n Общее количество объявлений: ${announcements.meta.totalItems}`;
+        const buttons = [];
+        announcements.data.map((announcement, index) => buttons.push());
+        ctx.reply(caption, {
+            ...Markup.inlineKeyboard([buttons]),
+        });
+    }
+
+    @Hears(MONEY_BUTTON)
+    async money(@Ctx() ctx: BotContext) {
+        ctx.scene.enter(ENUM_SCENES_ID.ADMIN_MONEY_SCENE_ID);
+    }
+
+    @Hears(GRIMOIRES_BUTTON)
+    async grimoire(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.EDIT_GRIMOIRES_SCENE_ID);
+    }
+
+    @Hears(CHRONICLE_BUTTON)
+    async chronicle(@Ctx() ctx: BotContext) {
+        ctx.reply('Меню по управлению объявлениями', {
+            ...Markup.inlineKeyboard([
+                [
+                    Markup.button.callback(
+                        'Создать новое событие в хронологии',
+                        `ADD_NEW_EVENT`
+                    ),
+                ],
+                [Markup.button.callback('хроника', `SHOW_LIST_EVENTS`)],
+            ]),
+        });
+    }
+
+    @Action('ACTION_ADD_ADMIN')
+    async addAdmin(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.ADD_ADMIN_SCENE_ID);
+    }
+
+    @Action('ADD_NEW_DRAFT_ANNOUNCEMENT')
+    async removeAdmin(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.DELETE_ADMIN_SCENE_ID);
+    }
+
     @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
-    }
-    @Hears(GRIMOIRE_BUTTON)
-    async grimoire(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_SCENE_ID);
     }
 }
 

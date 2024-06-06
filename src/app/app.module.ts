@@ -28,7 +28,6 @@ import { RequestModule } from 'src/common/request/request.module';
 import { ResponseModule } from 'src/common/response/response.module';
 import { CharacterModule } from 'src/modules/character/character.module';
 import { DevilsModule } from 'src/modules/devils/devils.module';
-import { EventsModule } from 'src/modules/events/event.module';
 import { GrimoireModule } from 'src/modules/grimoire/grimoire.module';
 import { ItemsModule } from 'src/modules/items/items.module';
 import { JudicialSystemModule } from 'src/modules/judicial.system/judicial.system.module';
@@ -39,6 +38,7 @@ import { RaceModule } from 'src/modules/race/race.module';
 import { SpiritsModule } from 'src/modules/spirits/spirits.module';
 import { SquadsModule } from 'src/modules/squards/squads.module';
 import { UserModule } from 'src/modules/user/user.module';
+import { AnnouncementModule } from 'src/modules/events/event.module';
 
 const logDir = 'logs/service/';
 const infoLogDir = `${logDir}${LOGGER_INFO}`;
@@ -156,7 +156,7 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
         RequestModule,
 
         GrimoireModule,
-        EventsModule,
+        AnnouncementModule,
         DevilsModule,
         SpiritsModule,
         ItemsModule,

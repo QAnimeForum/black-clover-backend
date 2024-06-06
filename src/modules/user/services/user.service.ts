@@ -64,11 +64,10 @@ export class UserService {
             'READ UNCOMMITTED',
             async (transactionManager) => {
                 const character =
-                    await this.characterService.createPlayableCharacterDto(
+                    await this.characterService.createPlayableCharacter(
                         transactionManager,
                         dto.character
                     );
-                console.log(character);
                 user = new UserEntity();
                 user.tgUserId = dto.tgUserId;
                 user.characterId = character.id;

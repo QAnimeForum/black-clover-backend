@@ -16,14 +16,14 @@ import { CharacterService } from 'src/modules/character/services/character.servi
 @Injectable()
 export class TgBotService {
     
-    async downloadAndSaveLocalFile(filePath: string) {
+    async downloadAndSaveLocalFile(filePath: string, avatarPath: string) {
         //  const botToken = this.configService.get(EnvVariablesKeys.tgBotToken);
         const botToken = process.env.TELEGRAM_BOT_TOKEN;
         const fileURL = `https://api.telegram.org/file/bot${botToken}/${filePath}`;
         const fileMimeType = getFileMimeType(filePath);
         const fileName = `${randomUUID()}.${fileMimeType}`;
         const relativeFilePath = join('media/images', fileName);
-        const absoluteFilePath = join(process.cwd(), relativeFilePath);
+        const absoluteFilePath = join(avatarPath, relativeFilePath);
         try {
             const response = await fetch(fileURL);
             const blob = await response.blob();

@@ -13,7 +13,7 @@ export class SpellCreateDto {
     type: ENUM_SPELL_TYPE;
     goals: string;
     minLevel: number;
-    requipments: Array<string>;
+    requipments: string;
 }
 
 /**

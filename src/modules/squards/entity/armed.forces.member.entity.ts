@@ -1,4 +1,5 @@
 import {
+    Column,
     CreateDateColumn,
     Entity,
     JoinColumn,
@@ -24,13 +25,23 @@ export class ArmedForcesMemberEntity {
     })
     character: CharacterEntity;
 
+    @Column({
+        type: 'varchar',
+        name: 'character_id',
+    })
+    characterId: string;
+
     @ManyToOne(() => SquadEntity, (squad) => squad.members)
     @JoinColumn({
-        name: 'ar',
+        name: 'armed_forces_id',
         referencedColumnName: 'id',
     })
     armedForces: ArmedForcesEntity;
-
+    @Column({
+        type: 'varchar',
+        name: 'armed_forces_id',
+    })
+    armedForcesId: string;
     @ManyToOne(() => ArmedForcesRankEntity, (rank) => rank.members)
     @JoinColumn({
         name: 'rank_id',

@@ -175,8 +175,7 @@ export class ArmedForcesScene {
         };
         const requests = await this.squadsService.findAllRequests(query);
         console.log(requests);
-        let caption =
-            '<strong><u>Заявки</u></strong>\n\nНик | имя пероснажа | Магический атрибут | id\n';
+        let caption = '<strong><u>Заявки</u></strong>\n\n';
         requests.data.map(
             (request: ArmedForcesRequestEntity, index: number) => {
                 const requestBlock = `${index + 1})@${request.tgUsername} | ${request.character.background.name} | ${request.character.grimoire.magicName} | <code>${request.tgUserId}</code>\n`;

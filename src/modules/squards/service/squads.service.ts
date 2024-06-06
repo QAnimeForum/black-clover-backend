@@ -103,6 +103,18 @@ export class SquadsService {
         });
     }
 
+    public async acceptMember(
+        characterId: string,
+        armedForcesId: string,
+        tgUserId: string,
+        requestStatus: ENUM_ARMED_FORCES_REQUEST
+    ) {
+        const member = new ArmedForcesMemberEntity();
+        member.armedForcesId = armedForcesId;
+        member.characterId = characterId;
+      //  member.rank = ENUM_MEMB
+        this.changeRequestStatus(tgUserId, requestStatus);
+    }
     public async changeRequestStatus(
         tgUserId: string,
         requestStatus: ENUM_ARMED_FORCES_REQUEST
@@ -251,7 +263,7 @@ export class SquadsService {
     findArmedForcesByState(
         state: StateEntity
     ): Promise<ArmedForcesEntity | null> {
-        return this.armedForcesRepository.findOneBy({ state: state });
+        return this.armedForcesRepository.findOneBy({ stateId: state.id });
     }
     async createArmedForces(dto: ArmedForcesCreateDto) {
         const armedForces = new ArmedForcesEntity();

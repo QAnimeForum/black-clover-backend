@@ -21,5 +21,6 @@ import { InventoryEntity } from '../character/entity/inventory.entity';
     ],
     controllers: [MoneyController],
     providers: [MoneyService],
+    exports: [MoneyService],
 })
 export class MoneyModule {}

@@ -44,6 +44,7 @@ export class HomeScene {
             [PROFILE_BUTTON, ORGANIZATIONS_BUTTON, MAP_BUTTON],
             [ALL_SPIRITS_BUTTON, ALL_DEVILS_BUTTON],
             [ANNOUNCEMENTS_BUTTON, QUESTS_BUTTON, HELP_BUTTON],
+            [ADMIN_PANEL_BUTTON]
         ];
         if (isShowAdminButton) {
             buttons.push([ADMIN_PANEL_BUTTON]);
