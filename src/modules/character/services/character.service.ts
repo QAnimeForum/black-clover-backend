@@ -205,12 +205,17 @@ export class CharacterService {
         return entity;
     }
 
-    findCharacteristicsB(dto: GetCharacteristicsDto) {
-        return this.characterRepository.findBy({
-            id: dto.charactristicsId,
+    async findCharacterByTgId(tgId: string) {
+        const entity = await this.userRepository.findOne({
+            where: {
+                tgUserId: tgId,
+            },
+            relations: {
+                character: true,
+            },
         });
+        return entity;
     }
-
     findCharacterById(characterId: string) {
         return this.characterRepository.findOneBy({
             id: characterId,

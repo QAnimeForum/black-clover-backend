@@ -11,7 +11,7 @@ import { ENUM_ARMED_FORCES_REQUEST } from '../constants/armed.forces.request.lis
 import { ArmedForcesEntity } from './armed.forces.entity';
 import { CharacterEntity } from '../../character/entity/character.entity';
 
-@Entity('armdedForcesRequest')
+@Entity('armed_forces_request')
 export class ArmedForcesRequestEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;

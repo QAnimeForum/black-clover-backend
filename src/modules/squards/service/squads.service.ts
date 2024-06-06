@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository, TreeRepository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { SquadEntity } from '../entity/squad.entity';
 import { ArmedForcesEntity } from '../entity/armed.forces.entity';
 import { SquadMemberEntity } from '../entity/squad.member.entity';
@@ -26,15 +26,18 @@ import {
 import { ArmedForcesRankEntity } from '../entity/armed.forces.rank.entity';
 import { ArmedForcesMemberEntity } from '../entity/armed.forces.member.entity';
 import { ArmedForcesMemberCreateDto } from '../dto/armed.forces.member.create.dto';
+
 @Injectable()
 export class SquadsService {
     constructor(
+        @InjectDataSource()
+        private readonly connection: DataSource,
         @InjectRepository(SquadEntity)
         private readonly squadRepository: Repository<SquadEntity>,
         @InjectRepository(ArmedForcesEntity)
         private readonly armedForcesRepository: Repository<ArmedForcesEntity>,
         @InjectRepository(ArmedForcesRankEntity)
-        private readonly rankRepository: Repository<ArmedForcesRankEntity>,
+        private readonly rankRepository: TreeRepository<ArmedForcesRankEntity>,
         @InjectRepository(SquadMemberEntity)
         private readonly squadMemberRepository: Repository<SquadMemberEntity>,
         @InjectRepository(CharacterEntity)
@@ -104,26 +107,43 @@ export class SquadsService {
     }
 
     public async acceptMember(
-        characterId: string,
-        armedForcesId: string,
+        character: CharacterEntity,
+        armedForces: ArmedForcesEntity,
         tgUserId: string,
         requestStatus: ENUM_ARMED_FORCES_REQUEST
     ) {
         const member = new ArmedForcesMemberEntity();
-        member.armedForcesId = armedForcesId;
-        member.characterId = characterId;
-      //  member.rank = ENUM_MEMB
+        console.log(character);
+        console.log(armedForces);
+        member.armedForcesId = armedForces.id;
+        member.armedForces = armedForces;
+        member.character = character;
+        member.characterId = character.id;
+        //TODO сделать красивее
+        let rank = (await this.rankRepository.findTrees())[0];
+        console.log(rank);
+        while (rank.children.length > 0) {
+            rank = rank.children[0];
+        }
+        member.rank = rank;
+        member.rankId = rank.id;
+        console.log(member);
+        await this.armedForcesMemberRepository.insert(member);
+        //  member.rank = ENUM_MEMB
         this.changeRequestStatus(tgUserId, requestStatus);
     }
     public async changeRequestStatus(
         tgUserId: string,
         requestStatus: ENUM_ARMED_FORCES_REQUEST
     ) {
-        const request = await this.armedForcesRequestRepository.findOneBy({
-            tgUserId: tgUserId,
-        });
-        request.status = requestStatus;
-        this.armedForcesRequestRepository.insert(request);
+        await this.connection
+            .createQueryBuilder()
+            .update(this.armedForcesRequestRepository)
+            .set({
+                status: requestStatus,
+            })
+            .where('tgUserId = :tgUserId', { tgUserId: tgUserId })
+            .execute();
         return true;
     }
     findSquadById(id: string): Promise<SquadEntity | null> {
@@ -167,11 +187,11 @@ export class SquadsService {
     }
 
     async findRanksByArmedForces(
-        armedForces: ArmedForcesEntity
+        armedForceId: string
     ): Promise<[ArmedForcesRankEntity[], number]> {
         const [entities, total] = await this.rankRepository.findAndCount({
             where: {
-                armorForces: armedForces,
+                armorForcesId: armedForceId,
             },
         });
         return [entities, total];
@@ -183,7 +203,7 @@ export class SquadsService {
         const rank = new ArmedForcesRankEntity();
         rank.name = dto.name;
         rank.description = dto.description;
-        rank.salary = new SalaryEntity();
+        // rank.salary = new SalaryEntity();
         return this.rankRepository.insert(rank);
     }
 
@@ -297,12 +317,16 @@ export class SquadsService {
         });
     }
 
-    async isUserSquadMember(character: CharacterEntity): Promise<boolean> {
-        /*  return this.squadMemberRepository.exists({
+    async isUserArmedForcesMember(
+        character: CharacterEntity
+    ): Promise<boolean> {
+        return this.armedForcesMemberRepository.exists({
             where: {
-                character: character,
+                characterId: character.id,
             },
-        });*/
+        });
+    }
+    async isUserSquadMember(character: CharacterEntity): Promise<boolean> {
         return false;
     }
 

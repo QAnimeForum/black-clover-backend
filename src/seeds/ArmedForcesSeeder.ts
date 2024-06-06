@@ -28,9 +28,10 @@ export default class ArmedForcesSeeder implements Seeder {
             })
         ).raw[0];
         const ranksDto = clover.ranks;
+        let parent = null;
         for (let i = 0; i < ranksDto.length; ++i) {
             const rank = ranksDto[i];
-            const salary = (
+            /* const salary = (
                 await salaryRepository.insert({
                     cooper: ranksDto[i].salary.cooper,
                     platinum: ranksDto[i].salary.platinum,
@@ -38,13 +39,16 @@ export default class ArmedForcesSeeder implements Seeder {
                     silver: ranksDto[i].salary.silver,
                     gold: ranksDto[i].salary.gold,
                 })
+            ).raw[0];*/
+            parent = (
+                await rankRepository.insert({
+                    name: rank.name,
+                    description: rank.description,
+                    armorForces: cloverArmedForcesEntity,
+                    parent: parent,
+                    // salary: salary,
+                })
             ).raw[0];
-            await rankRepository.insert({
-                name: rank.name,
-                description: rank.description,
-                armorForces: cloverArmedForcesEntity,
-                salary: salary,
-            });
         }
 
         for (let i = 0; i < squads.length; ++i) {

@@ -6,11 +6,16 @@ import {
     OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
+    Tree,
+    TreeChildren,
+    TreeParent,
 } from 'typeorm';
 import { SquadMemberEntity } from './squad.member.entity';
 import { SalaryEntity } from '../../money/entity/amount.entity';
 import { ArmedForcesEntity } from './armed.forces.entity';
-@Entity('rank')
+
+@Tree('nested-set')
+@Entity('armed_forces_rank')
 export class ArmedForcesRankEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -25,13 +30,37 @@ export class ArmedForcesRankEntity {
     })
     description: string;
 
-    @OneToOne(() => SalaryEntity)
+    @TreeParent()
+    parent: ArmedForcesRankEntity;
+
+    @TreeChildren()
+    children: ArmedForcesRankEntity[];
+
+    /**
+     * 
+    @Column({
+        type: 'varchar',
+        name: 'parent_ran_id',
+        nullable: true,
+    })
+    parentRank: ArmedForcesRankEntity;
+
+    @Column({
+        type: 'varchar',
+        name: 'parent_category_id',
+        nullable: true,
+    })
+    parentRankId: string;
+     */
+    /**
+   *   @OneToOne(() => SalaryEntity)
     @JoinColumn({
         name: 'salary_id',
         referencedColumnName: 'id',
     })
     salary: SalaryEntity;
 
+   */
     @OneToMany(() => SquadMemberEntity, (member) => member.squad)
     members: Array<SquadMemberEntity>;
 
@@ -41,6 +70,12 @@ export class ArmedForcesRankEntity {
         referencedColumnName: 'id',
     })
     armorForces: ArmedForcesEntity;
+
+    @Column({
+        type: 'varchar',
+        name: 'forces_id',
+    })
+    armorForcesId: string;
     /*   @Column({
         type: 'varchar',
     })

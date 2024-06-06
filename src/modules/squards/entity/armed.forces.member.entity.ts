@@ -9,7 +9,6 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 import { CharacterEntity } from '../../character/entity/character.entity';
-import { SquadEntity } from './squad.entity';
 import { ArmedForcesEntity } from './armed.forces.entity';
 import { ArmedForcesRankEntity } from './armed.forces.rank.entity';
 
@@ -31,7 +30,7 @@ export class ArmedForcesMemberEntity {
     })
     characterId: string;
 
-    @ManyToOne(() => SquadEntity, (squad) => squad.members)
+    @ManyToOne(() => ArmedForcesEntity, (armedForces) => armedForces.members)
     @JoinColumn({
         name: 'armed_forces_id',
         referencedColumnName: 'id',
@@ -49,6 +48,12 @@ export class ArmedForcesMemberEntity {
     })
     rank: ArmedForcesRankEntity;
 
+
+    @Column({
+        type: 'varchar',
+        name: 'rank_id',
+    })
+    rankId: string;
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;
 

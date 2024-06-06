@@ -24,7 +24,7 @@ import { MyDevilsScene } from './scenes/devils/devils-my.scene';
 import { MySpiritsScene } from './scenes/spirits/spirits-my.scene';
 import { AllSpiritsScene } from './scenes/spirits/all.spirits';
 import { MagicParlamentScene } from './scenes/organizations/magic.parlament.scene';
-import { AcceptRequestWizard, ArmedForcesScene } from './scenes/organizations/armed.forces.scene';
+import { ArmedForcesScene } from './scenes/organizations/armed.forces.scene';
 import { CreateScquadWizard } from './scenes/organizations/create.squad.wizard';
 import { MinesScene } from './scenes/organizations/mines.wizard';
 import { RequestToParlamentWizard } from './scenes/organizations/request.to.parlament.wizard';
@@ -61,6 +61,9 @@ import {
 } from './scenes/admin/admin.scene';
 import { AdminMoneyScene } from './scenes/admin/money.scene';
 import { AdminGrimoireScene } from './scenes/admin/admin.grimoire.scene';
+import { AcceptRequestWizard } from './scenes/organizations/accept.request.wizard';
+import { CommanderInChiefScene } from './scenes/organizations/comander.in.chief.scene';
+import { SquadScene } from './scenes/organizations/squad.scene';
 @Module({
     imports: [
         ThrottlerModule.forRoot([
@@ -119,6 +122,8 @@ import { AdminGrimoireScene } from './scenes/admin/admin.grimoire.scene';
         ArmedForcesScene,
         AcceptRequestWizard,
         CreateScquadWizard,
+        SquadScene,
+        CommanderInChiefScene,
         MinesScene,
 
         //profile

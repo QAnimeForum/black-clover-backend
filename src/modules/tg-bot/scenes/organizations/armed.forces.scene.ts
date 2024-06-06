@@ -1,15 +1,4 @@
-import {
-    Ctx,
-    Hears,
-    On,
-    Scene,
-    SceneEnter,
-    Sender,
-    Wizard,
-    WizardStep,
-    Message,
-    Command,
-} from 'nestjs-telegraf';
+import { Ctx, Hears, On, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { Inject, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 import { ARMED_FORCES, STATIC_IMAGE_BASE_PATH } from '../../constants/images';
@@ -20,19 +9,20 @@ import { CharacterService } from 'src/modules/character/services/character.servi
 import { ArmedForcesRequestDto } from 'src/modules/squards/dto/armed.forces.request.dto';
 import { PaginateQuery } from 'nestjs-paginate';
 import { ArmedForcesRequestEntity } from 'src/modules/squards/entity/armed.forces.request.entity';
-import { UserService } from 'src/modules/user/services/user.service';
-import { ENUM_ARMED_FORCES_REQUEST } from 'src/modules/squards/constants/armed.forces.request.list';
 import { SQUAD_DEFAULT_PER_PAGE } from 'src/modules/squards/constants/squad.list.constant';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import {
     BACK_BUTTON,
+    COMMANDER_IN_CHIEF_BUTTON,
     CREATE_SQUAD_BUTTON,
     JOIN_TO_ARMED_FORCES_BUTTON,
     MY_SQUAD_BUTTON,
+    PEOPLE_MANAGEMENT_BUTTON,
     SHOW_SQUAD_REQUESTS_BUTTON,
     SQUAD_LIST_BUTTON,
+    TREASURY_BUTTON,
 } from '../../constants/button-names.constant';
 @Scene(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -51,24 +41,32 @@ export class ArmedForcesScene {
         const armedForces =
             await this.squadsService.findArmedForcesByState(state);
         ctx.session.armedForcesId = armedForces.id;
-        const [ranks] =
-            await this.squadsService.findRanksByArmedForces(armedForces);
-        const isUserSquadMember =
-            await this.squadsService.isUserSquadMember(character);
+        const [ranks] = await this.squadsService.findRanksByArmedForces(
+            armedForces.id
+        );
+        /*  const isUserSquadMember =
+            await this.squadsService.isUserSquadMember(character);*/
 
+        const isUserArmedForcesMember =
+            await this.squadsService.isUserArmedForcesMember(character);
         const nameBlock = `<strong><u>${armedForces.name}</u></strong>`;
         const descripitonBlock = `<strong>Описание</strong>\n${armedForces.descripiton}`;
         let ranksBlock = `Ранговая система\n`;
         ranks.map((rank) => (ranksBlock += `<strong>${rank.name}</strong>\n`));
         const caption = `${nameBlock}\n\n${descripitonBlock}\n${ranksBlock}`;
         const buttons = [];
-        if (isUserSquadMember) {
+        if (!isUserArmedForcesMember) {
+            buttons.push([JOIN_TO_ARMED_FORCES_BUTTON]);
+        }
+        /*if (isUserArmedForcesMember) {
             buttons.push([MY_SQUAD_BUTTON]);
         } else {
             buttons.push([JOIN_TO_ARMED_FORCES_BUTTON]);
-        }
+        }*/
         buttons.push(
-            [SHOW_SQUAD_REQUESTS_BUTTON, SQUAD_LIST_BUTTON],
+            [MY_SQUAD_BUTTON],
+            [SQUAD_LIST_BUTTON],
+            [COMMANDER_IN_CHIEF_BUTTON],
             [BACK_BUTTON]
         );
         ctx.sendPhoto(
@@ -129,6 +127,15 @@ export class ArmedForcesScene {
         this.showArmedForcesRequest(ctx);
     }
 
+    @Hears(MY_SQUAD_BUTTON)
+    async mySquad(@Ctx() ctx: BotContext) {
+        ctx.scene.enter(ENUM_SCENES_ID.SQUAD_SCENE_ID);
+    }
+    @Hears(COMMANDER_IN_CHIEF_BUTTON)
+    async comander(@Ctx() ctx: BotContext) {
+        ctx.scene.enter(ENUM_SCENES_ID.COMMANDER_IN_SCENE_ID);
+    }
+
     @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID);
@@ -174,7 +181,6 @@ export class ArmedForcesScene {
             },
         };
         const requests = await this.squadsService.findAllRequests(query);
-        console.log(requests);
         let caption = '<strong><u>Заявки</u></strong>\n\n';
         requests.data.map(
             (request: ArmedForcesRequestEntity, index: number) => {
@@ -272,93 +278,5 @@ export class ArmedForcesScene {
         ctx.reply('Отряды вашего королевства', {
             ...Markup.inlineKeyboard(inlineButtons),
         });
-    }
-}
-
-@Wizard(ENUM_SCENES_ID.ARMY_REQUEST_REJECT_SCENE_ID)
-@UseFilters(TelegrafExceptionFilter)
-export class RejectrequestWizard {
-    constructor(
-        private readonly userService: UserService,
-        private readonly squadService: SquadsService
-    ) {}
-    @SceneEnter()
-    async start(@Ctx() ctx: BotContext) {
-        await ctx.reply(
-            `🧟 Введи TRADE ID игрока, которого хотите принять в ряды чародеев, защищающих вашу страну.\n🦝 Если игрока не находит, то ему нужно прописать /start в боте!`,
-            Markup.removeKeyboard()
-        );
-    }
-
-    @Command('cancel')
-    async cancel(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID);
-    }
-    @On('text')
-    @WizardStep(1)
-    async getTgId(@Ctx() ctx: BotContext, @Message() message) {
-        const isUserExists = await this.userService.exists(message.text);
-        console.log(isUserExists);
-        if (!isUserExists) {
-            ctx.reply(
-                'Введен не верный id пользователя! Для отмены нажмите кнопку отменить /cancel'
-            );
-            ctx.wizard.back();
-        } else {
-            const tgChatId: string = message.text;
-            await this.squadService.changeRequestStatus(
-                message.text,
-                ENUM_ARMED_FORCES_REQUEST.REJECTED
-            );
-            ctx.telegram.sendMessage(
-                tgChatId,
-                'Вашу заявку в боевые маги не одобрили.'
-            );
-            await ctx.scene.enter(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID);
-        }
-    }
-}
-
-@Wizard(ENUM_SCENES_ID.ARMY_REQUEST_ACCEPT_SCENE_ID)
-@UseFilters(TelegrafExceptionFilter)
-export class AcceptRequestWizard {
-    constructor(
-        private readonly userService: UserService,
-        private readonly squadService: SquadsService
-    ) {}
-    @SceneEnter()
-    async start(@Ctx() ctx: BotContext) {
-        await ctx.reply(
-            `🧟 Введи ID игрока, которого хотите принять в ряды рыцарей-чародеев.\n🦝 Если игрока не находит, то ему нужно прописать /start в боте!`,
-            Markup.removeKeyboard()
-        );
-    }
-
-    @Command('cancel')
-    async cancel(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID);
-    }
-    @On('text')
-    @WizardStep(1)
-    async getTgId(@Ctx() ctx: BotContext, @Message() message) {
-        const isUserExists = await this.userService.exists(message.text);
-        console.log(isUserExists);
-        if (!isUserExists) {
-            ctx.reply(
-                'Введен не верный id пользователя! Для отмены нажмите кнопку отменить /cancel'
-            );
-            ctx.wizard.back();
-        } else {
-            const tgChatId: string = message.text;
-            await this.squadService.changeRequestStatus(
-                message.text,
-                ENUM_ARMED_FORCES_REQUEST.REJECTED
-            );
-            ctx.telegram.sendMessage(
-                tgChatId,
-                'Вашу заявку в боевые маги одобрили.'
-            );
-            await ctx.scene.enter(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID);
-        }
     }
 }
