@@ -12,8 +12,13 @@ import { Logger } from 'winston';
 import {
     ARMED_FORCES_BUTTON,
     BACK_BUTTON,
+    BAR_BUTTON,
+    BLACK_MARKET_BUTTON,
+    CASINO_BUTTON,
+    FIELDS_BUTTON,
     MAGIC_PARLAMENT_BUTTON,
     MINES_BUTTON,
+    SHOP_BUTTON,
 } from '../../constants/button-names.constant';
 
 @Scene(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID)
@@ -44,16 +49,34 @@ export class OrganizationsScene {
                 caption,
                 parse_mode: 'HTML',
                 ...Markup.keyboard([
-                    [MAGIC_PARLAMENT_BUTTON, ARMED_FORCES_BUTTON, MINES_BUTTON],
+                    [SHOP_BUTTON, BLACK_MARKET_BUTTON],
+                    [BAR_BUTTON, CASINO_BUTTON],
+                    [FIELDS_BUTTON, MINES_BUTTON],
+                    [MAGIC_PARLAMENT_BUTTON, ARMED_FORCES_BUTTON],
                     [BACK_BUTTON],
                 ]).resize(),
             }
         );
     }
 
-    @Hears(BACK_BUTTON)
-    async home(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+    @Hears(SHOP_BUTTON)
+    async shop(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.SHOP_SCENE_ID);
+    }
+
+    @Hears(BLACK_MARKET_BUTTON)
+    async blackMarket(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.BLACK_MARKET_SCENE_ID);
+    }
+
+    @Hears(CASINO_BUTTON)
+    async casino(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.CASINO_SCENE_ID);
+    }
+
+    @Hears(FIELDS_BUTTON)
+    async fields(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.FIELDS_SCENE_ID);
     }
 
     @Hears(MAGIC_PARLAMENT_BUTTON)
@@ -69,5 +92,10 @@ export class OrganizationsScene {
     @Hears(MINES_BUTTON)
     async mines(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.MINES_SCENE_ID);
+    }
+
+    @Hears(BACK_BUTTON)
+    async home(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
     }
 }

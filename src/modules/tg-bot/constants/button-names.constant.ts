@@ -81,8 +81,9 @@ export const WORKS_BUTTON = 'Работа';
 export const ORGANIZATIONS_BUTTON = '🏢Организации';
 export const CHURCH_BUTTON = '💒Церковь';
 export const MINES_BUTTON = '💎Шахты';
+export const FIELDS_BUTTON = '🏡Поля';
 //ARMED FORCES
-export const ARMED_FORCES_BUTTON = '🧙Вооружённые силы';
+export const ARMED_FORCES_BUTTON = '🧙Армия';
 export const TREASURY_BUTTON = '💰Казна';
 export const SHOW_SQUAD_REQUESTS_BUTTON = '📔 Заявки';
 export const COMMANDER_IN_CHIEF_BUTTON = '📘меню главнокомандующего';
@@ -104,6 +105,10 @@ export const EXPEL_FROM_SQUAD_BUTTON = 'Изгнать из клана';
 export const ARMED_FORCES_CONTROL_BUTTON = '⚙️Управление вооружёнными силами';
 //MAGIC PARLAMENT
 export const MAGIC_PARLAMENT_BUTTON = '⚖️Магический парламент';
+export const SHOP_BUTTON = '🛍Магазин';
+export const BLACK_MARKET_BUTTON = '🛍Чёрный рынок';
+export const BAR_BUTTON = '🍸Бар';
+export const CASINO_BUTTON = '🎰Казино';
 export const PRIAZON_BUTTON = '#️⃣Тюрьма';
 export const ALL_COURY_CASE_BUTTON = '⚖️Все судебные заявки';
 export const MY_COURY_CASE_BUTTON = '⚖️Мои судебные заявки';
