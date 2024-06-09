@@ -1,4 +1,12 @@
-import { Ctx, Hears, On, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
+import {
+    Action,
+    Ctx,
+    Hears,
+    On,
+    Scene,
+    SceneEnter,
+    Sender,
+} from 'nestjs-telegraf';
 import { Inject, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 import { ARMED_FORCES, STATIC_IMAGE_BASE_PATH } from '../../constants/images';
@@ -17,9 +25,9 @@ import {
     BACK_BUTTON,
     COMMANDER_IN_CHIEF_BUTTON,
     CREATE_SQUAD_BUTTON,
+    GET_A_WAGE_BUTTON,
     JOIN_TO_ARMED_FORCES_BUTTON,
     MY_SQUAD_BUTTON,
-    PEOPLE_MANAGEMENT_BUTTON,
     SHOW_SQUAD_REQUESTS_BUTTON,
     SQUAD_LIST_BUTTON,
     TREASURY_BUTTON,
@@ -64,10 +72,9 @@ export class ArmedForcesScene {
             buttons.push([JOIN_TO_ARMED_FORCES_BUTTON]);
         }*/
         buttons.push(
-            [MY_SQUAD_BUTTON],
+            [MY_SQUAD_BUTTON, TREASURY_BUTTON],
             [SQUAD_LIST_BUTTON],
-            [COMMANDER_IN_CHIEF_BUTTON],
-            [BACK_BUTTON]
+            [COMMANDER_IN_CHIEF_BUTTON, BACK_BUTTON]
         );
         ctx.sendPhoto(
             {
@@ -83,7 +90,7 @@ export class ArmedForcesScene {
 
     @Hears(JOIN_TO_ARMED_FORCES_BUTTON)
     async joinToArmedForces(@Ctx() ctx: BotContext, @Sender() sender) {
-        const tgUserId: string = sender.id;
+        const tgUserId: number = sender.id;
         const tgUsername: string = sender.username;
         const character = await this.characterService.getCharacterIdByTgId(
             sender.id
@@ -112,6 +119,29 @@ export class ArmedForcesScene {
         );
     }
 
+    @Hears(TREASURY_BUTTON)
+    async treasury(@Ctx() ctx: BotContext) {
+        const caption =
+            'Это сокровищница 💰 вашего королевства, здесь раз в сутки можно получать деньги. \nВаша выплата: 100 рублей.\n';
+
+        await ctx.sendPhoto(
+            {
+                source: ARMED_FORCES,
+            },
+            {
+                caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard([
+                    [
+                        Markup.button.callback(
+                            GET_A_WAGE_BUTTON,
+                            GET_A_WAGE_BUTTON
+                        ),
+                    ],
+                ]),
+            }
+        );
+    }
     @Hears(CREATE_SQUAD_BUTTON)
     async createSquad(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.CREATE_SQUAD_SCENE_ID);
@@ -122,26 +152,25 @@ export class ArmedForcesScene {
         this.showSquadsList(ctx);
     }
 
-    @Hears(SHOW_SQUAD_REQUESTS_BUTTON)
-    async squadRequests(@Ctx() ctx: BotContext) {
-        this.showArmedForcesRequest(ctx);
+    @Action(GET_A_WAGE_BUTTON)
+    async getAWageButton(@Ctx() ctx: BotContext) {
+        const caption = `Вам начислено:`;
+        await ctx.reply(caption);
     }
 
-    @Hears(MY_SQUAD_BUTTON)
-    async mySquad(@Ctx() ctx: BotContext) {
-        ctx.scene.enter(ENUM_SCENES_ID.SQUAD_SCENE_ID);
-    }
-    @Hears(COMMANDER_IN_CHIEF_BUTTON)
-    async comander(@Ctx() ctx: BotContext) {
-        ctx.scene.enter(ENUM_SCENES_ID.COMMANDER_IN_SCENE_ID);
+    @Action(/^(GET_SQUADS.*)$/)
+    async getSquads(@Ctx() ctx: BotContext) {
+        const [action, value] = ctx.callbackQuery['data'].split(':');
+        this.showSquadInformation(ctx, value);
     }
 
-    @Hears(BACK_BUTTON)
-    async home(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID);
+    @Action('BACK_TO_SQUADS_LIST')
+    async backToSquadList(@Ctx() ctx: BotContext) {
+        this.showSquadsList(ctx);
     }
-
-    @On('callback_query')
+    /**
+   * 
+   * @param ctx   @On('callback_query')
     public async callbackQuery(@Ctx() ctx: BotContext) {
         await ctx.answerCbQuery();
         if ('data' in ctx.callbackQuery) {
@@ -170,41 +199,19 @@ export class ArmedForcesScene {
             }
         }
     }
+   */
+    @Hears(MY_SQUAD_BUTTON)
+    async mySquad(@Ctx() ctx: BotContext) {
+        ctx.scene.enter(ENUM_SCENES_ID.SQUAD_SCENE_ID);
+    }
+    @Hears(COMMANDER_IN_CHIEF_BUTTON)
+    async comander(@Ctx() ctx: BotContext) {
+        ctx.scene.enter(ENUM_SCENES_ID.COMMANDER_IN_SCENE_ID);
+    }
 
-    async showArmedForcesRequest(ctx: BotContext) {
-        const armedForcesId = ctx.session.armedForcesId;
-        const query: PaginateQuery = {
-            limit: 10,
-            path: '',
-            filter: {
-                forces_id: `$eq:${armedForcesId}`,
-            },
-        };
-        const requests = await this.squadsService.findAllRequests(query);
-        let caption = '<strong><u>Заявки</u></strong>\n\n';
-        requests.data.map(
-            (request: ArmedForcesRequestEntity, index: number) => {
-                const requestBlock = `${index + 1})@${request.tgUsername} | ${request.character.background.name} | ${request.character.grimoire.magicName} | <code>${request.tgUserId}</code>\n`;
-                caption += requestBlock;
-            }
-        );
-        await ctx.reply(caption, {
-            parse_mode: 'HTML',
-            ...Markup.inlineKeyboard([
-                [
-                    Markup.button.callback(
-                        'Одобрить заявку по id',
-                        `APPROVAL_REQUEST`
-                    ),
-                ],
-                [
-                    Markup.button.callback(
-                        'Отклонить заявку по id',
-                        `REJECT_REQUEST`
-                    ),
-                ],
-            ]),
-        });
+    @Hears(BACK_BUTTON)
+    async home(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID);
     }
 
     async showSquadInformation(ctx: BotContext, squadId: string) {

@@ -9,7 +9,7 @@ export class CashEntity {
     @Column({
         type: 'int',
     })
-    cooper: number;
+    copper: number;
     @Column({
         type: 'int',
     })
@@ -17,7 +17,7 @@ export class CashEntity {
     @Column({
         type: 'int',
     })
-    eclevtrum: number;
+    electrum: number;
     @Column({
         type: 'int',
     })
@@ -27,6 +27,6 @@ export class CashEntity {
     })
     platinum: number;
 
-    @OneToOne(() => WalletEntity, (wallet) => wallet.cash)
-    wallet: WalletEntity;
+  /*  @OneToOne(() => WalletEntity, (wallet) => wallet.cash)
+    wallet: WalletEntity;*/
 }

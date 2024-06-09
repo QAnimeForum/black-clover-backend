@@ -2,25 +2,43 @@ import {
     Entity,
     PrimaryGeneratedColumn,
     OneToOne,
-    JoinColumn,
     CreateDateColumn,
     UpdateDateColumn,
+    Column,
 } from 'typeorm';
-import { CashEntity } from './cash.entity';
-import { BankAccountEntity } from './bank.account.entity';
 import { CharacterEntity } from '../../character/entity/character.entity';
 @Entity('wallet')
 export class WalletEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @OneToOne(() => CashEntity, (cash) => cash.wallet)
+    @Column({
+        type: 'int',
+    })
+    copper: number;
+    @Column({
+        type: 'int',
+    })
+    silver: number;
+    @Column({
+        type: 'int',
+    })
+    electrum: number;
+    @Column({
+        type: 'int',
+    })
+    gold: number;
+    @Column({
+        type: 'int',
+    })
+    platinum: number;
+    /*  @OneToOne(() => CashEntity, (cash) => cash.wallet)
     @JoinColumn({ name: 'cash_id', referencedColumnName: 'id' })
-    cash: CashEntity;
+    cash: CashEntity;*/
 
-    @OneToOne(() => BankAccountEntity, (account) => account.wallet)
+    /*   @OneToOne(() => BankAccountEntity, (account) => account.wallet)
     @JoinColumn({ name: 'bank_account_id', referencedColumnName: 'id' })
-    bankAccount: BankAccountEntity;
+    bankAccount: BankAccountEntity;*/
 
     @OneToOne(() => CharacterEntity)
     character: CharacterEntity;

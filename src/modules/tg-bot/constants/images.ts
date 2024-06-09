@@ -3,7 +3,7 @@ import { join } from 'path';
 //export const STATIC_IMAGE_BASE_PATH = `${join(__dirname, '..', '..', '..', '..', '..', '..', 'public')}`;
 export const STATIC_IMAGE_BASE_PATH = `${join(__dirname, '..', '..', '..', '..', '..', 'Assets', 'images')}`;
 export const HELLO_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/hello.jpg`;
-
+export const EXCHANGE_RATES_PATH = `${STATIC_IMAGE_BASE_PATH}/курсы валют.png`;
 export const SAMPLE_SPELL_URL =
     'https://telegra.ph/Grimuar-i-zaklinaniya-02-03#%D0%A8%D0%B0%D0%B1%D0%BB%D0%BE%D0%BD-%D0%B7%D0%B0%D0%BA%D0%BB%D0%B8%D0%BD%D0%B0%D0%BD%D0%B8%D1%8F';
 export const SAMPLE_GRIMOURE_URL =

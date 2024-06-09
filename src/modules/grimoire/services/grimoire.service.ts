@@ -17,6 +17,7 @@ import { SpellRequirementsEntity } from '../entity/spell.requirements.entity';
 import { SpellUpdateTypeDto } from '../dto/spell.update-type.dto';
 import { SpellCastEditDto } from '../dto/spell.update-cast-time.dto';
 import { where } from 'sequelize';
+import { SpellUpdateGoalsDto } from '../dto/spell.update-goals.dto';
 @Injectable()
 export class GrimoireService {
     constructor(
@@ -25,7 +26,9 @@ export class GrimoireService {
         @InjectRepository(GrimoireEntity)
         private readonly grimoireRepository: Repository<GrimoireEntity>,
         @InjectRepository(SpellEntity)
-        private readonly spellRepository: Repository<SpellEntity>
+        private readonly spellRepository: Repository<SpellEntity>,
+        @InjectRepository(SpellRequirementsEntity)
+        private readonly spellRequirementsRepository: Repository<SpellRequirementsEntity>
     ) {}
 
     public findAllGrimoires(
@@ -142,8 +145,13 @@ export class GrimoireService {
     }
 
     async findSpellById(id: string): Promise<SpellEntity> {
-        const entity = await this.spellRepository.findOneBy({
-            id: id,
+        const entity = await this.spellRepository.findOne({
+            where: {
+                id: id,
+            },
+            relations: {
+                requirements: true,
+            }
         });
         return entity;
     }
@@ -193,6 +201,12 @@ export class GrimoireService {
         return await this.spellRepository.save(spell);
     }
 
+    async updateCooldown(id: string, dto: SpellUpdateCooldownDto) {
+        const spell = await this.findSpellById(id);
+        spell.cooldown = dto.cooldown;
+        return await this.spellRepository.save(spell);
+    }
+
     async updateSpellDescription(id: string, dto: SpellUpdateDescriptionDto) {
         const spell = await this.findSpellById(id);
         spell.description = dto.description;
@@ -227,7 +241,30 @@ export class GrimoireService {
         return await this.spellRepository.save(spell);
     }
 
+    async updateSpellGoals(id: string, dto: SpellUpdateGoalsDto) {
+        const spell = await this.findSpellById(id);
+        spell.goals = dto.goals;
+        return await this.spellRepository.save(spell);
+    }
+
+    async updateMinimalLevel(id: string, dto: SpellUpdateMinimalLevel) {
+        const spell = await this.findSpellById(id);
+        this.spellRequirementsRepository.findBy({
+            id: spell.requirementsId,
+        });
+        spell.requirements.minimalLevel = dto.minimalLevel;
+        return await this.spellRequirementsRepository.save(spell.requirements);
+    }
+
     async deleteSpell(id: string) {
         return await this.spellRepository.delete(id);
     }
+}
+
+export class SpellUpdateMinimalLevel {
+    minimalLevel: number;
+}
+
+export class SpellUpdateCooldownDto {
+    cooldown: string;
 }

@@ -51,7 +51,7 @@ export class CharacterCreateDto {
         };
     };
     cash?: {
-        cooper?: number;
+        copper?: number;
         silver?: number;
         eclevtrum?: number;
         gold?: number;

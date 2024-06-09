@@ -1,8 +1,8 @@
 export class Wallet {
     id: number;
-    cooper: number;
+    copper: number;
     silver: number;
-    eclevtrum: number;
+    ecletrum: number;
     gold: number;
     platinum: number;
 }

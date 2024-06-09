@@ -8,12 +8,14 @@ import { CharacterEntity } from '../character/entity/character.entity';
 import { UserEntity } from '../user/entities/user.entity';
 import { ManaSkinEntity } from './entity/mana.skin.entity';
 import { ManaZoneEntity } from './entity/mana.zone.entity';
+import { SpellRequirementsEntity } from './entity/spell.requirements.entity';
 @Module({
     imports: [
         TypeOrmModule.forFeature(
             [
                 GrimoireEntity,
                 SpellEntity,
+                SpellRequirementsEntity,
                 UserEntity,
                 CharacterEntity,
                 ManaSkinEntity,

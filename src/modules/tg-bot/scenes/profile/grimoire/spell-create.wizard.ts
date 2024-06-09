@@ -353,7 +353,7 @@ export class SpellCreateWizard {
             const minLevel = `<strong>Минимальный уровень персонажа: </strong> ${spell.minLevel}`;
             const requipments = '<strong>Требования: </strong>';
             const description = `<strong>Описание</strong>\n ${spell.description}`;
-            const template = `${title}\n${name}\n${type}\n${damage}\n${range}\n${duration}\n${cost}\n${castTime}\n${cooldown}\b${goals}\n${minLevel}\n${requipments}${description}`;
+            const template = `${title}\n${name}\n${type}\n${damage}\n${range}\n${duration}\n${cost}\n${castTime}\n${cooldown}\n${goals}\n${minLevel}\n${requipments}\n${description}`;
             await ctx.reply(template, {
                 parse_mode: 'HTML',
             });

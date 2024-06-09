@@ -16,16 +16,32 @@ export class MoneyLogEntity {
     @Column({
         type: 'varchar',
     })
-    recipient: string;
+    recipient: number;
     @Column({
         type: 'int',
     })
-    sum: number;
+    copper: number;
+    @Column({
+        type: 'int',
+    })
+    silver: number;
+    @Column({
+        type: 'int',
+    })
+    electrum: number;
+    @Column({
+        type: 'int',
+    })
+    gold: number;
+    @Column({
+        type: 'int',
+    })
+    platinum: number;
 
     @Column({
         type: 'varchar',
     })
-    notes: string;
+    note: string;
 
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;

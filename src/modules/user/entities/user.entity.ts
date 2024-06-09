@@ -6,7 +6,7 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CharacterEntity } from '../../character/entity/character.entity';
-@Entity('user')
+@Entity('game_user')
 export class UserEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -18,10 +18,11 @@ export class UserEntity {
     isAdmin: boolean;
 
     @Column({
-        type: 'varchar',
+        type: 'int',
         nullable: false,
+        name: 'tg_user_id',
     })
-    tgUserId: string;
+    tgUserId: number;
 
     @OneToOne(() => CharacterEntity)
     @JoinColumn({

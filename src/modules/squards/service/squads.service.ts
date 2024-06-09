@@ -109,12 +109,10 @@ export class SquadsService {
     public async acceptMember(
         character: CharacterEntity,
         armedForces: ArmedForcesEntity,
-        tgUserId: string,
+        tgUserId: number,
         requestStatus: ENUM_ARMED_FORCES_REQUEST
     ) {
         const member = new ArmedForcesMemberEntity();
-        console.log(character);
-        console.log(armedForces);
         member.armedForcesId = armedForces.id;
         member.armedForces = armedForces;
         member.character = character;
@@ -133,7 +131,7 @@ export class SquadsService {
         this.changeRequestStatus(tgUserId, requestStatus);
     }
     public async changeRequestStatus(
-        tgUserId: string,
+        tgUserId: number,
         requestStatus: ENUM_ARMED_FORCES_REQUEST
     ) {
         await this.connection
@@ -261,6 +259,35 @@ export class SquadsService {
         await this.squadMemberRepository.delete(id);
     }
 
+    async findAllArmedForcesMembers(
+        query: PaginateQuery
+    ): Promise<Paginated<any>> {
+        return paginate(query, this.armedForcesMemberRepository, {
+            sortableColumns: ['id', 'character'],
+            nullSort: 'last',
+            defaultSortBy: [['id', 'DESC']],
+            searchableColumns: ['rank.name'],
+            relations: [
+                'character',
+                'character.background',
+                'character.grimoire',
+                'rank',
+            ],
+            select: [
+                'id',
+                'character',
+                'armedForcesId',
+                'rank.name',
+                'character.id',
+                'character.grimoire.magicName',
+                'character.background',
+                'character.background.name',
+            ],
+            filterableColumns: {
+                armedForcesId: true,
+            },
+        });
+    }
     async findAllArmedForces(
         query: PaginateQuery
     ): Promise<Paginated<ArmedForcesEntity>> {

@@ -130,7 +130,7 @@ export class BackgroundService {
     async updateUserAppearance(dto: UpdateAppearanceDto) {
         const userEntity = await this.userRepository.findOne({
             where: {
-                tgUserId: dto.telegramId.toString(),
+                tgUserId: dto.telegramId,
             },
             relations: {
                 character: true,
@@ -147,7 +147,7 @@ export class BackgroundService {
     async updateUserName(dto: UpdateNameDto) {
         const userEntity = await this.userRepository.findOne({
             where: {
-                tgUserId: dto.telegramId.toString(),
+                tgUserId: dto.telegramId,
             },
             relations: {
                 character: true,
@@ -165,7 +165,7 @@ export class BackgroundService {
     async updateUserGoals(dto: UpdateGoalsDto) {
         const userEntity = await this.userRepository.findOne({
             where: {
-                tgUserId: dto.telegramId.toString(),
+                tgUserId: dto.telegramId,
             },
             relations: {
                 character: true,
@@ -182,7 +182,7 @@ export class BackgroundService {
     async updateUserHistory(dto: UpdateHistoryDto) {
         const userEntity = await this.userRepository.findOne({
             where: {
-                tgUserId: dto.telegramId.toString(),
+                tgUserId: dto.telegramId,
             },
             relations: {
                 character: true,
@@ -200,7 +200,7 @@ export class BackgroundService {
     async updateUserHobbies(dto: UpdateHobbiesDto) {
         const userEntity = await this.userRepository.findOne({
             where: {
-                tgUserId: dto.telegramId.toString(),
+                tgUserId: dto.telegramId,
             },
             relations: {
                 character: true,
@@ -218,7 +218,7 @@ export class BackgroundService {
     async updateUserWeakness(dto: UpdateWeaknessDto) {
         const userEntity = await this.userRepository.findOne({
             where: {
-                tgUserId: dto.telegramId.toString(),
+                tgUserId: dto.telegramId,
             },
             relations: {
                 character: true,
@@ -236,7 +236,7 @@ export class BackgroundService {
     async updateWorldwiew(dto: UpdateWorldviewDto) {
         const userEntity = await this.userRepository.findOne({
             where: {
-                tgUserId: dto.telegramId.toString(),
+                tgUserId: dto.telegramId,
             },
             relations: {
                 character: true,
@@ -254,7 +254,7 @@ export class BackgroundService {
     async updateCharacterTraits(dto: UpdateCharacterTraitsDto) {
         const userEntity = await this.userRepository.findOne({
             where: {
-                tgUserId: dto.telegramId.toString(),
+                tgUserId: dto.telegramId,
             },
             relations: {
                 character: true,
@@ -272,7 +272,7 @@ export class BackgroundService {
     async updateIdeals(dto: UpdateCharacterIdealsDto) {
         const userEntity = await this.userRepository.findOne({
             where: {
-                tgUserId: dto.telegramId.toString(),
+                tgUserId: dto.telegramId,
             },
             relations: {
                 character: true,

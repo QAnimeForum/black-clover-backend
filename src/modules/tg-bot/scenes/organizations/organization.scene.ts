@@ -19,6 +19,7 @@ import {
     MAGIC_PARLAMENT_BUTTON,
     MINES_BUTTON,
     SHOP_BUTTON,
+    SHOPPING_DISTRICT_BUTTON,
 } from '../../constants/button-names.constant';
 
 @Scene(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID)
@@ -49,8 +50,7 @@ export class OrganizationsScene {
                 caption,
                 parse_mode: 'HTML',
                 ...Markup.keyboard([
-                    [SHOP_BUTTON, BLACK_MARKET_BUTTON],
-                    [BAR_BUTTON, CASINO_BUTTON],
+                    [SHOPPING_DISTRICT_BUTTON],
                     [FIELDS_BUTTON, MINES_BUTTON],
                     [MAGIC_PARLAMENT_BUTTON, ARMED_FORCES_BUTTON],
                     [BACK_BUTTON],
@@ -59,19 +59,9 @@ export class OrganizationsScene {
         );
     }
 
-    @Hears(SHOP_BUTTON)
-    async shop(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.SHOP_SCENE_ID);
-    }
-
-    @Hears(BLACK_MARKET_BUTTON)
-    async blackMarket(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.BLACK_MARKET_SCENE_ID);
-    }
-
-    @Hears(CASINO_BUTTON)
-    async casino(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.CASINO_SCENE_ID);
+    @Hears(SHOPPING_DISTRICT_BUTTON)
+    async shopDistrict(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.SHOPPING_DISTRICT_SCENE_ID);
     }
 
     @Hears(FIELDS_BUTTON)

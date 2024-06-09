@@ -5,7 +5,7 @@ import { DataSource, EntityManager, Repository } from 'typeorm';
 import { BackgroundEntity } from '../entity/background.entity';
 import { RaceEntity } from '../../race/entity/race.entity';
 import { CreatePlayableCharacterDto } from '../dto/create-playable-character.dto';
-import { GetCharacteristicsDto } from '../dto/query-character-info.dto';
+
 import { CharacterCharacteristicsEntity } from '../entity/character.characteristics.entity';
 import { ENUM_CHARCACTER_TYPE } from '../constants/character.type.enum';
 import { UserEntity } from '../../user/entities/user.entity';
@@ -15,11 +15,11 @@ import { InventoryService } from 'src/modules/items/service/inventory.service';
 import { CharacteristicService } from './characteristics.service';
 import { BackgroundService } from './background.service';
 import { MapService } from 'src/modules/map/service/map.service';
-import { WalletService } from './wallet.service';
 import { getFileMimeType } from 'src/utils/utils';
 import { join } from 'path';
 import fs from 'fs';
 import { KNIGHT_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
+import { WalletService } from 'src/modules/money/wallet.service';
 @Injectable()
 export class CharacterService {
     constructor(
@@ -110,7 +110,7 @@ export class CharacterService {
         return fileName;
     }
 
-    getCharacterBacgroundByTgId(telegramId: string) {
+    getCharacterBacgroundByTgId(telegramId: number) {
         return this.userRepository.findOne({
             where: {
                 tgUserId: telegramId,
@@ -126,7 +126,7 @@ export class CharacterService {
         });
     }
 
-    async getCharacterIdByTgId(telegramId: string) {
+    async getCharacterIdByTgId(telegramId: number) {
         return (
             await this.userRepository.findOne({
                 where: {
@@ -138,7 +138,7 @@ export class CharacterService {
             })
         ).character;
     }
-    async findBackgroundByTgId(telegramId: string) {
+    async findBackgroundByTgId(telegramId: number) {
         const user = await this.userRepository.findOne({
             where: {
                 tgUserId: telegramId,
@@ -205,7 +205,7 @@ export class CharacterService {
         return entity;
     }
 
-    async findCharacterByTgId(tgId: string) {
+    async findCharacterByTgId(tgId: number) {
         const entity = await this.userRepository.findOne({
             where: {
                 tgUserId: tgId,
@@ -222,7 +222,7 @@ export class CharacterService {
         });
     }
 
-    async findFullCharacterInfoByTgId(tgId: string): Promise<CharacterEntity> {
+    async findFullCharacterInfoByTgId(tgId: number): Promise<CharacterEntity> {
         const entity = await this.userRepository.findOne({
             where: {
                 tgUserId: tgId,
@@ -249,26 +249,10 @@ export class CharacterService {
         return entity.character;
     }
 
-    async getWalletByCharacter(tg_id: string) {
+    async getInventoryByCharacter(tgId: number) {
         const entity = await this.userRepository.findOne({
             where: {
-                tgUserId: tg_id,
-            },
-            relations: {
-                character: {
-                    wallet: {
-                        cash: true,
-                    },
-                },
-            },
-        });
-        return entity;
-    }
-
-    async getInventoryByCharacter(tg_id: string) {
-        const entity = await this.userRepository.findOne({
-            where: {
-                tgUserId: tg_id,
+                tgUserId: tgId,
             },
             relations: {
                 character: {
@@ -285,16 +269,16 @@ export class CharacterService {
         return entity;
     }
     async changeCharacterName(dto: CharacterNameEditDto) {
-        const character = (await this.getCharacterBacgroundByTgId(dto.id))
+        const character = (await this.getCharacterBacgroundByTgId(dto.tgId))
             .character;
         character.background.name = dto.name;
         this.backgroundRepository.save(character.background);
     }
 
-    async getStateByTgId(tg_id: string) {
+    async getStateByTgId(tgId: number) {
         const entity = await this.userRepository.findOne({
             where: {
-                tgUserId: tg_id,
+                tgUserId: tgId,
             },
             relations: {
                 character: {

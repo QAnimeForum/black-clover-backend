@@ -19,7 +19,7 @@ export class BankAccountEntity {
     @Column({
         type: 'int',
     })
-    cooper: number;
+    copper: number;
     @Column({
         type: 'int',
     })
@@ -36,9 +36,9 @@ export class BankAccountEntity {
         type: 'int',
     })
     platinum: number;
-
+/*
     @OneToOne(() => WalletEntity, (wallet) => wallet.bankAccount)
-    wallet: WalletEntity;
+    wallet: WalletEntity;*/
 
     @ManyToOne(() => BankEntity, (bank) => bank.accounts)
     @JoinColumn({ name: 'bank_id', referencedColumnName: 'id' })

@@ -9,7 +9,6 @@ import { BotContext } from '../../interfaces/bot.context';
 import { UseFilters } from '@nestjs/common';
 import { CharacterService } from '../../../character/services/character.service';
 import { Markup } from 'telegraf';
-import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from 'src/common/pagination/constants/pagination.enum.constant';
 import { GrimoireService } from '../../../grimoire/services/grimoire.service';
 import {
     ALCOHOL_BUTTON,
@@ -18,7 +17,6 @@ import {
     BACKGROUND_BUTTON,
     CREATE_SPELL_BUTTON,
     EDIT_GRIMOIRE_BUTTON,
-    EDIT_MAGIC_COLOR_BUTTON,
     EDIT_MAGIC_NAME_BUTTON,
     EDIT_SPELL_BUTTON,
     FOOD_BUTTON,
@@ -176,13 +174,8 @@ export class ProfileScene {
                             EDIT_MAGIC_NAME_BUTTON,
                             EDIT_MAGIC_NAME_BUTTON
                         ),
-                    ],
-                    [
-                        Markup.button.callback(
-                            EDIT_MAGIC_COLOR_BUTTON,
-                            EDIT_MAGIC_COLOR_BUTTON
-                        ),
-                    ],
+                    ]
+
                 ]),
             }
         );

@@ -33,7 +33,7 @@ export class HomeScene {
 
     @SceneEnter()
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
-    async enter(@Ctx() ctx: BotContext, @Sender('id') tgId: string) {
+    async enter(@Ctx() ctx: BotContext, @Sender('id') tgId: number) {
         const isShowAdminButton =
             await this.userSerivce.isShowAdminButton(tgId);
         const caption = 'Привет, путник!';
@@ -44,13 +44,12 @@ export class HomeScene {
             [PROFILE_BUTTON, ORGANIZATIONS_BUTTON, MAP_BUTTON],
             [ALL_SPIRITS_BUTTON, ALL_DEVILS_BUTTON],
             [ANNOUNCEMENTS_BUTTON, QUESTS_BUTTON, HELP_BUTTON],
-            [ADMIN_PANEL_BUTTON]
+            [ADMIN_PANEL_BUTTON],
         ];
         if (isShowAdminButton) {
             buttons.push([ADMIN_PANEL_BUTTON]);
         }
-        console.log(buttons);
-        ctx.sendPhoto(
+        await ctx.sendPhoto(
             {
                 source: HELLO_IMAGE_PATH,
             },

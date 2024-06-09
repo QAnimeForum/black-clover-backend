@@ -24,9 +24,6 @@ import { Composer, Markup, Scenes, Telegraf } from 'telegraf';
 import { MapService } from 'src/modules/map/service/map.service';
 import { RaceService } from 'src/modules/race/race.service';
 import { WORLD_MAP_IMAGE_PATH } from '../../constants/images';
-import { CharacterCreateDto } from 'src/modules/character/dto/character.create.dto';
-import { ValidateAnswerPipe } from '../../pipes/validate-answer.pipe';
-import Joi from 'joi';
 import { message } from 'telegraf/filters';
 import { LOGGER_INFO } from '../../utils/logger';
 import { GO_TO_HOME } from '../../constants/button-names.constant';
@@ -244,7 +241,7 @@ export class CharacterCreateWizard {
             ctx.scene.session.character.stateName = data[1];
 
             const user = await this.userService.createUser({
-                tgUserId: ctx.update.callback_query.from.id.toString(),
+                tgUserId: ctx.update.callback_query.from.id,
                 character: {
                     name: ctx.scene.session.character.name,
                     age: ctx.scene.session.character.age,

@@ -10,7 +10,7 @@ export class UserCreateDto {
     @IsNotEmpty()
     @IsUUID('4')
     readonly role: string;*/
-    tgUserId: string;
+    tgUserId: number;
 
     character: CreatePlayableCharacterDto;
     role: ENUM_ROLE_TYPE;

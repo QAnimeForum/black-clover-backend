@@ -26,7 +26,6 @@ import { GearEntity } from '../items/entity/gear.entity';
 import { UserEntity } from '../user/entities/user.entity';
 import { BackgroundService } from './services/background.service';
 import { CharacteristicService } from './services/characteristics.service';
-import { WalletService } from './services/wallet.service';
 import { GrimoireModule } from '../grimoire/grimoire.module';
 import { ItemsModule } from '../items/items.module';
 import { MapModule } from '../map/map.module';
@@ -72,17 +71,7 @@ import { MoneyModule } from '../money/money.module';
         MoneyModule,
     ],
     controllers: [CharacterController],
-    providers: [
-        BackgroundService,
-        CharacteristicService,
-        WalletService,
-        CharacterService,
-    ],
-    exports: [
-        CharacterService,
-        BackgroundService,
-        CharacteristicService,
-        WalletService,
-    ],
+    providers: [BackgroundService, CharacteristicService, CharacterService],
+    exports: [CharacterService, BackgroundService, CharacteristicService],
 })
 export class CharacterModule {}

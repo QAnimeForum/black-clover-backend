@@ -57,7 +57,15 @@ export const GRIMOIRE_BUTTON = '📕 Гримуар';
 export const CREATE_SPELL_BUTTON = '✏️Создать заклинание';
 export const EDIT_GRIMOIRE_BUTTON = '✏️Редактировать гримуар';
 export const EDIT_MAGIC_NAME_BUTTON = '✏️Изменить название магии';
-export const EDIT_MAGIC_COLOR_BUTTON = '✏️Изменить цвет магии';
+export const EDIT_SPELL_NAME_BUTTON = '✏️Изменить название';
+export const EDIT_SPELL_TYPE_BUTTON = '✏️Изменить тип';
+export const EDIT_SPELL_DAMAGE_BUTTON = '✏️Изменить урон';
+export const EDIT_SPELL_DURATION_BUTTON = '✏️Изменить продолжительность';
+export const EDIT_SPELL_COST_BUTTON = '✏️Изменить стоимость';
+export const EDIT_SPELL_COOLDOWN_BUTTON = '✏️Изменить откат';
+export const EDIT_SPELL_GOALS_BUTTON = '✏️Изменить цели';
+export const EDIT_SPELL_MINIMAL_LEVEL_BUTTON = '✏️Изменить мин. уровень';
+export const EDIT_SPELL_DESCRIPTION_BUTTON = '✏️Изменить описание';
 //INVENTORY
 export const INVENTORY_BUTTON = '🎒Инвентарь';
 export const ALL_INVENTORY_BUTTON = '🎒показать весь инвентарь';
@@ -76,18 +84,27 @@ export const MAP_BUTTON = '🗺Карта';
 export const MINERALS_BUTTON = '🗿Каталог минералов';
 //MONEY
 export const WALLET_BUTTON = '👛Кошелёк';
+
+export const EXCHANGE_RATES_BUTTON = 'Курс валют';
 //WORK
 export const WORKS_BUTTON = 'Работа';
 export const ORGANIZATIONS_BUTTON = '🏢Организации';
 export const CHURCH_BUTTON = '💒Церковь';
 export const MINES_BUTTON = '💎Шахты';
 export const FIELDS_BUTTON = '🏡Поля';
+export const SHOPPING_DISTRICT_BUTTON = '🛍Торговый квартал';
+export const SHOP_BUTTON = '🛍Магазин';
+export const BLACK_MARKET_BUTTON = '🛍Чёрный рынок';
+export const BAR_BUTTON = '🍸Бар';
+export const CASINO_BUTTON = '🎰Казино';
+
 //ARMED FORCES
-export const ARMED_FORCES_BUTTON = '🧙Армия';
+export const ARMED_FORCES_BUTTON = '🧙Военный квартал';
 export const TREASURY_BUTTON = '💰Казна';
+export const GET_A_WAGE_BUTTON = 'Получить выплаты';
 export const SHOW_SQUAD_REQUESTS_BUTTON = '📔 Заявки';
 export const COMMANDER_IN_CHIEF_BUTTON = '📘меню главнокомандующего';
-export const PEOPLE_MANAGEMENT_BUTTON = 'Управление людьми';
+export const PEOPLE_MANAGEMENT_BUTTON = '👤Управление людьми';
 export const JOIN_TO_ARMED_FORCES_BUTTON = '🛡Вступить';
 export const CREATE_SQUAD_BUTTON = '🛡Создать отряд';
 export const JOIN_TO_SQUAD_BUTTON = '🛡Подать заявку в отряд';
@@ -105,10 +122,6 @@ export const EXPEL_FROM_SQUAD_BUTTON = 'Изгнать из клана';
 export const ARMED_FORCES_CONTROL_BUTTON = '⚙️Управление вооружёнными силами';
 //MAGIC PARLAMENT
 export const MAGIC_PARLAMENT_BUTTON = '⚖️Магический парламент';
-export const SHOP_BUTTON = '🛍Магазин';
-export const BLACK_MARKET_BUTTON = '🛍Чёрный рынок';
-export const BAR_BUTTON = '🍸Бар';
-export const CASINO_BUTTON = '🎰Казино';
 export const PRIAZON_BUTTON = '#️⃣Тюрьма';
 export const ALL_COURY_CASE_BUTTON = '⚖️Все судебные заявки';
 export const MY_COURY_CASE_BUTTON = '⚖️Мои судебные заявки';
@@ -116,6 +129,8 @@ export const REQUEST_TO_PARLAMENT_BUTTON = '✏️Написать судебн�
 // ADMIN
 export const ADMIN_PANEL_BUTTON = '⚙️Панель админа';
 export const PERMITIONS_BUTTON = '👤Выдача прав';
+export const ITEMS_BUTTON = '🎒Предметы';
+export const GAMES_BUTTON = '🎰Казино';
 export const MONEY_BUTTON = '🏦Деньги';
 export const TRANSACTIONS_BUTTON = '💸Все транзакции';
 export const GIVE_MONEY_BUTTON = '💸Начислить деньги';

@@ -16,7 +16,7 @@ export class SalaryEntity {
     @Column({
         type: 'int',
     })
-    cooper: number;
+    copper: number;
 
     @Column({
         type: 'int',

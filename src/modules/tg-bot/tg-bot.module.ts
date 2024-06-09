@@ -59,11 +59,28 @@ import {
     AdminScene,
     DeleteAdminWizard,
 } from './scenes/admin/admin.scene';
-import { AdminMoneyScene } from './scenes/admin/money.scene';
+import { AddMoneyWizard, AdminMoneyScene } from './scenes/admin/money.scene';
 import { AdminGrimoireScene } from './scenes/admin/admin.grimoire.scene';
 import { AcceptRequestWizard } from './scenes/organizations/accept.request.wizard';
-import { CommanderInChiefScene } from './scenes/organizations/comander.in.chief.scene';
+import {
+    ChangeRankScene,
+    CommanderInChiefScene,
+} from './scenes/organizations/comander.in.chief.scene';
 import { SquadScene } from './scenes/organizations/squad.scene';
+import { ShopScene } from './scenes/organizations/shop/shop.scene';
+import { BLackMarketScene } from './scenes/organizations/shop/black.market.scene';
+import { CasinoScene } from './scenes/organizations/casino.scene';
+import { BarScene } from './scenes/organizations/shop/bar.scene';
+import { FieldsScene } from './scenes/organizations/fields.scene';
+import { ShoppingDistrictScene } from './scenes/organizations/shopping.district.scene';
+import { SpellNameEditWizard } from './scenes/profile/grimoire/spell-name-edit.wizard';
+import { SpellTypeEditWizard } from './scenes/profile/grimoire/spell-type-edit.wizard';
+import { SpellDescriptionEditWizard } from './scenes/profile/grimoire/spell-description-edit.wizard';
+import { SpellCostEditWizard } from './scenes/profile/grimoire/spell-cost-edit.wizard';
+import { SpellMinimalLevelEditWizard } from './scenes/profile/grimoire/spell-minimal-level-edit.wizard';
+import { SpellDurationEditWizard } from './scenes/profile/grimoire/spell-duration-edit.wizard';
+import { SpellGoalsEditWizard } from './scenes/profile/grimoire/spell-goals-edit.wizard';
+import { SpellCooldownEditWizard } from './scenes/profile/grimoire/spell-cooldown-edit.wizard';
 @Module({
     imports: [
         ThrottlerModule.forRoot([
@@ -107,6 +124,7 @@ import { SquadScene } from './scenes/organizations/squad.scene';
         DeleteAdminWizard,
         AnnouncementCreateWizard,
         AdminMoneyScene,
+        AddMoneyWizard,
         //Devils
         AllDevilsScene,
         MyDevilsScene,
@@ -125,6 +143,14 @@ import { SquadScene } from './scenes/organizations/squad.scene';
         SquadScene,
         CommanderInChiefScene,
         MinesScene,
+        CasinoScene,
+        BarScene,
+        FieldsScene,
+        ChangeRankScene,
+        ShoppingDistrictScene,
+        //items
+        ShopScene,
+        BLackMarketScene,
 
         //profile
         CharacterCreateWizard,
@@ -153,6 +179,15 @@ import { SquadScene } from './scenes/organizations/squad.scene';
         GrimoreScene,
         SpellCreateWizard,
         MagicNameEditWizard,
+
+        SpellNameEditWizard,
+        SpellDescriptionEditWizard,
+        SpellTypeEditWizard,
+        SpellCostEditWizard,
+        SpellDurationEditWizard,
+        SpellGoalsEditWizard,
+        SpellMinimalLevelEditWizard,
+        SpellCooldownEditWizard,
         {
             provide: APP_GUARD,
             useClass: TelegrafThrottlerGuard,

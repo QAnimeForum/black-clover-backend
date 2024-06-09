@@ -33,7 +33,7 @@ export default class ArmedForcesSeeder implements Seeder {
             const rank = ranksDto[i];
             /* const salary = (
                 await salaryRepository.insert({
-                    cooper: ranksDto[i].salary.cooper,
+                    copper: ranksDto[i].salary.copper,
                     platinum: ranksDto[i].salary.platinum,
                     eclevtrum: ranksDto[i].salary.eclevtrum,
                     silver: ranksDto[i].salary.silver,

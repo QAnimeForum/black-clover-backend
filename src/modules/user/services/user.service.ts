@@ -22,7 +22,7 @@ export class UserService {
         });
     }
 
-    async findUserByTelegramId(telegramId: string): Promise<UserEntity> {
+    async findUserByTelegramId(telegramId: number): Promise<UserEntity> {
         return await this.userRepository.findOneBy({
             tgUserId: telegramId,
         });
@@ -78,14 +78,14 @@ export class UserService {
         );
         return user;
     }
-    async exists(telegramUserId: string): Promise<boolean> {
+    async exists(telegramUserId: number): Promise<boolean> {
         return this.userRepository.exists({
             where: {
                 tgUserId: telegramUserId,
             },
         });
     }
-    async isShowAdminButton(userTgId: string): Promise<boolean> {
+    async isShowAdminButton(userTgId: number): Promise<boolean> {
         const user = await this.userRepository.findOneBy({
             tgUserId: userTgId,
         });
