@@ -51,7 +51,7 @@ export class WalletService {
                     }
                 );
                 const moneyLogEntity = new MoneyLogEntity();
-                moneyLogEntity.recipient = dto.tgId;
+                moneyLogEntity.recipient = dto.tgId.toString();
                 moneyLogEntity.sender = `Начислил админ ${dto.adminId.toString()}`;
                 moneyLogEntity.copper = dto.copper;
                 moneyLogEntity.silver = dto.silver;
@@ -88,9 +88,9 @@ export class WalletService {
     }
 
     async findWalletByUserTgId(tgUserId: number): Promise<WalletEntity> {
-        const wallets: Array<WalletEntity> = await this.walletRepository.query(
-            `select wallet.* from wallet JOIN character ON wallet.id = character.wallet_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = ${tgUserId}`
-        );
+        const query: string = `select wallet.* from wallet JOIN character ON wallet.id = character.wallet_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = ${tgUserId}`;
+        const wallets: Array<WalletEntity> =
+            await this.walletRepository.query(query);
         if (wallets.length !== 1) {
             return;
         }

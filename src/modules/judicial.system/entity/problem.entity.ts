@@ -11,11 +11,6 @@ import {
 } from 'typeorm';
 import { CharacterEntity } from '../../character/entity/character.entity';
 
-export enum ProblemType {
-    Traditional = 'Traditional',
-    Interaction = 'Interaction',
-    SubmitAnswer = 'SubmitAnswer',
-}
 
 export enum ENUM_PROBLEM_STATUS {
     DRAFT = 'DRAFT',
@@ -33,9 +28,6 @@ export class ProblemEntity {
     @Index({ unique: true })
     displayId: number;
 
-    @Column({ type: 'enum', enum: ProblemType })
-    type: ProblemType;
-
     @Column({ type: 'boolean' })
     isPublic: boolean;
 
@@ -51,7 +43,7 @@ export class ProblemEntity {
 
     @Column({
         name: 'creator_id',
-        type: 'string',
+        type: 'uuid',
     })
     creatorId: string;
 
@@ -71,7 +63,6 @@ export class ProblemEntity {
 
     @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
     updatedAt: Date;
-
 }
 
 /**

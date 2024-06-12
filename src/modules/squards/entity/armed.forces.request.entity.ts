@@ -24,6 +24,12 @@ export class ArmedForcesRequestEntity {
     armedForces: ArmedForcesEntity;
 
     @Column({
+        name: 'forces_id',
+        type: 'uuid',
+    })
+    forcesId: string;
+
+    @Column({
         type: 'varchar',
     })
     tgUsername: string;
@@ -40,6 +46,11 @@ export class ArmedForcesRequestEntity {
     })
     character: CharacterEntity;
 
+    @Column({
+        name: 'character_id',
+        type: 'uuid',
+    })
+    characterId: string;
     @Column({
         type: 'enum',
         enum: ENUM_ARMED_FORCES_REQUEST,

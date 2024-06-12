@@ -1,4 +1,12 @@
-import { Ctx, Hears, On, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
+import {
+    Action,
+    Ctx,
+    Hears,
+    On,
+    Scene,
+    SceneEnter,
+    Sender,
+} from 'nestjs-telegraf';
 import { MINES_PATH, STATIC_IMAGE_BASE_PATH } from '../../constants/images';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
@@ -21,11 +29,13 @@ import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import { SquadsService } from 'src/modules/squards/service/squads.service';
 import { CharacterService } from 'src/modules/character/services/character.service';
 import { ArmedForcesRequestEntity } from 'src/modules/squards/entity/armed.forces.request.entity';
+import { UserService } from 'src/modules/user/services/user.service';
 
 @Scene(ENUM_SCENES_ID.COMMANDER_IN_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class CommanderInChiefScene {
     constructor(
+        private readonly userService: UserService,
         private readonly characterService: CharacterService,
         private readonly tgBotService: TgBotService,
         private readonly squadsService: SquadsService,
@@ -56,40 +66,86 @@ export class CommanderInChiefScene {
         });
         const title = '<strong><u>СПИСОК </u></strong>\n';
         let caption = title;
+        const keyboard = [
+            [
+                Markup.button.callback('Сортировать по рангу', 'SORT_BY_RANK'),
+                Markup.button.callback(
+                    'Сортировать по должности',
+                    'SORT_BY_JOB_TITLE'
+                ),
+            ],
+            [
+                Markup.button.callback('Сортировать по имени', 'SORT_BY_NAME'),
+                Markup.button.callback(
+                    'Сортировать по отряду',
+                    'SORT_BY_SQUAD'
+                ),
+            ],
+        ];
         members.data.map((member, index) => {
-            console.log(member);
             const item = `${index + 1}) ${member.character.background.name}, ${member.character.grimoire.magicName}, ${member.rank.name}`;
             caption += item;
+            keyboard.push([
+                Markup.button.callback(
+                    member.character.background.name,
+                    `MEMBER:${member.character.id}`
+                ),
+            ]);
         });
+
         await ctx.reply(caption, {
             parse_mode: 'HTML',
-            ...Markup.inlineKeyboard([
-                [
-                    Markup.button.callback(
-                        'Сортировать по рангу',
-                        'SORT_BY_RANK'
-                    ),
-                    Markup.button.callback(
-                        'Сортировать по должности',
-                        'SORT_BY_JOB_TITLE'
-                    ),
-                ],
-                [
-                    Markup.button.callback(
-                        'Сортировать по имени',
-                        'SORT_BY_NAME'
-                    ),
-                    Markup.button.callback(
-                        'Сортировать по отряду',
-                        'SORT_BY_SQUAD'
-                    ),
-                ],
-                [Markup.button.callback('Изменить ранг', 'CHANGE_RANK')],
-                [Markup.button.callback('Наградить из казны', 'REWARD')],
-            ]),
+            ...Markup.inlineKeyboard(keyboard),
         });
     }
 
+    @Action(PEOPLE_MANAGEMENT_BUTTON)
+    async peoplesAction(@Ctx() ctx: BotContext) {
+        ctx.answerCbQuery();
+        const state = await this.characterService.getStateByTgId(ctx.from.id);
+        const armedForces =
+            await this.squadsService.findArmedForcesByState(state);
+
+        const members = await this.squadsService.findAllArmedForcesMembers({
+            path: '',
+            filter: {
+                armedForcesId: `$eq:${armedForces.id}`,
+            },
+        });
+        const title = '<strong><u>СПИСОК </u></strong>\n';
+        let caption = title;
+        const keyboard = [
+            [
+                Markup.button.callback('Сортировать по рангу', 'SORT_BY_RANK'),
+                Markup.button.callback(
+                    'Сортировать по должности',
+                    'SORT_BY_JOB_TITLE'
+                ),
+            ],
+            [
+                Markup.button.callback('Сортировать по имени', 'SORT_BY_NAME'),
+                Markup.button.callback(
+                    'Сортировать по отряду',
+                    'SORT_BY_SQUAD'
+                ),
+            ],
+        ];
+        members.data.map((member, index) => {
+            const item = `${index + 1}) ${member.character.background.name}, ${member.character.grimoire.magicName}, ${member.rank.name}`;
+            caption += item;
+            keyboard.push([
+                Markup.button.callback(
+                    member.character.background.name,
+                    `MEMBER:${member.character.id}`
+                ),
+            ]);
+        });
+
+        await ctx.reply(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(keyboard),
+        });
+    }
     @Hears(SHOW_SQUAD_REQUESTS_BUTTON)
     async squadRequests(@Ctx() ctx: BotContext) {
         this.showArmedForcesRequest(ctx);
@@ -130,11 +186,73 @@ export class CommanderInChiefScene {
         });
     }
 
+    async showCharacterInfo(ctx: BotContext, selectedId: string) {
+        const character =
+            await this.characterService.findCharacterById(selectedId);
+        const tgId = await this.characterService.findTgIdByCharacterId(
+            character.id
+        );
+        const armedForcesInfo = await this.squadsService.findArmedForcesMember(
+            character.id
+        );
+        const title = `Персонаж`;
+        const name = `<strong>Имя: </strong>${character.background.name}`;
+        const magicName = `<strong>Магический атрибут:</strong>${character.grimoire.magicName}`;
+        const tgText = `ID:<code>${tgId}</code>`;
+        const rankText = `<strong>Ранг: </strong>${armedForcesInfo.rank.name}`;
+        const caption = `${title}\n\n${name}\n${magicName}\n${tgText}\n${rankText}`;
+        return caption;
+    }
+
+    @Action(/^(CHANGE_RANK.*)$/)
+    async changeRank(@Ctx() ctx: BotContext) {
+        ctx.answerCbQuery();
+        const selectedId = await ctx.callbackQuery['data'].split(':')[1];
+        const ranks = await this.squadsService.findRanksByArmedForces(
+            ctx.session.armedForcesId
+        );
+
+        const caption = await this.showCharacterInfo(ctx, selectedId);
+        const keyboard = [];
+        ranks.map((rank) => {
+            keyboard.push([
+                Markup.button.callback(rank.name, `RANK:${rank.id}`),
+            ]);
+        });
+        keyboard.push([
+            Markup.button.callback(BACK_BUTTON, `MEMBER:${selectedId}`),
+        ]);
+        await ctx.reply(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(keyboard),
+        });
+    }
+
+    @Action(/^(MEMBER.*)$/)
+    async member(@Ctx() ctx: BotContext) {
+        ctx.answerCbQuery();
+
+        const selectedId = await ctx.callbackQuery['data'].split(':')[1];
+        const caption = await this.showCharacterInfo(ctx, selectedId);
+        await ctx.reply(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard([
+                [
+                    Markup.button.callback(
+                        'Изменить ранг',
+                        `CHANGE_RANK:${selectedId}`
+                    ),
+                ],
+                [Markup.button.callback('Наградить из казны', 'REWARD')],
+                [Markup.button.callback(BACK_BUTTON, PEOPLE_MANAGEMENT_BUTTON)],
+            ]),
+        });
+    }
     @On('callback_query')
     public async callbackQuery(@Ctx() ctx: BotContext) {
         await ctx.answerCbQuery();
         if ('data' in ctx.callbackQuery) {
-            const [action, value] = ctx.callbackQuery.data.split(':');
+            const [action, value] = await ctx.callbackQuery.data.split(':');
 
             switch (action) {
                 case 'SORT_BY_RANK': {
@@ -156,16 +274,6 @@ export class CommanderInChiefScene {
                     await ctx.reply('Сортировать по отряду');
                     break;
                 }
-                case 'CHANGE_RANK': {
-                    await ctx.reply('Изменить ранг');
-                    const ranks =
-                        await this.squadsService.findRanksByArmedForces(
-                            ctx.session.armedForcesId
-                        );
-                    console.log(ranks);
-                    break;
-                }
-
                 case 'REWARD': {
                     await ctx.reply('Наградить кого-то');
                     break;

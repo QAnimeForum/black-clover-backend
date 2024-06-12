@@ -6,16 +6,17 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CharacterEntity } from '../../character/entity/character.entity';
+
+export enum ENUM_USER_PERMISSION_TYPE {
+    OWNER = 'OWNER',
+    ADMIN = 'ADMIN',
+    OPRDINARY = 'OPRDINARY',
+}
+
 @Entity('game_user')
 export class UserEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
-
-    @Column({
-        type: 'boolean',
-        name: 'is_admin',
-    })
-    isAdmin: boolean;
 
     @Column({
         type: 'int',
@@ -37,4 +38,11 @@ export class UserEntity {
         nullable: false,
     })
     characterId: string;
+
+    @Column({
+        type: 'enum',
+        enum: ENUM_USER_PERMISSION_TYPE,
+        default: ENUM_USER_PERMISSION_TYPE.OPRDINARY,
+    })
+    type: ENUM_USER_PERMISSION_TYPE;
 }

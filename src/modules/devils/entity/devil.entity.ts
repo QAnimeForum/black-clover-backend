@@ -49,11 +49,12 @@ export class DevilEntity {
     rank: ENUM_DEVIL_RANK;
 
     @Column({
+        name: 'magic_type',
         type: 'varchar',
     })
-    magic_type: string;
+    magicType: string;
 
-    @OneToOne(() => DevilUnionEntity)
+  /*  @OneToOne(() => DevilUnionEntity)
     @JoinColumn({
         name: 'union_10_id',
     })
@@ -87,7 +88,7 @@ export class DevilEntity {
     @JoinColumn({
         name: 'union_100_id',
     })
-    union_100: DevilUnionEntity;
+    union_100: DevilUnionEntity;*/
 
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;

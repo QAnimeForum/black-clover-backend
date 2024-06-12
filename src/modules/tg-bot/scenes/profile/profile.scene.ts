@@ -46,38 +46,45 @@ export class ProfileScene {
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
+        const chatType = ctx.message.chat.type;
+        
         const senderId = sender.id;
         const username = sender.username;
         const character =
             await this.characterService.findFullCharacterInfoByTgId(senderId);
         const background = character.background;
-        const name = `<strong>Имя</strong>: ${background.name}\n`;
-        const sex = `<strong>Пол</strong>: ${background.sex}\n`;
-        const age = `<strong>Возраст</strong>: ${background.age}\n`;
-        const state = `<strong>Страна происхождения</strong>: ${background.state.name}\n`;
-        const race = `<strong>Раса</strong>: ${background.race.name}\n`;
+
+        const name = `<strong>🏷️Имя</strong>: ${background.name}`;
+        const sex = `<strong>⚧Пол</strong>: ${background.sex}`;
+        const age = `<strong>🕐Возраст</strong>: ${background.age}`;
+        const state = `<strong>🌍Страна происхождения</strong>: ${background.state.name}`;
+        const race = `<strong>👤Раса</strong>: ${background.race.name}`;
         const title = `<strong><u>ПРОФИЛЬ</u></strong>\n\n`;
-        const owner = `<strong>Владелец</strong>: @${username}\n`;
-        const userId = `<strong>Ваш id</strong>: <code>${senderId}</code>\n`;
-        const magicTypeBlock = `<strong>Магический атрибут</strong>: ${character.grimoire.magicName}\т`;
-        const delimiter = `_____________\n`;
+        const owner = `<strong>👤Владелец</strong>: @${username}`;
+        const userId = `<strong>🆔Ваш id</strong>: <code>${senderId}</code>`;
+        const magicTypeBlock = `<strong>🃏Магический атрибут</strong>: ${character?.grimoire?.magicName ?? '-'}\n`;
 
         const characteristics = character.characterCharacteristics;
-        const levelBlock = `<strong>Уровень персонажа</strong>: ${characteristics.currentLevel}/${characteristics.maxLevel}\n`;
-        const hpBlock = `<strong>♥️</strong>: ${characteristics.currentHealth}/${characteristics.maxHealth}\n`;
-        const magicPowerBlock = `<strong>Магичесая сила</strong>: 500/500\n`;
-        const strengthBlock = `<strong>💪Сила</strong>: ${characteristics.strength.score}\n`;
-        const dexterityBlock = `<strong>🏃Ловкость</strong>: ${characteristics.dexterity.score}\n`;
-        const constitutionBlock = `<strong>🏋️Телосложение</strong>: ${characteristics.constitution.score}\n`;
-        const intelligenceBlock = `<strong>🎓Интеллект</strong>: ${characteristics.intelligence.score}\n`;
-        const wisdomBlock = `<strong>📚Мудрость</strong>: ${characteristics.wisdom.score}\n`;
-        const charismaBlock = `<strong>🗣Харизма</strong>: ${characteristics.charisma.score}\n`;
+        const levelBlock = `<strong>🏆Уровень персонажа</strong>: ${characteristics.currentLevel}/${characteristics.maxLevel}\n`;
+        const sanityBlock = `<strong>🤪Здравомыслие</strong>: ${characteristics.sanity}`;
+        const hpBlock = `<strong>♥️Уровень здоровья</strong>: ${characteristics.currentHealth}/${characteristics.maxHealth}`;
+        const magicPowerBlock = `<strong>🌀Магическая сила</strong>: ${characteristics.magicPower}`;
+        const strengthBlock = `<strong>💪Сила</strong>: ${characteristics.strength.score}`;
+        const dexterityBlock = `<strong>🏃Ловкость</strong>: ${characteristics.dexterity.score}`;
+        const constitutionBlock = `<strong>🏋️Телосложение</strong>: ${characteristics.constitution.score}`;
+        const intelligenceBlock = `<strong>🎓Интеллект</strong>: ${characteristics.intelligence.score}`;
+        const wisdomBlock = `<strong>📚Мудрость</strong>: ${characteristics.wisdom.score}`;
+        const charismaBlock = `<strong>🗣Харизма</strong>: ${characteristics.charisma.score}`;
         //   const armorClassBlock = `${characteristics.armorClass.}${characteristics.armorClassBlock.name}${characteristics.armorClassBlock.score}`;
 
-        const characteristicsTitle = `\n<strong><u>Характеристики персонажа</u></strong>\n\n`;
-        const characteristicsBlock = `${characteristicsTitle}${levelBlock}${hpBlock}${magicPowerBlock}${strengthBlock}${dexterityBlock}${constitutionBlock}${intelligenceBlock}${wisdomBlock}${charismaBlock}`;
-        const caption = `${title}${owner}${userId}${name}${sex}${age}${state}${race}${magicTypeBlock}${characteristicsBlock}`;
-        ctx.sendPhoto(
+        // const characteristicsTitle = `\n<strong><u>Характеристики персонажа</u></strong>\n\n`;
+        // const characteristicsBlock = `${levelBlock}\n${hpBlock}\n${magicPowerBlock}\n${sanityBlock}\n${strengthBlock}\n${dexterityBlock}\n${constitutionBlock}\n${intelligenceBlock}\n${wisdomBlock}\n${charismaBlock}\n`;
+        const spellsBlock = `<strong>☄️Заклинания</strong>\n У вас заклинаний нет`;
+        const devilsBlock = `<strong>😈Дьяволы:</strong>\n Контрактов с дьяволами нет`;
+        const spiritsBlock = `<strong>🧚Духи:</strong>\n Союза с духами нет`;
+        const equippedItemsBlock = `<strong>🤹Оборудованные предметы:</strong>\n Ничего не надето`;
+        const caption = `${title}${owner}\n${userId}\n${name}\n${levelBlock}\n${sanityBlock}\n${hpBlock}\n${magicPowerBlock}\n\n${sex}\n${age}\n${state}\n${race}\n${magicTypeBlock}\n${spellsBlock}\n${devilsBlock}\n${spiritsBlock}\n${equippedItemsBlock}`;
+        await ctx.sendPhoto(
             {
                 source: KNIGHT_IMAGE_PATH,
             },
@@ -92,8 +99,39 @@ export class ProfileScene {
                 ]).resize(),
             }
         );
+        if (character.grimoire == null) {
+            ctx.reply(
+                `Вы ещё не получили гримуар. Сходите в ближайшую башню, где выдают гримуары, и оставьте заявку на гримуар. \n (Перейдите во вкадку: ${GRIMOIRE_BUTTON})`
+            );
+        }
     }
 
+    /**
+     * 
+     * @param ctx         /**
+         * 「🏷️」Имя: 
+
+「❤️」Жизнь: 
+
+⇒「🤪」Здравомыслие: 
+
+⇒「🌀」Магическая сила: 
+
+⇒「🗡️」Урон: 
+
+⊨═══════════════════════⫤
+
+⇒「🃏」Атрибут: 
+
+⇒「🧨」Предметы: 
+
+⇒「🤹」Оборудованные предметы: 
+
+⇒「☄️」Заклинания: 
+
+⇒「⚡」Бонус: 
+         */
+     */
     @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
@@ -103,7 +141,7 @@ export class ProfileScene {
         const grimoire = await this.grimoireService.findGrimoireByUserTgId(
             sender.id
         );
-     /**
+        /**
       *    const [spellEntities] = await this.grimoireService.findAllSpells(
             {
                 _search: undefined,
@@ -174,8 +212,7 @@ export class ProfileScene {
                             EDIT_MAGIC_NAME_BUTTON,
                             EDIT_MAGIC_NAME_BUTTON
                         ),
-                    ]
-
+                    ],
                 ]),
             }
         );

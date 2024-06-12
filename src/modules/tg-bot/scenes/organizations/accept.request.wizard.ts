@@ -52,9 +52,8 @@ export class AcceptRequestWizard {
             ctx.wizard.back();
         } else {
             const tgChatId: number = Number.parseInt(message.text);
-            const character = (
-                await this.characterService.findCharacterByTgId(tgChatId)
-            ).character;
+            const character =
+                await this.characterService.findCharacterByTgId(tgChatId);
             const armedForces = await this.squadService.findArmedForcesById(
                 ctx.session.armedForcesId
             );

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DataSource, In, Repository } from 'typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from '../entities/user.entity';
+import { ENUM_USER_PERMISSION_TYPE, UserEntity } from '../entities/user.entity';
 import { UserCreateDto } from '../dtos/user.create.dto';
 import { CharacterService } from 'src/modules/character/services/character.service';
 //implements IUserService
@@ -17,8 +17,16 @@ export class UserService {
     ) {}
 
     async findUserById(id: string): Promise<UserEntity> {
-        return await this.userRepository.findOneBy({
-            id,
+        return await this.userRepository.findOne({
+            where: {
+                id: id,
+            },
+            relations: {
+                character: {
+                    background: true,
+                    grimoire: true,
+                },
+            },
         });
     }
 
@@ -71,8 +79,7 @@ export class UserService {
                 user = new UserEntity();
                 user.tgUserId = dto.tgUserId;
                 user.characterId = character.id;
-                user.isAdmin = false;
-                console.log(user);
+                user.type = ENUM_USER_PERMISSION_TYPE.OPRDINARY;
                 await transactionManager.save(user);
             }
         );
@@ -85,17 +92,40 @@ export class UserService {
             },
         });
     }
-    async isShowAdminButton(userTgId: number): Promise<boolean> {
+    async isSuperAdmin(userTgId: number): Promise<boolean> {
         const user = await this.userRepository.findOneBy({
             tgUserId: userTgId,
         });
-        return user.isAdmin;
+        return user.type === ENUM_USER_PERMISSION_TYPE.OWNER;
     }
 
-    async getAdmins(): Promise<Array<UserEntity>> {
+    async isAdmin(userTgId: number): Promise<boolean> {
+        const user = await this.userRepository.findOneBy({
+            tgUserId: userTgId,
+        });
+        return (
+            user.type === ENUM_USER_PERMISSION_TYPE.OWNER ||
+            user.type === ENUM_USER_PERMISSION_TYPE.ADMIN
+        );
+    }
+
+    async findOwners(): Promise<Array<UserEntity>> {
         const users = await this.userRepository.find({
             where: {
-                isAdmin: true,
+                type: ENUM_USER_PERMISSION_TYPE.OWNER,
+            },
+            select: {
+                id: true,
+                tgUserId: true,
+            },
+        });
+        return users;
+    }
+
+    async findAdmins(): Promise<Array<UserEntity>> {
+        const users = await this.userRepository.find({
+            where: {
+                type: ENUM_USER_PERMISSION_TYPE.ADMIN,
             },
             select: {
                 id: true,

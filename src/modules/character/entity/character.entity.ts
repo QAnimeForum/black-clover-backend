@@ -3,8 +3,6 @@ import {
     CreateDateColumn,
     Entity,
     JoinColumn,
-    JoinTable,
-    ManyToMany,
     OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
@@ -23,6 +21,7 @@ import { UserEntity } from '../../user/entities/user.entity';
 import { ArmedForcesRequestEntity } from '../../squards/entity/armed.forces.request.entity';
 import { ProblemEntity } from '../../judicial.system/entity/problem.entity';
 import { Expose } from 'class-transformer';
+import { GardenEntity } from '../../plants/entity/garden.entity';
 @Entity('character')
 export class CharacterEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -84,16 +83,17 @@ export class CharacterEntity {
     })
     characterCharacteristicsId: string;
 
-    @OneToOne(() => GrimoireEntity)
+    @OneToOne(() => GrimoireEntity, { nullable: true })
     @JoinColumn({
         name: 'grimoire_id',
         referencedColumnName: 'id',
     })
-    grimoire: GrimoireEntity;
+    grimoire: GrimoireEntity | null;
 
     @Column({
         type: 'uuid',
         name: 'grimoire_id',
+        nullable: true,
     })
     grimoireId: string;
 
@@ -132,6 +132,19 @@ export class CharacterEntity {
     @OneToOne(() => UserEntity)
     user: UserEntity;
 
+    @OneToOne(() => GardenEntity, (garden) => garden.id, { nullable: true })
+    @JoinColumn({
+        name: 'garden_id',
+        referencedColumnName: 'id',
+    })
+    garden: GardenEntity | null;
+
+    @Column({
+        name: 'gargen_id',
+        type: 'uuid',
+        nullable: true,
+    })
+    gardenId: string;
     @OneToMany(
         () => ArmedForcesRequestEntity,
         (requests) => requests.armedForces

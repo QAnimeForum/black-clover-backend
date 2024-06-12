@@ -110,6 +110,9 @@ export class CharacterService {
         return fileName;
     }
 
+    updateCharacter(character: CharacterEntity) {
+        return this.characterRepository.save(character);
+    }
     getCharacterBacgroundByTgId(telegramId: number) {
         return this.userRepository.findOne({
             where: {
@@ -206,7 +209,7 @@ export class CharacterService {
     }
 
     async findCharacterByTgId(tgId: number) {
-        const entity = await this.userRepository.findOne({
+        const user = await this.userRepository.findOne({
             where: {
                 tgUserId: tgId,
             },
@@ -214,12 +217,37 @@ export class CharacterService {
                 character: true,
             },
         });
-        return entity;
+        return user.character;
     }
     findCharacterById(characterId: string) {
-        return this.characterRepository.findOneBy({
-            id: characterId,
+        return this.characterRepository.findOne({
+            where: {
+                id: characterId,
+            },
+            relations: {
+                grimoire: true,
+                background: {
+                    race: true,
+                    state: true,
+                },
+                characterCharacteristics: {
+                    strength: true,
+                    dexterity: true,
+                    constitution: true,
+                    intelligence: true,
+                    wisdom: true,
+                    charisma: true,
+                    armorClass: true,
+                },
+            },
         });
+    }
+
+    async findTgIdByCharacterId(characterId: string) {
+        const user = await this.userRepository.findOneBy({
+            characterId: characterId,
+        });
+        return user.tgUserId;
     }
 
     async findFullCharacterInfoByTgId(tgId: number): Promise<CharacterEntity> {

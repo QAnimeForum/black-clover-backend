@@ -196,12 +196,12 @@ export class AllDevilsScene {
             }
         }
         const paginatedDevils = await this.devilService.findAll(query);
-        this.devilsList(
+      /*  this.devilsList(
             ctx,
             paginatedDevils,
             caption,
             ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_FLOOR
-        );
+        );*/
     }
 
     @Hears(/(Высшие|Высокоранговые|Среднеранговые|Низкоранговые|) дьяволы/g)
@@ -246,12 +246,12 @@ export class AllDevilsScene {
             }
         }
         const paginatedDevils = await this.devilService.findAll(query);
-        this.devilsList(
+        /*   this.devilsList(
             ctx,
             paginatedDevils,
             caption,
             ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_RANK
-        );
+        );*/
     }
 
     @Action(/^(devil_id.*)$/)
@@ -260,8 +260,8 @@ export class AllDevilsScene {
         if ('data' in ctx.callbackQuery) {
             const selectedId = ctx.callbackQuery.data.split(':')[1];
             ctx.scene.session.devilsList.selectedId = selectedId;
-            const devil_information =
-                await this.devilService.findDevilByIdWithUnions(selectedId);
+            /*  const devil_information = 
+               await this.devilService.findDevilByIdWithUnions(selectedId);
             console.log(devil_information);
             const nameBlock = `<strong>Имя</strong>: ${devil_information.name}\n`;
             const floorBLock = `<strong>Этаж</strong>: ${devil_information.floor}\n`;
@@ -291,57 +291,10 @@ export class AllDevilsScene {
                         ],
                     ]),
                 }
-            );
+            );*/
         }
     }
-    /**
-  * 
-  * @param ctx    @Action(/^(devil_id.*)$/)
-    async devil(@Ctx() ctx: BotContext) {
-        switch (ctx.updateType) {
-            case 'callback_query':
-                await ctx.answerCbQuery();
-                if ('data' in ctx.callbackQuery) {
-                    const selectedId = ctx.callbackQuery.data.split(':')[1];
-                    ctx.scene.session.devilsList.selectedId = selectedId;
-                    const devil_information =
-                        await this.devilService.findDevilByIdWithUnions(
-                            selectedId
-                        );
-                    const nameBlock = `<strong>Имя</strong>: ${devil_information.name}\n`;
-                    const floorBLock = `<strong>Этаж</strong>: ${devil_information.floor}\n`;
-                    const rankBlock = `<strong>Ранг</strong>: ${devil_information.rank}\n`;
-                    const descriptionBlock = `<strong>Описание</strong>\n${devil_information.description}\n`;
-                    const caption = `<strong>Профиль дьявола</strong>\n\n${nameBlock}${floorBLock}${rankBlock}${descriptionBlock}`;
-
-                    await ctx.replyWithPhoto(
-                        {
-                            source: `${STATIC_IMAGE_BASE_PATH}${devil_information.image}`,
-                        },
-                        {
-                            caption: caption,
-                            parse_mode: 'HTML',
-                            ...Markup.inlineKeyboard([
-                                [
-                                    Markup.button.callback(
-                                        `Показать все заклинания`,
-                                        `SHOW_ALL_DEVIL_UNIONS:${selectedId}`
-                                    ),
-                                ],
-                                [
-                                    Markup.button.callback(
-                                        BACK_BUTTON,
-                                        `BACK_TO_DEVIL_LIST`
-                                    ),
-                                ],
-                            ]),
-                        }
-                    );
-                }
-        }
-    }
-  */
-    @Action(/^(SHOW_ALL_DEVIL_UNIONS.*)$/)
+    /*   @Action(/^(SHOW_ALL_DEVIL_UNIONS.*)$/)
     async unions(@Ctx() ctx: BotContext) {
         switch (ctx.updateType) {
             case 'callback_query':
@@ -423,5 +376,5 @@ export class AllDevilsScene {
         await ctx.reply(`Едиение ${devilUnion.percent}%\n\n${caption}`, {
             parse_mode: 'HTML',
         });
-    }
+    }*/
 }

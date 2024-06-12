@@ -22,6 +22,7 @@ export class CharacterCharacteristicsEntity {
         type: 'int',
     })
     experience: number;
+
     @Column({
         type: 'int',
         name: 'current_level',
@@ -43,6 +44,12 @@ export class CharacterCharacteristicsEntity {
         type: 'int',
     })
     maxHealth: number;
+
+    @Column({
+        type: 'int',
+        name: 'magic_power',
+    })
+    magicPower: number;
 
     @Column({
         type: 'int',

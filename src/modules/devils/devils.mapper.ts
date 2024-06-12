@@ -9,7 +9,7 @@ export class DevilMapper {
         devil.description = raw.description;
         devil.floor = raw.floor;
         devil.rank = raw.rank;
-        devil.magic_type = raw.magic_type;
+        devil.magic_type = raw.magicType;
         return devil;
     }
 
@@ -22,7 +22,7 @@ export class DevilMapper {
         devilEntity.description = devil.description;
         devilEntity.floor = devil.floor;
         devilEntity.rank = devil.rank;
-        devilEntity.magic_type = devil.magic_type;
+        devilEntity.magicType = devil.magic_type;
         return devilEntity;
     }
 }

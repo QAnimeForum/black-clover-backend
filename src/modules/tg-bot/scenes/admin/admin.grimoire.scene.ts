@@ -7,7 +7,9 @@ import { Markup } from 'telegraf';
 import {
     ADD_SPELL_BUTTON,
     BACK_BUTTON,
+    CHANGE_GRIMOIRE_STATUS,
     EDIT_MAGIC_NAME_BUTTON,
+    EDIT_SPELL_CHANGE_STATUS_BUTTON,
     EDIT_SPELL_COOLDOWN_BUTTON,
     EDIT_SPELL_COST_BUTTON,
     EDIT_SPELL_DESCRIPTION_BUTTON,
@@ -23,6 +25,7 @@ import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service'
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ENUM_GRIMOIRE_STATUS } from 'src/modules/grimoire/constants/grimoire.enum.constant';
 import { ENUM_SPELL_STATUS } from 'src/modules/grimoire/constants/spell.status.enum.constant';
+import { ENUM_SPELL_TYPE } from 'src/modules/grimoire/constants/spell.type.enum';
 
 @Scene(ENUM_SCENES_ID.EDIT_GRIMOIRES_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -33,11 +36,10 @@ export class AdminGrimoireScene {
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {
-        console.log(ctx.session.spellId);
-        if (ctx.session.spellId) {
+        if (ctx.session.grimoireId) {
+            this.grimoire(ctx, ctx.session.grimoireId);
+        } else if (ctx.session.spellId) {
             this.spell(ctx, ctx.session.spellId);
-            //  ctx.session.grimoireId == null;
-            //   ctx.session.spellId == null;
         } else {
             const caption = 'Админская панель';
             await ctx.reply(caption, {
@@ -48,45 +50,6 @@ export class AdminGrimoireScene {
                 ]).resize(),
             });
         }
-        /**
-         * if (ctx.session.grimoireId == null) {
-        } else {
-            await ctx.reply('Админская панель', {
-                ...Markup.keyboard([
-                    [GRIMOIRE_LIST_BUTTON],
-                    [FIND_GRIMOIRE_BY_TG_BUTTON],
-                    [BACK_BUTTON],
-                ]).resize(),
-            });
-            const grimoire = await this.grimoireService.findGrimoireById(
-                ctx.session.grimoireId
-            );
-            const spells = grimoire.spells;
-            let caption = `<strong><u>ГРИМУАР</u></strong>\n\n<strong>Маг. атрибут:</strong> ${grimoire.magicName}\n<strong>Символ на обложке:</strong>${grimoire.coverSymbol}\n<strong>Статус:</strong> ${grimoire.status}\n`;
-            caption += '<strong><u>ЗАКЛИНАНИЯ</u></strong>\n';
-            spells.map((spell, index) => {
-                caption += `${index}) ${spell.name}${spell.status}\n`;
-            });
-            if (spells.length == 0) caption += 'Заклинаний нет';
-            await ctx.reply(caption, {
-                parse_mode: 'HTML',
-                ...Markup.inlineKeyboard([
-                    [
-                        Markup.button.callback(
-                            EDIT_MAGIC_NAME_BUTTON,
-                            EDIT_MAGIC_NAME_BUTTON
-                        ),
-                        Markup.button.callback(
-                            ADD_SPELL_BUTTON,
-                            ADD_SPELL_BUTTON
-                        ),
-                    ],
-                    [Markup.button.callback(BACK_BUTTON, BACK_BUTTON)],
-                ]),
-            });
-            ctx.session.grimoireId = null;
-        }
-         */
     }
     @Hears(GRIMOIRE_LIST_BUTTON)
     @Action(BACK_BUTTON)
@@ -142,6 +105,10 @@ export class AdminGrimoireScene {
         });
     }
 
+    @Action(CHANGE_GRIMOIRE_STATUS)
+    async changeGrimoreStatus(@Ctx() ctx: BotContext) {
+        ctx.scene.enter(ENUM_SCENES_ID.CHANGE_GRIMOIRE_STATUS_SCENE_ID);
+    }
     @Action(/^(GRIMOIRE.*)$/)
     async showGrimoire(@Ctx() ctx: BotContext) {
         if ('data' in ctx.callbackQuery) {
@@ -170,21 +137,7 @@ export class AdminGrimoireScene {
         caption += '<strong><u>ЗАКЛИНАНИЯ</u></strong>\n';
         const buttons = [];
         spells.map((spell, index) => {
-            let status = '';
-            switch (spell.status) {
-                case ENUM_SPELL_STATUS.DRAFT: {
-                    status = 'Черновик';
-                    break;
-                }
-                case ENUM_SPELL_STATUS.NOT_APPROVED: {
-                    status = 'Не одобрено';
-                    break;
-                }
-                case ENUM_SPELL_STATUS.APPROVED: {
-                    status = 'Одобрено';
-                    break;
-                }
-            }
+            const status = this.spellStatusToString(spell.status);
             caption += `${index + 1}) ${spell.name}, cтатус: ${status}\n`;
             buttons.push([
                 Markup.button.callback(spell.name, `SPELL:${spell.id}`),
@@ -198,6 +151,12 @@ export class AdminGrimoireScene {
                 ),
             ],
             [Markup.button.callback(ADD_SPELL_BUTTON, ADD_SPELL_BUTTON)],
+            [
+                Markup.button.callback(
+                    CHANGE_GRIMOIRE_STATUS,
+                    CHANGE_GRIMOIRE_STATUS
+                ),
+            ],
             [Markup.button.callback(BACK_BUTTON, BACK_BUTTON)]
         );
         if (spells.length == 0) caption += 'Заклинаний нет';
@@ -216,11 +175,16 @@ export class AdminGrimoireScene {
         }
     }
 
+    @Action(EDIT_MAGIC_NAME_BUTTON)
+    async editMagicName(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.EDIT_MAGIC_NAME_SCENE_ID);
+    }
     async spell(ctx: BotContext, selectedSpellId: string) {
         const spell = await this.grimoireService.findSpellById(selectedSpellId);
         const title = '<strong><u>Заклинание</u></strong>';
         const name = `<strong>Название: </strong> ${spell.name}`;
-        const type = `<strong>Тип: </strong> ${spell.type}`;
+        const status = `<strong>Статус: </strong> ${this.spellStatusToString(spell.status)}`;
+        const type = `<strong>Тип: </strong> ${this.spellTypeToString(spell.type)}`;
         const damage = `<strong>Урон: </strong> ${spell.damage}`;
         const range = `<strong>Область действия заклинания: </strong> ${spell.range}`;
         const duration = `<strong>Продолжительность: </strong> ${spell.duration}`;
@@ -231,7 +195,7 @@ export class AdminGrimoireScene {
         const minLevel = `<strong>Минимальный уровень персонажа: </strong> ${spell.requirements.minimalLevel}`;
         const requipments = '<strong>Требования: </strong>';
         const description = `<strong>Описание</strong>\n ${spell.description}`;
-        const caption = `${title}\n${name}\n${type}\n${damage}\n${range}\n${duration}\n${cost}\n${castTime}\n${cooldown}\n${goals}\n${minLevel}\n${requipments}\n${description}`;
+        const caption = `${title}\n${name}\n${status}\n${type}\n${damage}\n${range}\n${duration}\n${cost}\n${castTime}\n${cooldown}\n${goals}\n${minLevel}\n${requipments}\n${description}`;
 
         await ctx.reply(caption, {
             parse_mode: 'HTML',
@@ -276,15 +240,83 @@ export class AdminGrimoireScene {
                         EDIT_SPELL_MINIMAL_LEVEL_BUTTON
                     ),
                 ],
+                [
+                    Markup.button.callback(
+                        EDIT_SPELL_CHANGE_STATUS_BUTTON,
+                        EDIT_SPELL_CHANGE_STATUS_BUTTON
+                    ),
+                ],
                 [Markup.button.callback(BACK_BUTTON, 'BACK_TO_GRIMOIRE')],
             ]),
         });
+    }
+    spellStatusToString(status: ENUM_SPELL_STATUS) {
+        switch (status) {
+            case ENUM_SPELL_STATUS.DRAFT:
+                return 'Черновик';
+            case ENUM_SPELL_STATUS.NOT_APPROVED:
+                return 'На одобрении';
+            case ENUM_SPELL_STATUS.APPROVED:
+                return 'Одобрено';
+            default:
+                return '';
+        }
+    }
+
+    spellTypeToString(status: ENUM_SPELL_TYPE) {
+        switch (status) {
+            case ENUM_SPELL_TYPE.CREATION:
+                return 'магия созидания';
+            case ENUM_SPELL_TYPE.HEALING:
+                return 'Магия лечения';
+            case ENUM_SPELL_TYPE.COMPOUND:
+                return 'Комбинированая магия';
+            case ENUM_SPELL_TYPE.CURSE:
+                return 'Проклятие';
+            case ENUM_SPELL_TYPE.FORBIDDEN:
+                return 'Запретная магия';
+            case ENUM_SPELL_TYPE.REINCARNATION:
+                return 'Магия реинкарнации';
+            case ENUM_SPELL_TYPE.REINFORCEMENT:
+                return 'Магия усиления';
+            case ENUM_SPELL_TYPE.RESTRAINING:
+                return 'магия ограничения';
+            case ENUM_SPELL_TYPE.SEAL:
+                return 'Печать';
+            case ENUM_SPELL_TYPE.TRAP:
+                return 'ловушка';
+            case ENUM_SPELL_TYPE.WEAKING:
+                return 'магия ослабления';
+            case ENUM_SPELL_TYPE.OTHER:
+                return 'другой вариант';
+            default:
+                return '';
+        }
+
+        /**
+         *     COMPOUND = 'COMPOUND',
+    CREATION = 'CREATION',
+    CURSE = 'CURSE',
+    FORBIDDEN = 'FORBIDDEN',
+    HEALING = 'HEALING',
+    REINCARNATION = 'REINCARNATION',
+    REINFORCEMENT = 'REINFORCEMENT',
+    RESTRAINING = 'RESTRAINING',
+    SEAL = 'SEAL',
+    TRAP = 'TRAP',
+    WEAKING = 'WEAKING',
+    OTHER = 'OTHER',
+         */
     }
     @Action('BACK_TO_GRIMOIRE')
     async backToGrimoire(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
         ctx.session.spellId == null;
         this.grimoire(ctx, ctx.session.grimoireId);
+    }
+    @Action(EDIT_SPELL_CHANGE_STATUS_BUTTON)
+    async changeSpellStatus(@Ctx() ctx: BotContext) {
+        ctx.scene.enter(ENUM_SCENES_ID.EDIT_SPELL_CHANGE_STATUS_SCENE_ID);
     }
     @Action(ADD_SPELL_BUTTON)
     async addSpell(@Ctx() ctx: BotContext) {

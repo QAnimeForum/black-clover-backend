@@ -9,11 +9,10 @@ import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import {
     BACK_BUTTON,
-    CREATE_SPELL_BUTTON,
-    EDIT_GRIMOIRE_BUTTON,
-    EDIT_MAGIC_NAME_BUTTON,
     EDIT_SPELL_BUTTON,
+    SHOW_FULL_GRIMOIRE,
 } from 'src/modules/tg-bot/constants/button-names.constant';
+import { GrimoireEntity } from 'src/modules/grimoire/entity/grimoire.entity';
 
 @Scene(ENUM_SCENES_ID.GRIMOIRE_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -23,13 +22,16 @@ export class GrimoreScene {
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
-    async enter(@Ctx() ctx: BotContext, @Sender('id') tgId) {
-        const grimoire =
+    async enter(@Ctx() ctx: BotContext, @Sender('id') tgId: number) {
+        const grimoire: GrimoireEntity =
             await this.grimoireService.findGrimoireByUserTgId(tgId);
+
         const spells = grimoire.spells;
         const title = '<strong><u>ГРИМУАР</u></strong>\n\n';
         const magicBlock = `<strong>Магия</strong>: ${grimoire.magicName}\n`;
-        let caption = `${title}${magicBlock}<strong>Обложка</strong>: ${grimoire.coverSymbol}\n`;
+        const statusBlock = `<strong>Статус</strong>: ${grimoire.status}\n`;
+        const coverBlock = `<strong>Обложка</strong>: ${grimoire.coverSymbol}`;
+        let caption = `${title}${magicBlock}${coverBlock}${statusBlock}\n`;
         //<strong>Цвет магии</strong>: ${grimoire.magicColor}
         const spellListMessages: Array<{
             id: string;
@@ -71,14 +73,8 @@ export class GrimoreScene {
                 ...Markup.inlineKeyboard([
                     [
                         Markup.button.callback(
-                            CREATE_SPELL_BUTTON,
-                            CREATE_SPELL_BUTTON
-                        ),
-                    ],
-                    [
-                        Markup.button.callback(
-                            EDIT_MAGIC_NAME_BUTTON,
-                            EDIT_MAGIC_NAME_BUTTON
+                            SHOW_FULL_GRIMOIRE,
+                            SHOW_FULL_GRIMOIRE
                         ),
                     ],
                 ]),
@@ -98,25 +94,6 @@ export class GrimoreScene {
                     ]),
                 })
         );
-    }
-
-    @Hears(EDIT_GRIMOIRE_BUTTON)
-    async editGrimoire(@Ctx() ctx: BotContext) {
-        ctx.reply('вы попали в меню редактирования гримуара', {
-            ...Markup.keyboard([
-                [CREATE_SPELL_BUTTON, EDIT_MAGIC_NAME_BUTTON],
-                [BACK_BUTTON],
-            ]),
-        });
-    }
-    @Action(CREATE_SPELL_BUTTON)
-    async createSpell(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.CREATE_SPELL_FORM_SCENE_ID);
-    }
-
-    @Action(EDIT_MAGIC_NAME_BUTTON)
-    async editMagicName(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.EDIT_MAGIC_NAME_SCENE_ID);
     }
 
     @Hears(BACK_BUTTON)

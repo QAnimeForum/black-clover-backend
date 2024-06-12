@@ -16,45 +16,98 @@ import { SquadsService } from 'src/modules/squards/service/squads.service';
 import { CharacterService } from 'src/modules/character/services/character.service';
 import { ArmedForcesRequestDto } from 'src/modules/squards/dto/armed.forces.request.dto';
 import { PaginateQuery } from 'nestjs-paginate';
-import { ArmedForcesRequestEntity } from 'src/modules/squards/entity/armed.forces.request.entity';
 import { SQUAD_DEFAULT_PER_PAGE } from 'src/modules/squards/constants/squad.list.constant';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import {
+    ARMED_FORCES_BUTTON,
+    ARMED_FORCES_CONTROL_BUTTON,
     BACK_BUTTON,
     COMMANDER_IN_CHIEF_BUTTON,
     CREATE_SQUAD_BUTTON,
     GET_A_WAGE_BUTTON,
     JOIN_TO_ARMED_FORCES_BUTTON,
     MY_SQUAD_BUTTON,
-    SHOW_SQUAD_REQUESTS_BUTTON,
     SQUAD_LIST_BUTTON,
     TREASURY_BUTTON,
 } from '../../constants/button-names.constant';
+import { UserService } from 'src/modules/user/services/user.service';
 @Scene(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class ArmedForcesScene {
     constructor(
         private readonly characterService: CharacterService,
+        private readonly userService: UserService,
         private readonly squadsService: SquadsService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
-    async enter(@Ctx() ctx: BotContext, @Sender() sender) {
-        const character = await this.characterService.getCharacterIdByTgId(
-            sender.id
-        );
-        const state = await this.characterService.getStateByTgId(sender.id);
+    async enter(@Ctx() ctx: BotContext, @Sender('id') userTgId: number) {
+        const state = await this.characterService.getStateByTgId(userTgId);
         const armedForces =
             await this.squadsService.findArmedForcesByState(state);
         ctx.session.armedForcesId = armedForces.id;
-        const [ranks] = await this.squadsService.findRanksByArmedForces(
+        await this.showArmedForces(ctx, userTgId);
+    }
+
+    @Hears(ARMED_FORCES_BUTTON)
+    async armedForces(@Ctx() ctx: BotContext, @Sender('id') userTgId: number) {
+        await this.showArmedForces(ctx, userTgId);
+    }
+
+    async generateMainArmedForcesKeyboard(userTgId: number) {
+        const isUserSuperAdmin = this.userService.isSuperAdmin(userTgId);
+        const character =
+            await this.characterService.getCharacterIdByTgId(userTgId);
+        const isUserArmedForcesMember =
+            await this.squadsService.isUserArmedForcesMember(character);
+        const isUserHasRequest =
+            await this.squadsService.isUserHasRequest(userTgId);
+        const buttons = [];
+        if (!isUserArmedForcesMember && !isUserHasRequest) {
+            buttons.push([JOIN_TO_ARMED_FORCES_BUTTON]);
+        }
+        buttons.push([SQUAD_LIST_BUTTON]);
+        buttons.push([ARMED_FORCES_BUTTON, BACK_BUTTON]);
+
+        return buttons;
+    }
+    async showArmedForces(ctx: BotContext, userTgId: number) {
+        const buttons = await this.generateMainArmedForcesKeyboard(userTgId);
+        let caption =
+            '🛡️Добро пожаловать в Палату Рыцарей-Чародеев Королевства Клевер!🛡️\n\nЗдесь ты найдешь информацию о рыцарях-чародеях, системе рангов, своих будущих обязанностях,  о системе обучения, о боевых  отрядах  и о всех важных вещах, необходимых для твоего прохождения  службы. Готовься к геройству!\n';
+        const linkRanks = `Система рангов рыцарей-чародеев: <a href='https://telegra.ph/Grimuar-i-zaklinaniya-02-03'>перейти</a>\n`;
+        const linkJobTitles = `Какие должности возможны (и зарплата): <a href='https://telegra.ph/Grimuar-i-zaklinaniya-02-03'>перейти</a>\n\n`;
+        const isUserHasRequest =
+            await this.squadsService.isUserHasRequest(userTgId);
+        caption += linkRanks;
+        caption += linkJobTitles;
+        if (isUserHasRequest) {
+            caption +=
+                '<strong><u>ВНИМАНИЕ:</u></strong> Вы отправили заявку в рыцари-чародеи. Ваша заявка на рассмотрении. \n';
+        }
+
+        /**
+
+ */
+        /*  if(isUserSuperAdmin) {
+            buttons.push([COMMANDER_IN_CHIEF_BUTTON, BACK_BUTTON]);
+        }*/
+        await ctx.sendPhoto(
+            {
+                source: ARMED_FORCES,
+            },
+            {
+                caption,
+                parse_mode: 'HTML',
+                ...Markup.keyboard(buttons).resize(),
+            }
+        );
+        /*
+        const ranks = await this.squadsService.findRanksByArmedForces(
             armedForces.id
         );
-        /*  const isUserSquadMember =
-            await this.squadsService.isUserSquadMember(character);*/
-
         const isUserArmedForcesMember =
             await this.squadsService.isUserArmedForcesMember(character);
         const nameBlock = `<strong><u>${armedForces.name}</u></strong>`;
@@ -66,16 +119,11 @@ export class ArmedForcesScene {
         if (!isUserArmedForcesMember) {
             buttons.push([JOIN_TO_ARMED_FORCES_BUTTON]);
         }
-        /*if (isUserArmedForcesMember) {
-            buttons.push([MY_SQUAD_BUTTON]);
-        } else {
-            buttons.push([JOIN_TO_ARMED_FORCES_BUTTON]);
-        }*/
         buttons.push(
             [MY_SQUAD_BUTTON, TREASURY_BUTTON],
             [SQUAD_LIST_BUTTON],
             [COMMANDER_IN_CHIEF_BUTTON, BACK_BUTTON]
-        );
+        )
         ctx.sendPhoto(
             {
                 source: ARMED_FORCES,
@@ -85,9 +133,8 @@ export class ArmedForcesScene {
                 parse_mode: 'HTML',
                 ...Markup.keyboard(buttons).resize(),
             }
-        );
+        );*/
     }
-
     @Hears(JOIN_TO_ARMED_FORCES_BUTTON)
     async joinToArmedForces(@Ctx() ctx: BotContext, @Sender() sender) {
         const tgUserId: number = sender.id;
@@ -98,13 +145,15 @@ export class ArmedForcesScene {
         const isUserSquadMember =
             await this.squadsService.isUserSquadMember(character);
         if (isUserSquadMember) {
-            ctx.reply('Вы уже являетесь членом какого-либо отряда.');
+            await ctx.reply('Вы уже являетесь членом какого-либо отряда.');
             return;
         }
         const isUserHasRequest =
             await this.squadsService.isUserSquadMemberRequest(character);
         if (isUserHasRequest) {
-            ctx.reply('Вы уже отправили заявку, ждите результата.');
+            await ctx.reply(
+                'От вас уже есть заявка на рассмотрение, ждите ответа.'
+            );
             return;
         }
         const dto: ArmedForcesRequestDto = {
@@ -114,8 +163,13 @@ export class ArmedForcesScene {
             tgUsername: tgUsername,
         };
         this.squadsService.createArmedForcesRequest(dto);
-        ctx.reply(
-            'Вы отправили заявку на вступление в вооружённые силы вышей страны! Через время с вами свяжутся.'
+        const buttons = await this.generateMainArmedForcesKeyboard(tgUserId);
+        await ctx.reply(
+            'Вы отправили заявку на вступление в вооружённые силы вышей страны! Через время с вами свяжутся.',
+            {
+                parse_mode: 'HTML',
+                ...Markup.keyboard(buttons),
+            }
         );
     }
 
@@ -149,7 +203,7 @@ export class ArmedForcesScene {
 
     @Hears(SQUAD_LIST_BUTTON)
     async squadList(@Ctx() ctx: BotContext) {
-        this.showSquadsList(ctx);
+        await this.showSquadsList(ctx, 1);
     }
 
     @Action(GET_A_WAGE_BUTTON)
@@ -166,7 +220,7 @@ export class ArmedForcesScene {
 
     @Action('BACK_TO_SQUADS_LIST')
     async backToSquadList(@Ctx() ctx: BotContext) {
-        this.showSquadsList(ctx);
+        await this.showSquadsList(ctx, 1);
     }
     /**
    * 
@@ -239,7 +293,7 @@ export class ArmedForcesScene {
             }
         );
     }
-    async showSquadsList(ctx: BotContext) {
+    async showSquadsList(ctx: BotContext, page: number) {
         const armedForcesId = ctx.session.armedForcesId;
         const query: PaginateQuery = {
             limit: SQUAD_DEFAULT_PER_PAGE,
@@ -247,42 +301,53 @@ export class ArmedForcesScene {
             filter: {
                 forces_id: `$eq:${armedForcesId}`,
             },
+            page: page,
         };
         const paginatedSquads = await this.squadsService.findAllSquads(query);
         const data = paginatedSquads.data;
         const { currentPage, totalPages } = paginatedSquads.meta;
-        /**
-         * const totalPage: number = this.paginationService.totalPage(
-            total,
-            dto._limit
-        );
-         */
         const inlineButtons = [];
-        if (data.length == 1) {
+        data.map((squad) => {
+            inlineButtons.push([
+                Markup.button.callback(`${squad.name}`, `SQUAD:${squad.name}`),
+            ]);
+        });
+        if (totalPages == 0) {
+            inlineButtons.push([Markup.button.callback(`1 из 1`, `PAGE`)]);
+        } else if (page == 1 && totalPages == 1) {
             inlineButtons.push([
                 Markup.button.callback(
-                    data[0].name,
-                    `GET_SQUADS:${data[0].id}`
+                    `${currentPage} из ${totalPages}`,
+                    `PAGE`
                 ),
             ]);
-        }
-        for (let i = 0; i < data.length - 1; i += 2) {
+        } else if (page == 1 && totalPages > 1) {
             inlineButtons.push([
                 Markup.button.callback(
-                    data[i].name,
-                    `GET_SQUADS:${data[i].id}`
+                    `${currentPage} из ${totalPages}`,
+                    `PAGE`
                 ),
+                Markup.button.callback(`>>`, `NEXT_PAGE:${page + 1}`),
+            ]);
+        } else if (currentPage == totalPages) {
+            inlineButtons.push([
+                Markup.button.callback(`<<`, `PREVIOUS_PAGE:${page - 1}`),
                 Markup.button.callback(
-                    data[i + 1].name,
-                    `GET_SQUADS:${data[i + 1].id}`
+                    `${currentPage} из ${totalPages}`,
+                    `PAGE`
                 ),
             ]);
+        } else {
+            inlineButtons.push([
+                Markup.button.callback(`<<`, `PREVIOUS_PAGE:${page - 1}`),
+                Markup.button.callback(
+                    `${currentPage} из ${totalPages}`,
+                    `PAGE`
+                ),
+                Markup.button.callback(`>>`, `NEXT_PAGE:${page + 1}`),
+            ]);
         }
-        inlineButtons.push([
-            Markup.button.callback(`${currentPage} из ${totalPages}`, `stop`),
-            Markup.button.callback('>>', `next`),
-        ]);
-        ctx.reply('Отряды вашего королевства', {
+        await ctx.reply('Отряды вашего королевства', {
             ...Markup.inlineKeyboard(inlineButtons),
         });
     }

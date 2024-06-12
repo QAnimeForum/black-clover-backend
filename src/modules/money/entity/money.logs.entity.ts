@@ -16,7 +16,7 @@ export class MoneyLogEntity {
     @Column({
         type: 'varchar',
     })
-    recipient: number;
+    recipient: string;
     @Column({
         type: 'int',
     })

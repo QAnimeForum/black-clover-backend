@@ -4,13 +4,8 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 
 import { WantedEntity } from '../entity/wanted.entity';
 import { ProblemJudgeInfoEntity } from '../entity/problem-judge-info.entity';
-import {
-    ENUM_PROBLEM_STATUS,
-    ProblemEntity,
-    ProblemType,
-} from '../entity/problem.entity';
+import { ENUM_PROBLEM_STATUS, ProblemEntity } from '../entity/problem.entity';
 
-import { UserPrivilegeService } from 'src/modules/user/services/user-privilege.service';
 import { CharacterEntity } from 'src/modules/character/entity/character.entity';
 import { SubmissionService } from './submission.service';
 import { CourtWorkerEntity } from '../entity/court.worker.entity';
@@ -35,13 +30,20 @@ export class ProblemService {
         @InjectRepository(CourtWorkerEntity)
         private readonly courtWorkerRepository: Repository<CourtWorkerEntity>,
         @Inject(forwardRef(() => SubmissionService))
-        private readonly submissionService: SubmissionService,
-        @Inject(forwardRef(() => UserPrivilegeService))
-        private readonly userPrivilegeService: UserPrivilegeService
+        private readonly submissionService: SubmissionService
+        /* @Inject(forwardRef(() => UserPrivilegeService))
+        private readonly userPrivilegeService: UserPrivilegeService*/
     ) {}
 
     async findProblemById(id: string): Promise<ProblemEntity> {
-        return await this.problemRepository.findOneBy({ id });
+        return await this.problemRepository.findOne({
+            where: { id },
+            relations: {
+                creator: {
+                    background: true,
+                },
+            },
+        });
     }
 
     async findProblemsByExistingIds(
@@ -73,15 +75,17 @@ export class ProblemService {
             defaultSortBy: [['id', 'DESC']],
             searchableColumns: ['displayId'],
             select: ['id', 'displayId', 'status', 'content', 'creator_id'],
+            defaultLimit: 5,
             filterableColumns: {
                 creator_id: [FilterOperator.EQ],
             },
+            relations: ['creator'],
         });
     }
 
     async createProblem(
         creator: CharacterEntity,
-        type: ProblemType,
+        //    type: ProblemType,
         content: string
     ): Promise<ProblemEntity> {
         /**
@@ -93,7 +97,6 @@ export class ProblemService {
         problem.content = content;
        */
         return await this.problemRepository.save({
-            type,
             isPublic: true,
             status: ENUM_PROBLEM_STATUS.DRAFT,
             creatorId: creator.id,
@@ -113,6 +116,17 @@ export class ProblemService {
         return await this.problemRepository.save(problem);
     }
 
+    async countProblems() {
+        return this.problemRepository.count();
+    }
+
+    async countMyProblems(characterId: string) {
+        return this.problemRepository.count({
+            where: {
+                creatorId: characterId,
+            },
+        });
+    }
     async changeProblemContent(
         problemId: string,
         content: string

@@ -184,15 +184,12 @@ export class SquadsService {
         });
     }
 
-    async findRanksByArmedForces(
-        armedForceId: string
-    ): Promise<[ArmedForcesRankEntity[], number]> {
-        const [entities, total] = await this.rankRepository.findAndCount({
+    async findRanksByArmedForces(armedForceId: string) {
+        return await this.rankRepository.find({
             where: {
                 armorForcesId: armedForceId,
             },
         });
-        return [entities, total];
     }
     findRankById(id: string): Promise<ArmedForcesRankEntity | null> {
         return this.rankRepository.findOneBy({ id });
@@ -224,6 +221,16 @@ export class SquadsService {
         });
     }
 
+    findArmedForcesMember(characterId: string) {
+        return this.armedForcesMemberRepository.findOne({
+            where: {
+                characterId: characterId,
+            },
+            relations: {
+                rank: true,
+            },
+        });
+    }
     findSquadMemberById(id: string): Promise<SquadMemberEntity | null> {
         return this.squadMemberRepository.findOneBy({ id });
     }
@@ -304,7 +311,12 @@ export class SquadsService {
         });
     }
     findArmedForcesById(id: string): Promise<ArmedForcesEntity | null> {
-        return this.armedForcesRepository.findOneBy({ id });
+        return this.armedForcesRepository.findOne({
+            where: { id },
+            relations: {
+                state: true,
+            }
+        });
     }
 
     findArmedForcesByState(
@@ -336,10 +348,13 @@ export class SquadsService {
         await this.armedForcesRepository.delete(id);
     }
 
-    async isUserHadRequest(character: CharacterEntity): Promise<boolean> {
+    async isUserHasRequest(tgId: number): Promise<boolean> {
+        //  `select wallet.* from wallet JOIN character ON wallet.id = character.wallet_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = ${dto.tgId}`
+
         return this.armedForcesRequestRepository.exists({
             where: {
-                character: character,
+                tgUserId: tgId,
+                status: ENUM_ARMED_FORCES_REQUEST.PENDING,
             },
         });
     }
@@ -360,11 +375,13 @@ export class SquadsService {
     async isUserSquadMemberRequest(
         character: CharacterEntity
     ): Promise<boolean> {
-        return this.armedForcesRequestRepository.exists({
+        const isRequestExists = this.armedForcesRequestRepository.exists({
             where: {
                 character: character,
+                status: ENUM_ARMED_FORCES_REQUEST.PENDING,
             },
         });
+        return isRequestExists;
     }
 
     async requestToForces(characterId: string, armedForcesId: string) {

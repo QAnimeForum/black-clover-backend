@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ProblemType } from '../entity/problem.entity';
 
 export class ProblemMetaDto {
     @ApiProperty()
@@ -7,9 +6,6 @@ export class ProblemMetaDto {
 
     @ApiProperty()
     displayId?: number;
-
-    @ApiProperty()
-    type: ProblemType;
 
     @ApiProperty()
     isPublic: boolean;

@@ -10,6 +10,8 @@ export enum ENUM_SPELL_TYPE {
     SEAL = 'SEAL',
     TRAP = 'TRAP',
     WEAKING = 'WEAKING',
+    DEVIL_UNION = 'DEVIL_UNION',
+    SPIRIT_UNION = 'SPIRIT_UNION',
     OTHER = 'OTHER',
 }
 

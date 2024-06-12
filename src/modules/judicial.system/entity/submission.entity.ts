@@ -12,10 +12,9 @@ import {
 
 import { ProblemEntity } from './problem.entity';
 import { CharacterEntity } from '../../character/entity/character.entity';
-import { SubmissionStatus } from '../constants/submission-status.enum';
 
 @Entity('submission')
-@Index(['isPublic', 'problemId', 'submitterId', 'status'])
+@Index(['isPublic', 'problemId', 'submitterId'])
 /**
  * @Index(['isPublic', 'problemId', 'status'])
 @Index(['isPublic', 'problemId', 'submitterId'])
@@ -30,18 +29,17 @@ export class SubmissionEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    // By default it equals to the problem's isPublic
     @Column({ type: 'boolean' })
     @Index()
     isPublic: boolean;
 
-    @Column({ type: 'integer', nullable: true })
-    timeUsed: number;
 
-    @Column({ type: 'enum', enum: SubmissionStatus })
+/**
+ *     @Column({ type: 'enum', enum: SubmissionStatus })
     @Index()
     status: SubmissionStatus;
 
+ */
     @ManyToOne(() => ProblemEntity, { onDelete: 'CASCADE' })
     @JoinColumn()
     problem: Promise<ProblemEntity>;
@@ -51,8 +49,10 @@ export class SubmissionEntity {
     problemId: string;
 
     @ManyToOne(() => CharacterEntity)
-    @JoinColumn()
-    submitter: Promise<CharacterEntity>;
+    @JoinColumn({
+        name: 'submitter_id',
+    })
+    submitter: CharacterEntity;
 
     @Column()
     @Index()
@@ -78,5 +78,4 @@ export class SubmissionEntity {
 
     @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
     updatedAt: Date;
-
 }

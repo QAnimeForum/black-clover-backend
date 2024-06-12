@@ -25,7 +25,7 @@ export class HelpScene {
             ...Markup.keyboard([
                 [KNOWLEGE_BASE_BUTTON, GUIDES_BUTTON],
                 [BACK_BUTTON],
-            ]),
+            ]).resize(),
         });
     }
 

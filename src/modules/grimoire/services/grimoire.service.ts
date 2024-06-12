@@ -64,32 +64,14 @@ export class GrimoireService {
         return entity;
     }
 
-    async findGrimoireByUserTgId(tgUserId: string): Promise<GrimoireEntity> {
-        const grimoire = await this.grimoireRepository
-            .createQueryBuilder('grimoire')
-            .innerJoinAndSelect(
-                'grimoire.character',
-                'charcter',
-                'character.tgUserId = :tgUserId',
-                { tgUserId: tgUserId }
-            )
-            .leftJoinAndSelect('grimoire.spells', 'spell')
-            .getOne();
-        return grimoire;
-
-        /**
-        *  
-        const entity = await this.userRepository.findOne({
-            where: {
-                tgUserId: tgUserId,
-            },
-            relations: {
-                character: {
-                    grimoire: true,
-                },
-            },
-        });
-        return entity.character.grimoire;*/
+    async findGrimoireByUserTgId(tgUserId: number) {
+        const grimoires = await this.connection.query(
+            `select grimoire.* from grimoire JOIN character ON grimoire.id = character.grimoire_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = ${tgUserId}`
+        );
+        if(grimoires.length == 1) {
+            return grimoires[0];
+        }
+        return null;
     }
 
     async createGrimoire(dto: GrimoireCreateDto): Promise<GrimoireEntity> {
@@ -151,7 +133,7 @@ export class GrimoireService {
             },
             relations: {
                 requirements: true,
-            }
+            },
         });
         return entity;
     }
@@ -256,6 +238,11 @@ export class GrimoireService {
         return await this.spellRequirementsRepository.save(spell.requirements);
     }
 
+    async updateSpellStatus(id: string, dto: SpellUpdateStatusDto) {
+        const spell = await this.findSpellById(id);
+        spell.status = dto.status;
+        return await this.spellRepository.save(spell);
+    }
     async deleteSpell(id: string) {
         return await this.spellRepository.delete(id);
     }
@@ -267,4 +254,8 @@ export class SpellUpdateMinimalLevel {
 
 export class SpellUpdateCooldownDto {
     cooldown: string;
+}
+
+export class SpellUpdateStatusDto {
+    status: ENUM_SPELL_STATUS;
 }

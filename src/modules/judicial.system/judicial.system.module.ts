@@ -14,6 +14,7 @@ import { UserModule } from 'src/modules/user/user.module';
 import { ProblemService } from './services/problem.service';
 import { SubmissionService } from './services/submission.service';
 import { CourtWorkerEntity } from './entity/court.worker.entity';
+import { CourtWorkerService } from './services/court.worker.service';
 
 @Module({
     imports: [
@@ -22,7 +23,7 @@ import { CourtWorkerEntity } from './entity/court.worker.entity';
             CourtWorkerEntity,
             ProblemJudgeInfoEntity,
             ProblemEntity,
-    
+
             SubmissionEntity,
             ArrestEntity,
             FactionEntity,
@@ -33,7 +34,7 @@ import { CourtWorkerEntity } from './entity/court.worker.entity';
         ]),
     ],
     controllers: [JudicialSystemController],
-    providers: [ProblemService, SubmissionService],
-    exports: [ProblemService, SubmissionService],
+    providers: [ProblemService, SubmissionService, CourtWorkerService],
+    exports: [ProblemService, SubmissionService, CourtWorkerService],
 })
 export class JudicialSystemModule {}

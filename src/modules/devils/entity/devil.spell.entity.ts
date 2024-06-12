@@ -43,9 +43,9 @@ export class DevilSpellEntity {
     })
     castTime: string;
 
-    @ManyToOne(() => DevilUnionEntity, (devilUnion) => devilUnion.spells)
+   /* @ManyToOne(() => DevilUnionEntity, (devilUnion) => devilUnion.spells)
     @JoinColumn({ name: 'union_id', referencedColumnName: 'id' })
-    union: DevilUnionEntity;
+    union: DevilUnionEntity;*/
 
 
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })

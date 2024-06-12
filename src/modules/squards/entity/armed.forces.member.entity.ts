@@ -11,6 +11,7 @@ import {
 import { CharacterEntity } from '../../character/entity/character.entity';
 import { ArmedForcesEntity } from './armed.forces.entity';
 import { ArmedForcesRankEntity } from './armed.forces.rank.entity';
+import { ArmedForcesJobTitleEntity } from './armed.forces.job.title.entity';
 
 @Entity('armed_forces_member')
 export class ArmedForcesMemberEntity {
@@ -48,12 +49,19 @@ export class ArmedForcesMemberEntity {
     })
     rank: ArmedForcesRankEntity;
 
-
     @Column({
         type: 'varchar',
         name: 'rank_id',
     })
     rankId: string;
+
+    @ManyToOne(() => ArmedForcesJobTitleEntity, (jobTitle) => jobTitle.members)
+    @JoinColumn({
+        name: 'job_title_id',
+        referencedColumnName: 'id',
+    })
+    jobTitle: ArmedForcesJobTitleEntity;
+
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;
 

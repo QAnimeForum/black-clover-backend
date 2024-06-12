@@ -12,13 +12,10 @@ import { Logger } from 'winston';
 import {
     ARMED_FORCES_BUTTON,
     BACK_BUTTON,
-    BAR_BUTTON,
-    BLACK_MARKET_BUTTON,
-    CASINO_BUTTON,
-    FIELDS_BUTTON,
+    GARDEN_BUTTON,
+    GRIMOIRE_TOWER_BUTTON,
     MAGIC_PARLAMENT_BUTTON,
     MINES_BUTTON,
-    SHOP_BUTTON,
     SHOPPING_DISTRICT_BUTTON,
 } from '../../constants/button-names.constant';
 
@@ -42,7 +39,7 @@ export class OrganizationsScene {
         const title2 = `<strong><u>Частные организации</u></strong>`;
         const title3 = `<strong><u>Преступные организации</u></strong>`;
         const caption = `${title}${description}\n\n${title1}\n${title2}\n${title3}\n`;
-        ctx.sendPhoto(
+        await ctx.sendPhoto(
             {
                 source: KNIGHT_IMAGE_PATH,
             },
@@ -50,8 +47,8 @@ export class OrganizationsScene {
                 caption,
                 parse_mode: 'HTML',
                 ...Markup.keyboard([
-                    [SHOPPING_DISTRICT_BUTTON],
-                    [FIELDS_BUTTON, MINES_BUTTON],
+                    [GRIMOIRE_TOWER_BUTTON, SHOPPING_DISTRICT_BUTTON],
+                    [GARDEN_BUTTON, MINES_BUTTON],
                     [MAGIC_PARLAMENT_BUTTON, ARMED_FORCES_BUTTON],
                     [BACK_BUTTON],
                 ]).resize(),
@@ -59,12 +56,16 @@ export class OrganizationsScene {
         );
     }
 
+    @Hears(GRIMOIRE_TOWER_BUTTON)
+    async grimoireTower(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
+    }
     @Hears(SHOPPING_DISTRICT_BUTTON)
     async shopDistrict(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.SHOPPING_DISTRICT_SCENE_ID);
     }
 
-    @Hears(FIELDS_BUTTON)
+    @Hears(GARDEN_BUTTON)
     async fields(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.FIELDS_SCENE_ID);
     }

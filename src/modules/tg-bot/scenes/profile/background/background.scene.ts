@@ -1,10 +1,13 @@
 import { Inject, UseFilters } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { Action, Context, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
+import { Action, Context, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { CharacterService } from 'src/modules/character/services/character.service';
 import {
     ADD_QUOTES_BUTTON,
+    ALCOHOL_BUTTON,
+    ARMOR_BUTTON,
     BACK_BUTTON,
+    BACKGROUND_BUTTON,
     EDIT_APPEARANCE_BUTTON,
     EDIT_ATTACHMENTS_BUTTON,
     EDIT_AVATAR_BUTTON,
@@ -17,9 +20,23 @@ import {
     EDIT_QUOTE_BUTTON,
     EDIT_WEAKNESS_BUTTON,
     EDIT_WORLDVIEW_BUTTON,
+    FOOD_BUTTON,
+    GEARS_BUTTON,
+    GRIMOIRE_BUTTON,
+    INVENTORY_BUTTON,
+    JEWEIRY_BUTTON,
+    MINERALS_BUTTON,
+    MY_DEVILS_BUTTON,
+    MY_SPIRITS_BUTTON,
+    PARAMS_BUTTON,
+    PROFILE_BUTTON,
     REMOVE_QUOTES_BUTTON,
+    TOOLKIT_BUTTON,
+    VEHICLES_BUTTON,
+    WALLET_BUTTON,
+    WEAPONS_BUTTON,
 } from 'src/modules/tg-bot/constants/button-names.constant';
-import { KNIGHT_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
+import { INVENTORY_IMAGE_PATH, KNIGHT_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
 import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
 import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
 import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
@@ -69,6 +86,12 @@ export class BackgroundScene {
             {
                 caption,
                 parse_mode: 'HTML',
+                ...Markup.keyboard([
+                    [GRIMOIRE_BUTTON, BACKGROUND_BUTTON, PARAMS_BUTTON],
+                    [WALLET_BUTTON, INVENTORY_BUTTON],
+                    [MY_DEVILS_BUTTON, MY_SPIRITS_BUTTON],
+                    [PROFILE_BUTTON, BACK_BUTTON],
+                ]).resize(),
                 /**    ...Markup.keyboard([[EDIT_BUTTON], [BACK_BUTTON]]).resize(), */
             }
         );
@@ -219,6 +242,80 @@ export class BackgroundScene {
     async editAppearance(@Context() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.EDIT_APPEARANCE_SCENE_ID);
     }
+
+    @Hears(BACKGROUND_BUTTON)
+    async bio(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
+    }
+    @Hears(PARAMS_BUTTON)
+    async params(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.CHARACTER_PARAMETERS_SCENE_ID);
+    }
+    @Hears(WALLET_BUTTON)
+    async wallet(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.WALLET_SCENE_ID);
+    }
+    @Hears(INVENTORY_BUTTON)
+    async inventory(@Ctx() ctx: BotContext, @Sender() sender) {
+        const title = '<strong><u>Инвентарь</u></strong>\n\n';
+        const owner = `<strong>Владелец</strong>: @${sender.username}\n\n`;
+        const equipmentTitle = '<strong><u>Надетая экипировка</u></strong>\n\n';
+        const weaponBlock = `${WEAPONS_BUTTON}:-\n`;
+        const armorBlock = `${ARMOR_BUTTON}: -\n`;
+        const jeweiryBlock = `${JEWEIRY_BUTTON}: -\n`;
+        const foodBlock = `${FOOD_BUTTON}: -\n`;
+        const alcoholBlock = `${ALCOHOL_BUTTON}: -\n`;
+        const toolKitBlock = `${TOOLKIT_BUTTON}: -\n`;
+        const gearsBlock = `${GEARS_BUTTON}: -\n`;
+        const vehiclesBlock = `${VEHICLES_BUTTON}: -\n`;
+
+        const resourcesTitle = `strong><u>♻️ Ресурсы</u></strong>\n\n`;
+        const caption = `${title}${owner}${equipmentTitle}${weaponBlock}${armorBlock}${gearsBlock}${vehiclesBlock}${toolKitBlock}`;
+        await ctx.sendPhoto(
+            {
+                source: INVENTORY_IMAGE_PATH,
+            },
+            {
+                caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard([
+                    [
+                        Markup.button.callback(
+                            MINERALS_BUTTON,
+                            MINERALS_BUTTON
+                        ),
+                        Markup.button.callback(JEWEIRY_BUTTON, JEWEIRY_BUTTON),
+                    ],
+                    [
+                        Markup.button.callback(ALCOHOL_BUTTON, ALCOHOL_BUTTON),
+                        Markup.button.callback(FOOD_BUTTON, FOOD_BUTTON),
+                    ],
+
+                    [
+                        Markup.button.callback(WEAPONS_BUTTON, WEAPONS_BUTTON),
+                        Markup.button.callback(ARMOR_BUTTON, ARMOR_BUTTON),
+                    ],
+                    [
+                        Markup.button.callback(GEARS_BUTTON, GEARS_BUTTON),
+                        Markup.button.callback(
+                            VEHICLES_BUTTON,
+                            VEHICLES_BUTTON
+                        ),
+                    ],
+                ]),
+            }
+        );
+    }
+    @Hears(MY_DEVILS_BUTTON)
+    async myDevils(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.MY_DEVILS_SCENE_ID);
+    }
+
+    @Hears(MY_SPIRITS_BUTTON)
+    async mySpirits(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.MY_SPIRITS_SCENE_ID);
+    }
+
     @Action(BACK_BUTTON)
     async profile(@Context() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.PROFILE_SCENE_ID);

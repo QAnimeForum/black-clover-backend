@@ -41,7 +41,7 @@ export class DevilsService {
         return this.devilRepository.findOneBy({ id });
     }
 
-    findDevilByIdWithUnions(id: string): Promise<DevilEntity | null> {
+   /* findDevilByIdWithUnions(id: string): Promise<DevilEntity | null> {
         return this.devilRepository.findOne({
             where: {
                 id: id,
@@ -55,8 +55,8 @@ export class DevilsService {
                 union_100: true,
             },
         });
-    }
-    findSpellsByUnion(id: string) {
+    }*/
+   /* findSpellsByUnion(id: string) {
         return this.devilUnionRepository.findOne({
             where: {
                 id: id,
@@ -65,7 +65,7 @@ export class DevilsService {
                 spells: true,
             },
         });
-    }
+    }*/
     findOneByName(name: string): Promise<DevilEntity | null> {
         return this.devilRepository.findOne({
             where: {
@@ -97,13 +97,13 @@ export class DevilsService {
             description: dto.description,
             rank: ENUM_DEVIL_RANK[dto.rank],
             floor: ENUM_DEVIL_FLOOR[dto.floor],
-            magic_type: dto.magic_type,
-            union_10: devil_union_10,
+            magicType: dto.magic_type,
+           /* union_10: devil_union_10,
             union_25: devil_union_25,
             union_50: devil_union_50,
             union_65: devil_union_65,
             union_80: devil_union_80,
-            union_100: devil_union_100,
+            union_100: devil_union_100,*/
         });
         return insert.raw[0].id;
     }

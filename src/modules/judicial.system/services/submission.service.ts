@@ -53,7 +53,7 @@ export class SubmissionService {
         const submission = new SubmissionEntity();
         submission.isPublic = problem.isPublic;
 
-        submission.status = SubmissionStatus.Pending;
+       // submission.status = SubmissionStatus.Pending;
         submission.submitTime = new Date();
         submission.problemId = problem.id;
         submission.submitterId = submitter.id;
@@ -74,7 +74,8 @@ export class SubmissionService {
         };
     }*/
 
-    private async onSubmissionFinished(
+   /**
+    *  private async onSubmissionFinished(
         submission: SubmissionEntity,
         problem: ProblemEntity,
         status: SubmissionStatus
@@ -82,4 +83,5 @@ export class SubmissionService {
         submission.status = status;
         this.submissionRepository.save(submission);
     }
+    */
 }

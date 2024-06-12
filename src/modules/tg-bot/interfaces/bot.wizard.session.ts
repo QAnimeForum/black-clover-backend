@@ -18,6 +18,7 @@ export interface BotWizardSession extends Scenes.WizardSessionData {
         name: string;
         description: string;
     };
+    problem: string;
     character: CharacterCreateDto;
     grimoire: GrimoireCreateDto;
     squad: SquadCreateDto;

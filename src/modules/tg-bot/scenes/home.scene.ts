@@ -22,42 +22,93 @@ import {
     PROFILE_BUTTON,
     QUESTS_BUTTON,
 } from '../constants/button-names.constant';
+import { AnnouncementService } from 'src/modules/events/services/announcement.service';
 
 @Scene(ENUM_SCENES_ID.HOME_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class HomeScene {
     constructor(
         private readonly userSerivce: UserService,
+        private readonly announcementService: AnnouncementService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
 
     @SceneEnter()
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
     async enter(@Ctx() ctx: BotContext, @Sender('id') tgId: number) {
-        const isShowAdminButton =
-            await this.userSerivce.isShowAdminButton(tgId);
+        const chatType = ctx.message.chat.type;
+        const isShowAdminButton = await this.userSerivce.isAdmin(tgId);
         const caption = 'Привет, путник!';
-        ctx.reply(
-            `Поздравляем! Вы заполнили базовую информацию о персонаже. \n Для того, чтобы принимать активное участие в мире клевера, вам необходимо иметь гримуар. Перейдите во вкладку`
-        );
-        const buttons = [
-            [PROFILE_BUTTON, ORGANIZATIONS_BUTTON, MAP_BUTTON],
-            [ALL_SPIRITS_BUTTON, ALL_DEVILS_BUTTON],
-            [ANNOUNCEMENTS_BUTTON, QUESTS_BUTTON, HELP_BUTTON],
-            [ADMIN_PANEL_BUTTON],
-        ];
-        if (isShowAdminButton) {
-            buttons.push([ADMIN_PANEL_BUTTON]);
-        }
-        await ctx.sendPhoto(
-            {
-                source: HELLO_IMAGE_PATH,
-            },
-            {
-                caption,
-                ...Markup.keyboard(buttons).resize(),
+        if (chatType == 'private') {
+            const caption = 'Привет, путник!';
+            const buttons = [
+                [PROFILE_BUTTON, ORGANIZATIONS_BUTTON, MAP_BUTTON],
+                [ALL_SPIRITS_BUTTON, ALL_DEVILS_BUTTON],
+                [ANNOUNCEMENTS_BUTTON, QUESTS_BUTTON, HELP_BUTTON],
+            ];
+            if (isShowAdminButton) {
+                buttons.push([ADMIN_PANEL_BUTTON]);
             }
-        );
+            await ctx.sendPhoto(
+                {
+                    source: HELLO_IMAGE_PATH,
+                },
+                {
+                    caption,
+                    ...Markup.keyboard(buttons).resize(),
+                }
+            );
+        } else {
+            const buttons = [
+                [
+                    Markup.button.callback(
+                        PROFILE_BUTTON,
+                        PROFILE_BUTTON
+                    ),
+                    Markup.button.callback(
+                        ORGANIZATIONS_BUTTON,
+                        ORGANIZATIONS_BUTTON
+                    ),
+                    Markup.button.callback(MAP_BUTTON, MAP_BUTTON),
+                ],
+                [
+                    Markup.button.callback(
+                        ALL_SPIRITS_BUTTON,
+                        ALL_SPIRITS_BUTTON
+                    ),
+                    Markup.button.callback(
+                        ALL_DEVILS_BUTTON,
+                        ALL_DEVILS_BUTTON
+                    ),
+                ],
+                [
+                    Markup.button.callback(
+                        ANNOUNCEMENTS_BUTTON,
+                        ANNOUNCEMENTS_BUTTON
+                    ),
+                    Markup.button.callback(HELP_BUTTON, HELP_BUTTON),
+                ],
+            ];
+            if (isShowAdminButton) {
+                buttons.push([
+                    Markup.button.callback(
+                        ADMIN_PANEL_BUTTON,
+                        ADMIN_PANEL_BUTTON
+                    ),
+                ]);
+            }
+
+            await ctx.sendPhoto(
+                {
+                    source: HELLO_IMAGE_PATH,
+                },
+                {
+                    caption,
+                    parse_mode: 'HTML',
+                    ...Markup.inlineKeyboard(buttons),
+                }
+            );
+        }
     }
 
     @Hears(ORGANIZATIONS_BUTTON)
@@ -95,9 +146,28 @@ export class HomeScene {
     }
 
     @Hears(ANNOUNCEMENTS_BUTTON)
-    @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
     async quests(@Ctx() ctx: BotContext) {
-        ctx.reply('У вас нет квестов');
+        const announcements =
+            await this.announcementService.findAllAnnouncements({
+                path: '',
+            });
+        const caption = `Объявления\n Общее количество объявлений: ${announcements.meta.totalItems}`;
+        const buttons = [];
+        announcements.data.map((announcement, index) =>
+            buttons.push([
+                Markup.button.callback(
+                    announcement.title,
+                    `ANNOUNCEMENTS:${announcement.id}`
+                ),
+            ])
+        );
+        if (buttons.length > 0) {
+            await ctx.reply(caption, {
+                ...Markup.inlineKeyboard([buttons]),
+            });
+        } else {
+            await ctx.reply('Объявлений нет');
+        }
     }
     @Hears(HELP_BUTTON)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)

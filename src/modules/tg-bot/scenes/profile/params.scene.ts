@@ -34,8 +34,8 @@ export class CharacterParamsScene {
             await this.characterService.findFullCharacterInfoByTgId(senderId);
         const characteristics = character.characterCharacteristics;
         const levelBlock = `<strong>Уровень персонажа</strong>: ${characteristics.currentLevel}/${characteristics.maxLevel}\n`;
-        const hpBlock = `<strong>♥️</strong>: ${characteristics.currentHealth}/${characteristics.maxHealth}\n`;
-        const magicPowerBlock = `<strong>Магичесая сила</strong>: 500/500\n`;
+        const hpBlock = `<strong>♥️Уровень здоровья</strong>: ${characteristics.currentHealth}/${characteristics.maxHealth}\n`;
+        const magicPowerBlock = `<strong>🌀Магическая сила</strong>: 500/500\n`;
         const strengthBlock = `<strong>💪Сила</strong>: ${characteristics.strength.score}\n`;
         const dexterityBlock = `<strong>🏃Ловкость</strong>: ${characteristics.dexterity.score}\n`;
         const constitutionBlock = `<strong>🏋️Телосложение</strong>: ${characteristics.constitution.score}\n`;

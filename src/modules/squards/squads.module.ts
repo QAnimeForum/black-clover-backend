@@ -11,10 +11,14 @@ import { ArmedForcesRequestEntity } from './entity/armed.forces.request.entity';
 import { CharacterModule } from 'src/modules/character/character.module';
 import { ArmedForcesRankEntity } from './entity/armed.forces.rank.entity';
 import { ArmedForcesMemberEntity } from './entity/armed.forces.member.entity';
+import { ArmedForcesJobPermissionEntity } from './entity/armed.forces.permission.entity';
+import { ArmedForcesJobTitleEntity } from './entity/armed.forces.job.title.entity';
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             ArmedForcesMemberEntity,
+            ArmedForcesJobTitleEntity,
+            ArmedForcesJobPermissionEntity,
             ArmedForcesRequestEntity,
             ArmedForcesEntity,
             SquadEntity,

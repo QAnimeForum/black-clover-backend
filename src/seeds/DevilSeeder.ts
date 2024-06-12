@@ -14,7 +14,8 @@ export default class DevilSeeder implements Seeder {
         const devilSpellsRepository =
             dataSource.getRepository(DevilSpellEntity);
 
-        for (let i = 0; i < devils.length; ++i) {
+     /**
+      *    for (let i = 0; i < devils.length; ++i) {
             const {
                 name,
                 description,
@@ -145,5 +146,6 @@ export default class DevilSeeder implements Seeder {
                 });
             }
         }
+      */
     }
 }

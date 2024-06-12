@@ -9,8 +9,8 @@ import { PlantEntity } from './plant.entity';
 
 @Entity('pot')
 export class PotEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column({ type: 'timestamp', nullable: true })
     rentedUntil: Date | null;

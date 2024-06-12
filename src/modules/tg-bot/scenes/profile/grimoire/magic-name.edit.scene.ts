@@ -1,51 +1,53 @@
-import {
-    Ctx,
-    Message,
-    On,
-    SceneEnter,
-    Sender,
-    Wizard,
-    WizardStep,
-} from 'nestjs-telegraf';
-
-import { Inject, UseFilters } from '@nestjs/common';
-import { BotContext } from '../../../interfaces/bot.context';
-import { GrimoireService } from '../../../../grimoire/services/grimoire.service';
-import { TelegrafExceptionFilter } from '../../../filters/tg-bot.filter';
-import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
-import { Logger } from 'winston';
+import { Inject, Injectable } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
+import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
+import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
+import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
+import { Composer, Scenes, Telegraf } from 'telegraf';
+import { message } from 'telegraf/filters';
+import { Logger } from 'winston';
 
-@Wizard(ENUM_SCENES_ID.EDIT_MAGIC_NAME_SCENE_ID)
-@UseFilters(TelegrafExceptionFilter)
+@Injectable()
 export class MagicNameEditWizard {
-    constructor(private readonly grimoireService: GrimoireService,
+    readonly scene: Scenes.WizardScene<BotContext>;
+    readonly steps: Composer<BotContext>[] = [];
+    constructor(
+        @InjectBot() bot: Telegraf<BotContext>,
+        @Inject(TELEGRAF_STAGE)
+        private readonly stage: Scenes.Stage<BotContext>,
+        private readonly grimoireService: GrimoireService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
-    ) {}
-
-    @SceneEnter()
-    async start(@Ctx() ctx: BotContext) {
-        await ctx.reply(`Редактировать магию`);
-    }
-
-    @WizardStep(1)
-    @On(['text'])
-    //@UseInterceptors(TgBotLoggerInterceptor)
-    async changeName(
-        @Ctx() ctx: BotContext,
-        @Sender('id') tgId,
-        @Message('text') msg: string
     ) {
-        /*   if (Object.values(BUTTON_ACTIONS).includes(msg)) {
-            ctx.reply('Введите название магии, а не команду');
-            ctx.wizard.back();
-            return;
-        }*/
-        const grimoire =
-            await this.grimoireService.findGrimoireByUserTgId(tgId);
-        await this.grimoireService.updateGrimoreMagicName(grimoire.id, {
-            magicName: msg,
+        this.scene = new Scenes.WizardScene<BotContext>(
+            ENUM_SCENES_ID.EDIT_MAGIC_NAME_SCENE_ID,
+            this.step1()
+        );
+        this.scene.enter(this.start());
+        this.stage.register(this.scene);
+        bot.use(stage.middleware());
+    }
+    start() {
+        return async (ctx: BotContext) => {
+            await ctx.reply('Введите название магического атрибута.');
+        };
+    }
+    step1() {
+        const composer = new Composer<BotContext>();
+        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+        composer.command('cancel', async (ctx) => {
+            await ctx.reply('Имя не изменено.');
+            ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
         });
-        await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_SCENE_ID);
+        composer.on(message('text'), async (ctx) => {
+            const message = ctx.update?.message.text;
+            const spellId = ctx.session.spellId;
+            const grimoireId = ctx.session.grimoireId;
+            await this.grimoireService.updateGrimoreMagicName(grimoireId, {
+                magicName: message,
+            });
+            await ctx.scene.enter(ENUM_SCENES_ID.EDIT_GRIMOIRES_SCENE_ID);
+        });
+        return composer;
     }
 }

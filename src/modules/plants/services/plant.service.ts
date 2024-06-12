@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PlantEntity } from '../entity/plant.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PotEntity } from '../entity/pot.entity';
 import { GardenEntity } from '../entity/garden.entity';
+import { UserEntity } from 'src/modules/user/entities/user.entity';
+import { CharacterEntity } from 'src/modules/character/entity/character.entity';
+import { CharacterService } from 'src/modules/character/services/character.service';
 
 export enum PlantStage {
     JustPlantedRecently = 1,
@@ -24,6 +27,8 @@ export class PlantCreateDto {
 @Injectable()
 export class PlantService {
     constructor(
+        @Inject(CharacterService)
+        private readonly characterService: CharacterService,
         @InjectRepository(GardenEntity)
         private readonly gardenRepository: Repository<GardenEntity>,
         @InjectRepository(PlantEntity)
@@ -32,7 +37,22 @@ export class PlantService {
         private readonly potRepository: Repository<PotEntity>
     ) {}
 
-    async create(dto: PlantCreateDto) {
+    async findGardenByUserTgId(tgUserId: number): Promise<GardenEntity> {
+        const query: string = `select garden.* from garden JOIN character ON garden.id = character.garden_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = ${tgUserId}`;
+        const gardens: Array<GardenEntity> =
+            await this.gardenRepository.query(query);
+        if (gardens.length !== 1) {
+            return null;
+        }
+        return gardens[0];
+    }
+
+    async findPotById(id: string) {
+        return this.potRepository.findOneBy({
+            id: id,
+        });
+    }
+    async createPlant(dto: PlantCreateDto) {
         const plant = new PlantEntity();
         plant.name = dto.name;
         plant.emojiIcon = dto.emojiIcon;
@@ -43,6 +63,34 @@ export class PlantService {
         this.plantRepository.save(plant);
     }
 
+    async createGarden(tgId: number) {
+        const character = await this.characterService.findCharacterByTgId(tgId);
+        const garden = new GardenEntity();
+        const pot1 = new PotEntity();
+        await this.potRepository.insert(pot1);
+        const pot2 = new PotEntity();
+
+        await this.potRepository.insert(pot2);
+        const pot3 = new PotEntity();
+
+        await this.potRepository.insert(pot3);
+        const pot4 = new PotEntity();
+
+        await this.potRepository.insert(pot4);
+        const pot5 = new PotEntity();
+        await this.potRepository.insert(pot5);
+        garden.pot_1 = pot1;
+        garden.pot_2 = pot2;
+        garden.pot_3 = pot3;
+        garden.pot_4 = pot4;
+        garden.pot_5 = pot5;
+        console.log(garden);
+        await this.gardenRepository.save(garden);
+        character.garden = garden;
+        character.gardenId = garden.id;
+        this.characterService.updateCharacter(character);
+        return garden;
+    }
     async delete(id: string): Promise<void> {
         const result = await this.plantRepository.findBy({ id: id });
         if (result.length > 0) {
@@ -235,7 +283,7 @@ export class PlantService {
         }
         const bias = Math.floor(Math.random() * 5);
         const sale = Math.round((pot.stage * (pot.plant.salePrice + bias)) / 4);
-     //   await UserService.getMoney(userId, sale);
+        //   await UserService.getMoney(userId, sale);
         pot.plant = null;
         pot.stage = 0;
         pot.nextWatering = null;

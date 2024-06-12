@@ -39,6 +39,8 @@ import { SpiritsModule } from 'src/modules/spirits/spirits.module';
 import { SquadsModule } from 'src/modules/squards/squads.module';
 import { UserModule } from 'src/modules/user/user.module';
 import { AnnouncementModule } from 'src/modules/events/event.module';
+import { PlantService } from 'src/modules/plants/services/plant.service';
+import { PlantsModule } from 'src/modules/plants/plants.module';
 
 const logDir = 'logs/service/';
 const infoLogDir = `${logDir}${LOGGER_INFO}`;
@@ -154,7 +156,7 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
         ErrorModule,
         ResponseModule,
         RequestModule,
-
+        PlantsModule,
         GrimoireModule,
         AnnouncementModule,
         DevilsModule,

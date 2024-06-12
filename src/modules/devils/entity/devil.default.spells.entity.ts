@@ -8,11 +8,12 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 import { DevilUnionsPercentEnum } from '../constants/devil.union.percent.enum';
-import { CharacterEntity } from '../../character/entity/character.entity';
+import { SpellEntity } from '../../grimoire/entity/spell.entity';
+
 import { DevilEntity } from './devil.entity';
 
-@Entity('devil_union')
-export class DevilUnionEntity {
+@Entity('devil_default_spells')
+export class DevilDefaultSpellsEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -21,14 +22,7 @@ export class DevilUnionEntity {
         enum: DevilUnionsPercentEnum,
         default: DevilUnionsPercentEnum.PERCENT_10,
     })
-    maxAvailablePercent: DevilUnionsPercentEnum;
-
-    @Column({
-        type: 'enum',
-        enum: DevilUnionsPercentEnum,
-        default: DevilUnionsPercentEnum.PERCENT_10,
-    })
-    currentPercent: DevilUnionsPercentEnum;
+    percent: DevilUnionsPercentEnum;
 
     @OneToOne(() => DevilEntity)
     @JoinColumn({
@@ -38,25 +32,17 @@ export class DevilUnionEntity {
     devil: DevilEntity;
 
     @Column({
-        name: 'devil_id',
+        name: 'character_id',
         type: 'uuid',
     })
     devilId: string;
 
-    @OneToOne(() => CharacterEntity)
+    @OneToOne(() => SpellEntity)
     @JoinColumn({
-        name: 'character_id',
+        name: 'spell_id',
         referencedColumnName: 'id',
     })
-    character: CharacterEntity;
-
-    @Column({
-        name: 'character_id',
-        type: 'uuid',
-    })
-    characterId: string;
-   /* @OneToMany(() => SpellEntity, (devilSpell) => devilSpell.union)
-    spells: Array<SpellEntity>;*/
+    spell: SpellEntity;
 
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;

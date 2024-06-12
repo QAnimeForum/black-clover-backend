@@ -20,23 +20,28 @@ import { UserService } from 'src/modules/user/services/user.service';
 
 import {
     ANNOUNCEMENTS_BUTTON,
+    ARMED_FORCES_BUTTON,
     BACK_BUTTON,
     CHRONICLE_BUTTON,
     GAMES_BUTTON,
     GRIMOIRES_BUTTON,
     ITEMS_BUTTON,
+    MAGIC_PARLAMENT_BUTTON,
     MONEY_BUTTON,
     PERMITIONS_BUTTON,
+    PLANTS_BUTTON,
 } from '../../constants/button-names.constant';
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { AnnouncementService } from 'src/modules/events/services/announcement.service';
+import { SquadsService } from 'src/modules/squards/service/squads.service';
 @Scene(ENUM_SCENES_ID.ADMIN_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class AdminScene {
     constructor(
         private readonly userService: UserService,
         private readonly announcementService: AnnouncementService,
+        private readonly armedForcesService: SquadsService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
@@ -49,8 +54,9 @@ export class AdminScene {
             {
                 caption,
                 ...Markup.keyboard([
-                    [PERMITIONS_BUTTON, ITEMS_BUTTON],
-                    [GRIMOIRES_BUTTON, GAMES_BUTTON, MONEY_BUTTON],
+                    [PERMITIONS_BUTTON, GRIMOIRES_BUTTON, ITEMS_BUTTON],
+                    [PLANTS_BUTTON, GAMES_BUTTON, MONEY_BUTTON],
+                    [MAGIC_PARLAMENT_BUTTON, ARMED_FORCES_BUTTON],
                     [ANNOUNCEMENTS_BUTTON, CHRONICLE_BUTTON],
                     [BACK_BUTTON],
                 ]).resize(),
@@ -58,6 +64,34 @@ export class AdminScene {
         );
     }
 
+    @Hears(ARMED_FORCES_BUTTON)
+    async armedForces(@Ctx() ctx: BotContext) {
+        const armedForces = await this.armedForcesService.findAllArmedForces({
+            path: '',
+        });
+        const inlineKeyboard = [];
+        armedForces.data.map((item) =>
+            inlineKeyboard.push([
+                Markup.button.callback(
+                    `${item.name}`,
+                    `ARMED_FORCES:${item.id}`
+                ),
+            ])
+        );
+        const caption = 'Админка армии';
+        await ctx.reply(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(inlineKeyboard),
+        });
+    }
+
+    @Action(/^(ARMED_FORCES.*)$/)
+    @Hears(MAGIC_PARLAMENT_BUTTON)
+    async magicParlament(@Ctx() ctx: BotContext) {
+        const selectedId = ctx.callbackQuery['data'].split(':')[1];
+        ctx.session.adminSelectedArmedForcesId = selectedId;
+        await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_ARMED_FORCES_MAGIC_SCENE_ID);
+    }
     @Hears(ITEMS_BUTTON)
     async items(@Ctx() ctx: BotContext) {
         await ctx.reply('Предметы', {
@@ -87,19 +121,27 @@ export class AdminScene {
         });
     }
 
+    @Hears(PLANTS_BUTTON)
+    async plants(@Ctx() ctx: BotContext) {
+        ctx.scene.enter(ENUM_SCENES_ID.PLANTS_SCENE_ID);
+    }
     @Hears(PERMITIONS_BUTTON)
     async permitions(@Ctx() ctx: BotContext) {
-        const superAdmins = await this.userService.getAdmins();
-        const admins = await this.userService.getAdmins();
-        let caption = 'Список суперадминов:\n\n';
+        const superAdmins = await this.userService.findOwners();
+        const admins = await this.userService.findAdmins();
+        let caption = '<strong>Супер админ</strong>\n';
         superAdmins.map(
             (admin, index) => (caption += `${index + 1}) ${admin.tgUserId}\n`)
         );
-        caption += '\nСписок админов:\n\n';
+        caption += '<strong>Список админов:</strong>\n';
         admins.map(
             (admin, index) => (caption += `${index + 1}) ${admin.tgUserId}\n`)
         );
+        if (admins.length == 1) {
+            caption += 'Админов нет';
+        }
         await ctx.reply(caption, {
+            parse_mode: 'HTML',
             ...Markup.inlineKeyboard([
                 [
                     Markup.button.callback(
@@ -147,7 +189,14 @@ export class AdminScene {
             });
         const caption = `Объявления\n Общее количество объявлений: ${announcements.meta.totalItems}`;
         const buttons = [];
-        announcements.data.map((announcement, index) => buttons.push());
+        announcements.data.map((announcement, index) =>
+            buttons.push([
+                Markup.button.callback(
+                    announcement.title,
+                    `ANNOUNCEMENTS:${announcement.id}`
+                ),
+            ])
+        );
         ctx.reply(caption, {
             ...Markup.inlineKeyboard([buttons]),
         });

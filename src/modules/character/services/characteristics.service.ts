@@ -72,6 +72,7 @@ export class CharacteristicService {
         characteristitcsEntity.currentHealth = 500;
         characteristitcsEntity.maxHealth = 500;
         characteristitcsEntity.currentLevel = 1;
+        characteristitcsEntity.magicPower = 500;
         characteristitcsEntity.experience = 0;
         characteristitcsEntity.maxLevel = 20;
         characteristitcsEntity.hunger = 0;

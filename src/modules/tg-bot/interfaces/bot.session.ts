@@ -5,6 +5,7 @@ import { BotWizardSession } from './bot.wizard.session';
 export interface BotSession extends Scenes.WizardSession<BotWizardSession> {
     devilsList: string;
     devilId: string;
+    adminSelectedArmedForcesId: string;
     armedForcesId: string;
     grimoireId: string | null;
     spellId: string | null;

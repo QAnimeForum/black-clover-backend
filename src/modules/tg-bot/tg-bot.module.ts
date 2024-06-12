@@ -23,11 +23,9 @@ import { AllDevilsScene } from './scenes/devils/all.devils.scene';
 import { MyDevilsScene } from './scenes/devils/devils-my.scene';
 import { MySpiritsScene } from './scenes/spirits/spirits-my.scene';
 import { AllSpiritsScene } from './scenes/spirits/all.spirits';
-import { MagicParlamentScene } from './scenes/organizations/magic.parlament.scene';
 import { ArmedForcesScene } from './scenes/organizations/armed.forces.scene';
 import { CreateScquadWizard } from './scenes/organizations/create.squad.wizard';
 import { MinesScene } from './scenes/organizations/mines.wizard';
-import { RequestToParlamentWizard } from './scenes/organizations/request.to.parlament.wizard';
 import { AvatarEditWizard } from './scenes/profile/background/avatar-edit.wizard';
 import { BackgroundScene } from './scenes/profile/background/background.scene';
 import { CharacterHistoryEditWizard } from './scenes/profile/background/history-edit.wizard';
@@ -81,6 +79,15 @@ import { SpellMinimalLevelEditWizard } from './scenes/profile/grimoire/spell-min
 import { SpellDurationEditWizard } from './scenes/profile/grimoire/spell-duration-edit.wizard';
 import { SpellGoalsEditWizard } from './scenes/profile/grimoire/spell-goals-edit.wizard';
 import { SpellCooldownEditWizard } from './scenes/profile/grimoire/spell-cooldown-edit.wizard';
+import { SpellChangeStatusWizard } from './scenes/admin/spell-change-status.wizard';
+import { PlantsModule } from '../plants/plants.module';
+import { PlantsService } from './scenes/admin/plants.scene';
+import { PlantCreateScene } from './scenes/admin/plant.create.scene';
+import { GrimoireTowerScene } from './scenes/organizations/grimoire.tower.scene';
+import { MagicParlamentScene } from './scenes/organizations/parlament/magic.parlament.scene';
+import { RequestToParlamentWizard } from './scenes/organizations/parlament/request.to.parlament.wizard';
+import { AdminMagicParlamentScene } from './scenes/admin/admin.magic.parlament.scene';
+import { AdminArmedForcesScene } from './scenes/admin/admin.armed.forces.scene';
 @Module({
     imports: [
         ThrottlerModule.forRoot([
@@ -92,6 +99,7 @@ import { SpellCooldownEditWizard } from './scenes/profile/grimoire/spell-cooldow
         TypeOrmModule.forFeature([]),
         AnnouncementModule,
         GrimoireModule,
+        PlantsModule,
         DevilsModule,
         SpiritsModule,
         ItemsModule,
@@ -111,6 +119,7 @@ import { SpellCooldownEditWizard } from './scenes/profile/grimoire/spell-cooldow
     providers: [
         TgBotUpdate,
         TgBotService,
+        PlantsService,
         //common
         StartScene,
 
@@ -125,6 +134,9 @@ import { SpellCooldownEditWizard } from './scenes/profile/grimoire/spell-cooldow
         AnnouncementCreateWizard,
         AdminMoneyScene,
         AddMoneyWizard,
+        PlantCreateScene,
+        AdminMagicParlamentScene,
+        AdminArmedForcesScene,
         //Devils
         AllDevilsScene,
         MyDevilsScene,
@@ -148,6 +160,7 @@ import { SpellCooldownEditWizard } from './scenes/profile/grimoire/spell-cooldow
         FieldsScene,
         ChangeRankScene,
         ShoppingDistrictScene,
+        GrimoireTowerScene,
         //items
         ShopScene,
         BLackMarketScene,
@@ -188,6 +201,7 @@ import { SpellCooldownEditWizard } from './scenes/profile/grimoire/spell-cooldow
         SpellGoalsEditWizard,
         SpellMinimalLevelEditWizard,
         SpellCooldownEditWizard,
+        SpellChangeStatusWizard,
         {
             provide: APP_GUARD,
             useClass: TelegrafThrottlerGuard,
