@@ -152,7 +152,7 @@ export default class UserSeeder implements Seeder {
 
         await characterRepository.save(character);
         const user = new UserEntity();
-        user.tgUserId = 237798019;
+        user.tgUserId = '237798019';
         user.characterId = character.id;
         user.type = ENUM_USER_PERMISSION_TYPE.OWNER;
         await userRepository.save(user);

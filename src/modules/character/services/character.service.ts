@@ -113,7 +113,7 @@ export class CharacterService {
     updateCharacter(character: CharacterEntity) {
         return this.characterRepository.save(character);
     }
-    getCharacterBacgroundByTgId(telegramId: number) {
+    getCharacterBacgroundByTgId(telegramId: string) {
         return this.userRepository.findOne({
             where: {
                 tgUserId: telegramId,
@@ -129,7 +129,7 @@ export class CharacterService {
         });
     }
 
-    async getCharacterIdByTgId(telegramId: number) {
+    async getCharacterIdByTgId(telegramId: string) {
         return (
             await this.userRepository.findOne({
                 where: {
@@ -141,7 +141,7 @@ export class CharacterService {
             })
         ).character;
     }
-    async findBackgroundByTgId(telegramId: number) {
+    async findBackgroundByTgId(telegramId: string) {
         const user = await this.userRepository.findOne({
             where: {
                 tgUserId: telegramId,
@@ -208,7 +208,7 @@ export class CharacterService {
         return entity;
     }
 
-    async findCharacterByTgId(tgId: number) {
+    async findCharacterByTgId(tgId: string) {
         const user = await this.userRepository.findOne({
             where: {
                 tgUserId: tgId,
@@ -250,7 +250,7 @@ export class CharacterService {
         return user.tgUserId;
     }
 
-    async findFullCharacterInfoByTgId(tgId: number): Promise<CharacterEntity> {
+    async findFullCharacterInfoByTgId(tgId: string): Promise<CharacterEntity> {
         const entity = await this.userRepository.findOne({
             where: {
                 tgUserId: tgId,
@@ -277,7 +277,7 @@ export class CharacterService {
         return entity.character;
     }
 
-    async getInventoryByCharacter(tgId: number) {
+    async getInventoryByCharacter(tgId: string) {
         const entity = await this.userRepository.findOne({
             where: {
                 tgUserId: tgId,
@@ -303,7 +303,7 @@ export class CharacterService {
         this.backgroundRepository.save(character.background);
     }
 
-    async getStateByTgId(tgId: number) {
+    async getStateByTgId(tgId: string) {
         const entity = await this.userRepository.findOne({
             where: {
                 tgUserId: tgId,

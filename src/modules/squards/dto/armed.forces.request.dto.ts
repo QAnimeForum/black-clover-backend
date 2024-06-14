@@ -12,8 +12,8 @@ export class ArmedForcesRequestDto {
     @Type(() => String)
     characterId: string;
 
-    @Type(() => Number)
-    tgUserId: number;
+    @Type(() => String)
+    tgUserId: string;
     @Type(() => String)
     tgUsername: string;
 }

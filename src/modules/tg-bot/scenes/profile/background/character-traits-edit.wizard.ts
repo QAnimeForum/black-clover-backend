@@ -55,7 +55,7 @@ export class CharacterTraitsEditWizard {
             const message = ctx.update?.message.text;
             await this.backgroundService.updateCharacterTraits({
                 characterTraits: message,
-                telegramId: ctx.update?.message.from.id,
+                telegramId: ctx.update?.message.from.id.toString(),
             });
             this.logger.log(
                 LOGGER_INFO,

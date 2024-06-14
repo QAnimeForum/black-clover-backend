@@ -96,7 +96,7 @@ export class CharacterCreateWizard {
             await ctx.scene.leave();
         });
         composer.on(message('text'), async (ctx) => {
-            const regex = /^[a-zA-Zа-я\-]{2,25}$/;
+            const regex = /^[a-zA-ZА-Яа-я\-]{2,25}$/;
             const message = ctx.update?.message.text;
             if (regex.test(message)) {
                 ctx.scene.session.character.name = message;
@@ -241,7 +241,7 @@ export class CharacterCreateWizard {
             ctx.scene.session.character.stateName = data[1];
 
             const user = await this.userService.createUser({
-                tgUserId: ctx.update.callback_query.from.id,
+                tgUserId: ctx.update.callback_query.from.id.toString(),
                 character: {
                     name: ctx.scene.session.character.name,
                     age: ctx.scene.session.character.age,

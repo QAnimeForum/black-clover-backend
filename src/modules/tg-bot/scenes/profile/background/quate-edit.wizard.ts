@@ -62,7 +62,7 @@ export class EditCharacterNameWizard {
             } else {
                 await this.backgroundService.updateUserName({
                     name: message,
-                    telegramId: ctx.update?.message.from.id,
+                    telegramId: ctx.update?.message.from.id.toString(),
                 });
                 this.logger.log(
                     LOGGER_INFO,

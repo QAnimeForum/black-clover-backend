@@ -47,18 +47,18 @@ export class FieldsScene {
     }
 
     @Action('DISPLAY_GARDEN')
-    async dispayGarden(@Ctx() ctx: BotContext, @Sender('id') tgId: number) {
+    async dispayGarden(@Ctx() ctx: BotContext, @Sender('id') tgId) {
         const garden = await this.plantService.findGardenByUserTgId(tgId);
         this.showGarden(ctx, garden);
     }
     @Hears(CREATE_GARDEN_BUTTON)
-    async createGarden(@Ctx() ctx: BotContext, @Sender('id') tgId: number) {
+    async createGarden(@Ctx() ctx: BotContext, @Sender('id') tgId) {
         const garden = await this.plantService.createGarden(tgId);
         this.showGarden(ctx, garden);
     }
 
     @Action(/^(pot.*)$/)
-    async pot(@Ctx() ctx: BotContext, @Sender('id') tgId: number) {
+    async pot(@Ctx() ctx: BotContext, @Sender('id') tgId) {
         ctx.answerCbQuery();
         const potNumber = ctx.callbackQuery['data'];
         const garden = await this.plantService.findGardenByUserTgId(tgId);

@@ -72,7 +72,7 @@ export class RequestToParlamentWizard {
         });
         composer.action('SEND_MESSAGE', async (ctx) => {
             const character = await this.characterService.getCharacterIdByTgId(
-                ctx.callbackQuery.from.id
+                ctx.callbackQuery.from.id.toString()
             );
             await this.problemService.createProblem(
                 character,

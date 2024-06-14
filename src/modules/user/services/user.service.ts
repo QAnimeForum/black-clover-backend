@@ -30,13 +30,13 @@ export class UserService {
         });
     }
 
-    async findUserByTelegramId(telegramId: number): Promise<UserEntity> {
+    async findUserByTelegramId(telegramId: string): Promise<UserEntity> {
         return await this.userRepository.findOneBy({
             tgUserId: telegramId,
         });
     }
 
-    async findUsersByExistingIds(userIds: number[]): Promise<UserEntity[]> {
+    async findUsersByExistingIds(userIds: string[]): Promise<UserEntity[]> {
         if (userIds.length === 0) return [];
         const uniqueIds = Array.from(new Set(userIds));
         const records = await this.userRepository.findBy({
@@ -85,21 +85,21 @@ export class UserService {
         );
         return user;
     }
-    async exists(telegramUserId: number): Promise<boolean> {
+    async exists(telegramUserId: string): Promise<boolean> {
         return this.userRepository.exists({
             where: {
                 tgUserId: telegramUserId,
             },
         });
     }
-    async isSuperAdmin(userTgId: number): Promise<boolean> {
+    async isSuperAdmin(userTgId: string): Promise<boolean> {
         const user = await this.userRepository.findOneBy({
             tgUserId: userTgId,
         });
         return user.type === ENUM_USER_PERMISSION_TYPE.OWNER;
     }
 
-    async isAdmin(userTgId: number): Promise<boolean> {
+    async isAdmin(userTgId: string): Promise<boolean> {
         const user = await this.userRepository.findOneBy({
             tgUserId: userTgId,
         });

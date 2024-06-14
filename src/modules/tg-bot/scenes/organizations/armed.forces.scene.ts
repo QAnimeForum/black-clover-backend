@@ -43,7 +43,7 @@ export class ArmedForcesScene {
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
-    async enter(@Ctx() ctx: BotContext, @Sender('id') userTgId: number) {
+    async enter(@Ctx() ctx: BotContext, @Sender('id') userTgId) {
         const state = await this.characterService.getStateByTgId(userTgId);
         const armedForces =
             await this.squadsService.findArmedForcesByState(state);
@@ -52,11 +52,11 @@ export class ArmedForcesScene {
     }
 
     @Hears(ARMED_FORCES_BUTTON)
-    async armedForces(@Ctx() ctx: BotContext, @Sender('id') userTgId: number) {
+    async armedForces(@Ctx() ctx: BotContext, @Sender('id') userTgId) {
         await this.showArmedForces(ctx, userTgId);
     }
 
-    async generateMainArmedForcesKeyboard(userTgId: number) {
+    async generateMainArmedForcesKeyboard(userTgId: string) {
         const isUserSuperAdmin = this.userService.isSuperAdmin(userTgId);
         const character =
             await this.characterService.getCharacterIdByTgId(userTgId);
@@ -73,7 +73,7 @@ export class ArmedForcesScene {
 
         return buttons;
     }
-    async showArmedForces(ctx: BotContext, userTgId: number) {
+    async showArmedForces(ctx: BotContext, userTgId) {
         const buttons = await this.generateMainArmedForcesKeyboard(userTgId);
         let caption =
             '🛡️Добро пожаловать в Палату Рыцарей-Чародеев Королевства Клевер!🛡️\n\nЗдесь ты найдешь информацию о рыцарях-чародеях, системе рангов, своих будущих обязанностях,  о системе обучения, о боевых  отрядах  и о всех важных вещах, необходимых для твоего прохождения  службы. Готовься к геройству!\n';
@@ -137,7 +137,7 @@ export class ArmedForcesScene {
     }
     @Hears(JOIN_TO_ARMED_FORCES_BUTTON)
     async joinToArmedForces(@Ctx() ctx: BotContext, @Sender() sender) {
-        const tgUserId: number = sender.id;
+        const tgUserId = sender.id;
         const tgUsername: string = sender.username;
         const character = await this.characterService.getCharacterIdByTgId(
             sender.id

@@ -19,11 +19,11 @@ export class UserEntity {
     id: string;
 
     @Column({
-        type: 'int',
+        type: 'varchar',
         nullable: false,
         name: 'tg_user_id',
     })
-    tgUserId: number;
+    tgUserId: string;
 
     @OneToOne(() => CharacterEntity)
     @JoinColumn({

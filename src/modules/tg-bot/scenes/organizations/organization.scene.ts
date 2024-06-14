@@ -1,4 +1,4 @@
-import { Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
+import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { KNIGHT_IMAGE_PATH } from '../../constants/images';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
@@ -29,7 +29,61 @@ export class OrganizationsScene {
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
-        const background = await this.characterService.findBackgroundByTgId(
+        const chatType = ctx.chat.type;
+
+        const caption = 'Вы вошли в город!';
+        if (chatType == 'private') {
+            await ctx.sendPhoto(
+                {
+                    source: KNIGHT_IMAGE_PATH,
+                },
+                {
+                    caption,
+                    parse_mode: 'HTML',
+                    ...Markup.keyboard([
+                        [GRIMOIRE_TOWER_BUTTON, SHOPPING_DISTRICT_BUTTON],
+                        [GARDEN_BUTTON, MINES_BUTTON],
+                        [MAGIC_PARLAMENT_BUTTON, ARMED_FORCES_BUTTON],
+                        [BACK_BUTTON],
+                    ]).resize(),
+                }
+            );
+        } else {
+            ctx.answerCbQuery();
+            await ctx.editMessageCaption(
+                caption,
+                Markup.inlineKeyboard([
+                    [
+                        Markup.button.callback(
+                            GRIMOIRE_TOWER_BUTTON,
+                            GRIMOIRE_TOWER_BUTTON
+                        ),
+                        Markup.button.callback(
+                            SHOPPING_DISTRICT_BUTTON,
+                            SHOPPING_DISTRICT_BUTTON
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(GARDEN_BUTTON, GARDEN_BUTTON),
+                        ,
+                        Markup.button.callback(MINES_BUTTON, MINES_BUTTON),
+                    ],
+                    [
+                        Markup.button.callback(
+                            MAGIC_PARLAMENT_BUTTON,
+                            MAGIC_PARLAMENT_BUTTON
+                        ),
+                        ,
+                        Markup.button.callback(
+                            ARMED_FORCES_BUTTON,
+                            ARMED_FORCES_BUTTON
+                        ),
+                    ],
+                ])
+            );
+        }
+        /**
+      *    const background = await this.characterService.findBackgroundByTgId(
             sender.id
         );
         const state = background.state;
@@ -54,9 +108,11 @@ export class OrganizationsScene {
                 ]).resize(),
             }
         );
+      */
     }
 
     @Hears(GRIMOIRE_TOWER_BUTTON)
+    @Action(GRIMOIRE_TOWER_BUTTON)
     async grimoireTower(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
     }
@@ -71,6 +127,7 @@ export class OrganizationsScene {
     }
 
     @Hears(MAGIC_PARLAMENT_BUTTON)
+    @Action(MAGIC_PARLAMENT_BUTTON)
     async magicParlament(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.MAGIC_PARLAMENT_SCENE_ID);
     }

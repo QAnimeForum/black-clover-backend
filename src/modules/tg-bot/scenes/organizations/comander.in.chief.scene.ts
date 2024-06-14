@@ -53,7 +53,7 @@ export class CommanderInChiefScene {
     }
 
     @Hears(PEOPLE_MANAGEMENT_BUTTON)
-    async peoples(@Ctx() ctx: BotContext, @Sender('id') tgId: number) {
+    async peoples(@Ctx() ctx: BotContext, @Sender('id') tgId) {
         const state = await this.characterService.getStateByTgId(tgId);
         const armedForces =
             await this.squadsService.findArmedForcesByState(state);
@@ -102,7 +102,9 @@ export class CommanderInChiefScene {
     @Action(PEOPLE_MANAGEMENT_BUTTON)
     async peoplesAction(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
-        const state = await this.characterService.getStateByTgId(ctx.from.id);
+        const state = await this.characterService.getStateByTgId(
+            ctx.from.id.toString()
+        );
         const armedForces =
             await this.squadsService.findArmedForcesByState(state);
 

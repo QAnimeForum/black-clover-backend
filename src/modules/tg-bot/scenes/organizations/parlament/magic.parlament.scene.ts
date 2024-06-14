@@ -3,20 +3,15 @@ import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { Inject, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 import { ProblemService } from 'src/modules/judicial.system/services/problem.service';
-import {
-    ENUM_PROBLEM_STATUS,
-    ProblemEntity,
-} from 'src/modules/judicial.system/entity/problem.entity';
+import { ProblemEntity } from 'src/modules/judicial.system/entity/problem.entity';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
-import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
 import { CourtWorkerService } from 'src/modules/judicial.system/services/court.worker.service';
 import { UserService } from 'src/modules/user/services/user.service';
 import {
     MAGICAL_PARLIAMENT_BUTTON,
     REQUEST_TO_PARLAMENT_BUTTON,
-    COURY_CASE_LIST_BUTTON,
     BACK_BUTTON,
     MY_COURY_CASE_BUTTON,
     PRIAZON_BUTTON,
@@ -26,6 +21,11 @@ import { PARLAMENT } from 'src/modules/tg-bot/constants/images';
 import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
 import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
 import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
+import {
+    convertParlamentInfoToText,
+    problemToText,
+    probmlemListButtons,
+} from 'src/modules/tg-bot/utils/parlament.utils';
 
 @Scene(ENUM_SCENES_ID.MAGIC_PARLAMENT_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -38,35 +38,31 @@ export class MagicParlamentScene {
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {
-        await this.showParlamentInfo(ctx);
+        const chatType = ctx.chat.type;
+        if (chatType == 'private') {
+            this.showPrivateParlamentInfo(ctx);
+        } else {
+            this.showPublicParlamentInfo(ctx);
+        }
     }
 
     @Hears(MAGICAL_PARLIAMENT_BUTTON)
     async magicParlament(@Ctx() ctx: BotContext) {
-        await this.showParlamentInfo(ctx);
+        this.showPrivateParlamentInfo(ctx);
     }
 
-    async showParlamentInfo(ctx: BotContext) {
-        const numberOfCourtCases = await this.problemService.countProblems();
+    async showPrivateParlamentInfo(ctx: BotContext) {
+        const numberOfAllCourtCases = await this.problemService.countProblems();
+        const numberOfMyCourtCases = await this.problemService.countProblems();
         const curtWorkers = await this.courtWorkerService.findAllWorkers({
             path: '',
         });
-        const title = `<strong><u>Магический парламент</u></strong>`;
-        const workingHours = `<strong>Время работы</strong>\n По согласованию.`;
-        let workers = `<strong>Судьи</strong>\n`;
-        curtWorkers.data.map((worker, index) => {
-            workers += `${index}) ${worker.character.background.name}\n`;
-        });
-        if (curtWorkers.data.length == 0) {
-            workers +=
-                'Судей пока нет. Но вы можете стать судьёй и разбирать заявки! (заявки подаются через админов)\n';
-        }
-        const allCourtCase = `<strong>Количество всех дел</strong>: ${numberOfCourtCases}`;
-        const myCourtCase = `<strong>Количество моих заявок в суд</strong>:`;
-        const yourAllFines = `<strong>Количество всех штрафов</strong>:`;
-        const yourCurrentFines = `<strong>Количество текущих штрафов</strong>:`;
-        const priazonStatus = `<strong>Находитесь ли вы в тюрьме</strong>: нет`;
-        const caption = `${title}\n\n${workingHours}\n${workers}\n\n${allCourtCase}\n${myCourtCase}\n${yourAllFines}\n${yourCurrentFines}\n${priazonStatus}\n`;
+        const caption = convertParlamentInfoToText(
+            numberOfAllCourtCases,
+            numberOfMyCourtCases,
+            curtWorkers
+        );
+
         await ctx.sendPhoto(
             {
                 source: PARLAMENT,
@@ -77,112 +73,75 @@ export class MagicParlamentScene {
                 ...Markup.keyboard([
                     [REQUEST_TO_PARLAMENT_BUTTON],
                     [MAGICAL_PARLIAMENT_BUTTON, ALL_COURY_CASE_BUTTON],
-                    //           [ALL_COURY_CASE_BUTTON, MY_COURY_CASE_BUTTON],
                     [BACK_BUTTON],
                 ]).resize(),
             }
         );
     }
+    async showPublicParlamentInfo(ctx: BotContext) {
+        const numberOfAllCourtCases = await this.problemService.countProblems();
+        const numberOfMyCourtCases = await this.problemService.countProblems();
+        const curtWorkers = await this.courtWorkerService.findAllWorkers({
+            path: '',
+        });
+        const text = convertParlamentInfoToText(
+            numberOfAllCourtCases,
+            numberOfMyCourtCases,
+            curtWorkers
+        );
 
-    async showProblemList(
-        page: number
-    ): Promise<[string, InlineKeyboardButton[][]]> {
+        const problems = await this.problemService.findAllProblems({
+            path: '',
+            sortBy: [['displayId', 'ASC']],
+            limit: 5,
+            page: 1,
+        });
+        const [problemsText, buttons] = probmlemListButtons(problems);
+        const caption = `${text}${problemsText}`;
+        await ctx.deleteMessage();
+        await ctx.sendPhoto(
+            {
+                source: PARLAMENT,
+            },
+            {
+                caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard(buttons),
+            }
+        );
+
+        ctx.answerCbQuery();
+    }
+    @Action(/^(PROBLEMS_NEXT_PAGE.*)$/)
+    async nextPage(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
         const problems = await this.problemService.findAllProblems({
             path: '',
             sortBy: [['displayId', 'ASC']],
             limit: 5,
             page: page,
         });
-        const caption = `Судебные дела\n\n Общее количество дел: ${problems.meta.totalItems}`;
-        const buttons = [];
-        problems.data.map((problem: ProblemEntity) => {
-            // caption += `${problem.displayId}\n`;
-            buttons.push([
-                Markup.button.callback(
-                    `Дело №${problem.displayId}. Статус: ${this.convertStatusToString(problem.status)}. ${problem.content}`,
-                    `PROBLEM:${problem.id}`
-                ),
-            ]);
-        });
-        if (problems.meta.totalPages == 0) {
-            buttons.push([Markup.button.callback(`1 из 1`, `PAGE`)]);
-        } else if (page == 1 && problems.meta.totalPages == 1) {
-            buttons.push([
-                Markup.button.callback(
-                    `${problems.meta.currentPage} из ${problems.meta.totalPages}`,
-                    `PAGE`
-                ),
-            ]);
-        } else if (page == 1 && problems.meta.totalPages > 1) {
-            buttons.push([
-                Markup.button.callback(
-                    `${problems.meta.currentPage} из ${problems.meta.totalPages}`,
-                    `PAGE`
-                ),
-                Markup.button.callback(`>>`, `NEXT_PAGE:${page + 1}`),
-            ]);
-        } else if (problems.meta.currentPage == problems.meta.totalPages) {
-            buttons.push([
-                Markup.button.callback(`<<`, `PREVIOUS_PAGE:${page - 1}`),
-                Markup.button.callback(
-                    `${problems.meta.currentPage} из ${problems.meta.totalPages}`,
-                    `PAGE`
-                ),
-            ]);
-        } else {
-            buttons.push([
-                Markup.button.callback(`<<`, `PREVIOUS_PAGE:${page - 1}`),
-                Markup.button.callback(
-                    `${problems.meta.currentPage} из ${problems.meta.totalPages}`,
-                    `PAGE`
-                ),
-                Markup.button.callback(`>>`, `NEXT_PAGE:${page + 1}`),
-            ]);
-        }
-        buttons.push([
-            Markup.button.callback(`Все дела`, `ALL_PROBLEMS`),
-            Markup.button.callback(`Мои заявки`, `MY_PROBLEMS`),
-        ]);
-        buttons.push([
-            Markup.button.callback(`Все решённые дела`, `ALL_PROBLEMS`),
-            Markup.button.callback(`Все нерешённые дела`, `MY_PROBLEMS`),
-        ]);
-        buttons.push([
-            Markup.button.callback(`Мои решённые дела`, `ALL_PROBLEMS`),
-            Markup.button.callback(`Мои нерешённые дела`, `MY_PROBLEMS`),
-        ]);
-        return [caption, buttons];
-    }
 
-    convertStatusToString(status: ENUM_PROBLEM_STATUS) {
-        switch (status) {
-            case ENUM_PROBLEM_STATUS.DRAFT:
-                return 'черновик';
-            case ENUM_PROBLEM_STATUS.PENDING:
-                return 'на рассмотрении';
-            case ENUM_PROBLEM_STATUS.SOLVED:
-                return 'вынесено решение';
-            default:
-                return 'не определено';
-        }
-    }
-    @Action(/^(NEXT_PAGE.*)$/)
-    async nextPage(@Ctx() ctx: BotContext) {
-        await ctx.answerCbQuery();
-        const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
-        const [caption, buttons] = await this.showProblemList(page);
-        ctx.editMessageText(caption, {
+        const [caption, buttons] = probmlemListButtons(problems);
+        await ctx.editMessageCaption(caption, {
             parse_mode: 'HTML',
             ...Markup.inlineKeyboard(buttons),
         });
     }
 
-    @Action(/^(PREVIOUS_PAGE.*)$/)
+    @Action(/^(PROBLEMS_PREVIOUS_PAGE.*)$/)
     async previousPage(@Ctx() ctx: BotContext) {
         await ctx.answerCbQuery();
         const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
-        const [caption, buttons] = await this.showProblemList(page);
-        ctx.editMessageText(caption, {
+        const problems = await this.problemService.findAllProblems({
+            path: '',
+            sortBy: [['displayId', 'ASC']],
+            limit: 5,
+            page: page,
+        });
+        const [caption, buttons] = probmlemListButtons(problems);
+        await ctx.editMessageCaption(caption, {
             parse_mode: 'HTML',
             ...Markup.inlineKeyboard(buttons),
         });
@@ -191,9 +150,8 @@ export class MagicParlamentScene {
     async showProblem(@Ctx() ctx: BotContext) {
         const problemId = ctx.callbackQuery['data'].split(':')[1];
         const problem = await this.problemService.findProblemById(problemId);
-
-        const caption = `<strong>Дело № ${problem.displayId}</strong>\n<strong>Статус:</strong> ${this.convertStatusToString(problem.status)}\n<strong>Заявитель:</strong> ${problem.creator.background.name}\n${problem.content}`;
-        await ctx.editMessageText(caption, {
+        const caption = problemToText(problem);
+        await ctx.editMessageCaption(caption, {
             parse_mode: 'HTML',
             ...Markup.inlineKeyboard([
                 Markup.button.callback(BACK_BUTTON, BACK_BUTTON),
@@ -203,16 +161,31 @@ export class MagicParlamentScene {
 
     @Action(BACK_BUTTON)
     async backToProblemsList(@Ctx() ctx: BotContext) {
-        const [caption, buttons] = await this.showProblemList(1);
-        await ctx.editMessageText(caption, {
+        const problems = await this.problemService.findAllProblems({
+            path: '',
+            sortBy: [['displayId', 'ASC']],
+            limit: 5,
+            page: 1,
+        });
+        const [caption, buttons] = probmlemListButtons(problems);
+        ctx.editMessageCaption(caption, {
+            parse_mode: 'HTML',
             ...Markup.inlineKeyboard(buttons),
         });
     }
 
     @Hears(ALL_COURY_CASE_BUTTON)
     async allProblemsList(@Ctx() ctx: BotContext) {
-        const [caption, buttons] = await this.showProblemList(1);
+        const problems = await this.problemService.findAllProblems({
+            path: '',
+            sortBy: [['displayId', 'ASC']],
+            limit: 5,
+            page: 1,
+        });
+        const [caption, buttons] = probmlemListButtons(problems);
+        console.log(caption, buttons);
         await ctx.reply(caption, {
+            parse_mode: 'HTML',
             ...Markup.inlineKeyboard(buttons),
         });
     }

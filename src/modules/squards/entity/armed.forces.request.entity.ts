@@ -35,9 +35,10 @@ export class ArmedForcesRequestEntity {
     tgUsername: string;
 
     @Column({
-        type: 'int',
+        type: 'varchar',
+        name: 'tg_user_id',
     })
-    tgUserId: number;
+    tgUserId: string;
 
     @ManyToOne(() => CharacterEntity, (character) => character.requests)
     @JoinColumn({

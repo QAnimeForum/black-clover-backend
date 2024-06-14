@@ -102,7 +102,7 @@ export class AvatarEditWizard {
             ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
             /* await this.backgroundService.updateUserName({
                 name: message,
-                telegramId: ctx.update?.message.from.id,
+                telegramId: ctx.update?.message.from.id.toString(),
             });
             this.logger.log(
                 LOGGER_INFO,

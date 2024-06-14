@@ -348,7 +348,7 @@ export class SquadsService {
         await this.armedForcesRepository.delete(id);
     }
 
-    async isUserHasRequest(tgId: number): Promise<boolean> {
+    async isUserHasRequest(tgId: string): Promise<boolean> {
         //  `select wallet.* from wallet JOIN character ON wallet.id = character.wallet_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = ${dto.tgId}`
 
         return this.armedForcesRequestRepository.exists({

@@ -1,4 +1,4 @@
 export class CharacterNameEditDto {
-    tgId: number;
+    tgId: string;
     name: string;
 }

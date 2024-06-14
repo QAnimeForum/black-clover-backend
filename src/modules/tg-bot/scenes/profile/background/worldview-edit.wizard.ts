@@ -55,7 +55,7 @@ export class WorldviewEditWizard {
             const message = ctx.update?.message.text;
             await this.backgroundService.updateWorldwiew({
                 worldview: message,
-                telegramId: ctx.update?.message.from.id,
+                telegramId: ctx.update?.message.from.id.toString(),
             });
             this.logger.log(
                 LOGGER_INFO,

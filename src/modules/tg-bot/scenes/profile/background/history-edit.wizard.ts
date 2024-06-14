@@ -54,7 +54,7 @@ export class CharacterHistoryEditWizard {
             const message = ctx.update?.message.text;
             await this.backgroundService.updateUserHistory({
                 history: message,
-                telegramId: ctx.update?.message.from.id,
+                telegramId: ctx.update?.message.from.id.toString(),
             });
             this.logger.log(
                 LOGGER_INFO,
@@ -72,7 +72,7 @@ export class CharacterHistoryEditWizard {
             } else {
                 await this.backgroundService.updateUserHistory({
                     history: message,
-                    telegramId: ctx.update?.message.from.id,
+                    telegramId: ctx.update?.message.from.id.toString(),
                 });
                 this.logger.log(
                     LOGGER_INFO,

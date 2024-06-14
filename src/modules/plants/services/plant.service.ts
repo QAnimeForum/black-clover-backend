@@ -63,7 +63,7 @@ export class PlantService {
         this.plantRepository.save(plant);
     }
 
-    async createGarden(tgId: number) {
+    async createGarden(tgId: string) {
         const character = await this.characterService.findCharacterByTgId(tgId);
         const garden = new GardenEntity();
         const pot1 = new PotEntity();

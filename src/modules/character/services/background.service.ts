@@ -8,45 +8,45 @@ import { CharacterEntity } from '../entity/character.entity';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
 
 export class UpdateAppearanceDto {
-    telegramId: number;
+    telegramId: string;
     appearance: string;
 }
 export class UpdateNameDto {
-    telegramId: number;
+    telegramId: string;
     name: string;
 }
 
 export class UpdateGoalsDto {
-    telegramId: number;
+    telegramId: string;
     goals: string;
 }
 
 export class UpdateHistoryDto {
-    telegramId: number;
+    telegramId: string;
     history: string;
 }
 
 export class UpdateHobbiesDto {
-    telegramId: number;
+    telegramId: string;
     hobbies: string;
 }
 
 export class UpdateWeaknessDto {
     weaknesses: string;
-    telegramId: number;
+    telegramId: string;
 }
 export class UpdateWorldviewDto {
-    telegramId: number;
+    telegramId: string;
     worldview: string;
 }
 
 export class UpdateCharacterTraitsDto {
-    telegramId: number;
+    telegramId: string;
     characterTraits: string;
 }
 
 export class UpdateCharacterIdealsDto {
-    telegramId: number;
+    telegramId: string;
     ideals: string;
 }
 

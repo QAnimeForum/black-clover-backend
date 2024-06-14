@@ -1,4 +1,4 @@
-import { Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
+import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { BotContext } from '../interfaces/bot.context';
 import { TelegrafExceptionFilter } from '../filters/tg-bot.filter';
 import { Inject, UseFilters } from '@nestjs/common';
@@ -35,7 +35,7 @@ export class HomeScene {
 
     @SceneEnter()
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
-    async enter(@Ctx() ctx: BotContext, @Sender('id') tgId: number) {
+    async enter(@Ctx() ctx: BotContext, @Sender('id') tgId: string) {
         const chatType = ctx.message.chat.type;
         const isShowAdminButton = await this.userSerivce.isAdmin(tgId);
         const caption = 'Привет, путник!';
@@ -62,10 +62,6 @@ export class HomeScene {
             const buttons = [
                 [
                     Markup.button.callback(
-                        PROFILE_BUTTON,
-                        PROFILE_BUTTON
-                    ),
-                    Markup.button.callback(
                         ORGANIZATIONS_BUTTON,
                         ORGANIZATIONS_BUTTON
                     ),
@@ -86,17 +82,9 @@ export class HomeScene {
                         ANNOUNCEMENTS_BUTTON,
                         ANNOUNCEMENTS_BUTTON
                     ),
-                    Markup.button.callback(HELP_BUTTON, HELP_BUTTON),
+                    Markup.button.callback(PROFILE_BUTTON, PROFILE_BUTTON),
                 ],
             ];
-            if (isShowAdminButton) {
-                buttons.push([
-                    Markup.button.callback(
-                        ADMIN_PANEL_BUTTON,
-                        ADMIN_PANEL_BUTTON
-                    ),
-                ]);
-            }
 
             await ctx.sendPhoto(
                 {
@@ -112,6 +100,7 @@ export class HomeScene {
     }
 
     @Hears(ORGANIZATIONS_BUTTON)
+    @Action(ORGANIZATIONS_BUTTON)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
     async armedForces(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID);
@@ -136,7 +125,7 @@ export class HomeScene {
     @Hears(ALL_DEVILS_BUTTON)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
     async devils(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.ALL_SPIRITS_SCENE_ID);
+        await ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
     }
 
     @Hears(ALL_SPIRITS_BUTTON)

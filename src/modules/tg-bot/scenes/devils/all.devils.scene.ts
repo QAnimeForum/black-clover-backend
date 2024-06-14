@@ -52,21 +52,47 @@ export class AllDevilsScene {
     ) {}
 
     async showEntryButtons(ctx: BotContext) {
+        const chatType = ctx.chat.type;
         ctx.scene.session.devilsList = {
             backStatus: ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_HOME,
             selectedId: '',
         };
-        await ctx.replyWithPhoto(
-            { source: DEVILS_IMAGE_PATH },
-            {
-                caption: `Вы попали в преисподнюю`,
-                parse_mode: 'HTML',
-                ...Markup.keyboard([
-                    [DEVIL_TYPE_SORT_FLOOR_BUTTON, DEVIL_TYPE_SORT_RANK_BUTTON],
-                    [BACK_BUTTON],
-                ]).resize(),
-            }
-        );
+        if (chatType == 'private') {
+            await ctx.replyWithPhoto(
+                { source: DEVILS_IMAGE_PATH },
+                {
+                    caption: `Вы попали в преисподнюю`,
+                    parse_mode: 'HTML',
+                    ...Markup.keyboard([
+                        [
+                            DEVIL_TYPE_SORT_FLOOR_BUTTON,
+                            DEVIL_TYPE_SORT_RANK_BUTTON,
+                        ],
+                        [BACK_BUTTON],
+                    ]).resize(),
+                }
+            );
+        } else {
+            await ctx.replyWithPhoto(
+                { source: DEVILS_IMAGE_PATH },
+                {
+                    caption: `Вы попали в преисподнюю`,
+                    parse_mode: 'HTML',
+                    ...Markup.inlineKeyboard([
+                        [
+                            Markup.button.callback(
+                                DEVIL_TYPE_SORT_FLOOR_BUTTON,
+                                DEVIL_TYPE_SORT_FLOOR_BUTTON
+                            ),
+                            Markup.button.callback(
+                                DEVIL_TYPE_SORT_RANK_BUTTON,
+                                DEVIL_TYPE_SORT_RANK_BUTTON
+                            ),
+                        ],
+                    ]),
+                }
+            );
+        }
     }
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {
@@ -94,42 +120,124 @@ export class AllDevilsScene {
         }
     }
 
+    @Action(DEVIL_TYPE_SORT_FLOOR_BUTTON)
     @Hears(DEVIL_TYPE_SORT_FLOOR_BUTTON)
     async floor(@Ctx() ctx: BotContext) {
         ctx.scene.session.devilsList.backStatus =
             ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_SORT_TYPE;
-        await ctx.replyWithPhoto(
-            { source: DEVILS_IMAGE_PATH },
-            {
+        const chatType = ctx.chat.type;
+        if (chatType == 'private') {
+            await ctx.editMessageCaption({
                 caption: `Информация о дьяволах, собранная по этажам`,
-                parse_mode: 'HTML',
                 ...Markup.keyboard([
                     [DEVIL_FLOOR_1_BUTTON, DEVIL_FLOOR_2_BUTTON],
                     [DEVIL_FLOOR_3_BUTTON, DEVIL_FLOOR_4_BUTTON],
                     [DEVIL_FLOOR_5_BUTTON, DEVIL_FLOOR_6_BUTTON],
                     [DEVIL_FLOOR_7_BUTTON, BACK_BUTTON],
                 ]).resize(),
-            }
-        );
-        // await ctx.scene.enter(ENUM_SCENES_ID.allDevilsByFloor);
+            });
+        } else {
+            await ctx.editMessageCaption({
+                caption: `Информация о дьяволах, собранная по этажам`,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard([
+                    [
+                        Markup.button.callback(
+                            DEVIL_FLOOR_1_BUTTON,
+                            DEVIL_FLOOR_1_BUTTON
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            DEVIL_FLOOR_2_BUTTON,
+                            DEVIL_FLOOR_2_BUTTON
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            DEVIL_FLOOR_3_BUTTON,
+                            DEVIL_FLOOR_3_BUTTON
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            DEVIL_FLOOR_4_BUTTON,
+                            DEVIL_FLOOR_4_BUTTON
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            DEVIL_FLOOR_5_BUTTON,
+                            DEVIL_FLOOR_5_BUTTON
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            DEVIL_FLOOR_6_BUTTON,
+                            DEVIL_FLOOR_6_BUTTON
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            DEVIL_FLOOR_7_BUTTON,
+                            DEVIL_FLOOR_7_BUTTON
+                        ),
+                    ],
+                ]),
+            });
+        }
     }
 
+    @Action(DEVIL_TYPE_SORT_RANK_BUTTON)
     @Hears(DEVIL_TYPE_SORT_RANK_BUTTON)
     async rank(@Ctx() ctx: BotContext) {
+        const chatType = ctx.chat.type;
         ctx.scene.session.devilsList.backStatus =
             ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_SORT_TYPE;
-        await ctx.replyWithPhoto(
-            { source: DEVILS_IMAGE_PATH },
-            {
-                caption: `Список дьяволов по рангам`,
+        if (chatType == 'private') {
+            ctx.editMessageCaption('`Список дьяволов по рангам`', {
                 parse_mode: 'HTML',
-                ...Markup.keyboard([
+                ...Markup.keyboard(
                     [DEVIL_RANK_1_BUTTON, DEVIL_RANK_2_BUTTON],
                     [DEVIL_RANK_3_BUTTON, DEVIL_RANK_4_BUTTON],
                     [BACK_BUTTON],
-                ]).resize(),
-            }
-        );
+                ),
+            });
+        } else {
+            await ctx.replyWithPhoto(
+                { source: DEVILS_IMAGE_PATH },
+                {
+                    caption: `Список дьяволов по рангам`,
+                    parse_mode: 'HTML',
+                    ...Markup.inlineKeyboard([
+                        [
+                            Markup.button.callback(
+                                DEVIL_RANK_1_BUTTON,
+                                DEVIL_RANK_1_BUTTON
+                            ),
+                        ],
+                        [
+                            Markup.button.callback(
+                                DEVIL_RANK_2_BUTTON,
+                                DEVIL_RANK_2_BUTTON
+                            ),
+                        ],
+                        [
+                            Markup.button.callback(
+                                DEVIL_RANK_3_BUTTON,
+                                DEVIL_RANK_3_BUTTON
+                            ),
+                        ],
+                        [
+                            Markup.button.callback(
+                                DEVIL_RANK_4_BUTTON,
+                                DEVIL_RANK_4_BUTTON
+                            ),
+                        ],
+                    ]),
+                }
+            );
+        }
         // await ctx.scene.enter(ENUM_SCENES_ID.allDevilsByRank);
     }
 
@@ -196,7 +304,7 @@ export class AllDevilsScene {
             }
         }
         const paginatedDevils = await this.devilService.findAll(query);
-      /*  this.devilsList(
+        /*  this.devilsList(
             ctx,
             paginatedDevils,
             caption,

@@ -36,20 +36,35 @@ import {
 } from '../../constants/button-names.constant';
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import { SpellEntity } from 'src/modules/grimoire/entity/spell.entity';
+import { UserService } from 'src/modules/user/services/user.service';
 
 @Scene(ENUM_SCENES_ID.PROFILE_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class ProfileScene {
     constructor(
         private readonly characterService: CharacterService,
+        private readonly userService: UserService,
         private readonly grimoireService: GrimoireService
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
         const chatType = ctx.message.chat.type;
-        
         const senderId = sender.id;
         const username = sender.username;
+        const isUserExist = await this.userService.exists(senderId);
+        if(!isUserExist && chatType !== 'private') {
+            await ctx.reply(
+                'Мир Чёрного клевера вас не знает. Пожалуйста, перейдите в личные сообщения с ботом, для заполнения личной информации о себе.',
+                {
+                    ...Markup.inlineKeyboard([
+                        Markup.button.url(
+                            'Ссылка на бот',
+                            'https://t.me/black_clover_role_play_bot'
+                        ),
+                    ]),
+                }
+            );
+        }
         const character =
             await this.characterService.findFullCharacterInfoByTgId(senderId);
         const background = character.background;
@@ -67,14 +82,14 @@ export class ProfileScene {
         const characteristics = character.characterCharacteristics;
         const levelBlock = `<strong>🏆Уровень персонажа</strong>: ${characteristics.currentLevel}/${characteristics.maxLevel}\n`;
         const sanityBlock = `<strong>🤪Здравомыслие</strong>: ${characteristics.sanity}`;
-        const hpBlock = `<strong>♥️Уровень здоровья</strong>: ${characteristics.currentHealth}/${characteristics.maxHealth}`;
-        const magicPowerBlock = `<strong>🌀Магическая сила</strong>: ${characteristics.magicPower}`;
-        const strengthBlock = `<strong>💪Сила</strong>: ${characteristics.strength.score}`;
-        const dexterityBlock = `<strong>🏃Ловкость</strong>: ${characteristics.dexterity.score}`;
+        const hpBlock = `<strong>🏃Ловкость</strong>: ${characteristics.dexterity.score}`;
         const constitutionBlock = `<strong>🏋️Телосложение</strong>: ${characteristics.constitution.score}`;
         const intelligenceBlock = `<strong>🎓Интеллект</strong>: ${characteristics.intelligence.score}`;
         const wisdomBlock = `<strong>📚Мудрость</strong>: ${characteristics.wisdom.score}`;
-        const charismaBlock = `<strong>🗣Харизма</strong>: ${characteristics.charisma.score}`;
+        const charismaBlock = `<stron>♥️Уровень здоровья</strong>: ${characteristics.currentHealth}/${characteristics.maxHealth}`;
+        const magicPowerBlock = `<strong>🌀Магическая сила</strong>: ${characteristics.magicPower}`;
+        const strengthBlock = `<strong>💪Сила</strong>: ${characteristics.strength.score}`;
+        const dexterityBlock = `g>🗣Харизма</strong>: ${characteristics.charisma.score}`;
         //   const armorClassBlock = `${characteristics.armorClass.}${characteristics.armorClassBlock.name}${characteristics.armorClassBlock.score}`;
 
         // const characteristicsTitle = `\n<strong><u>Характеристики персонажа</u></strong>\n\n`;
@@ -84,24 +99,36 @@ export class ProfileScene {
         const spiritsBlock = `<strong>🧚Духи:</strong>\n Союза с духами нет`;
         const equippedItemsBlock = `<strong>🤹Оборудованные предметы:</strong>\n Ничего не надето`;
         const caption = `${title}${owner}\n${userId}\n${name}\n${levelBlock}\n${sanityBlock}\n${hpBlock}\n${magicPowerBlock}\n\n${sex}\n${age}\n${state}\n${race}\n${magicTypeBlock}\n${spellsBlock}\n${devilsBlock}\n${spiritsBlock}\n${equippedItemsBlock}`;
-        await ctx.sendPhoto(
-            {
-                source: KNIGHT_IMAGE_PATH,
-            },
-            {
-                caption,
-                parse_mode: 'HTML',
-                ...Markup.keyboard([
-                    [GRIMOIRE_BUTTON, BACKGROUND_BUTTON, PARAMS_BUTTON],
-                    [WALLET_BUTTON, INVENTORY_BUTTON],
-                    [MY_DEVILS_BUTTON, MY_SPIRITS_BUTTON],
-                    [PROFILE_BUTTON, BACK_BUTTON],
-                ]).resize(),
+        if (chatType == 'private') {
+            await ctx.sendPhoto(
+                {
+                    source: KNIGHT_IMAGE_PATH,
+                },
+                {
+                    caption,
+                    parse_mode: 'HTML',
+                    ...Markup.keyboard([
+                        [GRIMOIRE_BUTTON, BACKGROUND_BUTTON, PARAMS_BUTTON],
+                        [WALLET_BUTTON, INVENTORY_BUTTON],
+                        [MY_DEVILS_BUTTON, MY_SPIRITS_BUTTON],
+                        [PROFILE_BUTTON, BACK_BUTTON],
+                    ]).resize(),
+                }
+            );
+            if (character.grimoire == null) {
+                ctx.reply(
+                    `Вы ещё не получили гримуар. Сходите в ближайшую башню, где выдают гримуары, и оставьте заявку на гримуар. \n (Перейдите во вкадку: ${GRIMOIRE_BUTTON})`
+                );
             }
-        );
-        if (character.grimoire == null) {
-            ctx.reply(
-                `Вы ещё не получили гримуар. Сходите в ближайшую башню, где выдают гримуары, и оставьте заявку на гримуар. \n (Перейдите во вкадку: ${GRIMOIRE_BUTTON})`
+        } else {
+            await ctx.sendPhoto(
+                {
+                    source: KNIGHT_IMAGE_PATH,
+                },
+                {
+                    caption,
+                    parse_mode: 'HTML',
+                }
             );
         }
     }
@@ -131,7 +158,7 @@ export class ProfileScene {
 
 ⇒「⚡」Бонус: 
          */
-     */
+
     @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);

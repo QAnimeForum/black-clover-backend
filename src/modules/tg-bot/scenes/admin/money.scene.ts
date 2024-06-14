@@ -147,7 +147,7 @@ export class AddMoneyWizard {
             ctx.scene.enter(ENUM_SCENES_ID.ADMIN_MONEY_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
-            const tgId = Number.parseInt(ctx.update.message.text);
+            const tgId = ctx.update.message.text;
             const isUserExists = await this.userService.exists(tgId);
             if (!isUserExists) {
                 ctx.reply(
