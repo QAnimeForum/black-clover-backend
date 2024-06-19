@@ -66,9 +66,9 @@ export class GrimoireService {
 
     async findGrimoireByUserTgId(tgUserId: number) {
         const grimoires = await this.connection.query(
-            `select grimoire.* from grimoire JOIN character ON grimoire.id = character.grimoire_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = ${tgUserId}`
+            `select grimoire.* from grimoire JOIN character ON grimoire.id = character.grimoire_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = '${tgUserId}'`
         );
-        if(grimoires.length == 1) {
+        if (grimoires.length == 1) {
             return grimoires[0];
         }
         return null;

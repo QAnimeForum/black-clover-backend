@@ -47,7 +47,7 @@ export const probmlemListButtons = (
             ),
         ]);
     });
-    if (problems.meta.totalPages == 0) {
+    if (totalPages == 0) {
         buttons.push([Markup.button.callback(`1 из 1`, `PAGE`)]);
     } else if (currentPage == 1 && totalPages == 1) {
         buttons.push([

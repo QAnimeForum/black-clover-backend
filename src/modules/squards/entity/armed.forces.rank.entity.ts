@@ -11,8 +11,8 @@ import {
     TreeParent,
 } from 'typeorm';
 import { SquadMemberEntity } from './squad.member.entity';
-import { SalaryEntity } from '../../money/entity/amount.entity';
 import { ArmedForcesEntity } from './armed.forces.entity';
+import { MoneyEntity } from '../../money/entity/money.entity';
 
 @Tree('nested-set')
 @Entity('armed_forces_rank')
@@ -52,15 +52,14 @@ export class ArmedForcesRankEntity {
     })
     parentRankId: string;
      */
-    /**
-   *   @OneToOne(() => SalaryEntity)
+     @OneToOne(() => MoneyEntity)
     @JoinColumn({
         name: 'salary_id',
         referencedColumnName: 'id',
     })
-    salary: SalaryEntity;
+    salary: MoneyEntity;
 
-   */
+
     @OneToMany(() => SquadMemberEntity, (member) => member.squad)
     members: Array<SquadMemberEntity>;
 

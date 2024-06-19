@@ -3,9 +3,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { WalletEntity } from './entity/wallet.entity';
-import { CashEntity } from './entity/cash.entity';
+
 import { MoneyAddDto } from './dto/money-add.dto';
 import { MoneyLogEntity } from './entity/money.logs.entity';
+import { MoneyDto } from './dto/money.dto';
 
 @Injectable()
 export class WalletService {
@@ -16,8 +17,6 @@ export class WalletService {
         private readonly walletRepository: Repository<WalletEntity>,
         @InjectRepository(MoneyLogEntity)
         private readonly moneyLogsRepository: Repository<MoneyLogEntity>,
-        @InjectRepository(CashEntity)
-        private readonly cashRepository: Repository<CashEntity>
     ) {}
 
     async addCharacterMoney(dto: MoneyAddDto) {
@@ -60,6 +59,79 @@ export class WalletService {
                 moneyLogEntity.platinum = dto.platinum;
                 moneyLogEntity.note = 'Начисление денег администратором';
                 await transactionManager.save(moneyLogEntity);
+            }
+        );
+    }
+
+    convertMoney(walletId: string) {
+        this.connection.transaction(
+            'READ UNCOMMITTED',
+            async (transactionManager) => {
+                const wallet = await this.findWalletById(walletId);
+                const moneyDto = new MoneyDto();
+                const totalCopper =
+                    wallet.copper +
+                    wallet.silver * 10 +
+                    wallet.electrum * 50 +
+                    wallet.gold * 100 +
+                    wallet.platinum * 1000;
+                let leftover = 0;
+                if (wallet.usePlatinum) {
+                    const platinum = Math.floor(totalCopper / 1000);
+                    leftover = totalCopper % 1000;
+                    moneyDto.platinum = platinum;
+                } else {
+                    leftover = totalCopper;
+                    moneyDto.platinum = 0;
+                }
+
+                const gold = Math.floor(leftover / 100);
+                leftover = leftover % 100;
+                if (wallet.useElectrum) {
+                    const electrum = Math.floor(gold / 50);
+                    leftover = gold % 50;
+                    moneyDto.electrum = electrum;
+                } else {
+                    moneyDto.electrum = 0;
+                }
+                const silver = Math.floor(leftover / 100);
+                const copper = leftover % 10;
+                moneyDto.gold = gold;
+                moneyDto.silver = silver;
+                moneyDto.copper = copper;
+                const moneyLogEntity1 = new MoneyLogEntity();
+                moneyLogEntity1.recipient = `Кошелёк ${wallet.id}`;
+                moneyLogEntity1.sender = `Нет`;
+                moneyLogEntity1.copper = wallet.copper;
+                moneyLogEntity1.silver = wallet.silver;
+                moneyLogEntity1.gold = wallet.gold;
+                moneyLogEntity1.electrum = wallet.electrum;
+                moneyLogEntity1.platinum = wallet.platinum;
+                moneyLogEntity1.note = 'Конвертация валюты. Произошла в меню кошелька. Старая сумма.';
+                await transactionManager.save(moneyLogEntity1);
+                await transactionManager.update(
+                    WalletEntity,
+                    {
+                        id: wallet.id,
+                    },
+                    {
+                        copper: moneyDto.copper,
+                        silver: moneyDto.silver,
+                        gold: moneyDto.gold,
+                        electrum: moneyDto.electrum,
+                        platinum: moneyDto.platinum,
+                    }
+                );
+                const moneyLogEntity2 = new MoneyLogEntity();
+                moneyLogEntity2.recipient = `Кошелёк ${wallet.id}`;
+                moneyLogEntity2.sender = `Нет`;
+                moneyLogEntity2.copper = moneyDto.copper;
+                moneyLogEntity2.silver = moneyDto.silver;
+                moneyLogEntity2.gold = moneyDto.gold;
+                moneyLogEntity2.electrum = moneyDto.electrum;
+                moneyLogEntity2.platinum = moneyDto.platinum;
+                moneyLogEntity2.note = 'Конвертация валюты. Произошла в меню кошелька. Новая сумма.';
+                await transactionManager.save(moneyLogEntity2);
             }
         );
     }

@@ -14,8 +14,7 @@ export default class DevilSeeder implements Seeder {
         const devilSpellsRepository =
             dataSource.getRepository(DevilSpellEntity);
 
-     /**
-      *    for (let i = 0; i < devils.length; ++i) {
+    for (let i = 0; i < devils.length; ++i) {
             const {
                 name,
                 description,
@@ -30,7 +29,8 @@ export default class DevilSeeder implements Seeder {
                 union_80,
                 union_100,
             } = devils[i];
-            const devil_union_10 = (
+           /**
+            *  const devil_union_10 = (
                 await devilUnionRepository.insert({
                     percent: DevilUnionsPercentEnum.PERCENT_10,
                 })
@@ -61,21 +61,23 @@ export default class DevilSeeder implements Seeder {
                 })
             ).raw[0];
 
+            */
             await devilRepository.insert({
                 name: name,
                 description: description,
                 image: image_path,
                 rank: rank as ENUM_DEVIL_RANK,
                 floor: floor as ENUM_DEVIL_FLOOR,
-                magic_type: magic_type,
-                union_10: devil_union_10,
+                magicType: magic_type,
+              /*  union_10: devil_union_10,
                 union_25: devil_union_25,
                 union_50: devil_union_50,
                 union_65: devil_union_65,
                 union_80: devil_union_80,
-                union_100: devil_union_100,
+                union_100: devil_union_100,*/
             });
-            for (let j = 0; j < union_10.spells.length; ++j) {
+           /**
+            *  for (let j = 0; j < union_10.spells.length; ++j) {
                 await devilSpellsRepository.insert({
                     name: union_10.spells[j].name,
                     description: union_10.spells[j].description,
@@ -145,7 +147,8 @@ export default class DevilSeeder implements Seeder {
                     union: devil_union_100,
                 });
             }
+            */
         }
-      */
+    
     }
 }

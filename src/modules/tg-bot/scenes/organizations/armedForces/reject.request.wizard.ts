@@ -9,30 +9,28 @@ import {
 } from 'nestjs-telegraf';
 import { Inject, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
-import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
-import { BotContext } from '../../interfaces/bot.context';
+
 import { SquadsService } from 'src/modules/squards/service/squads.service';
-import { CharacterService } from 'src/modules/character/services/character.service';
 
 import { UserService } from 'src/modules/user/services/user.service';
 import { ENUM_ARMED_FORCES_REQUEST } from 'src/modules/squards/constants/armed.forces.request.list';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
-
-@Wizard(ENUM_SCENES_ID.ARMY_REQUEST_ACCEPT_SCENE_ID)
+import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
+import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
+import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
+@Wizard(ENUM_SCENES_ID.ARMY_REQUEST_REJECT_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
-export class AcceptRequestWizard {
+export class RejectrequestWizard {
     constructor(
         private readonly userService: UserService,
-        private readonly characterService: CharacterService,
         private readonly squadService: SquadsService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
     async start(@Ctx() ctx: BotContext) {
         await ctx.reply(
-            `🧟 Введи ID игрока, которого хотите принять в ряды рыцарей-чародеев.\n🦝 Если игрока не находит, то ему нужно прописать /start в боте!`,
+            `🧟 Введи TRADE ID игрока, которого хотите принять в ряды чародеев, защищающих вашу страну.\n🦝 Если игрока не находит, то ему нужно прописать /start в боте!`,
             Markup.removeKeyboard()
         );
     }
@@ -45,27 +43,21 @@ export class AcceptRequestWizard {
     @WizardStep(1)
     async getTgId(@Ctx() ctx: BotContext, @Message() message) {
         const isUserExists = await this.userService.exists(message.text);
+        console.log(isUserExists);
         if (!isUserExists) {
             ctx.reply(
                 'Введен не верный id пользователя! Для отмены нажмите кнопку отменить /cancel'
             );
             ctx.wizard.back();
         } else {
-            const tgChatId = message.text;
-            const character =
-                await this.characterService.findCharacterByTgId(tgChatId);
-            const armedForces = await this.squadService.findArmedForcesById(
-                ctx.session.armedForcesId
-            );
-            await this.squadService.acceptMember(
-                character,
-                armedForces,
+            const tgChatId: string = message.text;
+            await this.squadService.changeRequestStatus(
                 message.text,
-                ENUM_ARMED_FORCES_REQUEST.ACCEPTED
+                ENUM_ARMED_FORCES_REQUEST.REJECTED
             );
             ctx.telegram.sendMessage(
                 tgChatId,
-                'Вашу заявку в боевые маги одобрили.'
+                'Вашу заявку в боевые маги не одобрили.'
             );
             await ctx.scene.enter(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID);
         }

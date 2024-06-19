@@ -8,8 +8,8 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('salary')
-export class SalaryEntity {
+@Entity('money')
+export class MoneyEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 

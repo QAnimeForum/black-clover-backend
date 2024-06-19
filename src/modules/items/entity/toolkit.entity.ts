@@ -8,8 +8,7 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { InventoryEntity } from '../../character/entity/inventory.entity';
-
+import { InventoryEntity } from './inventory.entity';
 @Entity('toolKit')
 export class ToolKitEnity {
     @PrimaryGeneratedColumn('uuid')

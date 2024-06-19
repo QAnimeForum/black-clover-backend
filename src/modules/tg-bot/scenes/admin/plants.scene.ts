@@ -36,7 +36,7 @@ export class PlantsService {
     async enter(@Ctx() ctx: BotContext) {
         const plants = await this.plantsService.findAllPlants();
         for (const plant of plants) {
-            const plantMessage = `ID: ${plant.id}\nНазвание: ${plant.name}\nЭмодзи: ${plant.emojiIcon}\nОписание: ${plant.description}\nСтоимость: ${plant.costMoney} денег, \nВремя засыхания: ${plant.deathTime}`;
+            const plantMessage = `ID: ${plant.id}\nНазвание: ${plant.name}\nЭмодзи: ${plant.emojiIcon}\nОписание: ${plant.description}\nСтоимость:денег, \nВремя засыхания: ${plant.deathTime}`;
             ctx.reply(
                 plantMessage,
                 Markup.inlineKeyboard([

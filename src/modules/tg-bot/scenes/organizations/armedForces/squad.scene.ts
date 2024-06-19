@@ -1,26 +1,18 @@
-import { Ctx, Hears, On, Scene, SceneEnter } from 'nestjs-telegraf';
-import {
-    ARMED_FORCES,
-    MINES_PATH,
-    STATIC_IMAGE_BASE_PATH,
-} from '../../constants/images';
-import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
-import { BotContext } from '../../interfaces/bot.context';
-import { TgBotService } from '../../services/tg-bot.service';
-import { Inject, UseFilters } from '@nestjs/common';
-import { Markup } from 'telegraf';
-import { MineService } from '../../../mines/services/mine.service';
-import { PaginateQuery } from 'nestjs-paginate';
-import { MINE_DEFAULT_PER_PAGE } from 'src/modules/mines/constants/mine.list.constant';
-import {
-    BACK_BUTTON,
-    MEMBER_LIST_BUTTON,
-    MINERALS_BUTTON,
-    SQUAD_CONTOL_BUTTON,
-} from '../../constants/button-names.constant';
-import { Logger } from 'winston';
+import { UseFilters, Inject } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
+import { Ctx, Hears, Scene, SceneEnter } from 'nestjs-telegraf';
+import {
+    MEMBER_LIST_BUTTON,
+    SQUAD_CONTOL_BUTTON,
+    BACK_BUTTON,
+} from 'src/modules/tg-bot/constants/button-names.constant';
+import { ARMED_FORCES } from 'src/modules/tg-bot/constants/images';
+import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
+import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
+import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
+import { TgBotService } from 'src/modules/tg-bot/services/tg-bot.service';
+import { Markup } from 'telegraf';
+import { Logger } from 'typeorm';
 
 @Scene(ENUM_SCENES_ID.SQUAD_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)

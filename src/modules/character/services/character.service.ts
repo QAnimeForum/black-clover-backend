@@ -271,9 +271,11 @@ export class CharacterService {
                         charisma: true,
                         armorClass: true,
                     },
+                    wallet: true,
                 },
             },
         });
+        console.log(entity);
         return entity.character;
     }
 
@@ -285,11 +287,11 @@ export class CharacterService {
             relations: {
                 character: {
                     inventory: {
-                        weapons: true,
+                     /*   weapons: true,
                         armor: true,
                         toolKits: true,
                         gears: true,
-                        vehicles: true,
+                        vehicles: true,*/
                     },
                 },
             },

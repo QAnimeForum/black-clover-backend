@@ -28,11 +28,12 @@ export class DevilsService {
             sortableColumns: ['id', 'name', 'floor'],
             nullSort: 'last',
             defaultSortBy: [['name', 'DESC']],
-            searchableColumns: ['name', 'floor'],
-            select: ['id', 'name', 'floor'],
+            searchableColumns: ['name', 'floor', 'rank'],
+            select: ['id', 'name', 'floor', 'rank'],
             filterableColumns: {
                 name: true,
                 floor: true,
+                rank: true,
             },
         });
     }

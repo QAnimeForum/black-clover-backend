@@ -36,7 +36,7 @@ export class HomeScene {
     @SceneEnter()
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
     async enter(@Ctx() ctx: BotContext, @Sender('id') tgId: string) {
-        const chatType = ctx.message.chat.type;
+        const chatType = ctx.chat.type;
         const isShowAdminButton = await this.userSerivce.isAdmin(tgId);
         const caption = 'Привет, путник!';
         if (chatType == 'private') {
@@ -100,9 +100,17 @@ export class HomeScene {
     }
 
     @Hears(ORGANIZATIONS_BUTTON)
+    @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
+    async organizations(@Ctx() ctx: BotContext) {
+        await ctx.deleteMessage();
+        await ctx.scene.enter(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID);
+    }
+
     @Action(ORGANIZATIONS_BUTTON)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
-    async armedForces(@Ctx() ctx: BotContext) {
+    async actionOrganizations(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        await ctx.deleteMessage();
         await ctx.scene.enter(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID);
     }
 
@@ -112,30 +120,52 @@ export class HomeScene {
         await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
     }
     @Hears(PROFILE_BUTTON)
+    @Action(PROFILE_BUTTON)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
     async profile(@Ctx() ctx: BotContext) {
+        await ctx.deleteMessage();
         await ctx.scene.enter(ENUM_SCENES_ID.PROFILE_SCENE_ID);
     }
     @Hears(MAP_BUTTON)
+    @Action(MAP_BUTTON)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
     async map(@Ctx() ctx: BotContext) {
+        await ctx.deleteMessage();
         await ctx.scene.enter(ENUM_SCENES_ID.MAP_SCENE_ID);
     }
 
     @Hears(ALL_DEVILS_BUTTON)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
-    async devils(@Ctx() ctx: BotContext) {
+    async hearDevils(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
+    }
+
+    @Action(ALL_DEVILS_BUTTON)
+    @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
+    async actionDevils(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        await ctx.deleteMessage();
         await ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
     }
 
     @Hears(ALL_SPIRITS_BUTTON)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
-    async spirits(@Ctx() ctx: BotContext) {
+    async hearsSpirits(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.ALL_SPIRITS_SCENE_ID);
+    }
+
+    @Action(ALL_SPIRITS_BUTTON)
+    @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
+    async actionSpirit(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        await ctx.deleteMessage();
         await ctx.scene.enter(ENUM_SCENES_ID.ALL_SPIRITS_SCENE_ID);
     }
 
     @Hears(ANNOUNCEMENTS_BUTTON)
+    @Action(ANNOUNCEMENTS_BUTTON)
     async quests(@Ctx() ctx: BotContext) {
+        await ctx.deleteMessage();
         const announcements =
             await this.announcementService.findAllAnnouncements({
                 path: '',

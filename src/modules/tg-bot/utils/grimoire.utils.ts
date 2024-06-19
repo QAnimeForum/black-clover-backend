@@ -34,7 +34,7 @@ export const convertGrimoiresToTextAndInlineButtons = (
     const buttons = [];
     paginatedGrimoires.data.map((grimoire, index) => {
         const grimoireStatus = grimoireStatusToText(grimoire.status);
-        const line = `<u>Гримуар № ${index + 1}</u>\n<strong>Маг. атрибут:</strong> ${grimoire.magicName}\n<strong>Символ на обложке:</strong>${grimoire.coverSymbol}\n<strong>Статус:</strong>${grimoireStatus}`;
+        const line = `<u>Гримуар № ${index + 1}</u>\n<strong>Маг. атрибут:</strong> ${grimoire.magicName}\n<strong>Символ на обложке:</strong>${grimoire.coverSymbol}\n<strong>Статус: </strong>${grimoireStatus}\n`;
         text += line;
         buttons.push([
             Markup.button.callback(

@@ -6,7 +6,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { InventoryEntity } from '../../character/entity/inventory.entity';
+import { InventoryEntity } from './inventory.entity';
 
 @Entity('vehicle')
 export class VehicleEntity {

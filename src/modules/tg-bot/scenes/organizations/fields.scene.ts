@@ -13,7 +13,6 @@ import {
 } from 'src/modules/tg-bot/constants/button-names.constant';
 import { PlantService } from 'src/modules/plants/services/plant.service';
 import { GardenEntity } from 'src/modules/plants/entity/garden.entity';
-import { PotEntity } from 'src/modules/plants/entity/pot.entity';
 
 @Scene(ENUM_SCENES_ID.FIELDS_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -23,8 +22,10 @@ export class FieldsScene {
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
-    async enter(@Ctx() ctx: BotContext, @Sender('id') tgId: number) {
-        const garden = await this.plantService.findGardenByUserTgId(tgId);
+    async enter(@Ctx() ctx: BotContext, @Sender('id') tgId: string) {
+        const garden = await this.plantService.findGardenByUserTgId(
+            tgId.toString()
+        );
         if (garden === null) {
             const caption = 'У вас не сада';
             await ctx.sendPhoto(
@@ -60,16 +61,20 @@ export class FieldsScene {
     @Action(/^(pot.*)$/)
     async pot(@Ctx() ctx: BotContext, @Sender('id') tgId) {
         ctx.answerCbQuery();
-        const potNumber = ctx.callbackQuery['data'];
+        const potName = ctx.callbackQuery['data'];
+        console.log(potName);
         const garden = await this.plantService.findGardenByUserTgId(tgId);
-        const potId: number = garden[potNumber];
+        const potId: number = garden[potName];
         const pot = await this.plantService.findPotById(potId.toString());
         const keyboard = [];
-        let text = `Горшок ${potNumber}\n`;
+        let text = `Горшок ${potName}\n`;
         if (!pot?.plant) {
             text += '\nПока тут ничего не растет...';
             keyboard.push(
-                Markup.button.callback('Посадить', `planting_${potNumber}`)
+                Markup.button.callback(
+                    'Посадить',
+                    `planting_${potName.split('_')[1]}`
+                )
             );
         }
         keyboard.push(Markup.button.callback(BACK_BUTTON, 'DISPLAY_GARDEN'));
@@ -82,7 +87,7 @@ export class FieldsScene {
     @Action(/^(planting.*)$/)
     async planting(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
-        const potNumber = ctx.callbackQuery['data'];
+        const potNumber = ctx.callbackQuery['data'].split('_')[1];
         const plants = await this.plantService.findAllPlants();
         const buttons = plants.map((plant) =>
             Markup.button.callback(
@@ -95,6 +100,49 @@ export class FieldsScene {
             'Выберите растение для посадки:',
             Markup.inlineKeyboard(buttons)
         );
+    }
+
+    //@Action(/^select_plant_(\d+)_(\d+)$/)
+    @Action(/^(select_plant_.*)$/)
+    async selectPlant(ctx: BotContext) {
+        const data = ctx.callbackQuery['data'].split('_');
+        const potNumber = parseInt(data[2]);
+        const plantId = data[3];
+        console.log(data);
+
+        const plant = await this.plantService.getPlantById(plantId);
+
+        if (plant) {
+            let priceInfo = '';
+           /**
+            *  if (plant.costMoney >= 0) {
+                priceInfo += `Цена: ${plant.costMoney}💵`;
+            }
+
+            const text = `Растение: ${plant.emojiIcon} ${plant.name}\nОписание: ${plant.description}\n${priceInfo}\nМаксимальная стоимость при продаже: ${plant.salePrice} 💵\nИнтервал полива: каждые ${plant.wateringInterval} мин\nВремя засыхания: ${plant.deathTime} мин`;
+            ctx.editMessageCaption(
+                text,
+                Markup.inlineKeyboard(
+                    [
+                        ...(plant.costMoney > 0
+                            ? [
+                                  Markup.button.callback(
+                                      'Купить за деньги💵',
+                                      `buy_plant_for_money_${potNumber}_${plantId}`
+                                  ),
+                              ]
+                            : []),
+                        Markup.button.callback(
+                            'Назад',
+                            `planting_${potNumber}`
+                        ),
+                    ].filter((button) => button !== undefined)
+                )
+            );
+            */
+        } else {
+            ctx.reply('Извините, растение не найдено.');
+        }
     }
     @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {

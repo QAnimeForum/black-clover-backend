@@ -1,9 +1,12 @@
+import { MoneyEntity } from '../../money/entity/money.entity';
 import {
     Entity,
     PrimaryGeneratedColumn,
     Column,
     CreateDateColumn,
     UpdateDateColumn,
+    JoinColumn,
+    OneToOne,
 } from 'typeorm';
 
 @Entity('plant')
@@ -23,12 +26,12 @@ export class PlantEntity {
     @Column()
     description: string;
 
-    @Column({
-        name: 'cost_money',
-        type: 'int',
+    @OneToOne(() => MoneyEntity)
+    @JoinColumn({
+        name: 'price_id',
+        referencedColumnName: 'id',
     })
-    costMoney: number;
-
+    price: MoneyEntity;
     @Column({
         name: 'watering_interval',
         type: 'int',

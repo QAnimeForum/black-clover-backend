@@ -32,6 +32,17 @@ export class WalletEntity {
         type: 'int',
     })
     platinum: number;
+
+    @Column({
+        name: 'use_platinum',
+        type: 'bool',
+    })
+    usePlatinum: boolean;
+    @Column({
+        name: 'useElectrum',
+        type: 'bool',
+    })
+    useElectrum: boolean;
     /*  @OneToOne(() => CashEntity, (cash) => cash.wallet)
     @JoinColumn({ name: 'cash_id', referencedColumnName: 'id' })
     cash: CashEntity;*/

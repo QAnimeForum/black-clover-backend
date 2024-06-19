@@ -36,7 +36,7 @@ export class SpiritService {
             nullSort: 'last',
             defaultSortBy: [['name', 'DESC']],
             searchableColumns: ['name'],
-            select: ['id', 'name', 'floor'],
+            select: ['id', 'name'],
             filterableColumns: {
                 name: true,
             },

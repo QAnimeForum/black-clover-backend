@@ -10,12 +10,13 @@ import {
 } from 'typeorm';
 import { ItemCategoryEntity } from './item.category.entity';
 import { ENUM_ITEM_RARITY } from '../constants/item.entity.enum';
+import { ENUM_BODY_PART_ENUM } from '../constants/body.part.enum';
 
-@Entity('item')
-export class ItemEntity {
+@Entity('equpment_item')
+export class EqupmentItemEntity {
     @ApiProperty()
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @ApiProperty()
     @Column({
@@ -60,6 +61,13 @@ export class ItemEntity {
     })
     rarity: ENUM_ITEM_RARITY;
 
+    @Column({
+        type: 'enum',
+        enum: ENUM_BODY_PART_ENUM,
+        default: ENUM_BODY_PART_ENUM.NO,
+    })
+    bodyPart: ENUM_BODY_PART_ENUM;
+
     @ApiProperty({ required: false })
     @Column({ default: 0 })
     heal: number;
@@ -82,6 +90,10 @@ export class ItemEntity {
 
     @ApiProperty({ required: false })
     @Column({ default: 0 })
+    luck: number;
+
+    @ApiProperty({ required: false })
+    @Column({ default: 0 })
     criticalChance: number;
 
     @ApiProperty({ required: false })
@@ -93,28 +105,47 @@ export class ItemEntity {
     dodgeChance: number;
 
     @ApiProperty({ required: false })
-    @Column({ default: 0 })
-    health: number;
-
+    @Column({ name: 'map_health', default: 0 })
+    mapHealth: number;
     @ApiProperty({ required: false })
-    @Column({ default: 0 })
-    mana: number;
-
+    @Column({ name: 'max_magic_power', default: 0 })
+    maxMagicPower: number;
     @ApiProperty({ required: false })
-    @Column({ default: 0 })
+    @Column({ name: 'armor', default: 0 })
     armor: number;
 
     @ApiProperty({ required: false })
-    @Column({ default: 0 })
-    damage: number;
+    @Column({ name: 'physical_attack_damage', default: 0 })
+    physicalAttackDamage: number;
+    @ApiProperty({ required: false })
+    @Column({ name: 'magic_attack_damage', default: 0 })
+    magicAttackDamage: number;
 
     @ApiProperty({ required: false })
-    @Column({ default: 0 })
-    goldDropMod!: number;
-
-    @ApiProperty({ required: false })
-    @Column({ default: 0 })
+    @Column({ name: 'inventory_pace', default: 0 })
     inventorySpace: number;
+
+    @Column({ name: 'physical_defense', default: 0 })
+    physicalDefense: number;
+
+    @Column({ name: 'magic_defense', default: 0 })
+    magicDefense: number;
+
+    @Column({ name: 'accuracy_rate', default: 0 })
+    accuracyRate: number;
+
+    @Column({ name: 'evasion', default: 0 })
+    evasion: number;
+
+    @Column({ name: 'craft', default: 0 })
+    craft: number;
+
+    @Column({ name: 'speed', default: 0 })
+    speed: number;
+
+    @Column({ name: 'jump', default: 0 })
+    jump: number;
+
     @ApiProperty()
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;

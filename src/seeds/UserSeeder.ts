@@ -1,11 +1,10 @@
-import { Armor } from 'src/modules/character/domain/Armor';
+import { InventoryEntity } from '../modules/items/entity/inventory.entity';
 import { ENUM_CHARCACTER_TYPE } from '../modules/character/constants/character.type.enum';
 import { AbilityEntity } from '../modules/character/entity/ability.entity';
 import { ArmorClassEntity } from '../modules/character/entity/armor.class.entity';
 import { BackgroundEntity } from '../modules/character/entity/background.entity';
 import { CharacterCharacteristicsEntity } from '../modules/character/entity/character.characteristics.entity';
 import { CharacterEntity } from '../modules/character/entity/character.entity';
-import { InventoryEntity } from '../modules/character/entity/inventory.entity';
 import { ProficiencyEntity } from '../modules/character/entity/proficiency.entity';
 import { GrimoireEntity } from '../modules/grimoire/entity/grimoire.entity';
 import { StateEntity } from '../modules/map/enitity/state.entity';
@@ -17,6 +16,7 @@ import {
 } from '../modules/user/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
+import { EquipmentEntity } from '../modules/items/entity/equipment.entity';
 
 export default class UserSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<any> {
@@ -25,6 +25,8 @@ export default class UserSeeder implements Seeder {
         const raceRepository = dataSource.getRepository(RaceEntity);
 
         const inventoryRepository = dataSource.getRepository(InventoryEntity);
+        const equipmentRepository = dataSource.getRepository(EquipmentEntity);
+        
         const grimoireRepository = dataSource.getRepository(GrimoireEntity);
         const stateRepository = dataSource.getRepository(StateEntity);
         const backgroundRepository = dataSource.getRepository(BackgroundEntity);
@@ -39,7 +41,9 @@ export default class UserSeeder implements Seeder {
         const character = new CharacterEntity();
 
         const inventory = new InventoryEntity();
-        inventoryRepository.save(inventory);
+        await inventoryRepository.save(inventory);
+        const equipment = new EquipmentEntity();
+        await equipmentRepository.save(equipment);
         /**
          * Создание истории персонажа
          */
@@ -139,12 +143,15 @@ export default class UserSeeder implements Seeder {
         wallet.electrum = 0;
         wallet.gold = 0;
         wallet.platinum = 0;
+        wallet.useElectrum = false;
+        wallet.usePlatinum = false;
         await walletRepository.save(wallet);
         character.type = ENUM_CHARCACTER_TYPE.PC;
         character.avatar = 'avatar.jpg';
         character.backgroundId = background.id;
         character.characterCharacteristicsId = characteristitcsEntity.id;
         character.grimoire = null;
+        character.equipmentId = equipment.id;
       //  character.grimoireId = grimoire.id;
         character.inventoryId = inventory.id;
         character.walletId = wallet.id;

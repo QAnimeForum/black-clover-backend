@@ -49,8 +49,7 @@ export class OrganizationsScene {
                 }
             );
         } else {
-            ctx.answerCbQuery();
-            await ctx.editMessageCaption(
+            await ctx.reply(
                 caption,
                 Markup.inlineKeyboard([
                     [
@@ -114,31 +113,41 @@ export class OrganizationsScene {
     @Hears(GRIMOIRE_TOWER_BUTTON)
     @Action(GRIMOIRE_TOWER_BUTTON)
     async grimoireTower(@Ctx() ctx: BotContext) {
+        await ctx.deleteMessage();
         await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
     }
     @Hears(SHOPPING_DISTRICT_BUTTON)
+    @Action(SHOPPING_DISTRICT_BUTTON)
     async shopDistrict(@Ctx() ctx: BotContext) {
+        await ctx.deleteMessage();
         await ctx.scene.enter(ENUM_SCENES_ID.SHOPPING_DISTRICT_SCENE_ID);
     }
 
     @Hears(GARDEN_BUTTON)
+    @Action(GARDEN_BUTTON)
     async fields(@Ctx() ctx: BotContext) {
+        await ctx.deleteMessage();
         await ctx.scene.enter(ENUM_SCENES_ID.FIELDS_SCENE_ID);
     }
 
     @Hears(MAGIC_PARLAMENT_BUTTON)
     @Action(MAGIC_PARLAMENT_BUTTON)
     async magicParlament(@Ctx() ctx: BotContext) {
+        await ctx.deleteMessage();
         await ctx.scene.enter(ENUM_SCENES_ID.MAGIC_PARLAMENT_SCENE_ID);
     }
 
     @Hears(ARMED_FORCES_BUTTON)
+    @Action(ARMED_FORCES_BUTTON)
     async armedForces(@Ctx() ctx: BotContext) {
+        await ctx.deleteMessage();
         await ctx.scene.enter(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID);
     }
 
     @Hears(MINES_BUTTON)
+    @Action(MINES_BUTTON)
     async mines(@Ctx() ctx: BotContext) {
+        await ctx.deleteMessage();
         await ctx.scene.enter(ENUM_SCENES_ID.MINES_SCENE_ID);
     }
 

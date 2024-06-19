@@ -19,9 +19,7 @@ import {
 import { DEVIL_DEFAULT_PER_PAGE } from 'src/modules/devils/constants/devil.list.constant';
 import { ENUM_DEVIL_FLOOR } from 'src/modules/devils/constants/devil.floor.enum';
 import { DevilsService } from 'src/modules/devils/services/devils.service';
-import { Paginated, PaginateQuery } from 'nestjs-paginate';
-import { DevilEntity } from 'src/modules/devils/entity/devil.entity';
-import { DevilUnionEntity } from 'src/modules/devils/entity/devil.union.entity';
+import { PaginateQuery } from 'nestjs-paginate';
 import { ENUM_DEVIL_LIST_BACK_TYPE } from '../../interfaces/bot.wizard.session';
 import { ENUM_DEVIL_RANK } from 'src/modules/devils/constants/devil.ranks.enum';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -35,6 +33,7 @@ import {
     DEVIL_FLOOR_5_BUTTON,
     DEVIL_FLOOR_6_BUTTON,
     DEVIL_FLOOR_7_BUTTON,
+    DEVIL_LIST_BUTTON,
     DEVIL_RANK_1_BUTTON,
     DEVIL_RANK_2_BUTTON,
     DEVIL_RANK_3_BUTTON,
@@ -42,6 +41,11 @@ import {
     DEVIL_TYPE_SORT_FLOOR_BUTTON,
     DEVIL_TYPE_SORT_RANK_BUTTON,
 } from '../../constants/button-names.constant';
+import {
+    defilInformationToText,
+    devilListToButtons,
+} from '../../utils/devil.utils';
+import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
 
 @Scene(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -55,6 +59,7 @@ export class AllDevilsScene {
         const chatType = ctx.chat.type;
         ctx.scene.session.devilsList = {
             backStatus: ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_HOME,
+            sortType: 'rank',
             selectedId: '',
         };
         if (chatType == 'private') {
@@ -84,6 +89,8 @@ export class AllDevilsScene {
                                 DEVIL_TYPE_SORT_FLOOR_BUTTON,
                                 DEVIL_TYPE_SORT_FLOOR_BUTTON
                             ),
+                        ],
+                        [
                             Markup.button.callback(
                                 DEVIL_TYPE_SORT_RANK_BUTTON,
                                 DEVIL_TYPE_SORT_RANK_BUTTON
@@ -96,48 +103,89 @@ export class AllDevilsScene {
     }
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {
-        this.showEntryButtons(ctx);
+        // await this.showEntryButtons(ctx);
+        ctx.scene.session.devilsList = {
+            backStatus: ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_HOME,
+            sortType: 'rank',
+            selectedId: '',
+        };
+        const chatType = ctx.chat.type;
+        if (chatType == 'private') {
+            await ctx.replyWithPhoto(
+                { source: DEVILS_IMAGE_PATH },
+                {
+                    caption: `Вы попали в преисподнюю`,
+                    parse_mode: 'HTML',
+                    ...Markup.keyboard([
+                        [DEVIL_LIST_BUTTON],
+                        [BACK_BUTTON],
+                    ]).resize(),
+                }
+            );
+        } else {
+            await ctx.replyWithPhoto(
+                { source: DEVILS_IMAGE_PATH },
+                {
+                    caption: `Вы попали в преисподнюю`,
+                    parse_mode: 'HTML',
+                    ...Markup.inlineKeyboard([
+                        [
+                            Markup.button.callback(
+                                DEVIL_LIST_BUTTON,
+                                DEVIL_LIST_BUTTON
+                            ),
+                        ],
+                    ]),
+                }
+            );
+        }
     }
 
     @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
-        const backStatus = ctx.scene.session.devilsList.backStatus;
-        switch (backStatus) {
-            case ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_HOME: {
-                await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
-                break;
-            }
-            case ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_SORT_TYPE: {
-                await this.showEntryButtons(ctx);
-                break;
-            }
-            case ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_FLOOR: {
-                break;
-            }
-            case ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_RANK: {
-                break;
-            }
-        }
+        await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
     }
 
+    @Action('BACK_TO_SORT')
+    @Hears(DEVIL_LIST_BUTTON)
+    @Action(DEVIL_LIST_BUTTON)
+    async showDevilList(@Ctx() ctx: BotContext) {
+        await ctx.deleteMessage();
+        await ctx.replyWithPhoto(
+            { source: DEVILS_IMAGE_PATH },
+            {
+                caption: `Вы попали в преисподнюю`,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard([
+                    [
+                        Markup.button.callback(
+                            DEVIL_TYPE_SORT_FLOOR_BUTTON,
+                            DEVIL_TYPE_SORT_FLOOR_BUTTON
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            DEVIL_TYPE_SORT_RANK_BUTTON,
+                            DEVIL_TYPE_SORT_RANK_BUTTON
+                        ),
+                    ],
+                ]),
+            }
+        );
+    }
     @Action(DEVIL_TYPE_SORT_FLOOR_BUTTON)
     @Hears(DEVIL_TYPE_SORT_FLOOR_BUTTON)
     async floor(@Ctx() ctx: BotContext) {
-        ctx.scene.session.devilsList.backStatus =
-            ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_SORT_TYPE;
-        const chatType = ctx.chat.type;
-        if (chatType == 'private') {
-            await ctx.editMessageCaption({
-                caption: `Информация о дьяволах, собранная по этажам`,
-                ...Markup.keyboard([
-                    [DEVIL_FLOOR_1_BUTTON, DEVIL_FLOOR_2_BUTTON],
-                    [DEVIL_FLOOR_3_BUTTON, DEVIL_FLOOR_4_BUTTON],
-                    [DEVIL_FLOOR_5_BUTTON, DEVIL_FLOOR_6_BUTTON],
-                    [DEVIL_FLOOR_7_BUTTON, BACK_BUTTON],
-                ]).resize(),
-            });
-        } else {
-            await ctx.editMessageCaption({
+        await ctx.deleteMessage();
+        await this.showFlowList(ctx);
+    }
+
+    async showFlowList(ctx: BotContext) {
+        await ctx.replyWithPhoto(
+            {
+                source: DEVILS_IMAGE_PATH,
+            },
+            {
                 caption: `Информация о дьяволах, собранная по этажам`,
                 parse_mode: 'HTML',
                 ...Markup.inlineKeyboard([
@@ -183,67 +231,92 @@ export class AllDevilsScene {
                             DEVIL_FLOOR_7_BUTTON
                         ),
                     ],
+                    [Markup.button.callback(BACK_BUTTON, 'BACK_TO_SORT')],
                 ]),
-            });
-        }
+            }
+        );
+        //  }
     }
-
     @Action(DEVIL_TYPE_SORT_RANK_BUTTON)
     @Hears(DEVIL_TYPE_SORT_RANK_BUTTON)
     async rank(@Ctx() ctx: BotContext) {
-        const chatType = ctx.chat.type;
-        ctx.scene.session.devilsList.backStatus =
-            ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_SORT_TYPE;
-        if (chatType == 'private') {
-            ctx.editMessageCaption('`Список дьяволов по рангам`', {
-                parse_mode: 'HTML',
-                ...Markup.keyboard(
-                    [DEVIL_RANK_1_BUTTON, DEVIL_RANK_2_BUTTON],
-                    [DEVIL_RANK_3_BUTTON, DEVIL_RANK_4_BUTTON],
-                    [BACK_BUTTON],
-                ),
-            });
-        } else {
-            await ctx.replyWithPhoto(
-                { source: DEVILS_IMAGE_PATH },
-                {
-                    caption: `Список дьяволов по рангам`,
-                    parse_mode: 'HTML',
-                    ...Markup.inlineKeyboard([
-                        [
-                            Markup.button.callback(
-                                DEVIL_RANK_1_BUTTON,
-                                DEVIL_RANK_1_BUTTON
-                            ),
-                        ],
-                        [
-                            Markup.button.callback(
-                                DEVIL_RANK_2_BUTTON,
-                                DEVIL_RANK_2_BUTTON
-                            ),
-                        ],
-                        [
-                            Markup.button.callback(
-                                DEVIL_RANK_3_BUTTON,
-                                DEVIL_RANK_3_BUTTON
-                            ),
-                        ],
-                        [
-                            Markup.button.callback(
-                                DEVIL_RANK_4_BUTTON,
-                                DEVIL_RANK_4_BUTTON
-                            ),
-                        ],
-                    ]),
-                }
-            );
-        }
-        // await ctx.scene.enter(ENUM_SCENES_ID.allDevilsByRank);
+        await ctx.deleteMessage();
+        await this.showRankList(ctx);
     }
 
+    async showRankList(ctx: BotContext) {
+        await ctx.replyWithPhoto(
+            { source: DEVILS_IMAGE_PATH },
+            {
+                caption: `Список дьяволов по рангам`,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard([
+                    [
+                        Markup.button.callback(
+                            DEVIL_RANK_1_BUTTON,
+                            DEVIL_RANK_1_BUTTON
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            DEVIL_RANK_2_BUTTON,
+                            DEVIL_RANK_2_BUTTON
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            DEVIL_RANK_3_BUTTON,
+                            DEVIL_RANK_3_BUTTON
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            DEVIL_RANK_4_BUTTON,
+                            DEVIL_RANK_4_BUTTON
+                        ),
+                    ],
+                    [Markup.button.callback(BACK_BUTTON, 'BACK_TO_SORT')],
+                ]),
+            }
+        );
+    }
     @Hears(/(Первый|Второй|Третий|Четвёртый|Пятый|Шестой|Седьмой) этаж/g)
-    async floorList(@Ctx() ctx: BotContext, @Message() message) {
+    async floorListInline(@Ctx() ctx: BotContext, @Message() message) {
+
         const text = message.text;
+        const [caption, buttons] = await this.showDevilListByFloor(ctx, text);
+        console.log(buttons);
+        await ctx.replyWithPhoto(
+            { source: DEVILS_QLIPOTH_IMAGE_PATH },
+            {
+                caption: caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard(buttons),
+            }
+        );
+    }
+
+    @Action(/(Первый|Второй|Третий|Четвёртый|Пятый|Шестой|Седьмой) этаж/g)
+    async floorListKeyboard(@Ctx() ctx: BotContext) {
+        ctx.answerCbQuery();
+        ctx.scene.session.devilsList.sortType = 'floor';
+        const text = ctx.callbackQuery['data'];
+        const [caption, buttons] = await this.showDevilListByFloor(ctx, text);
+        ctx.deleteMessage();
+        await ctx.replyWithPhoto(
+            { source: DEVILS_QLIPOTH_IMAGE_PATH },
+            {
+                caption: caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard(buttons),
+            }
+        );
+    }
+
+    async showDevilListByFloor(
+        ctx: BotContext,
+        floor: string
+    ): Promise<[string, InlineKeyboardButton[][]]> {
         let caption = '';
         const query: PaginateQuery = {
             limit: DEVIL_DEFAULT_PER_PAGE,
@@ -252,7 +325,7 @@ export class AllDevilsScene {
                 floor: `$eq:${ENUM_DEVIL_FLOOR.ONE}`,
             },
         };
-        switch (text) {
+        switch (floor) {
             case DEVIL_FLOOR_1_BUTTON: {
                 query.filter = {
                     floor: `$eq:${ENUM_DEVIL_FLOOR.ONE}`,
@@ -299,22 +372,60 @@ export class AllDevilsScene {
                 query.filter = {
                     floor: `$eq:${ENUM_DEVIL_FLOOR.SEVEN}`,
                 };
-                caption = 'Список дьяволов седьмого этажа';
-                break;
             }
         }
+        ctx.session.devilPaginateQuery = query;
         const paginatedDevils = await this.devilService.findAll(query);
-        /*  this.devilsList(
-            ctx,
-            paginatedDevils,
-            caption,
-            ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_FLOOR
-        );*/
+
+        const buttons = devilListToButtons(paginatedDevils, floor);
+        return [caption, buttons];
     }
 
     @Hears(/(Высшие|Высокоранговые|Среднеранговые|Низкоранговые|) дьяволы/g)
-    async rankList(@Ctx() ctx: BotContext, @Message() message) {
+    async rankListInline(@Ctx() ctx: BotContext, @Message() message) {
+        ctx.scene.session.devilsList.sortType = 'rank';
         const text = message.text;
+        const [caption, buttons] = await this.showDevilListByRank(ctx, text);
+        await ctx.replyWithPhoto(
+            { source: DEVILS_QLIPOTH_IMAGE_PATH },
+            {
+                caption: caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard(buttons),
+            }
+        );
+    }
+
+    @Action('BACK_TO_DEVIL_SORT')
+    async backToDevilSort(@Ctx() ctx: BotContext) {
+        await ctx.deleteMessage();
+        if (ctx.scene.session.devilsList.sortType == 'rank') {
+            await this.showRankList(ctx);
+        } else {
+            await this.showFlowList(ctx);
+        }
+    }
+    @Action(/(Высшие|Высокоранговые|Среднеранговые|Низкоранговые|) дьяволы/g)
+    async rankListKeyboard(@Ctx() ctx: BotContext) {
+        ctx.answerCbQuery();
+        ctx.scene.session.devilsList.sortType = 'rank';
+        const text = ctx.callbackQuery['data'];
+        const [caption, buttons] = await this.showDevilListByRank(ctx, text);
+        ctx.deleteMessage();
+        await ctx.replyWithPhoto(
+            { source: DEVILS_QLIPOTH_IMAGE_PATH },
+            {
+                caption: caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard(buttons),
+            }
+        );
+    }
+
+    async showDevilListByRank(
+        ctx: BotContext,
+        rank: string
+    ): Promise<[string, InlineKeyboardButton[][]]> {
         let caption = '';
         const query: PaginateQuery = {
             limit: DEVIL_DEFAULT_PER_PAGE,
@@ -323,29 +434,29 @@ export class AllDevilsScene {
                 rank: `$eq:${ENUM_DEVIL_RANK.LOW}`,
             },
         };
-        switch (text) {
-            case DEVIL_RANK_1_BUTTON: {
+        switch (rank) {
+            case DEVIL_RANK_4_BUTTON: {
                 query.filter = {
                     rank: `$eq:${ENUM_DEVIL_RANK.LOW}`,
                 };
                 caption = 'Список низкоранговых дьяволов';
                 break;
             }
-            case DEVIL_RANK_2_BUTTON: {
+            case DEVIL_RANK_4_BUTTON: {
                 query.filter = {
                     rank: `$eq:${ENUM_DEVIL_RANK.MID}`,
                 };
                 caption = `Список среднеранговых дьяволов`;
                 break;
             }
-            case DEVIL_RANK_3_BUTTON: {
+            case DEVIL_RANK_2_BUTTON: {
                 query.filter = {
                     rank: `$eq:${ENUM_DEVIL_RANK.HIGH}`,
                 };
                 caption = `Список высокоранговых дьяволов`;
                 break;
             }
-            case DEVIL_RANK_4_BUTTON: {
+            case DEVIL_RANK_1_BUTTON: {
                 query.filter = {
                     rank: `$eq:${ENUM_DEVIL_RANK.HIGHEST}`,
                 };
@@ -353,33 +464,82 @@ export class AllDevilsScene {
                 break;
             }
         }
+        ctx.session.devilPaginateQuery = query;
         const paginatedDevils = await this.devilService.findAll(query);
-        /*   this.devilsList(
-            ctx,
-            paginatedDevils,
-            caption,
-            ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_RANK
-        );*/
+        const buttons = devilListToButtons(paginatedDevils, rank);
+        return [caption, buttons];
+    }
+    @Action(/^(DEVILS_NEXT_PAGE.*)$/)
+    public async nextPage(@Ctx() ctx: BotContext) {
+        if ('data' in ctx.callbackQuery) {
+            const page = ctx.callbackQuery.data.split(':')[1];
+            ctx.session.devilPaginateQuery.page = Number.parseInt(page);
+            const paginatedDevils = await this.devilService.findAll(
+                ctx.session.devilPaginateQuery
+            );
+
+            const buttons = devilListToButtons(paginatedDevils, '');
+            await ctx.editMessageCaption(
+                'Список дьяволов',
+                Markup.inlineKeyboard(buttons)
+            );
+        }
     }
 
-    @Action(/^(devil_id.*)$/)
-    @On('callback_query')
+    @Action(/^(DEVILS_PREVIOUS_PAGE.*)$/)
+    public async previousPage(@Ctx() ctx: BotContext) {
+        if ('data' in ctx.callbackQuery) {
+            const page = ctx.callbackQuery.data.split(':')[1];
+            ctx.session.devilPaginateQuery.page = Number.parseInt(page);
+            const paginatedDevils = await this.devilService.findAll(
+                ctx.session.devilPaginateQuery
+            );
+
+            const buttons = devilListToButtons(paginatedDevils, '');
+            await ctx.editMessageCaption(
+                'Список дьяволов',
+                Markup.inlineKeyboard(buttons)
+            );
+        }
+    }
+
+    @Action('BACK_TO_DEVIL_LIST')
+    async backToDevils(@Ctx() ctx: BotContext) {
+        if ('data' in ctx.callbackQuery) {
+            ctx.answerCbQuery();
+            await ctx.deleteMessage();
+            const paginatedDevils = await this.devilService.findAll(
+                ctx.session.devilPaginateQuery
+            );
+            const buttons = devilListToButtons(paginatedDevils, '');
+
+            await ctx.replyWithPhoto(
+                {
+                    source: DEVILS_IMAGE_PATH,
+                },
+                {
+                    caption: 'Список дьяволов',
+                    ...Markup.inlineKeyboard(buttons),
+                }
+            );
+        }
+    }
+    @Action(/^(devilId.*)$/)
     public async callbackQuery(@Ctx() ctx: BotContext) {
         if ('data' in ctx.callbackQuery) {
             const selectedId = ctx.callbackQuery.data.split(':')[1];
             ctx.scene.session.devilsList.selectedId = selectedId;
-            /*  const devil_information = 
-               await this.devilService.findDevilByIdWithUnions(selectedId);
-            console.log(devil_information);
-            const nameBlock = `<strong>Имя</strong>: ${devil_information.name}\n`;
-            const floorBLock = `<strong>Этаж</strong>: ${devil_information.floor}\n`;
-            const rankBlock = `<strong>Ранг</strong>: ${devil_information.rank}\n`;
-            const descriptionBlock = `<strong>Описание</strong>\n${devil_information.description}\n`;
-            const caption = `<strong>Профиль дьявола</strong>\n\n${nameBlock}${floorBLock}${rankBlock}${descriptionBlock}`;
 
+            console.log(ctx.callbackQuery.data);
+            console.log(ctx.callbackQuery.data.split(':'));
+            console.log(selectedId);
+
+            const devil = await this.devilService.findDevilById(selectedId);
+            const caption = defilInformationToText(devil);
+            await ctx.deleteMessage();
             await ctx.replyWithPhoto(
                 {
-                    source: `${STATIC_IMAGE_BASE_PATH}${devil_information.image}`,
+                    source: `${STATIC_IMAGE_BASE_PATH}${devil.image}`,
                 },
                 {
                     caption: caption,
@@ -399,90 +559,7 @@ export class AllDevilsScene {
                         ],
                     ]),
                 }
-            );*/
+            );
         }
     }
-    /*   @Action(/^(SHOW_ALL_DEVIL_UNIONS.*)$/)
-    async unions(@Ctx() ctx: BotContext) {
-        switch (ctx.updateType) {
-            case 'callback_query':
-                await ctx.answerCbQuery();
-                if ('data' in ctx.callbackQuery) {
-                    const devil_id = ctx.callbackQuery.data.split(':')[1];
-                    const devil_information =
-                        await this.devilService.findDevilByIdWithUnions(
-                            devil_id
-                        );
-                    const union_10 = await this.devilService.findSpellsByUnion(
-                        devil_information.union_10.id
-                    );
-                    this.showSpellInfo(union_10, ctx);
-                    const union_25 = await this.devilService.findSpellsByUnion(
-                        devil_information.union_25.id
-                    );
-                    this.showSpellInfo(union_25, ctx);
-                    const union_50 = await this.devilService.findSpellsByUnion(
-                        devil_information.union_50.id
-                    );
-                    this.showSpellInfo(union_50, ctx);
-
-                    const union_65 = await this.devilService.findSpellsByUnion(
-                        devil_information.union_65.id
-                    );
-                    this.showSpellInfo(union_65, ctx);
-
-                    const union_80 = await this.devilService.findSpellsByUnion(
-                        devil_information.union_80.id
-                    );
-                    this.showSpellInfo(union_80, ctx);
-
-                    const union_100 = await this.devilService.findSpellsByUnion(
-                        devil_information.union_100.id
-                    );
-                    this.showSpellInfo(union_100, ctx);
-                }
-        }
-    }
-
-    async devilsList(
-        ctx: BotContext,
-        devils: Paginated<DevilEntity>,
-        caption: string,
-        back: ENUM_DEVIL_LIST_BACK_TYPE
-    ) {
-        // ctx.deleteMessage(ctx.callbackQuery.message.message_id);
-        ctx.scene.session.devilsList.backStatus = back;
-        const data = devils.data;
-        const devilsButtons = data.map((item) => [
-            Markup.button.callback(`${item.name}`, `devil_id:${item.id}`),
-        ]);
-        console.log(devilsButtons);
-        await ctx.replyWithPhoto(
-            { source: DEVILS_QLIPOTH_IMAGE_PATH },
-            {
-                caption: caption,
-                parse_mode: 'HTML',
-                ...Markup.inlineKeyboard(devilsButtons),
-            }
-        );
-    }
-
-    async showSpellInfo(devilUnion: DevilUnionEntity, ctx: BotContext) {
-        const caption = devilUnion.spells
-            .map((spell, index) => {
-                const title = `<strong><u>Заклинание ${index + 1}</u></strong>\n`;
-                const nameBlock = `<strong>Название</strong>: ${spell.name}\n`;
-                const costBlock = `<strong>Название</strong>: ${spell.cost}\n`;
-                const castTImeBlock = `<strong>Время каста заклинания</strong>: ${spell.castTime}\n`;
-                const durationBlock = `<strong>Продолжительность заклинания</strong>: ${spell.duration}\n`;
-                const rangeBlock = `<strong>Дальность заклинания</strong>: ${spell.range}\n`;
-                const descriptionBlock = `<strong>Описание</strong>\n${spell.description}\n`;
-                const caption = `${title}${nameBlock}${costBlock}${castTImeBlock}${durationBlock}${rangeBlock}${descriptionBlock}\n\n`;
-                return caption;
-            })
-            .join('');
-        await ctx.reply(`Едиение ${devilUnion.percent}%\n\n${caption}`, {
-            parse_mode: 'HTML',
-        });
-    }*/
 }

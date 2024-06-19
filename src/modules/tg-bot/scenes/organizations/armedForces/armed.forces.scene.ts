@@ -9,9 +9,7 @@ import {
 } from 'nestjs-telegraf';
 import { Inject, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
-import { ARMED_FORCES, STATIC_IMAGE_BASE_PATH } from '../../constants/images';
-import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
-import { BotContext } from '../../interfaces/bot.context';
+
 import { SquadsService } from 'src/modules/squards/service/squads.service';
 import { CharacterService } from 'src/modules/character/services/character.service';
 import { ArmedForcesRequestDto } from 'src/modules/squards/dto/armed.forces.request.dto';
@@ -19,20 +17,26 @@ import { PaginateQuery } from 'nestjs-paginate';
 import { SQUAD_DEFAULT_PER_PAGE } from 'src/modules/squards/constants/squad.list.constant';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
+
+import { UserService } from 'src/modules/user/services/user.service';
 import {
     ARMED_FORCES_BUTTON,
-    ARMED_FORCES_CONTROL_BUTTON,
-    BACK_BUTTON,
-    COMMANDER_IN_CHIEF_BUTTON,
-    CREATE_SQUAD_BUTTON,
-    GET_A_WAGE_BUTTON,
     JOIN_TO_ARMED_FORCES_BUTTON,
-    MY_SQUAD_BUTTON,
     SQUAD_LIST_BUTTON,
+    BACK_BUTTON,
     TREASURY_BUTTON,
-} from '../../constants/button-names.constant';
-import { UserService } from 'src/modules/user/services/user.service';
+    GET_A_WAGE_BUTTON,
+    CREATE_SQUAD_BUTTON,
+    MY_SQUAD_BUTTON,
+    COMMANDER_IN_CHIEF_BUTTON,
+} from 'src/modules/tg-bot/constants/button-names.constant';
+import {
+    ARMED_FORCES,
+    STATIC_IMAGE_BASE_PATH,
+} from 'src/modules/tg-bot/constants/images';
+import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
+import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
+import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
 @Scene(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class ArmedForcesScene {
@@ -73,7 +77,7 @@ export class ArmedForcesScene {
 
         return buttons;
     }
-    async showArmedForces(ctx: BotContext, userTgId) {
+    async showArmedForces(ctx: BotContext, userTgId: string) {
         const buttons = await this.generateMainArmedForcesKeyboard(userTgId);
         let caption =
             '🛡️Добро пожаловать в Палату Рыцарей-Чародеев Королевства Клевер!🛡️\n\nЗдесь ты найдешь информацию о рыцарях-чародеях, системе рангов, своих будущих обязанностях,  о системе обучения, о боевых  отрядах  и о всех важных вещах, необходимых для твоего прохождения  службы. Готовься к геройству!\n';
@@ -94,16 +98,29 @@ export class ArmedForcesScene {
         /*  if(isUserSuperAdmin) {
             buttons.push([COMMANDER_IN_CHIEF_BUTTON, BACK_BUTTON]);
         }*/
-        await ctx.sendPhoto(
-            {
-                source: ARMED_FORCES,
-            },
-            {
-                caption,
-                parse_mode: 'HTML',
-                ...Markup.keyboard(buttons).resize(),
-            }
-        );
+        const type = ctx.chat.type;
+        if (type == 'private') {
+            await ctx.sendPhoto(
+                {
+                    source: ARMED_FORCES,
+                },
+                {
+                    caption,
+                    parse_mode: 'HTML',
+                    ...Markup.keyboard(buttons).resize(),
+                }
+            );
+        } else {
+            await ctx.sendPhoto(
+                {
+                    source: ARMED_FORCES,
+                },
+                {
+                    caption,
+                    parse_mode: 'HTML',
+                }
+            );
+        }
         /*
         const ranks = await this.squadsService.findRanksByArmedForces(
             armedForces.id

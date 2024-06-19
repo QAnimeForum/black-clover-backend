@@ -1,4 +1,4 @@
-import { Action, Ctx, Hears, Scene, SceneEnter } from 'nestjs-telegraf';
+import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { Inject, UseFilters } from '@nestjs/common';
@@ -11,20 +11,21 @@ import { Logger } from 'winston';
 import {
     ARMOR_BUTTON,
     BACK_BUTTON,
-    BACKGROUND_BUTTON,
+    CHANGE_EQUIPMENT_BUTTON,
+    EQUIPMENT_BUTTON,
     FOOD_BUTTON,
     GEARS_BUTTON,
-    GRIMOIRE_BUTTON,
-    INVENTORY_BUTTON,
     JEWEIRY_BUTTON,
     MINERALS_BUTTON,
-    MY_DEVILS_BUTTON,
-    MY_SPIRITS_BUTTON,
-    PARAMS_BUTTON,
+    RESOURCES_BUTTON,
     VEHICLES_BUTTON,
-    WALLET_BUTTON,
     WEAPONS_BUTTON,
 } from '../../constants/button-names.constant';
+import {
+    equipmentInlineKeyBoard,
+    equipmentToText,
+} from '../../utils/inventory.utils';
+import { ENUM_ACTION_NAMES } from '../../constants/action-names.constant';
 
 @Scene(ENUM_SCENES_ID.INVENTORY_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -34,8 +35,118 @@ export class InventoryScene {
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
-    async enter(@Ctx() ctx: BotContext) {
-        const caption = 'Ваш инвентарь';
+    async enter(@Ctx() ctx: BotContext, @Sender() sender) {
+        const equipment = await this.inventoryService.findEquipmentByTgId(
+            sender.id
+        );
+        const chatType = ctx.chat.type;
+        if (chatType == 'private') {
+            const caption = equipmentToText(equipment, sender.username);
+            await ctx.sendPhoto(
+                {
+                    source: INVENTORY_IMAGE_PATH,
+                },
+                {
+                    caption,
+                    parse_mode: 'HTML',
+                    ...Markup.keyboard([
+                        [CHANGE_EQUIPMENT_BUTTON],
+                        [EQUIPMENT_BUTTON, RESOURCES_BUTTON],
+                        [BACK_BUTTON],
+                    ]).resize(),
+                }
+            );
+        } else {
+            const caption = equipmentToText(equipment, sender.username);
+            await ctx.sendPhoto(
+                {
+                    source: INVENTORY_IMAGE_PATH,
+                },
+                {
+                    caption,
+                    parse_mode: 'HTML',
+                    ...Markup.inlineKeyboard(equipmentInlineKeyBoard()),
+                }
+            );
+        }
+
+        /**
+         *  ...Markup.keyboard([
+                    [EQUIPMENT_BUTTON, RESOURCES_BUTTON],
+                    [BACK_BUTTON],
+                ]).resize(),
+         */
+        /**
+         *  ...Markup.keyboard([
+                    [EQUIPMENT_BUTTON, RESOURCES_BUTTON],
+                    [BACK_BUTTON],
+                ]).resize(),
+         */
+    }
+    /**
+     * 
+     * @param ctx 
+    /**
+    *  const weaponBlock = `${WEAPONS_BUTTON}:-\n`;
+    const armorBlock = `${ARMOR_BUTTON}: -\n`;
+    const jeweiryBlock = `${JEWEIRY_BUTTON}: -\n`;
+    const foodBlock = `${FOOD_BUTTON}: -\n`;
+    const alcoholBlock = `${ALCOHOL_BUTTON}: -\n`;
+    const toolKitBlock = `${TOOLKIT_BUTTON}: -\n`;
+    const gearsBlock = `${GEARS_BUTTON}: -\n`;
+    const vehiclesBlock = `${VEHICLES_BUTTON}: -\n`;
+
+    const resourcesTitle = `strong><u>♻️ Ресурсы</u></strong>\n\n`;
+    */
+    /**
+     * 🤴️sanscri 🔸5 ❤️(268/268)
+
+Надетая экипировка:
+
+🔪 Оружие: Деревянный меч [I]  (11/25)
+🎩 Шлем: -
+🎽 Доспех: -
+🧤 Перчатки: Перчатки новичка [I]  (25/25)
+🥾 Сапоги: -
+🛡 Щит: -
+💍 Кольцо: -
+📿 Колье: -
+🌂 Аксессуар: -
+🔧 Инструменты: -
+    {
+            source: INVENTORY_IMAGE_PATH,
+        },
+        {
+            caption,
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard([
+                [
+                    Markup.button.callback(MINERALS_BUTTON, MINERALS_BUTTON),
+                    Markup.button.callback(JEWEIRY_BUTTON, JEWEIRY_BUTTON),
+                ],
+                [
+                    Markup.button.callback(ALCOHOL_BUTTON, ALCOHOL_BUTTON),
+                    Markup.button.callback(FOOD_BUTTON, FOOD_BUTTON),
+                ],
+
+                [
+                    Markup.button.callback(WEAPONS_BUTTON, WEAPONS_BUTTON),
+                    Markup.button.callback(ARMOR_BUTTON, ARMOR_BUTTON),
+                ],
+                [
+                    Markup.button.callback(GEARS_BUTTON, GEARS_BUTTON),
+                    Markup.button.callback(VEHICLES_BUTTON, VEHICLES_BUTTON),
+                ],
+            ]),
+        }
+    );*/
+
+    @Hears(CHANGE_EQUIPMENT_BUTTON)
+    async changeEquipment(@Ctx() ctx: BotContext, @Sender() sender) {
+        const equipment = await this.inventoryService.findEquipmentByTgId(
+            sender.id
+        );
+        const caption = equipmentToText(equipment, sender.username);
         await ctx.sendPhoto(
             {
                 source: INVENTORY_IMAGE_PATH,
@@ -43,23 +154,110 @@ export class InventoryScene {
             {
                 caption,
                 parse_mode: 'HTML',
-                ...Markup.inlineKeyboard([
-                    [Markup.button.callback(MINERALS_BUTTON, MINERALS_BUTTON)],
-                ]),
+                ...Markup.inlineKeyboard(equipmentInlineKeyBoard()),
             }
         );
     }
-    /**
- * 
- * @param ctx                 ...Markup.keyboard([
-                    [BUTTON_ACTIONS.MINERALS, BUTTON_ACTIONS.JEWEIRY],
-                    [BUTTON_ACTIONS.FOOD, BUTTON_ACTIONS.ALCOHOL],
-                    [BUTTON_ACTIONS.WEAPONS, BUTTON_ACTIONS.ARMOR],
-                    [BUTTON_ACTIONS.GEARS, BUTTON_ACTIONS.VEHICLES],
-                    [BUTTON_ACTIONS.ALL_INVENTORY],
-                    [BACK_BUTTON],
-                ]).resize(),
- */
+
+    @Action(ENUM_ACTION_NAMES.CHANGE_CAP)
+    async changeCap(@Ctx() ctx: BotContext) {
+        ctx.answerCbQuery();
+        await ctx.reply('в разработке');
+    }
+
+    @Action(ENUM_ACTION_NAMES.CHANGE_ARMOR)
+    async changeArmor(@Ctx() ctx: BotContext) {
+        ctx.answerCbQuery();
+        await ctx.reply('в разработке');
+    }
+
+    @Action(ENUM_ACTION_NAMES.CHANGE_LEFT_HAND)
+    async changeLeftHand(@Ctx() ctx: BotContext) {
+        ctx.answerCbQuery();
+        await ctx.reply('в разработке');
+    }
+
+    @Action(ENUM_ACTION_NAMES.CHANGE_RIGHT_HAND)
+    async changeRightHand(@Ctx() ctx: BotContext) {
+        ctx.answerCbQuery();
+        await ctx.reply('в разработке');
+    }
+
+    @Action(ENUM_ACTION_NAMES.CHANGE_CLOAK_ACTION)
+    async changeCloak(@Ctx() ctx: BotContext) {
+        ctx.answerCbQuery();
+        await ctx.reply('в разработке');
+    }
+
+
+    @Action(ENUM_ACTION_NAMES.CHANGE_GLOVES_ACTION)
+    async changeGloves(@Ctx() ctx: BotContext) {
+        ctx.answerCbQuery();
+        await ctx.reply('в разработке');
+    }
+
+    @Action(ENUM_ACTION_NAMES.CHANGE_RING_ACTION)
+    async changeShoes(@Ctx() ctx: BotContext) {
+        ctx.answerCbQuery();
+        await ctx.reply('в разработке');
+    }
+
+    @Action(ENUM_ACTION_NAMES.CHANGE_VEHICLE_ACTION)
+    async changeVehicle(@Ctx() ctx: BotContext) {
+        ctx.answerCbQuery();
+        const tgUserId = ctx.callbackQuery.from.id.toString();
+        const currentSlot = ENUM_ACTION_NAMES.CHANGE_VEHICLE_ACTION;
+        this.chooseItem(ctx, tgUserId, currentSlot);
+    }
+    chooseItem = (
+        ctx: BotContext,
+        tgUserId: string,
+        currentSlot: ENUM_ACTION_NAMES
+    ) => {
+        const items = this.inventoryService.findAllEquipmentItems(
+            {
+                path: '',
+            },
+            tgUserId
+        );
+        let caption = '';
+        if (items.length == 0) {
+            caption = 'У вас нет экипировки, подходящего типа!';
+        } else {
+            caption = 'Теперь выберите предмет, который вы хотите надеть:\n';
+            items.map((item, index) => {
+                caption += `${index + 1})${item.name}\n`;
+            });
+            caption += 'Чтобы убрать предмет из слота введите 0';
+        }
+        ctx.replyWithHTML(
+            caption,
+            Markup.inlineKeyboard([
+                Markup.button.callback(
+                    BACK_BUTTON,
+                    ENUM_ACTION_NAMES.BACK_TO_EQUIP_ITEM
+                ),
+            ])
+        );
+    };
+
+    @Action(ENUM_ACTION_NAMES.BACK_TO_EQUIP_ITEM)
+    async backToEquipItem(@Ctx() ctx: BotContext, @Sender() sender) {
+        const equipment = await this.inventoryService.findEquipmentByTgId(
+            sender.id
+        );
+        const caption = equipmentToText(equipment, sender.username);
+        await ctx.sendPhoto(
+            {
+                source: INVENTORY_IMAGE_PATH,
+            },
+            {
+                caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard(equipmentInlineKeyBoard()),
+            }
+        );
+    }
     @Action(MINERALS_BUTTON)
     async minrals(@Ctx() ctx: BotContext) {
         const title =
@@ -173,35 +371,6 @@ export class InventoryScene {
 
     @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
-    }
-    @Hears(GRIMOIRE_BUTTON)
-    async grimoire(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_SCENE_ID);
-    }
-    @Hears(BACKGROUND_BUTTON)
-    async bio(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
-    }
-    @Hears(PARAMS_BUTTON)
-    async params(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.CHARACTER_PARAMETERS_SCENE_ID);
-    }
-    @Hears(WALLET_BUTTON)
-    async wallet(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.WALLET_SCENE_ID);
-    }
-    @Hears(INVENTORY_BUTTON)
-    async inventory(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.INVENTORY_SCENE_ID);
-    }
-    @Hears(MY_DEVILS_BUTTON)
-    async myDevils(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.MY_DEVILS_SCENE_ID);
-    }
-
-    @Hears(MY_SPIRITS_BUTTON)
-    async mySpirits(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.MY_SPIRITS_SCENE_ID);
+        await ctx.scene.enter(ENUM_SCENES_ID.PROFILE_SCENE_ID);
     }
 }

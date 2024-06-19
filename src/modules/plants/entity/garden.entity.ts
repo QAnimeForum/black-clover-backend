@@ -76,8 +76,6 @@ export class GardenEntity {
     })
     pot_5_Id: string;
 
-    @OneToOne(() => CharacterEntity)
+    @OneToOne(() => CharacterEntity, (character) => character.garden)
     character: CharacterEntity;
-
-    characterId: string;
 }

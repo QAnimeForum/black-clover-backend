@@ -11,6 +11,7 @@ export const CHRONICLE_BUTTON = '📰 Хроника';
 export const ANNOUNCEMENTS_BUTTON = '📜Объявления';
 //announcement
 //SPIRITS
+export const SPIRITS_LIST_BUTTON = '🧚‍♀️Список духов';
 export const ALL_SPIRITS_BUTTON = '🧚‍♀️Духи';
 export const MY_SPIRITS_BUTTON = '🧚‍♀️Мои духи';
 //DEVILS
@@ -28,6 +29,7 @@ export const DEVIL_RANK_2_BUTTON = 'Высокоранговые дьяволы'
 export const DEVIL_RANK_3_BUTTON = 'Среднеранговые дьяволы';
 export const DEVIL_RANK_4_BUTTON = 'Низкоранговые дьяволы';
 export const DEVILS_KNOLAGE_BASE_BUTTON = 'база знаний о дьяволах';
+export const DEVIL_LIST_BUTTON = 'Списки дьяволов';
 export const DEVIL_TYPE_SORT_RANK_BUTTON = 'Список дьяволов по рангам';
 export const DEVIL_TYPE_SORT_FLOOR_BUTTON = 'Список дьяволов по этажам';
 //CHARACTER
@@ -70,9 +72,11 @@ export const EDIT_SPELL_CHANGE_STATUS_BUTTON = '✏️Изменить стат�
 export const EDIT_SPELL_DESCRIPTION_BUTTON = '✏️Изменить описание';
 //INVENTORY
 export const INVENTORY_BUTTON = '🎒Инвентарь';
+export const CHANGE_EQUIPMENT_BUTTON = '🎒Сменить экипировку';
+export const EQUIPMENT_BUTTON = '🎒Экипировка';
 export const ALL_INVENTORY_BUTTON = '🎒показать весь инвентарь';
 export const JEWEIRY_BUTTON = '💎Укашения';
-export const RESOURCES_BUTTON = 'Ресурсы';
+export const RESOURCES_BUTTON = '♻️Ресурсы';
 export const FOOD_BUTTON = '🍧Еда';
 export const ALCOHOL_BUTTON = '🥃Алкоголь';
 export const WEAPONS_BUTTON = '⚔️Оружие';

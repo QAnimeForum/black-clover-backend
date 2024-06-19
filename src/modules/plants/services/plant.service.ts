@@ -37,8 +37,8 @@ export class PlantService {
         private readonly potRepository: Repository<PotEntity>
     ) {}
 
-    async findGardenByUserTgId(tgUserId: number): Promise<GardenEntity> {
-        const query: string = `select garden.* from garden JOIN character ON garden.id = character.garden_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = ${tgUserId}`;
+    async findGardenByUserTgId(tgUserId: string): Promise<GardenEntity> {
+        const query: string = `select garden.* from garden JOIN character ON garden.id = character.gargen_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = '${tgUserId}'`;
         const gardens: Array<GardenEntity> =
             await this.gardenRepository.query(query);
         if (gardens.length !== 1) {
@@ -57,10 +57,11 @@ export class PlantService {
         plant.name = dto.name;
         plant.emojiIcon = dto.emojiIcon;
         plant.description = dto.description;
-        plant.costMoney = dto.costMoney;
+       // plant.costMoney = dto.costMoney;
         plant.salePrice = dto.salePrice;
         plant.deathTime = dto.deathTime;
-        this.plantRepository.save(plant);
+        plant.wateringInterval = dto.wateringInterval;
+        return this.plantRepository.save(plant);
     }
 
     async createGarden(tgId: string) {

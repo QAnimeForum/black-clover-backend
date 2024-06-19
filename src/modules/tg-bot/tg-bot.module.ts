@@ -23,9 +23,8 @@ import { AllDevilsScene } from './scenes/devils/all.devils.scene';
 import { MyDevilsScene } from './scenes/devils/devils-my.scene';
 import { MySpiritsScene } from './scenes/spirits/spirits-my.scene';
 import { AllSpiritsScene } from './scenes/spirits/all.spirits';
-import { ArmedForcesScene } from './scenes/organizations/armed.forces.scene';
+
 import { CreateScquadWizard } from './scenes/organizations/create.squad.wizard';
-import { MinesScene } from './scenes/organizations/mines.wizard';
 import { AvatarEditWizard } from './scenes/profile/background/avatar-edit.wizard';
 import { BackgroundScene } from './scenes/profile/background/background.scene';
 import { CharacterHistoryEditWizard } from './scenes/profile/background/history-edit.wizard';
@@ -59,12 +58,7 @@ import {
 } from './scenes/admin/admin.scene';
 import { AddMoneyWizard, AdminMoneyScene } from './scenes/admin/money.scene';
 import { AdminGrimoireScene } from './scenes/admin/admin.grimoire.scene';
-import { AcceptRequestWizard } from './scenes/organizations/accept.request.wizard';
-import {
-    ChangeRankScene,
-    CommanderInChiefScene,
-} from './scenes/organizations/comander.in.chief.scene';
-import { SquadScene } from './scenes/organizations/squad.scene';
+
 import { ShopScene } from './scenes/organizations/shop/shop.scene';
 import { BLackMarketScene } from './scenes/organizations/shop/black.market.scene';
 import { CasinoScene } from './scenes/organizations/casino.scene';
@@ -88,6 +82,11 @@ import { MagicParlamentScene } from './scenes/organizations/parlament/magic.parl
 import { RequestToParlamentWizard } from './scenes/organizations/parlament/request.to.parlament.wizard';
 import { AdminMagicParlamentScene } from './scenes/admin/admin.magic.parlament.scene';
 import { AdminArmedForcesScene } from './scenes/admin/admin.armed.forces.scene';
+import { MinesScene } from './scenes/organizations/mines.scene';
+import { AcceptRequestWizard } from './scenes/organizations/armedForces/accept.request.wizard';
+import { ArmedForcesScene } from './scenes/organizations/armedForces/armed.forces.scene';
+import { CommanderInChiefScene, ChangeRankScene } from './scenes/organizations/armedForces/comander.in.chief.scene';
+import { SquadScene } from './scenes/organizations/armedForces/squad.scene';
 @Module({
     imports: [
         ThrottlerModule.forRoot([

@@ -1,42 +1,45 @@
 import {
-    Entity,
-    PrimaryGeneratedColumn,
     Column,
-    ManyToMany,
     CreateDateColumn,
+    Entity,
+    OneToMany,
+    PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { InventoryEntity } from './inventory.entity';
+import { DrinkEntity } from './drink.entity';
 
-@Entity('gear')
-export class GearEntity {
+@Entity('drink_type')
+export default class DrinkTypeEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
     @Column({
         type: 'varchar',
     })
-    itemType: string;
-
-    @Column({
-        type: 'int',
+    name: string;
+  /**
+   *   @Column({
+        type: 'varchar',
     })
-    quantity: number;
+    strengthMin: number;
     @Column({
         type: 'varchar',
     })
-    cost: string;
+    strengthMax: number;
     @Column({
         type: 'varchar',
     })
-    weight: string;
+    costMin: number;
     @Column({
         type: 'varchar',
     })
-    description: string;
+    costMax: number;
+    @Column('varchar', { name: 'colors', array: true })
+    appearances: string[];
 
-    @ManyToMany(() => InventoryEntity, (inventory) => inventory.gears)
-    inventory: InventoryEntity;
+   */
 
+    @OneToMany(() => DrinkEntity, (drink) => drink.type)
+    drinks: DrinkEntity[];
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;
 

@@ -1,6 +1,8 @@
 import { Scenes } from 'telegraf';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
 import { BotWizardSession } from './bot.wizard.session';
+import { DEVIL_DEFAULT_PER_PAGE } from 'src/modules/devils/constants/devil.list.constant';
+import { PaginateQuery } from 'nestjs-paginate';
 
 export interface BotSession extends Scenes.WizardSession<BotWizardSession> {
     devilsList: string;
@@ -10,4 +12,5 @@ export interface BotSession extends Scenes.WizardSession<BotWizardSession> {
     grimoireId: string | null;
     spellId: string | null;
     user: UserEntity;
+    devilPaginateQuery: PaginateQuery;
 }

@@ -41,6 +41,7 @@ import { UserModule } from 'src/modules/user/user.module';
 import { AnnouncementModule } from 'src/modules/events/event.module';
 import { PlantService } from 'src/modules/plants/services/plant.service';
 import { PlantsModule } from 'src/modules/plants/plants.module';
+import { CuisineModule } from 'src/modules/cuisine/cuisine.module';
 
 const logDir = 'logs/service/';
 const infoLogDir = `${logDir}${LOGGER_INFO}`;
@@ -172,6 +173,7 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
         MoneyModule,
         RaceModule,
         UserModule,
+        CuisineModule,
         CharacterModule,
         TelegrafModule.forRootAsync({
             imports: [TgBotModule],

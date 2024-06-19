@@ -37,22 +37,24 @@ import {
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import { SpellEntity } from 'src/modules/grimoire/entity/spell.entity';
 import { UserService } from 'src/modules/user/services/user.service';
+import { WalletService } from 'src/modules/money/wallet.service';
 
 @Scene(ENUM_SCENES_ID.PROFILE_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class ProfileScene {
     constructor(
         private readonly characterService: CharacterService,
+        private readonly walletService: WalletService,
         private readonly userService: UserService,
         private readonly grimoireService: GrimoireService
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
-        const chatType = ctx.message.chat.type;
+        const chatType = ctx.chat.type;
         const senderId = sender.id;
         const username = sender.username;
         const isUserExist = await this.userService.exists(senderId);
-        if(!isUserExist && chatType !== 'private') {
+        if (!isUserExist && chatType !== 'private') {
             await ctx.reply(
                 'Мир Чёрного клевера вас не знает. Пожалуйста, перейдите в личные сообщения с ботом, для заполнения личной информации о себе.',
                 {
@@ -90,6 +92,14 @@ export class ProfileScene {
         const magicPowerBlock = `<strong>🌀Магическая сила</strong>: ${characteristics.magicPower}`;
         const strengthBlock = `<strong>💪Сила</strong>: ${characteristics.strength.score}`;
         const dexterityBlock = `g>🗣Харизма</strong>: ${characteristics.charisma.score}`;
+        const wallet = character.wallet;
+        //  const wallet = character.wallet;
+        const copperText = `${wallet.copper} 🟤`;
+        const silverText = `${wallet.silver} ⚪️`;
+        const electrumText = `${wallet.electrum} 🔵`;
+        const goldTextText = `${wallet.gold} 🟡`;
+        const platinumText = `${wallet.platinum} 🪙`;
+        const walletText = `👛Кошелёк: ${platinumText} ${goldTextText} ${electrumText} ${silverText} ${copperText} \n`;
         //   const armorClassBlock = `${characteristics.armorClass.}${characteristics.armorClassBlock.name}${characteristics.armorClassBlock.score}`;
 
         // const characteristicsTitle = `\n<strong><u>Характеристики персонажа</u></strong>\n\n`;
@@ -98,7 +108,7 @@ export class ProfileScene {
         const devilsBlock = `<strong>😈Дьяволы:</strong>\n Контрактов с дьяволами нет`;
         const spiritsBlock = `<strong>🧚Духи:</strong>\n Союза с духами нет`;
         const equippedItemsBlock = `<strong>🤹Оборудованные предметы:</strong>\n Ничего не надето`;
-        const caption = `${title}${owner}\n${userId}\n${name}\n${levelBlock}\n${sanityBlock}\n${hpBlock}\n${magicPowerBlock}\n\n${sex}\n${age}\n${state}\n${race}\n${magicTypeBlock}\n${spellsBlock}\n${devilsBlock}\n${spiritsBlock}\n${equippedItemsBlock}`;
+        const caption = `${title}${owner}\n${userId}\n${name}\n${levelBlock}\n${sanityBlock}\n${hpBlock}\n${magicPowerBlock}\n\n${sex}\n${age}\n${state}\n${race}\n${magicTypeBlock}\n${walletText}\n${spellsBlock}\n${devilsBlock}\n${spiritsBlock}\n${equippedItemsBlock}`;
         if (chatType == 'private') {
             await ctx.sendPhoto(
                 {
@@ -168,6 +178,10 @@ export class ProfileScene {
         const grimoire = await this.grimoireService.findGrimoireByUserTgId(
             sender.id
         );
+        if(!grimoire) {
+            await ctx.reply('У вас ещё нет гримуара');
+            return;
+        }
         /**
       *    const [spellEntities] = await this.grimoireService.findAllSpells(
             {
@@ -273,54 +287,7 @@ export class ProfileScene {
     }
     @Hears(INVENTORY_BUTTON)
     async inventory(@Ctx() ctx: BotContext, @Sender() sender) {
-        const title = '<strong><u>Инвентарь</u></strong>\n\n';
-        const owner = `<strong>Владелец</strong>: @${sender.username}\n\n`;
-        const equipmentTitle = '<strong><u>Надетая экипировка</u></strong>\n\n';
-        const weaponBlock = `${WEAPONS_BUTTON}:-\n`;
-        const armorBlock = `${ARMOR_BUTTON}: -\n`;
-        const jeweiryBlock = `${JEWEIRY_BUTTON}: -\n`;
-        const foodBlock = `${FOOD_BUTTON}: -\n`;
-        const alcoholBlock = `${ALCOHOL_BUTTON}: -\n`;
-        const toolKitBlock = `${TOOLKIT_BUTTON}: -\n`;
-        const gearsBlock = `${GEARS_BUTTON}: -\n`;
-        const vehiclesBlock = `${VEHICLES_BUTTON}: -\n`;
-
-        const resourcesTitle = `strong><u>♻️ Ресурсы</u></strong>\n\n`;
-        const caption = `${title}${owner}${equipmentTitle}${weaponBlock}${armorBlock}${gearsBlock}${vehiclesBlock}${toolKitBlock}`;
-        await ctx.sendPhoto(
-            {
-                source: INVENTORY_IMAGE_PATH,
-            },
-            {
-                caption,
-                parse_mode: 'HTML',
-                ...Markup.inlineKeyboard([
-                    [
-                        Markup.button.callback(
-                            MINERALS_BUTTON,
-                            MINERALS_BUTTON
-                        ),
-                        Markup.button.callback(JEWEIRY_BUTTON, JEWEIRY_BUTTON),
-                    ],
-                    [
-                        Markup.button.callback(ALCOHOL_BUTTON, ALCOHOL_BUTTON),
-                        Markup.button.callback(FOOD_BUTTON, FOOD_BUTTON),
-                    ],
-
-                    [
-                        Markup.button.callback(WEAPONS_BUTTON, WEAPONS_BUTTON),
-                        Markup.button.callback(ARMOR_BUTTON, ARMOR_BUTTON),
-                    ],
-                    [
-                        Markup.button.callback(GEARS_BUTTON, GEARS_BUTTON),
-                        Markup.button.callback(
-                            VEHICLES_BUTTON,
-                            VEHICLES_BUTTON
-                        ),
-                    ],
-                ]),
-            }
-        );
+        await ctx.scene.enter(ENUM_SCENES_ID.INVENTORY_SCENE_ID);
     }
     @Hears(MY_DEVILS_BUTTON)
     async myDevils(@Ctx() ctx: BotContext) {

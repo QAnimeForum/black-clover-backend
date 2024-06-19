@@ -7,8 +7,8 @@ import {
     OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ItemEntity } from './item.entity';
-
+import { EquipmentEntity } from './equipment.entity';
+import { EqupmentItemEntity } from './equpment.item.entity';
 @Entity('item_category')
 export class ItemCategoryEntity {
     @ApiProperty()
@@ -40,6 +40,6 @@ export class ItemCategoryEntity {
     @OneToMany((type) => ItemCategoryEntity, (category) => category.parent)
     children: ItemCategoryEntity[];
 
-    @OneToMany((type) => ItemEntity, (item) => item.category)
-    items: ItemEntity[];
+    @OneToMany((type) => EqupmentItemEntity, (item) => item.category)
+    items: EqupmentItemEntity[];
 }

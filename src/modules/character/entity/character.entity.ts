@@ -10,7 +10,6 @@ import {
 } from 'typeorm';
 import { BackgroundEntity } from './background.entity';
 import { CharacterCharacteristicsEntity } from './character.characteristics.entity';
-import { InventoryEntity } from './inventory.entity';
 import { GrimoireEntity } from '../../grimoire/entity/grimoire.entity';
 import { NoteEntity } from './note.entity';
 import { WalletEntity } from '../../money/entity/wallet.entity';
@@ -22,6 +21,8 @@ import { ArmedForcesRequestEntity } from '../../squards/entity/armed.forces.requ
 import { ProblemEntity } from '../../judicial.system/entity/problem.entity';
 import { Expose } from 'class-transformer';
 import { GardenEntity } from '../../plants/entity/garden.entity';
+import { InventoryEntity } from '../../items/entity/inventory.entity';
+import { EquipmentEntity } from '../../items/entity/equipment.entity';
 @Entity('character')
 export class CharacterEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -113,8 +114,22 @@ export class CharacterEntity {
     })
     inventoryId: string;
 
+
+    @OneToOne(() => EquipmentEntity)
+    @JoinColumn({
+        name: 'equipment_id',
+        referencedColumnName: 'id',
+    })
+    equipment: EquipmentEntity;
+
+    @Column({
+        type: 'uuid',
+        name: 'equipment_id',
+    })
+    equipmentId: string;
+
     @OneToOne(() => WalletEntity)
-    @JoinColumn({ name: 'character_id', referencedColumnName: 'id' })
+    @JoinColumn({ name: 'wallet_id', referencedColumnName: 'id' })
     wallet: WalletEntity;
 
     @Column({
@@ -132,7 +147,9 @@ export class CharacterEntity {
     @OneToOne(() => UserEntity)
     user: UserEntity;
 
-    @OneToOne(() => GardenEntity, (garden) => garden.id, { nullable: true })
+    @OneToOne(() => GardenEntity, (garden) => garden.character, {
+        nullable: true,
+    })
     @JoinColumn({
         name: 'garden_id',
         referencedColumnName: 'id',

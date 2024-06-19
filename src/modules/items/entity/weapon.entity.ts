@@ -6,7 +6,7 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { InventoryEntity } from '../../character/entity/inventory.entity';
+
 @Entity('weapons')
 export class WeaponEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -37,8 +37,8 @@ export class WeaponEntity {
     })
     weight: string;
 
-    @ManyToMany(() => InventoryEntity, (inventory) => inventory.weapons)
-    inventory: InventoryEntity;
+    /*@ManyToMany(() => InventoryEntity, (inventory) => inventory.weapons)
+    inventory: InventoryEntity;*/
 
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;

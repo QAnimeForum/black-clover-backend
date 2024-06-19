@@ -26,7 +26,7 @@ export class PlantCreateScene {
             this.step2(),
             this.step3(),
             this.step4(),
-            this.step5(),
+            this.step5()
         );
         this.scene.enter(this.start());
         this.stage.register(this.scene);
@@ -34,6 +34,15 @@ export class PlantCreateScene {
     }
     start() {
         return async (ctx: BotContext) => {
+            ctx.scene.session.plant = {
+                name: '',
+                emojiIcon: '',
+                description: '',
+                costMoney: 0,
+                salePrice: 0,
+                wateringInterval: 0,
+                deathTime: 0,
+            };
             await ctx.reply('Введите название.');
         };
     }
@@ -46,6 +55,7 @@ export class PlantCreateScene {
         });
         composer.on(message('text'), async (ctx) => {
             const message = ctx.update?.message.text;
+            ctx.scene.session.plant.name = message;
             await ctx.reply('Введите эмодзи.');
             ctx.wizard.next();
         });
@@ -61,7 +71,7 @@ export class PlantCreateScene {
         });
         composer.on(message('text'), async (ctx) => {
             const message = ctx.update?.message.text;
-            const spellId = ctx.session.spellId;
+            ctx.scene.session.plant.emojiIcon = message;
             await ctx.reply('Стоимость в монетах.');
             ctx.wizard.next();
         });
@@ -77,7 +87,7 @@ export class PlantCreateScene {
         });
         composer.on(message('text'), async (ctx) => {
             const message = ctx.update?.message.text;
-            const spellId = ctx.session.spellId;
+            ctx.scene.session.plant.costMoney = Number.parseInt(message);
             await ctx.reply('Интервал полива в минутах.');
             ctx.wizard.next();
         });
@@ -92,7 +102,7 @@ export class PlantCreateScene {
         });
         composer.on(message('text'), async (ctx) => {
             const message = ctx.update?.message.text;
-            const spellId = ctx.session.spellId;
+            ctx.scene.session.plant.wateringInterval = Number.parseInt(message);
             await ctx.reply('Время засыхания в минутах.');
             ctx.wizard.next();
         });
@@ -107,9 +117,11 @@ export class PlantCreateScene {
         });
         composer.on(message('text'), async (ctx) => {
             const message = ctx.update?.message.text;
-            const spellId = ctx.session.spellId;
-            const name = '2';
-            ctx.reply(`Растение ${name} добавлено.`);
+            ctx.scene.session.plant.deathTime = Number.parseInt(message);
+            const plant = await this.plantsService.createPlant(
+                ctx.scene.session.plant
+            );
+            ctx.reply(`Растение ${plant.name} добавлено.`);
             ctx.scene.leave();
             ctx.scene.enter(ENUM_SCENES_ID.FIELDS_SCENE_ID);
         });

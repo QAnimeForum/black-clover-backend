@@ -1,4 +1,4 @@
-import { Ctx, Hears, On, Scene, SceneEnter } from 'nestjs-telegraf';
+import { Action, Ctx, Hears, On, Scene, SceneEnter } from 'nestjs-telegraf';
 import { MINES_PATH, STATIC_IMAGE_BASE_PATH } from '../../constants/images';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
@@ -26,17 +26,25 @@ export class MinesScene {
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {
-        const caption = 'Шахты';
-        ctx.sendPhoto(
-            {
-                source: MINES_PATH,
-            },
-            {
-                caption,
-                ...Markup.keyboard([[MINERALS_BUTTON], [BACK_BUTTON]]).resize(),
-            }
-        );
-        this.showButtonMenu(ctx);
+        const type = ctx.chat.type;
+        if (type == 'private') {
+            const caption = 'Шахты';
+            ctx.sendPhoto(
+                {
+                    source: MINES_PATH,
+                },
+                {
+                    caption,
+                    ...Markup.keyboard([
+                        [MINERALS_BUTTON],
+                        [BACK_BUTTON],
+                    ]).resize(),
+                }
+            );
+            await this.showButtonMenu(ctx);
+        } else {
+            await this.showButtonMenu(ctx);
+        }
     }
 
     @Hears(MINERALS_BUTTON)
@@ -50,21 +58,19 @@ export class MinesScene {
         await ctx.scene.enter(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID);
     }
 
-    @On('callback_query')
-    public async callbackQuery(@Ctx() ctx: BotContext) {
+    @Action(/^(GET_MINERAL.*)$/)
+    async getMeneralInfo(@Ctx() ctx: BotContext) {
         await ctx.answerCbQuery();
-        if ('data' in ctx.callbackQuery) {
-            const [action, value] = ctx.callbackQuery.data.split(':');
-            this.showMineralInfo(ctx, value);
-            switch (action) {
-                case 'GET_MINERAL': {
-                    break;
-                }
-                case 'BACK_TO_MINERALS_LIST': {
-                    this.showButtonMenu(ctx);
-                }
-            }
-        }
+        await ctx.deleteMessage();
+        const [action, value] = ctx.callbackQuery['data'].split(':');
+        this.showMineralInfo(ctx, value);
+    }
+
+    @Action('BACK_TO_MINERALS_LIST')
+    async backToMineralsList(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        await ctx.deleteMessage();
+        await this.showButtonMenu(ctx);
     }
 
     async showMineralInfo(ctx: BotContext, mineralId: string) {

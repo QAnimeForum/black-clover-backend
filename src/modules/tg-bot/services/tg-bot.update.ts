@@ -21,10 +21,14 @@ export class TgBotUpdate extends Telegraf<BotContext> {
 
     @Command('map')
     async map(@Context() ctx: BotContext) {
-        ctx.reply('карта пока недоступка');
+        ctx.reply('карта пока недоступна');
         //   await ctx.scene.enter(ENUM_SCENES_ID.map);
     }
 
+    @Command('spirits')
+    async spitits(@Context() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.ALL_SPIRITS_SCENE_ID);
+    }
     @Command('underworld')
     async allDevils(@Context() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);

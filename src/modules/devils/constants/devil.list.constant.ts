@@ -2,7 +2,7 @@ import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from 'src/common/pagination/cons
 import { ENUM_DEVIL_RANK } from './devil.ranks.enum';
 import { ENUM_DEVIL_FLOOR } from './devil.floor.enum';
 
-export const DEVIL_DEFAULT_PER_PAGE = 20;
+export const DEVIL_DEFAULT_PER_PAGE = 6;
 export const DEVIL_DEFAULT_ORDER_BY = 'floor';
 export const DEVIL_DEFAULT_ORDER_DIRECTION =
     ENUM_PAGINATION_ORDER_DIRECTION_TYPE.ASC;

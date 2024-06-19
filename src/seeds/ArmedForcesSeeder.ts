@@ -4,14 +4,14 @@ import { clover } from '../../Assets/json/armedForces/clover-armed-forces.json';
 import { squads } from '../../Assets/json/armedForces/default-squad.json';
 import { ArmedForcesEntity } from '../modules/squards/entity/armed.forces.entity';
 import { StateEntity } from '../modules/map/enitity/state.entity';
-import { SalaryEntity } from '../modules/money/entity/amount.entity';
 import { SquadEntity } from '../modules/squards/entity/squad.entity';
 import { ArmedForcesRankEntity } from '../modules/squards/entity/armed.forces.rank.entity';
+import { MoneyEntity } from '../modules/money/entity/money.entity';
 export default class ArmedForcesSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<any> {
         const armedForcesRepository =
             dataSource.getRepository(ArmedForcesEntity);
-        const salaryRepository = dataSource.getRepository(SalaryEntity);
+        const moneyRepositorty = dataSource.getRepository(MoneyEntity);
         const statesRepository = dataSource.getRepository(StateEntity);
         const squadsRepository = dataSource.getRepository(SquadEntity);
         const rankRepository = dataSource.getRepository(ArmedForcesRankEntity);
@@ -31,22 +31,22 @@ export default class ArmedForcesSeeder implements Seeder {
         let parent = null;
         for (let i = 0; i < ranksDto.length; ++i) {
             const rank = ranksDto[i];
-            /* const salary = (
-                await salaryRepository.insert({
+             const salary = (
+                await moneyRepositorty.insert({
                     copper: ranksDto[i].salary.copper,
                     platinum: ranksDto[i].salary.platinum,
                     eclevtrum: ranksDto[i].salary.eclevtrum,
                     silver: ranksDto[i].salary.silver,
                     gold: ranksDto[i].salary.gold,
                 })
-            ).raw[0];*/
+            ).raw[0];
             parent = (
                 await rankRepository.insert({
                     name: rank.name,
                     description: rank.description,
                     armorForces: cloverArmedForcesEntity,
                     parent: parent,
-                    // salary: salary,
+                    salary: salary,
                 })
             ).raw[0];
         }

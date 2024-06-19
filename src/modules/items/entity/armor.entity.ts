@@ -1,4 +1,4 @@
-import { InventoryEntity } from '../../character/entity/inventory.entity';
+
 import {
     Entity,
     PrimaryGeneratedColumn,
@@ -7,6 +7,7 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
 } from 'typeorm';
+import { InventoryEntity } from './inventory.entity';
 @Entity('armor')
 export class ArmorEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -50,8 +51,8 @@ export class ArmorEntity {
     })
     weight: string;
 
-    @ManyToMany(() => InventoryEntity, (inventory) => inventory.armor)
-    inventory: InventoryEntity;
+  /*  @ManyToMany(() => InventoryEntity, (inventory) => inventory.armor)
+    inventory: InventoryEntity;*/
     //  fightingStyles?: string[];
 
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
