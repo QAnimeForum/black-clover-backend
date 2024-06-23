@@ -85,8 +85,22 @@ import { AdminArmedForcesScene } from './scenes/admin/admin.armed.forces.scene';
 import { MinesScene } from './scenes/organizations/mines.scene';
 import { AcceptRequestWizard } from './scenes/organizations/armedForces/accept.request.wizard';
 import { ArmedForcesScene } from './scenes/organizations/armedForces/armed.forces.scene';
-import { CommanderInChiefScene, ChangeRankScene } from './scenes/organizations/armedForces/comander.in.chief.scene';
+import {
+    CommanderInChiefScene,
+    ChangeRankScene,
+} from './scenes/organizations/armedForces/comander.in.chief.scene';
 import { SquadScene } from './scenes/organizations/armedForces/squad.scene';
+import { GrmoireWorkerAddWizard } from './scenes/admin/grimoire-worker-add.scene';
+import { GrmoireWorkerRemoveWizard } from './scenes/admin/grimoire-worker-remove.scene';
+import { JudicialOfficerAddWizard } from './scenes/admin/judicial-officer-add.scene';
+import { JudicialOfficerRemoveWizard } from './scenes/admin/judicial-officer-remove.scene';
+import { CreateSolveWizard } from './scenes/organizations/parlament/solve-create.scene';
+import { CheckOffersScene } from './scenes/organizations/shop/check-offers.scene';
+import { MyOffersScene } from './scenes/organizations/shop/my-offers.scene';
+import {
+    SearchOfferByCategoryScene,
+    SearchOfferByNameScene,
+} from './scenes/organizations/shop/search-offer.by-name.scene';
 @Module({
     imports: [
         ThrottlerModule.forRoot([
@@ -148,6 +162,9 @@ import { SquadScene } from './scenes/organizations/armedForces/squad.scene';
         OrganizationsScene,
         MagicParlamentScene,
         RequestToParlamentWizard,
+        JudicialOfficerAddWizard,
+        JudicialOfficerRemoveWizard,
+        CreateSolveWizard,
         ArmedForcesScene,
         AcceptRequestWizard,
         CreateScquadWizard,
@@ -163,7 +180,12 @@ import { SquadScene } from './scenes/organizations/armedForces/squad.scene';
         //items
         ShopScene,
         BLackMarketScene,
+        SearchOfferByNameScene,
+        SearchOfferByCategoryScene,
 
+        CreateSolveWizard,
+        MyOffersScene,
+        CheckOffersScene,
         //profile
         CharacterCreateWizard,
         BackgroundScene,
@@ -191,7 +213,8 @@ import { SquadScene } from './scenes/organizations/armedForces/squad.scene';
         GrimoreScene,
         SpellCreateWizard,
         MagicNameEditWizard,
-
+        GrmoireWorkerAddWizard,
+        GrmoireWorkerRemoveWizard,
         SpellNameEditWizard,
         SpellDescriptionEditWizard,
         SpellTypeEditWizard,

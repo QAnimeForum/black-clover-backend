@@ -86,11 +86,17 @@ export class AdminScene {
     }
 
     @Action(/^(ARMED_FORCES.*)$/)
-    @Hears(MAGIC_PARLAMENT_BUTTON)
-    async magicParlament(@Ctx() ctx: BotContext) {
+    async armedForcesSelected(@Ctx() ctx: BotContext) {
         const selectedId = ctx.callbackQuery['data'].split(':')[1];
         ctx.session.adminSelectedArmedForcesId = selectedId;
         await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_ARMED_FORCES_MAGIC_SCENE_ID);
+    }
+
+    @Hears(MAGIC_PARLAMENT_BUTTON)
+    async magicParlament(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(
+            ENUM_SCENES_ID.ADMIN_MAGIC_PARLAMENT_SCENE_SCENE_ID
+        );
     }
     @Hears(ITEMS_BUTTON)
     async items(@Ctx() ctx: BotContext) {
@@ -209,7 +215,7 @@ export class AdminScene {
 
     @Hears(GRIMOIRES_BUTTON)
     async grimoire(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.EDIT_GRIMOIRES_SCENE_ID);
+        await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID);
     }
 
     @Hears(CHRONICLE_BUTTON)

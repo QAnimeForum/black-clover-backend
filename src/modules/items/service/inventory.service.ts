@@ -5,6 +5,8 @@ import { EquipmentEntity } from '../entity/equipment.entity';
 import { InventoryEntity } from '../entity/inventory.entity';
 import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { EqupmentItemEntity } from '../entity/equpment.item.entity';
+import { Inventory } from 'src/modules/character/domain/Inventory';
+import { VehicleEntity } from '../entity/vehicle.entity';
 @Injectable()
 export class InventoryService {
     constructor(
@@ -13,7 +15,9 @@ export class InventoryService {
         @InjectRepository(EquipmentEntity)
         private readonly equipomentRepository: Repository<EquipmentEntity>,
         @InjectRepository(EqupmentItemEntity)
-        private readonly equipmentItem: Repository<EqupmentItemEntity>
+        private readonly equipmentItemRepository: Repository<EqupmentItemEntity>,
+        @InjectRepository(VehicleEntity)
+        private readonly vehicleRepository: Repository<VehicleEntity>
     ) {}
 
     async createInventory(transactionalEntityManager: EntityManager) {
@@ -35,33 +39,47 @@ export class InventoryService {
             .getOne();
     }
 
-    public findAllEquipmentItems(paginateQuery: PaginateQuery, tgUserId: string) {
+    public async findAllEquipmentItems(query: PaginateQuery, tgUserId: string) {
+        const inventoryId = await this.findInventoryByTgId(tgUserId);
+        if (!inventoryId) {
+            return null;
+        }
+        // const query: string = `select inventory.* from inventort JOIN character ON inventory.id = character.inventory JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = '${tgUserId}'`;
+        //   const query: string = `select equipment_item.* from equipment_item JOIN inventory_equipment_items ON equipment_item.id = inventory_equipment_items.id`;
 
-       // const query: string = `select inventory.* from inventort JOIN character ON inventory.id = character.inventory JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = '${tgUserId}'`;
-    //   const query: string = `select equipment_item.* from equipment_item JOIN inventory_equipment_items ON equipment_item.id = inventory_equipment_items.id`;
-      return [];
-    /**
- * 
-        return paginate(query, this.inventoryRepository, {
+        return paginate(query, this.equipmentItemRepository, {
+            sortableColumns: ['id', 'name', 'bodyPart'],
+            nullSort: 'last',
+            defaultSortBy: [['name', 'DESC']],
+            searchableColumns: ['name', 'bodyPart'],
+            select: ['id', 'name', 'bodyPart'],
+            filterableColumns: {
+                bodyPart: true,
+            },
+        });
+    }
+
+    public async findAllVehicles(query: PaginateQuery, tgUserId: string) {
+        const inventoryId = await this.findInventoryByTgId(tgUserId);
+        if (!inventoryId) {
+            return null;
+        }
+        // const query: string = `select inventory.* from inventort JOIN character ON inventory.id = character.inventory JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = '${tgUserId}'`;
+        //   const query: string = `select equipment_item.* from equipment_item JOIN inventory_equipment_items ON equipment_item.id = inventory_equipment_items.id`;
+
+        return paginate(query, this.vehicleRepository, {
             sortableColumns: ['id', 'name'],
             nullSort: 'last',
-            defaultSortBy: [['magicName', 'DESC']],
-            searchableColumns: ['coverSymbol', 'magicName', 'status'],
-            select: [
-                'id',
-                'coverSymbol',
-                'magicName',
-                'coverImagePath',
-                'status',
-            ],
+            defaultSortBy: [['name', 'DESC']],
+            searchableColumns: ['name'],
+            select: ['id', 'name'],
             filterableColumns: {
                 magicName: true,
             },
         });
- */
     }
     async findEquipmentByTgId(tgUserId: string): Promise<EquipmentEntity> {
-        const query: string = `select equipment.* from equipment JOIN character ON equipment.id = character.equipment_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = '${tgUserId}'`;
+        const query: string = `select equipment.* from equipment JOIN character ON equipment.id = character.equipment_id JOIN game_user on character.user_id = game_user.id  where game_user.tg_user_id = '${tgUserId}'`;
         const equipments: Array<EquipmentEntity> =
             await this.equipomentRepository.query(query);
         if (equipments.length !== 1) {
@@ -70,14 +88,13 @@ export class InventoryService {
         return equipments[0];
     }
 
-    async findInventoryByTgId(tgUserId: string): Promise<EquipmentEntity> {
-        const query: string = `select inventory.* from inventort JOIN character ON inventory.id = character.inventory JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = '${tgUserId}'`;
-        const equipments: Array<EquipmentEntity> =
-            await this.equipomentRepository.query(query);
-        if (equipments.length !== 1) {
-            return;
+    async findInventoryByTgId(tgUserId: string): Promise<number> {
+        const query: string = `select inventory.id from inventory JOIN character ON inventory.id = character.inventory_id JOIN game_user on character.user_id = game_user.id  where game_user.tg_user_id = '${tgUserId}'`;
+        const inventories = await this.equipomentRepository.query(query);
+        if (inventories.length !== 1) {
+            return null;
         }
-        return equipments[0];
+        return inventories[0].id;
     }
 
     /**

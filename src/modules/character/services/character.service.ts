@@ -57,14 +57,13 @@ export class CharacterService {
         /**
          * Создание истории персонажа
          */
-        const coverSymbol = await this.mapService.findStateSymbolById(
+        /*   const coverSymbol = await this.mapService.findStateSymbolById(
             dto.stateId
         );
         const grimoire = await this.grimoireService.createGrimoire({
-            //      magicName: dto.magic,
             magicName: 'не выбран',
             coverSymbol: coverSymbol,
-        });
+        });*/
         const background = await this.backgroundService.createBackground(
             dto,
             transactionManager
@@ -81,7 +80,7 @@ export class CharacterService {
         character.avatar = await this.copyDefaultAvatar();
         character.backgroundId = background.id;
         character.characterCharacteristicsId = characteristics.id;
-        character.grimoireId = grimoire.id;
+        //   character.grimoireId = grimoire.id;
         character.inventoryId = inventory.id;
         character.walletId = wallet.id;
         character.prodigy = false;
@@ -244,10 +243,15 @@ export class CharacterService {
     }
 
     async findTgIdByCharacterId(characterId: string) {
-        const user = await this.userRepository.findOneBy({
-            characterId: characterId,
+        const character = await this.characterRepository.findOne({
+            where: {
+                id: characterId,
+            },
+            relations: {
+                user: true,
+            },
         });
-        return user.tgUserId;
+        return character.user.tgUserId;
     }
 
     async findFullCharacterInfoByTgId(tgId: string): Promise<CharacterEntity> {
@@ -287,7 +291,7 @@ export class CharacterService {
             relations: {
                 character: {
                     inventory: {
-                     /*   weapons: true,
+                        /*   weapons: true,
                         armor: true,
                         toolKits: true,
                         gears: true,

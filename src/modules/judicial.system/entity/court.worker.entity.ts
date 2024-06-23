@@ -4,10 +4,14 @@ import {
     CreateDateColumn,
     Entity,
     JoinColumn,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
     OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
+import { ProblemEntity } from './problem.entity';
 
 @Entity('court_worker')
 export class CourtWorkerEntity {
@@ -25,6 +29,9 @@ export class CourtWorkerEntity {
         type: 'uuid',
     })
     characterId: string;
+
+    @ManyToOne(() => ProblemEntity, (problem) => problem.judge)
+    problems: Array<ProblemEntity>;
 
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;

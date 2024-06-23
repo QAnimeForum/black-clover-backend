@@ -43,7 +43,7 @@ export class RejectrequestWizard {
     @WizardStep(1)
     async getTgId(@Ctx() ctx: BotContext, @Message() message) {
         const isUserExists = await this.userService.exists(message.text);
-        console.log(isUserExists);
+
         if (!isUserExists) {
             ctx.reply(
                 'Введен не верный id пользователя! Для отмены нажмите кнопку отменить /cancel'

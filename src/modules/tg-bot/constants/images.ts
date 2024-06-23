@@ -19,6 +19,7 @@ export const MINES_PATH = `${STATIC_IMAGE_BASE_PATH}/minerals/mines.jpg`;
 export const ARMED_FORCES = `${STATIC_IMAGE_BASE_PATH}/organization/forced.jpg`;
 export const PARLAMENT = `${STATIC_IMAGE_BASE_PATH}/organization/parlament.jpg`;
 export const KNIGHT_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/default-knight.jpg`;
+export const GRIMOIRE_TOWER_PATH = `${STATIC_IMAGE_BASE_PATH}/default/grimoire_tower.jpg`;
 export const DEVILS_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/devils.webp`;
 export const DEVILS_QLIPOTH_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/qlipoth/Tree_of_Qliphoth.webp`;
 export const LILITH_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/qlipoth/Lilith_profile.webp`;

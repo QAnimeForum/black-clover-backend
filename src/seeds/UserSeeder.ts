@@ -54,13 +54,13 @@ export default class UserSeeder implements Seeder {
             name: 'Человек',
         });
         const coverSymbol = '♠️';
-        const grimoire = new GrimoireEntity();
+      /*  const grimoire = new GrimoireEntity();
         grimoire.magicName = 'магия весов';
         grimoire.coverSymbol = coverSymbol;
-        grimoireRepository.save(grimoire);
+        grimoireRepository.save(grimoire);*/
         const background = new BackgroundEntity();
         background.name = 'не заполнено';
-        background.age = 12;
+        background.age = 25;
         background.sex = 'ж';
         background.history = 'не заполнено';
         background.hobbies = 'не заполнено';
@@ -157,11 +157,11 @@ export default class UserSeeder implements Seeder {
         character.walletId = wallet.id;
         character.prodigy = false;
 
-        await characterRepository.save(character);
         const user = new UserEntity();
         user.tgUserId = '237798019';
-        user.characterId = character.id;
         user.type = ENUM_USER_PERMISSION_TYPE.OWNER;
         await userRepository.save(user);
+        character.userId = user.id;
+        await characterRepository.save(character);
     }
 }

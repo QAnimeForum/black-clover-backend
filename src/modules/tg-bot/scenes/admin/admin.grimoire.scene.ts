@@ -6,6 +6,8 @@ import { BotContext } from '../../interfaces/bot.context';
 import { Markup } from 'telegraf';
 import {
     ADD_SPELL_BUTTON,
+    ADD_TOWER_WORKERS_BUTTON,
+
     BACK_BUTTON,
     CHANGE_GRIMOIRE_STATUS,
     EDIT_MAGIC_NAME_BUTTON,
@@ -20,6 +22,8 @@ import {
     EDIT_SPELL_TYPE_BUTTON,
     FIND_GRIMOIRE_BY_TG_BUTTON,
     GRIMOIRE_LIST_BUTTON,
+    REMOVE_TOWER_WORKERS_BUTTON,
+    TOWER_WORKERS_BUTTON,
 } from '../../constants/button-names.constant';
 import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -31,12 +35,16 @@ import {
     spellEditInlineKeyboard,
     spellToText,
 } from '../../utils/grimoire.utils';
+import { GRIMOIRE_TOWER_PATH } from '../../constants/images';
+import { GrmoireWorkerService } from 'src/modules/grimoire/services/grimoire.worker.service';
+import { ENUM_ACTION_NAMES } from '../../constants/action-names.constant';
 
-@Scene(ENUM_SCENES_ID.EDIT_GRIMOIRES_SCENE_ID)
+@Scene(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class AdminGrimoireScene {
     constructor(
         private readonly grimoireService: GrimoireService,
+        private readonly grmoireWorkerService: GrmoireWorkerService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
@@ -63,12 +71,52 @@ export class AdminGrimoireScene {
             const caption = 'Админская панель';
             await ctx.reply(caption, {
                 ...Markup.keyboard([
-                    [GRIMOIRE_LIST_BUTTON],
-                    [FIND_GRIMOIRE_BY_TG_BUTTON],
+                    [TOWER_WORKERS_BUTTON],
+                    [GRIMOIRE_LIST_BUTTON, FIND_GRIMOIRE_BY_TG_BUTTON],
                     [BACK_BUTTON],
                 ]).resize(),
             });
         }
+    }
+    @Hears(TOWER_WORKERS_BUTTON)
+    async workers(@Ctx() ctx: BotContext) {
+        const grimoireWorkers =
+            await this.grmoireWorkerService.findAllGrimoireWorkers({
+                path: '',
+            });
+        let caption = '<strong>Сотрудники башни гримуаров</strong>\n';
+        grimoireWorkers.data.map((worker, index) => {
+            caption += `${index + 1}) Имя: ${worker.character.background.name}, ID: <code>${worker.character.user.tgUserId}</code>\n`;
+        });
+
+        if (grimoireWorkers.data.length == 0) {
+            caption +=
+                'В башне никто пока не работает, большое упущение!\nВы можете добавить новых работников\n';
+        }
+
+        await ctx.replyWithPhoto(
+            {
+                source: GRIMOIRE_TOWER_PATH,
+            },
+            {
+                caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard([
+                    [
+                        Markup.button.callback(
+                            ADD_TOWER_WORKERS_BUTTON,
+                            ENUM_ACTION_NAMES.ADD_TOWER_WORKERS_ACTION
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            REMOVE_TOWER_WORKERS_BUTTON,
+                            ENUM_ACTION_NAMES.REMOVE_TOWER_WORKERS_ACTION
+                        ),
+                    ],
+                ]),
+            }
+        );
     }
     @Hears(GRIMOIRE_LIST_BUTTON)
     @Action(BACK_BUTTON)
@@ -89,6 +137,17 @@ export class AdminGrimoireScene {
         });
     }
 
+    @Action(ENUM_ACTION_NAMES.ADD_TOWER_WORKERS_ACTION)
+    async addWorker(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_WORKER_ADD_SCENE_ID);
+    }
+
+    @Action(ENUM_ACTION_NAMES.REMOVE_TOWER_WORKERS_ACTION)
+    async removeWorker(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_WORKER_REMOVE_SCENE_ID);
+    }
     @Action(CHANGE_GRIMOIRE_STATUS)
     async changeGrimoreStatus(@Ctx() ctx: BotContext) {
         ctx.scene.enter(ENUM_SCENES_ID.CHANGE_GRIMOIRE_STATUS_SCENE_ID);

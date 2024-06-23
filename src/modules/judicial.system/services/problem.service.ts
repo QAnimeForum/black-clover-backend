@@ -42,6 +42,12 @@ export class ProblemService {
                 creator: {
                     background: true,
                 },
+                judge: {
+                    character: {
+                        background: true,
+                    },
+                },
+                submission: true,
             },
         });
     }
@@ -74,12 +80,21 @@ export class ProblemService {
             nullSort: 'last',
             defaultSortBy: [['id', 'DESC']],
             searchableColumns: ['displayId'],
-            select: ['id', 'displayId', 'status', 'content', 'creator_id'],
+            select: [
+                'id',
+                'displayId',
+                'status',
+                'content',
+                'creator_id',
+                'judge',
+                'judge.id',
+            ],
             defaultLimit: 5,
             filterableColumns: {
                 creator_id: [FilterOperator.EQ],
+                judge: [FilterOperator.NULL, FilterOperator.EQ],
             },
-            relations: ['creator'],
+            relations: ['creator', 'judge'],
         });
     }
 
@@ -98,7 +113,7 @@ export class ProblemService {
        */
         return await this.problemRepository.save({
             isPublic: true,
-            status: ENUM_PROBLEM_STATUS.DRAFT,
+            status: ENUM_PROBLEM_STATUS.PENDING,
             creatorId: creator.id,
             content,
         });
@@ -120,10 +135,14 @@ export class ProblemService {
         return this.problemRepository.count();
     }
 
-    async countMyProblems(characterId: string) {
+    async countMyProblems(tgId: string) {
         return this.problemRepository.count({
             where: {
-                creatorId: characterId,
+                creator: {
+                    user: {
+                        tgUserId: tgId,
+                    },
+                },
             },
         });
     }

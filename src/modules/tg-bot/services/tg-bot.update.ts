@@ -14,11 +14,16 @@ export class TgBotUpdate extends Telegraf<BotContext> {
 
         await ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID);
     }
+    
     @Command('profile')
     async profile(@Context() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.PROFILE_SCENE_ID);
     }
 
+    @Command('grimoire')
+    async grimoire(@Context() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_SCENE_ID);
+    }
     @Command('map')
     async map(@Context() ctx: BotContext) {
         ctx.reply('карта пока недоступна');
@@ -41,7 +46,7 @@ export class TgBotUpdate extends Telegraf<BotContext> {
 
     @Command('equipment')
     async equipment(@Context() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.PROFILE_SCENE_ID);
+        await ctx.scene.enter(ENUM_SCENES_ID.INVENTORY_SCENE_ID);
     }
     @Help()
     async helps(@Context() ctx: BotContext) {

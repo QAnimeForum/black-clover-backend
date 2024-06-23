@@ -20,6 +20,8 @@ import { SpellEntity } from 'src/modules/grimoire/entity/spell.entity';
 import { GrimoireEntity } from 'src/modules/grimoire/entity/grimoire.entity';
 import { ENUM_GRIMOIRE_STATUS } from 'src/modules/grimoire/constants/grimoire.enum.constant';
 import { Paginated } from 'nestjs-paginate';
+import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
+import { ENUM_ACTION_NAMES } from '../constants/action-names.constant';
 
 export type GrimoireWithNavigation = {
     text: string;
@@ -28,22 +30,73 @@ export type GrimoireWithNavigation = {
 export const convertGrimoiresToTextAndInlineButtons = (
     paginatedGrimoires: Paginated<GrimoireEntity>
 ): GrimoireWithNavigation => {
-    const totalItems = paginatedGrimoires.meta.totalItems;
-    let text = `Общее количество гримуаров: ${totalItems}\n\n`;
-
-    const buttons = [];
-    paginatedGrimoires.data.map((grimoire, index) => {
+    const { data, meta } = paginatedGrimoires;
+    const { currentPage, totalPages, itemsPerPage, totalItems } = meta;
+    let text = `<strong>Общее количество гримуаров:</strong> ${totalItems}\n\n`;
+    const buttons: InlineKeyboardButton[][] = [];
+    data.map((grimoire, index) => {
+        const grimoireIndex = (currentPage - 1) * itemsPerPage + index + 1;
         const grimoireStatus = grimoireStatusToText(grimoire.status);
-        const line = `<u>Гримуар № ${index + 1}</u>\n<strong>Маг. атрибут:</strong> ${grimoire.magicName}\n<strong>Символ на обложке:</strong>${grimoire.coverSymbol}\n<strong>Статус: </strong>${grimoireStatus}\n`;
+        const line = `<u>Гримуар № ${grimoireIndex}</u>\n<strong>Маг. атрибут:</strong> ${grimoire.magicName}\n<strong>Символ на обложке:</strong>${grimoire.coverSymbol}\n<strong>Статус: </strong>${grimoireStatus}\n\n`;
         text += line;
         buttons.push([
             Markup.button.callback(
-                `Гримуар №  ${index + 1}`,
-                `GRIMOIRE:${grimoire.id}`
+                `Гримуар №  ${grimoireIndex}`,
+                `${ENUM_ACTION_NAMES.GRIMOIRE_INFO_ACTION}${ENUM_ACTION_NAMES.DELIMITER}${grimoire.id}${ENUM_ACTION_NAMES.DELIMITER}${currentPage}`
             ),
         ]);
     });
-/*    buttons.push(
+
+    if (totalPages == 0) {
+        buttons.push([
+            Markup.button.callback(`1 из 1`, ENUM_ACTION_NAMES.PAGE_ACTION),
+        ]);
+    } else if (currentPage == 1 && totalPages == 1) {
+        buttons.push([
+            Markup.button.callback(
+                `${currentPage} из ${totalPages}`,
+                ENUM_ACTION_NAMES.PAGE_ACTION
+            ),
+        ]);
+    } else if (currentPage == 1 && totalPages > 1) {
+        buttons.push([
+            Markup.button.callback(
+                `${currentPage} из ${totalPages}`,
+                ENUM_ACTION_NAMES.PAGE_ACTION
+            ),
+            Markup.button.callback(
+                `>>`,
+                `${ENUM_ACTION_NAMES.GRIMOIRES_NEXT_PAGE_ACTION}${ENUM_ACTION_NAMES.DELIMITER}${currentPage + 1}`
+            ),
+        ]);
+    } else if (currentPage == totalPages) {
+        buttons.push([
+            Markup.button.callback(
+                `<<`,
+                `${ENUM_ACTION_NAMES.GRIMOIRES_PREVIOUS_PAGE_ACTION}${ENUM_ACTION_NAMES.DELIMITER}${currentPage - 1}`
+            ),
+            Markup.button.callback(
+                `${currentPage} из ${totalPages}`,
+                ENUM_ACTION_NAMES.PAGE_ACTION
+            ),
+        ]);
+    } else {
+        buttons.push([
+            Markup.button.callback(
+                `<<`,
+                `${ENUM_ACTION_NAMES.GRIMOIRES_PREVIOUS_PAGE_ACTION}${ENUM_ACTION_NAMES.DELIMITER}${currentPage - 1}`
+            ),
+            Markup.button.callback(
+                `${currentPage} из ${totalPages}`,
+                ENUM_ACTION_NAMES.PAGE_ACTION
+            ),
+            Markup.button.callback(
+                `>>`,
+                `${ENUM_ACTION_NAMES.GRIMOIRES_NEXT_PAGE_ACTION}${ENUM_ACTION_NAMES.DELIMITER}${currentPage + 1}`
+            ),
+        ]);
+    }
+    /*    buttons.push(
         [
             Markup.button.callback('Все гримуары', `ALL_APPROVED_GRIMORE`),
             Markup.button.callback('В работе у меня', `MY_GRIMOIRE`),
@@ -53,6 +106,7 @@ export const convertGrimoiresToTextAndInlineButtons = (
             Markup.button.callback('Все одобренные', `APPROVED_GRIMORE`),
         ]
     );*/
+    console.log(buttons);
     return {
         text,
         buttons,
@@ -114,8 +168,8 @@ const grimoireStatusToText = (status: ENUM_GRIMOIRE_STATUS) => {
             return '';
     }
 };
-export const spellToText = (spell: SpellEntity) => {
-    const title = '<strong><u>Заклинание</u></strong>';
+export const spellToText = (spell: SpellEntity, index?: number) => {
+    const title = `<strong><u>Заклинание ${index}</u></strong>`;
     const name = `<strong>Название: </strong> ${spell.name}`;
     const status = `<strong>Статус: </strong> ${spellStatusToText(spell.status)}`;
     const type = `<strong>Тип: </strong> ${spellTypeToText(spell.type)}`;

@@ -37,8 +37,22 @@ export const PROFILE_BUTTON = '👤Профиль';
 export const BACKGROUND_BUTTON = 'ℹБиография';
 export const PARAMS_BUTTON = '⚙️Параметры';
 // BACKGROUND
-export const SHOW_FULL_BACKGROUND_BUTTON = '📚 Показать всю информацию';
-export const EDIT_BUTTON = '✏️Редактировать информацию';
+export const SHOW_FULL_BACKGROUND_BUTTON = '📚 Показать всё';
+
+export const SHOW_NAME_BUTTON = 'Имя';
+export const SHOW_AVATAR_BUTTON = 'Фотография';
+export const SHOW_HISTORY_BUTTON = 'История';
+export const SHOW_HOBBIES_BUTTON = 'Хобби';
+export const SHOW_GOALS_BUTTON = 'Цели';
+export const SHOW_WORLDVIEW_BUTTON = 'Мировоззрение';
+export const SHOW_CHRACTER_TRAITS_BUTTON = 'Черты характера';
+export const SHOW_IDEALS_BUTTON = 'Идеалы';
+export const SHOW_ATTACHMENTS_BUTTON = 'Привязанности';
+export const SHOW_WEAKNESS_BUTTON = 'Слабости';
+export const SHOW_QUOTES_BUTTON = 'Цитаты';
+export const SHOW_APPEARANCE_BUTTON = 'Внешность';
+
+export const EDIT_BACKGROUND_BUTTON = '✏️Редактировать информацию';
 export const EDIT_NAME_BUTTON = '✏️изменить имя';
 export const EDIT_AVATAR_BUTTON = '✏️Изменить фотографию';
 export const EDIT_HISTORY_BUTTON = '✏️изменить историю';
@@ -56,6 +70,9 @@ export const EDIT_APPEARANCE_BUTTON = '✏️изменить внешность
 
 //GRIMOIRE
 export const GRIMOIRE_BUTTON = '📕 Гримуар';
+export const COME_UP_WITH_MAGICAL_ATTRIBUTE_BUTTON = '📕 Выбрать самому магию';
+export const ADMIN_CREATE_GRIMOIRE_BUTTON =
+    '📕 Боги этого мира одарят вас магией';
 export const SHOW_FULL_GRIMOIRE = 'Показать все заклинания';
 export const CREATE_SPELL_BUTTON = '✏️Создать заклинание';
 export const EDIT_GRIMOIRE_BUTTON = '✏️Редактировать гримуар';
@@ -102,7 +119,13 @@ export const CREATE_GARDEN_BUTTON = '🏡Создать сад';
 export const SHOPPING_DISTRICT_BUTTON = '🛍Торговый квартал';
 export const GRIMOIRE_TOWER_BUTTON = '🏰Башня гримуаров';
 export const SHOP_BUTTON = '🛍Магазин';
+export const CHECK_OFFERS_BUTTON = '🏦 Посмотреть предложения';
+export const SEARCH_OFFERS_BUTTON = '🔎 Поиск предложений';
+export const SEARCH_OFFERS_BY_NAME_BUTTON = '🔎 Поиск по имени';
+export const SEARCH_OFFERS_BY_CATEGORY_BUTTON = '🔎 Поиск по категории';
+export const CREATE_OFFER_BUTTON = '➕ Создать предложение';
 export const BLACK_MARKET_BUTTON = '🛍Чёрный рынок';
+export const MY_OFFERS_BUTTON = '🛍️ Мои предложения';
 export const BAR_BUTTON = '🍸Бар';
 export const CASINO_BUTTON = '🎰Казино';
 
@@ -136,7 +159,10 @@ export const MY_COURY_CASE_BUTTON = '⚖️Мои судебные заявки'
 export const COURY_CASE_LIST_BUTTON = '⚖️Список судебных дел';
 export const REQUEST_TO_PARLAMENT_BUTTON = '✏️Написать судебное прошение';
 export const JUDICIAL_OFFICER_BUTTON = '👤Работники суда';
+export const ADD_JUDICIAL_OFFICER_BUTTON = '➕Назначить работников';
+export const REMOVE_JUDICIAL_OFFICER_BUTTON = '➖Снять с должности';
 export const MAGICAL_PARLIAMENT_BUTTON = '⚖️Информация о суде';
+export const JUDGE_OFFICE_BUTTON = '⚖️Офис судьи';
 // ADMIN
 export const ADMIN_PANEL_BUTTON = '⚙️Панель админа';
 export const PERMITIONS_BUTTON = '👤Выдача прав';
@@ -156,5 +182,9 @@ export const ADD_ANNOUNCEMENT_BUTTON = 'Объявления';
 export const ADD_EVENT_BUTTON = 'события';
 export const ADD_QUEST_BUTTON = 'квест';
 export const GRIMOIRE_LIST_BUTTON = '📚Список гримуаров';
+export const TOWER_WORKERS_BUTTON = '👤Работники';
+export const ADD_TOWER_WORKERS_BUTTON = '➕Назначить работников';
+export const REMOVE_TOWER_WORKERS_BUTTON = '➖Снять с должности';
+export const GRIMOIRE_GET_BUTTON = '📖Получить гримуар';
 export const FIND_GRIMOIRE_BY_TG_BUTTON = '🔎Поиск гримуара по id';
 export const CHANGE_GRIMOIRE_STATUS = 'Изменить статус гримуара';

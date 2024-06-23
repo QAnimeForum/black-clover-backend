@@ -78,7 +78,7 @@ export class UserService {
                     );
                 user = new UserEntity();
                 user.tgUserId = dto.tgUserId;
-                user.characterId = character.id;
+             //  user.characterId = character.id;
                 user.type = ENUM_USER_PERMISSION_TYPE.OPRDINARY;
                 await transactionManager.save(user);
             }

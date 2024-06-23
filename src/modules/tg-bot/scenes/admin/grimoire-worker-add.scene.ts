@@ -9,20 +9,23 @@ import { EDIT_GOALS_BUTTON } from '../../constants/button-names.constant';
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import { BotContext } from '../../interfaces/bot.context';
 import { LOGGER_INFO } from '../../utils/logger';
+import { GrmoireWorkerService } from 'src/modules/grimoire/services/grimoire.worker.service';
+import { CharacterService } from 'src/modules/character/services/character.service';
 
 @Injectable()
-export class FindGrimoireByTgIdWizard {
+export class GrmoireWorkerAddWizard {
     readonly scene: Scenes.WizardScene<BotContext>;
     readonly steps: Composer<BotContext>[] = [];
     constructor(
         @InjectBot() bot: Telegraf<BotContext>,
         @Inject(TELEGRAF_STAGE)
         private readonly stage: Scenes.Stage<BotContext>,
-        private readonly backgroundService: BackgroundService,
+        private readonly characterService: CharacterService,
+        private readonly grimoireWorkerService: GrmoireWorkerService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {
         this.scene = new Scenes.WizardScene<BotContext>(
-            ENUM_SCENES_ID.EDIT_GOALS_SCENE_ID,
+            ENUM_SCENES_ID.GRIMOIRE_WORKER_ADD_SCENE_ID,
             this.step1()
         );
         this.scene.enter(this.start());
@@ -32,7 +35,7 @@ export class FindGrimoireByTgIdWizard {
     start() {
         return async (ctx: BotContext) => {
             await ctx.reply(
-                `🧟 Введи  ID игрока, чей гримуар хотите посмотреть.`
+                `🧟 Введи ID игрока, которого хотите удалить из башни гримуаров.`
             );
         };
     }
@@ -46,15 +49,32 @@ export class FindGrimoireByTgIdWizard {
         composer.on(message('text'), async (ctx) => {
             const regex = /^[a-zA-Zа-яА_Я\-]{2,25}$/;
             const message = ctx.update?.message.text;
-            await this.backgroundService.updateUserGoals({
-                goals: message,
-                telegramId: ctx.update?.message.from.id.toString(),
-            });
-            this.logger.log(
-                LOGGER_INFO,
-                `🟢 Пользователь успешно изменил цели персонажа. * { name: ${ctx.update.message.from.first_name} id: ${ctx.update.message.from.id}}`
-            );
-            ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
+            const character =
+                await this.characterService.findCharacterByTgId(message);
+          /*  const isCharacterWorker = await this.grimoireWorkerService.exists(character);
+            if (!isCharacterWorker) {
+                ctx.reply(
+                    'Введен не верный id пользователя! Для отмены нажмите кнопку отменить /cancel'
+                );
+                ctx.wizard.back();
+                return;
+            }*/
+            try {
+                const grimoireWorker =
+                    await this.grimoireWorkerService.createGrimoireWorker({
+                        characterId: character.id,
+                    });
+                this.logger.log(
+                    LOGGER_INFO,
+                    `🟢 Работник башни гримуаров успешно добавлен. * { id: ${message}}`
+                );
+                ctx.scene.enter(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID);
+            } catch (err) {
+                await ctx.reply(
+                    'не удалось добавить пользователя с таким id попробуйте ещё раз'
+                );
+                ctx.wizard.back();
+            }
         });
         return composer;
     }

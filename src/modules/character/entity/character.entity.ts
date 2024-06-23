@@ -110,10 +110,9 @@ export class CharacterEntity {
 
     @Column({
         type: 'uuid',
-        name: 'invenetory_id',
+        name: 'inventory_id',
     })
     inventoryId: string;
-
 
     @OneToOne(() => EquipmentEntity)
     @JoinColumn({
@@ -145,7 +144,18 @@ export class CharacterEntity {
     squadMember: SquadMemberEntity;
 
     @OneToOne(() => UserEntity)
+    @JoinColumn({
+        name: 'user_id',
+        referencedColumnName: 'id',
+    })
     user: UserEntity;
+
+    @Column({
+        type: 'uuid',
+        name: 'user_id',
+     //   nullable: false,
+    })
+    userId: string;
 
     @OneToOne(() => GardenEntity, (garden) => garden.character, {
         nullable: true,

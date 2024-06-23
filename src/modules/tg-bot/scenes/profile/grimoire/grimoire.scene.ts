@@ -10,9 +10,11 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import {
     BACK_BUTTON,
     EDIT_SPELL_BUTTON,
+    GRIMOIRE_TOWER_BUTTON,
     SHOW_FULL_GRIMOIRE,
 } from 'src/modules/tg-bot/constants/button-names.constant';
 import { GrimoireEntity } from 'src/modules/grimoire/entity/grimoire.entity';
+import { ENUM_ACTION_NAMES } from 'src/modules/tg-bot/constants/action-names.constant';
 
 @Scene(ENUM_SCENES_ID.GRIMOIRE_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -23,9 +25,57 @@ export class GrimoreScene {
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender('id') tgId: number) {
+        const type = ctx.chat.type;
         const grimoire: GrimoireEntity =
             await this.grimoireService.findGrimoireByUserTgId(tgId);
-
+        if (!grimoire) {
+            if (type == 'private') {
+                await ctx.reply(
+                    'У вас нет гримуара!\n\n Перейдите в башню гримуаров, чтобы получить гримуар',
+                    {
+                        reply_markup: 'HTML',
+                        ...Markup.inlineKeyboard([
+                            [
+                                Markup.button.callback(
+                                    GRIMOIRE_TOWER_BUTTON,
+                                    ENUM_ACTION_NAMES.GO_TO_GRIMOIRE_TOWER_ACTION
+                                ),
+                            ],
+                            [
+                                Markup.button.callback(
+                                    BACK_BUTTON,
+                                    ENUM_ACTION_NAMES.BACK_TO_PROFILE_ACTION
+                                ),
+                            ],
+                        ]),
+                    }
+                );
+            } else {
+                await ctx.answerCbQuery();
+                await ctx.deleteMessage();
+                await ctx.reply(
+                    'У вас нет гримуара!\n\n Перейдите в башню гримуаров, чтобы получить гримуар',
+                    {
+                        reply_markup: 'HTML',
+                        ...Markup.inlineKeyboard([
+                            [
+                                Markup.button.callback(
+                                    GRIMOIRE_TOWER_BUTTON,
+                                    ENUM_ACTION_NAMES.GO_TO_GRIMOIRE_TOWER_ACTION
+                                ),
+                            ],
+                            [
+                                Markup.button.callback(
+                                    BACK_BUTTON,
+                                    ENUM_ACTION_NAMES.BACK_TO_PROFILE_ACTION
+                                ),
+                            ],
+                        ]),
+                    }
+                );
+            }
+            return;
+        }
         const spells = grimoire.spells;
         const title = '<strong><u>ГРИМУАР</u></strong>\n\n';
         const magicBlock = `<strong>Магия</strong>: ${grimoire.magicName}\n`;
@@ -96,8 +146,16 @@ export class GrimoreScene {
         );
     }
 
-    @Hears(BACK_BUTTON)
+    @Action(ENUM_ACTION_NAMES.GO_TO_GRIMOIRE_TOWER_ACTION)
+    async grimoireTower(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        await ctx.deleteMessage();
+        await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
+    }
+    @Action(ENUM_ACTION_NAMES.BACK_TO_PROFILE_ACTION)
     async profile(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        await ctx.deleteMessage();
         await ctx.scene.enter(ENUM_SCENES_ID.PROFILE_SCENE_ID);
     }
 }

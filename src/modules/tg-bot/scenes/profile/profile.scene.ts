@@ -19,37 +19,32 @@ import {
     EDIT_GRIMOIRE_BUTTON,
     EDIT_MAGIC_NAME_BUTTON,
     EDIT_SPELL_BUTTON,
-    FOOD_BUTTON,
-    GEARS_BUTTON,
     GRIMOIRE_BUTTON,
     INVENTORY_BUTTON,
-    JEWEIRY_BUTTON,
-    MINERALS_BUTTON,
     MY_DEVILS_BUTTON,
     MY_SPIRITS_BUTTON,
     PARAMS_BUTTON,
     PROFILE_BUTTON,
-    TOOLKIT_BUTTON,
-    VEHICLES_BUTTON,
     WALLET_BUTTON,
-    WEAPONS_BUTTON,
 } from '../../constants/button-names.constant';
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import { SpellEntity } from 'src/modules/grimoire/entity/spell.entity';
 import { UserService } from 'src/modules/user/services/user.service';
-import { WalletService } from 'src/modules/money/wallet.service';
+import { fullProfileToText } from '../../utils/profile.utils';
+import { spellToText } from '../../utils/grimoire.utils';
+import { ENUM_ACTION_NAMES } from '../../constants/action-names.constant';
 
 @Scene(ENUM_SCENES_ID.PROFILE_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class ProfileScene {
     constructor(
         private readonly characterService: CharacterService,
-        private readonly walletService: WalletService,
         private readonly userService: UserService,
         private readonly grimoireService: GrimoireService
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
+    
         const chatType = ctx.chat.type;
         const senderId = sender.id;
         const username = sender.username;
@@ -69,46 +64,7 @@ export class ProfileScene {
         }
         const character =
             await this.characterService.findFullCharacterInfoByTgId(senderId);
-        const background = character.background;
-
-        const name = `<strong>🏷️Имя</strong>: ${background.name}`;
-        const sex = `<strong>⚧Пол</strong>: ${background.sex}`;
-        const age = `<strong>🕐Возраст</strong>: ${background.age}`;
-        const state = `<strong>🌍Страна происхождения</strong>: ${background.state.name}`;
-        const race = `<strong>👤Раса</strong>: ${background.race.name}`;
-        const title = `<strong><u>ПРОФИЛЬ</u></strong>\n\n`;
-        const owner = `<strong>👤Владелец</strong>: @${username}`;
-        const userId = `<strong>🆔Ваш id</strong>: <code>${senderId}</code>`;
-        const magicTypeBlock = `<strong>🃏Магический атрибут</strong>: ${character?.grimoire?.magicName ?? '-'}\n`;
-
-        const characteristics = character.characterCharacteristics;
-        const levelBlock = `<strong>🏆Уровень персонажа</strong>: ${characteristics.currentLevel}/${characteristics.maxLevel}\n`;
-        const sanityBlock = `<strong>🤪Здравомыслие</strong>: ${characteristics.sanity}`;
-        const hpBlock = `<strong>🏃Ловкость</strong>: ${characteristics.dexterity.score}`;
-        const constitutionBlock = `<strong>🏋️Телосложение</strong>: ${characteristics.constitution.score}`;
-        const intelligenceBlock = `<strong>🎓Интеллект</strong>: ${characteristics.intelligence.score}`;
-        const wisdomBlock = `<strong>📚Мудрость</strong>: ${characteristics.wisdom.score}`;
-        const charismaBlock = `<stron>♥️Уровень здоровья</strong>: ${characteristics.currentHealth}/${characteristics.maxHealth}`;
-        const magicPowerBlock = `<strong>🌀Магическая сила</strong>: ${characteristics.magicPower}`;
-        const strengthBlock = `<strong>💪Сила</strong>: ${characteristics.strength.score}`;
-        const dexterityBlock = `g>🗣Харизма</strong>: ${characteristics.charisma.score}`;
-        const wallet = character.wallet;
-        //  const wallet = character.wallet;
-        const copperText = `${wallet.copper} 🟤`;
-        const silverText = `${wallet.silver} ⚪️`;
-        const electrumText = `${wallet.electrum} 🔵`;
-        const goldTextText = `${wallet.gold} 🟡`;
-        const platinumText = `${wallet.platinum} 🪙`;
-        const walletText = `👛Кошелёк: ${platinumText} ${goldTextText} ${electrumText} ${silverText} ${copperText} \n`;
-        //   const armorClassBlock = `${characteristics.armorClass.}${characteristics.armorClassBlock.name}${characteristics.armorClassBlock.score}`;
-
-        // const characteristicsTitle = `\n<strong><u>Характеристики персонажа</u></strong>\n\n`;
-        // const characteristicsBlock = `${levelBlock}\n${hpBlock}\n${magicPowerBlock}\n${sanityBlock}\n${strengthBlock}\n${dexterityBlock}\n${constitutionBlock}\n${intelligenceBlock}\n${wisdomBlock}\n${charismaBlock}\n`;
-        const spellsBlock = `<strong>☄️Заклинания</strong>\n У вас заклинаний нет`;
-        const devilsBlock = `<strong>😈Дьяволы:</strong>\n Контрактов с дьяволами нет`;
-        const spiritsBlock = `<strong>🧚Духи:</strong>\n Союза с духами нет`;
-        const equippedItemsBlock = `<strong>🤹Оборудованные предметы:</strong>\n Ничего не надето`;
-        const caption = `${title}${owner}\n${userId}\n${name}\n${levelBlock}\n${sanityBlock}\n${hpBlock}\n${magicPowerBlock}\n\n${sex}\n${age}\n${state}\n${race}\n${magicTypeBlock}\n${walletText}\n${spellsBlock}\n${devilsBlock}\n${spiritsBlock}\n${equippedItemsBlock}`;
+        const caption = fullProfileToText(character, username, senderId);
         if (chatType == 'private') {
             await ctx.sendPhoto(
                 {
@@ -138,66 +94,48 @@ export class ProfileScene {
                 {
                     caption,
                     parse_mode: 'HTML',
+                    ...Markup.inlineKeyboard([
+                        [
+                            Markup.button.callback(
+                                GRIMOIRE_BUTTON,
+                                ENUM_ACTION_NAMES.GET_MY_GRIMOIRE_ACTION
+                            ),
+                            Markup.button.callback(
+                                BACKGROUND_BUTTON,
+                                ENUM_ACTION_NAMES.GET_MY_BACKGROUND_ACTION
+                            ),
+                        ],
+                        [
+                            Markup.button.callback(
+                                INVENTORY_BUTTON,
+                                ENUM_ACTION_NAMES.GET_MY_INVENTORY_ACTION
+                            ),
+                            Markup.button.callback(
+                                WALLET_BUTTON,
+                                ENUM_ACTION_NAMES.GET_MY_WALLET_ACTION
+                            ),
+                        ],
+                    ]),
                 }
             );
         }
     }
-
-    /**
-     * 
-     * @param ctx         /**
-         * 「🏷️」Имя: 
-
-「❤️」Жизнь: 
-
-⇒「🤪」Здравомыслие: 
-
-⇒「🌀」Магическая сила: 
-
-⇒「🗡️」Урон: 
-
-⊨═══════════════════════⫤
-
-⇒「🃏」Атрибут: 
-
-⇒「🧨」Предметы: 
-
-⇒「🤹」Оборудованные предметы: 
-
-⇒「☄️」Заклинания: 
-
-⇒「⚡」Бонус: 
-         */
-
     @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
     }
+    @Action(ENUM_ACTION_NAMES.GET_MY_GRIMOIRE_ACTION)
     @Hears(GRIMOIRE_BUTTON)
     async grimoire(@Ctx() ctx: BotContext, @Sender() sender) {
-        const grimoire = await this.grimoireService.findGrimoireByUserTgId(
+        ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_SCENE_ID);
+        /**
+         *     const grimoire = await this.grimoireService.findGrimoireByUserTgId(
             sender.id
         );
-        if(!grimoire) {
+        if (!grimoire) {
             await ctx.reply('У вас ещё нет гримуара');
             return;
         }
-        /**
-      *    const [spellEntities] = await this.grimoireService.findAllSpells(
-            {
-                _search: undefined,
-                _limit: 20,
-                _offset: 0,
-                _order: { name: ENUM_PAGINATION_ORDER_DIRECTION_TYPE.ASC },
-                _availableOrderBy: ['name'],
-                _availableOrderDirection: [
-                    ENUM_PAGINATION_ORDER_DIRECTION_TYPE.ASC,
-                    ENUM_PAGINATION_ORDER_DIRECTION_TYPE.DESC,
-                ],
-            },
-            grimoire.id
-        );
-      */
 
         const spells: Array<SpellEntity> = [];
         const title = '<strong><u>ГРИМУАР</u></strong>\n\n';
@@ -219,14 +157,7 @@ export class ProfileScene {
                 spellListBlock = spellListBlock.concat(
                     `${index + 1}) ${spell.name}\n`
                 );
-                const title = `<strong><u>Заклинание ${index + 1}</u></strong>\n`;
-                const nameBlock = `<strong>Название</strong>: ${spell.name}\n`;
-                const costBlock = `<strong>Стоимость заклинания</strong>: ${spell.cost}\n`;
-                const castTImeBlock = `<strong>Время каста заклинания</strong>: ${spell.castTime}\n`;
-                const durationBlock = `<strong>Продолжительность заклинания</strong>: ${spell.duration}\n`;
-                const rangeBlock = `<strong>Дальность заклинания</strong>: ${spell.range}\n`;
-                const descriptionBlock = `<strong>Описание</strong>\n${spell.description}\n`;
-                const spellMessage = `${title}${nameBlock}${costBlock}${castTImeBlock}${durationBlock}${rangeBlock}${descriptionBlock}\n\n`;
+                const spellMessage = spellToText(spell, index + 1);
                 spellListMessages.push({
                     id: spell.id,
                     text: spellMessage,
@@ -271,20 +202,31 @@ export class ProfileScene {
                     ]),
                 })
         );
+         */
         //await ctx.scene.enter(ENUM_SCENES_ID.grimoire);
     }
     @Hears(BACKGROUND_BUTTON)
+    async bioHears(@Ctx() ctx: BotContext) {
+        await ctx.deleteMessage();
+        await ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
+    }
+
+    @Action(ENUM_ACTION_NAMES.GET_MY_BACKGROUND_ACTION)
     async bio(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        await ctx.deleteMessage();
         await ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
     }
     @Hears(PARAMS_BUTTON)
     async params(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.CHARACTER_PARAMETERS_SCENE_ID);
     }
+    @Action(ENUM_ACTION_NAMES.GET_MY_WALLET_ACTION)
     @Hears(WALLET_BUTTON)
     async wallet(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.WALLET_SCENE_ID);
     }
+    @Action(ENUM_ACTION_NAMES.GET_MY_INVENTORY_ACTION)
     @Hears(INVENTORY_BUTTON)
     async inventory(@Ctx() ctx: BotContext, @Sender() sender) {
         await ctx.scene.enter(ENUM_SCENES_ID.INVENTORY_SCENE_ID);
@@ -322,3 +264,31 @@ export class ProfileScene {
         await ctx.scene.enter(ENUM_SCENES_ID.EDIT_MAGIC_NAME_SCENE_ID);
     }
 }
+
+
+
+    /**
+     * 
+     * @param ctx         /**
+         * 「🏷️」Имя: 
+
+「❤️」Жизнь: 
+
+⇒「🤪」Здравомыслие: 
+
+⇒「🌀」Магическая сила: 
+
+⇒「🗡️」Урон: 
+
+⊨═══════════════════════⫤
+
+⇒「🃏」Атрибут: 
+
+⇒「🧨」Предметы: 
+
+⇒「🤹」Оборудованные предметы: 
+
+⇒「☄️」Заклинания: 
+
+⇒「⚡」Бонус: 
+         */

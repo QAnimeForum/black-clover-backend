@@ -20,12 +20,12 @@ export interface BotWizardSession extends Scenes.WizardSessionData {
         name: string;
         description: string;
     };
-    problem: string;
     character: CharacterCreateDto;
     grimoire: GrimoireCreateDto;
     squad: SquadCreateDto;
     plant: PlantCreateDto;
     createdProblemId: string | null;
+    problemId: string;
     devilsList: {
         backStatus: ENUM_DEVIL_LIST_BACK_TYPE;
         sortType: 'rank' | 'floor';

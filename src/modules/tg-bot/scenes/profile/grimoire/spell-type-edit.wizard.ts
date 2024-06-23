@@ -104,7 +104,7 @@ export class SpellTypeEditWizard {
             } catch (err) {
                 console.log(err);
             }
-            await ctx.scene.enter(ENUM_SCENES_ID.EDIT_GRIMOIRES_SCENE_ID);
+            await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID);
         });
         return composer;
     }

@@ -117,13 +117,13 @@ export class SquadsService {
         member.characterId = character.id;
         //TODO сделать красивее
         let rank = (await this.rankRepository.findTrees())[0];
-        console.log(rank);
+
         while (rank.children.length > 0) {
             rank = rank.children[0];
         }
         member.rank = rank;
         member.rankId = rank.id;
-        console.log(member);
+
         await this.armedForcesMemberRepository.insert(member);
         //  member.rank = ENUM_MEMB
         this.changeRequestStatus(tgUserId, requestStatus);

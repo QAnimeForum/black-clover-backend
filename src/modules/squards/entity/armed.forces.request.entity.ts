@@ -31,6 +31,7 @@ export class ArmedForcesRequestEntity {
 
     @Column({
         type: 'varchar',
+        name: 'tg_username',
     })
     tgUsername: string;
 

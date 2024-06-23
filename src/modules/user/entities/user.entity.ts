@@ -25,19 +25,8 @@ export class UserEntity {
     })
     tgUserId: string;
 
-    @OneToOne(() => CharacterEntity)
-    @JoinColumn({
-        name: 'character_id',
-        referencedColumnName: 'id',
-    })
+    @OneToOne(() => CharacterEntity, (character) => character.user)
     character: CharacterEntity;
-
-    @Column({
-        type: 'uuid',
-        name: 'character_id',
-        nullable: false,
-    })
-    characterId: string;
 
     @Column({
         type: 'enum',

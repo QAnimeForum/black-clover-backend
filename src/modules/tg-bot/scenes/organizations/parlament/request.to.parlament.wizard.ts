@@ -32,7 +32,6 @@ export class RequestToParlamentWizard {
     }
     start() {
         return async (ctx: BotContext) => {
-            console.log(ctx.scene.session.problem);
             await ctx.reply('Введите текст обращения.');
         };
     }
@@ -46,7 +45,7 @@ export class RequestToParlamentWizard {
         composer.on(message('text'), async (ctx) => {
             const message = ctx.update?.message.text;
             const caption = `Ваш текст обращения: ${message}`;
-            ctx.scene.session.problem = message;
+            ctx.scene.session.problemId = message;
             await ctx.reply(caption, {
                 ...Markup.inlineKeyboard([
                     [
@@ -76,7 +75,7 @@ export class RequestToParlamentWizard {
             );
             await this.problemService.createProblem(
                 character,
-                ctx.scene.session.problem
+                ctx.scene.session.problemId
             );
             await ctx.scene.enter(ENUM_SCENES_ID.MAGIC_PARLAMENT_SCENE_ID);
         });

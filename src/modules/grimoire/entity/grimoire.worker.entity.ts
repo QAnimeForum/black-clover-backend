@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 
 @Entity('grimoire_worker')
-export class GrimoireWorker {
+export class GrimoireWorkerEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 

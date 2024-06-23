@@ -38,7 +38,7 @@ export class PlantService {
     ) {}
 
     async findGardenByUserTgId(tgUserId: string): Promise<GardenEntity> {
-        const query: string = `select garden.* from garden JOIN character ON garden.id = character.gargen_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = '${tgUserId}'`;
+        const query: string = `select garden.* from garden JOIN character ON garden.id = character.gargen_id JOIN game_user on character.user_id = game_user.id  where game_user.tg_user_id = '${tgUserId}'`;
         const gardens: Array<GardenEntity> =
             await this.gardenRepository.query(query);
         if (gardens.length !== 1) {
@@ -85,7 +85,6 @@ export class PlantService {
         garden.pot_3 = pot3;
         garden.pot_4 = pot4;
         garden.pot_5 = pot5;
-        console.log(garden);
         await this.gardenRepository.save(garden);
         character.garden = garden;
         character.gardenId = garden.id;

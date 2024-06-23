@@ -16,13 +16,17 @@ import { ENUM_SPELL_STATUS } from '../constants/spell.status.enum.constant';
 import { SpellRequirementsEntity } from '../entity/spell.requirements.entity';
 import { SpellUpdateTypeDto } from '../dto/spell.update-type.dto';
 import { SpellCastEditDto } from '../dto/spell.update-cast-time.dto';
-import { where } from 'sequelize';
+
 import { SpellUpdateGoalsDto } from '../dto/spell.update-goals.dto';
+import { CharacterEntity } from 'src/modules/character/entity/character.entity';
+
 @Injectable()
 export class GrimoireService {
     constructor(
         @InjectDataSource()
         private readonly connection: DataSource,
+        @InjectRepository(CharacterEntity)
+        private readonly characterEntity: Repository<CharacterEntity>,
         @InjectRepository(GrimoireEntity)
         private readonly grimoireRepository: Repository<GrimoireEntity>,
         @InjectRepository(SpellEntity)
@@ -31,6 +35,9 @@ export class GrimoireService {
         private readonly spellRequirementsRepository: Repository<SpellRequirementsEntity>
     ) {}
 
+    public countGrimoires() {
+        return this.grimoireRepository.count();
+    }
     public findAllGrimoires(
         query: PaginateQuery
     ): Promise<Paginated<GrimoireEntity>> {
@@ -63,11 +70,18 @@ export class GrimoireService {
         });
         return entity;
     }
-
-    async findGrimoireByUserTgId(tgUserId: number) {
+    async hasGrimoire(tgUserId: number) {
         const grimoires = await this.connection.query(
-            `select grimoire.* from grimoire JOIN character ON grimoire.id = character.grimoire_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = '${tgUserId}'`
+            `select grimoire.id from grimoire JOIN character ON grimoire.id = character.grimoire_id JOIN game_user on character.user_id = game_user.id  where game_user.tg_user_id = '${tgUserId}'`
         );
+        return !(grimoires.length == 0);
+    }
+    async findGrimoireByUserTgId(tgUserId: number) {
+        const query = `select grimoire.* from grimoire JOIN character ON grimoire.id = character.grimoire_id JOIN game_user on character.user_id = game_user.id  where game_user.tg_user_id = '${tgUserId}'`;
+        const grimoires = await this.connection.query(query);
+        /*   const grimoires = await this.connection.query(
+            `select grimoire.* from grimoire JOIN character ON grimoire.id = character.grimoire_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = '${tgUserId}'`
+        );*/
         if (grimoires.length == 1) {
             return grimoires[0];
         }

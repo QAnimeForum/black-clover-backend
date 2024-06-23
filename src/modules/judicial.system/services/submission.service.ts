@@ -6,7 +6,7 @@ import { ProblemService } from './problem.service';
 import { CharacterEncoding } from 'crypto';
 import { CharacterEntity } from 'src/modules/character/entity/character.entity';
 import { SubmissionStatus } from '../constants/submission-status.enum';
-import { ProblemEntity } from '../entity/problem.entity';
+import { ENUM_PROBLEM_STATUS, ProblemEntity } from '../entity/problem.entity';
 import { SubmissionBasicMetaDto } from '../dto/submission-basic-meta.dto';
 
 @Injectable()
@@ -16,6 +16,8 @@ export class SubmissionService {
         private connection: DataSource,
         @InjectRepository(SubmissionEntity)
         private readonly submissionRepository: Repository<SubmissionEntity>,
+        @InjectRepository(ProblemEntity)
+        private readonly problemRepository: Repository<ProblemEntity>,
 
         @Inject(forwardRef(() => ProblemService))
         private readonly problemService: ProblemService
@@ -45,23 +47,33 @@ export class SubmissionService {
         return true;
     }
 
-    async createSubmission(
-        submitter: CharacterEntity,
-        problem: ProblemEntity,
-        content: string
-    ) {
+    async createSubmission(problemId: string, content: string) {
+        console.log(problemId);
         const submission = new SubmissionEntity();
-        submission.isPublic = problem.isPublic;
+        submission.isPublic = false;
 
-       // submission.status = SubmissionStatus.Pending;
+        // submission.status = SubmissionStatus.Pending;
         submission.submitTime = new Date();
-        submission.problemId = problem.id;
-        submission.submitterId = submitter.id;
+        //  submission.problemId = problem.id;
+        //  submission.submitterId = submitter.id;
         submission.content = content;
-        const result = await this.submissionRepository.save(submission);
-        return result;
+        await this.submissionRepository.save(submission);
+        console.log(problemId);
+        const result = await this.connection
+            .createQueryBuilder()
+            .update(ProblemEntity)
+            .set({
+                submissionId: submission.id,
+                status: ENUM_PROBLEM_STATUS.SOLVED,
+            })
+            .where('id = :id', { id: problemId })
+            .execute();
+        console.log('wtg');
+        console.log(result);
+        // this.problemRepository.save(submission);
+        return submission;
     }
-/*
+    /*
     async getSubmissionBasicMeta(
         submission: SubmissionEntity
     ): Promise<SubmissionBasicMetaDto> {
@@ -74,7 +86,7 @@ export class SubmissionService {
         };
     }*/
 
-   /**
+    /**
     *  private async onSubmissionFinished(
         submission: SubmissionEntity,
         problem: ProblemEntity,

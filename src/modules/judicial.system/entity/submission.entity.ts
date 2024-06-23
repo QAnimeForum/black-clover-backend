@@ -11,10 +11,9 @@ import {
 } from 'typeorm';
 
 import { ProblemEntity } from './problem.entity';
-import { CharacterEntity } from '../../character/entity/character.entity';
 
 @Entity('submission')
-@Index(['isPublic', 'problemId', 'submitterId'])
+//@Index(['isPublic', 'problemId', 'submitterId'])
 /**
  * @Index(['isPublic', 'problemId', 'status'])
 @Index(['isPublic', 'problemId', 'submitterId'])
@@ -40,23 +39,8 @@ export class SubmissionEntity {
     status: SubmissionStatus;
 
  */
-    @ManyToOne(() => ProblemEntity, { onDelete: 'CASCADE' })
-    @JoinColumn()
-    problem: Promise<ProblemEntity>;
-
-    @Column()
-    @Index()
-    problemId: string;
-
-    @ManyToOne(() => CharacterEntity)
-    @JoinColumn({
-        name: 'submitter_id',
-    })
-    submitter: CharacterEntity;
-
-    @Column()
-    @Index()
-    submitterId: string;
+    @OneToOne(() => ProblemEntity, (problem) => problem.submission) // specify inverse side as a second parameter
+    user: ProblemEntity;
 
     @Column({ type: 'timestamp' })
     @Index()

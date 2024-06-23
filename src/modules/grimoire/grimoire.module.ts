@@ -9,10 +9,13 @@ import { UserEntity } from '../user/entities/user.entity';
 import { ManaSkinEntity } from './entity/mana.skin.entity';
 import { ManaZoneEntity } from './entity/mana.zone.entity';
 import { SpellRequirementsEntity } from './entity/spell.requirements.entity';
+import { GrimoireWorkerEntity } from './entity/grimoire.worker.entity';
+import { GrmoireWorkerService } from './services/grimoire.worker.service';
 @Module({
     imports: [
         TypeOrmModule.forFeature(
             [
+                GrimoireWorkerEntity,
                 GrimoireEntity,
                 SpellEntity,
                 SpellRequirementsEntity,
@@ -25,7 +28,7 @@ import { SpellRequirementsEntity } from './entity/spell.requirements.entity';
         ),
     ],
     controllers: [GrimoireController],
-    providers: [GrimoireService],
-    exports: [GrimoireService],
+    providers: [GrimoireService, GrmoireWorkerService],
+    exports: [GrimoireService, GrmoireWorkerService],
 })
 export class GrimoireModule {}

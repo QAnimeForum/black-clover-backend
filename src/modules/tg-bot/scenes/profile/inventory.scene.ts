@@ -26,6 +26,8 @@ import {
     equipmentToText,
 } from '../../utils/inventory.utils';
 import { ENUM_ACTION_NAMES } from '../../constants/action-names.constant';
+import { Paginated } from 'nestjs-paginate';
+import { ENUM_BODY_PART_ENUM } from 'src/modules/items/constants/body.part.enum';
 
 @Scene(ENUM_SCENES_ID.INVENTORY_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -162,75 +164,109 @@ export class InventoryScene {
     @Action(ENUM_ACTION_NAMES.CHANGE_CAP)
     async changeCap(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
-        await ctx.reply('в разработке');
+        const tgUserId = ctx.callbackQuery.from.id.toString();
+        const currentSlot = ENUM_BODY_PART_ENUM.HEARDRESS;
+        this.chooseItem(ctx, tgUserId, currentSlot);
     }
 
     @Action(ENUM_ACTION_NAMES.CHANGE_ARMOR)
     async changeArmor(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
-        await ctx.reply('в разработке');
+        const tgUserId = ctx.callbackQuery.from.id.toString();
+        const currentSlot = ENUM_BODY_PART_ENUM.ARMOR;
+        this.chooseItem(ctx, tgUserId, currentSlot);
     }
 
     @Action(ENUM_ACTION_NAMES.CHANGE_LEFT_HAND)
     async changeLeftHand(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
-        await ctx.reply('в разработке');
+        const tgUserId = ctx.callbackQuery.from.id.toString();
+        const currentSlot = ENUM_BODY_PART_ENUM.LEFT_HEND;
+        this.chooseItem(ctx, tgUserId, currentSlot);
     }
 
     @Action(ENUM_ACTION_NAMES.CHANGE_RIGHT_HAND)
     async changeRightHand(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
-        await ctx.reply('в разработке');
+        const tgUserId = ctx.callbackQuery.from.id.toString();
+        const currentSlot = ENUM_BODY_PART_ENUM.RIGHT_HEND;
+        this.chooseItem(ctx, tgUserId, currentSlot);
     }
 
     @Action(ENUM_ACTION_NAMES.CHANGE_CLOAK_ACTION)
     async changeCloak(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
-        await ctx.reply('в разработке');
+        const tgUserId = ctx.callbackQuery.from.id.toString();
+        const currentSlot = ENUM_BODY_PART_ENUM.CLOAK;
+        this.chooseItem(ctx, tgUserId, currentSlot);
     }
-
 
     @Action(ENUM_ACTION_NAMES.CHANGE_GLOVES_ACTION)
     async changeGloves(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
-        await ctx.reply('в разработке');
+        const tgUserId = ctx.callbackQuery.from.id.toString();
+        const currentSlot = ENUM_BODY_PART_ENUM.GLOVES;
+        this.chooseItem(ctx, tgUserId, currentSlot);
     }
 
     @Action(ENUM_ACTION_NAMES.CHANGE_RING_ACTION)
+    async changeRing(@Ctx() ctx: BotContext) {
+        ctx.answerCbQuery();
+        const tgUserId = ctx.callbackQuery.from.id.toString();
+        const currentSlot = ENUM_BODY_PART_ENUM.RING;
+        this.chooseItem(ctx, tgUserId, currentSlot);
+    }
+
+    @Action(ENUM_ACTION_NAMES.CHANGE_SHOES_ACTION)
     async changeShoes(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
-        await ctx.reply('в разработке');
+        const tgUserId = ctx.callbackQuery.from.id.toString();
+        const currentSlot = ENUM_BODY_PART_ENUM.SHOES;
+        this.chooseItem(ctx, tgUserId, currentSlot);
     }
 
     @Action(ENUM_ACTION_NAMES.CHANGE_VEHICLE_ACTION)
     async changeVehicle(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
         const tgUserId = ctx.callbackQuery.from.id.toString();
-        const currentSlot = ENUM_ACTION_NAMES.CHANGE_VEHICLE_ACTION;
+        const currentSlot = ENUM_BODY_PART_ENUM.VEHICLE;
         this.chooseItem(ctx, tgUserId, currentSlot);
     }
-    chooseItem = (
+    async chooseItem(
         ctx: BotContext,
         tgUserId: string,
-        currentSlot: ENUM_ACTION_NAMES
-    ) => {
-        const items = this.inventoryService.findAllEquipmentItems(
-            {
-                path: '',
-            },
-            tgUserId
-        );
+        currentSlot: ENUM_BODY_PART_ENUM
+    ) {
+        let items: Paginated<any>;
+        if (currentSlot == ENUM_BODY_PART_ENUM.VEHICLE) {
+            items = await this.inventoryService.findAllVehicles(
+                {
+                    path: '',
+                },
+                tgUserId
+            );
+        } else {
+            items = await this.inventoryService.findAllEquipmentItems(
+                {
+                    path: '',
+                    filter: {
+                        bodyPart: `$eq:${currentSlot}`,
+                    },
+                },
+                tgUserId
+            );
+        }
         let caption = '';
-        if (items.length == 0) {
-            caption = 'У вас нет экипировки, подходящего типа!';
+        if (items.data.length == 0) {
+            caption = 'У вас нет экипировки подходящего типа!';
         } else {
             caption = 'Теперь выберите предмет, который вы хотите надеть:\n';
-            items.map((item, index) => {
+            items.data.map((item, index) => {
                 caption += `${index + 1})${item.name}\n`;
             });
             caption += 'Чтобы убрать предмет из слота введите 0';
         }
-        ctx.replyWithHTML(
+        await ctx.editMessageCaption(
             caption,
             Markup.inlineKeyboard([
                 Markup.button.callback(
@@ -239,7 +275,7 @@ export class InventoryScene {
                 ),
             ])
         );
-    };
+    }
 
     @Action(ENUM_ACTION_NAMES.BACK_TO_EQUIP_ITEM)
     async backToEquipItem(@Ctx() ctx: BotContext, @Sender() sender) {
@@ -247,16 +283,10 @@ export class InventoryScene {
             sender.id
         );
         const caption = equipmentToText(equipment, sender.username);
-        await ctx.sendPhoto(
-            {
-                source: INVENTORY_IMAGE_PATH,
-            },
-            {
-                caption,
-                parse_mode: 'HTML',
-                ...Markup.inlineKeyboard(equipmentInlineKeyBoard()),
-            }
-        );
+        await ctx.editMessageCaption(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(equipmentInlineKeyBoard()),
+        });
     }
     @Action(MINERALS_BUTTON)
     async minrals(@Ctx() ctx: BotContext) {

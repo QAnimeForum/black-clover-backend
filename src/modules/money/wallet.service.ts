@@ -25,7 +25,7 @@ export class WalletService {
             async (transactionManager) => {
                 const wallets: Array<WalletEntity> =
                     await transactionManager.query(
-                        `select wallet.* from wallet JOIN character ON wallet.id = character.wallet_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = ${dto.tgId}`
+                        `select wallet.* from wallet JOIN character ON wallet.id = character.wallet_id JOIN game_user on character.user_id = game_user.id  where game_user.tg_user_id = '${dto.tgId}'`
                     );
                 if (wallets.length !== 1) {
                     return;
@@ -149,6 +149,8 @@ export class WalletService {
         wallet.electrum = 0;
         wallet.gold = 0;
         wallet.platinum = 0;
+        wallet.useElectrum = false;
+        wallet.usePlatinum = false;
         await transactionalEntityManager.save(wallet);
         return wallet;
     }
@@ -160,7 +162,7 @@ export class WalletService {
     }
 
     async findWalletByUserTgId(tgUserId: number): Promise<WalletEntity> {
-        const query: string = `select wallet.* from wallet JOIN character ON wallet.id = character.wallet_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = ${tgUserId}`;
+        const query: string = `select wallet.* from wallet JOIN character ON wallet.id = character.wallet_id JOIN game_user on character.user_id = game_user.id  where game_user.tg_user_id = '${tgUserId}'`;
         const wallets: Array<WalletEntity> =
             await this.walletRepository.query(query);
         if (wallets.length !== 1) {
