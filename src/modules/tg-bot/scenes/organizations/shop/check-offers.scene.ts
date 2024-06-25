@@ -1,4 +1,11 @@
-import { Action, Ctx, Hears, Scene, SceneEnter } from 'nestjs-telegraf';
+import {
+    Action,
+    Ctx,
+    Hears,
+    InlineQuery,
+    Scene,
+    SceneEnter,
+} from 'nestjs-telegraf';
 import { Inject, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -38,12 +45,16 @@ export class CheckOffersScene {
                     caption,
                     parse_mode: 'HTML',
                     ...Markup.keyboard([
-                        [SEARCH_OFFERS_BUTTON],
+                        [
+                            SEARCH_OFFERS_BY_NAME_BUTTON,
+                            SEARCH_OFFERS_BY_CATEGORY_BUTTON,
+                        ],
                         [BACK_BUTTON],
                     ]).resize(),
                 }
             );
         } else {
+            const caption = 'Поиск картинок';
             await ctx.sendPhoto(
                 {
                     source: KNIGHT_IMAGE_PATH,
@@ -53,15 +64,18 @@ export class CheckOffersScene {
                     parse_mode: 'HTML',
                     ...Markup.inlineKeyboard([
                         [
-                            Markup.button.callback(
-                                MY_OFFERS_BUTTON,
-                                ENUM_ACTION_NAMES.MY_OFFERS_ACTION
+                            Markup.button.switchToCurrentChat(
+                                SEARCH_OFFERS_BY_NAME_BUTTON,
+                                '#wft'
                             ),
-
-                            Markup.button.callback(
-                                BACK_BUTTON,
-                                ENUM_ACTION_NAMES.BACK_TO_SHOPPING_DISTRICT_ACTION
-                            ),
+                        ],
+                        [
+                            {
+                                text: SEARCH_OFFERS_BY_CATEGORY_BUTTON,
+                                switch_inline_query_current_chat:
+                                    SEARCH_OFFERS_BY_CATEGORY_BUTTON,
+                                // ENUM_ACTION_NAMES.SEARCH_OFFERS_BY_CATEGORY_ACTION,
+                            },
                         ],
                     ]),
                 }
@@ -69,61 +83,15 @@ export class CheckOffersScene {
         }
     }
 
-    @Action(ENUM_ACTION_NAMES.SEARCH_OFFERS_BY_NAME_ACTION)
+    @Hears(SEARCH_OFFERS_BY_NAME_BUTTON)
     async searchByName(@Ctx() ctx: BotContext) {
-     //    await ctx.scene.enter(ENUM_SCENES_ID.SEARCH_OFFERS_BY_NAME_SCENE_ID);
-      /*  const offers: Array<MarketEntity> = [];
-        const result = offers.map(
-            (offer): InlineQueryResult => ({
-                type: 'article',
-                id: offer.id,
-                title: offer.item.name,
-                description: offer.item.description,
-                //   thumb_url: offer.item.url,
-                input_message_content: {
-                    message_text: offer.item.name,
-                },
-                ...Markup.inlineKeyboard([
-                    Markup.button.callback(
-                        SEARCH_OFFERS_BY_NAME_BUTTON,
-                        SEARCH_OFFERS_BY_NAME_BUTTON
-                    ),
-                ]),
-            })
-        );
-        await ctx.telegram.answerInlineQuery(ctx.inlineQuery.id, result);
-        await ctx.answerInlineQuery(result);*/
+        await ctx.scene.enter(ENUM_SCENES_ID.SEARCH_OFFERS_BY_NAME_SCENE_ID);
     }
 
-    @Hears(SEARCH_OFFERS_BUTTON)
-    async search(@Ctx() ctx: BotContext) {
-        /*   await ctx.scene.enter(
+    @Hears(SEARCH_OFFERS_BY_CATEGORY_BUTTON)
+    async searchByCategory(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(
             ENUM_SCENES_ID.SEARCH_OFFERS_BY_CATEGORY_SCENE_ID
-        );*/
-        const miniAppUrl = 'https://t.me/black_clover_role_play_bot/search';
-        const caption = 'Поиск картинок';
-        await ctx.sendPhoto(
-            {
-                source: KNIGHT_IMAGE_PATH,
-            },
-            {
-                caption,
-                parse_mode: 'HTML',
-                ...Markup.inlineKeyboard([
-                    [
-                        Markup.button.url(
-                            SEARCH_OFFERS_BY_NAME_BUTTON,
-                            miniAppUrl
-                     //       ENUM_ACTION_NAMES.SEARCH_OFFERS_BY_NAME_ACTION
-                        ),
-
-                        Markup.button.callback(
-                            SEARCH_OFFERS_BY_CATEGORY_BUTTON,
-                            ENUM_ACTION_NAMES.SEARCH_OFFERS_BY_CATEGORY_ACTION
-                        ),
-                    ],
-                ]),
-            }
         );
     }
 

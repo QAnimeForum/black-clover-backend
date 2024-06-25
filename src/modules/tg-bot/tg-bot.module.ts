@@ -101,6 +101,7 @@ import {
     SearchOfferByCategoryScene,
     SearchOfferByNameScene,
 } from './scenes/organizations/shop/search-offer.by-name.scene';
+import { MarketService } from '../items/service/market.service';
 @Module({
     imports: [
         ThrottlerModule.forRoot([
@@ -123,11 +124,9 @@ import {
         MinesModule,
         SquadsModule,
         MapModule,
-        MoneyModule,
         RaceModule,
         UserModule,
         CharacterModule,
-        MoneyModule,
     ],
     providers: [
         TgBotUpdate,

@@ -76,6 +76,7 @@ export class BLackMarketScene {
         }
     }
 
+    
     @Hears(CHECK_OFFERS_BUTTON)
     async checkOffers(@Ctx() ctx: BotContext) {
         ctx.scene.enter(ENUM_SCENES_ID.CHECK_OFFERS_SCENE_ID);

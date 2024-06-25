@@ -20,11 +20,19 @@ import { EquipmentEntity } from './entity/equipment.entity';
 import { VehicleService } from './service/vehicles.service';
 import { InventoryEntity } from './entity/inventory.entity';
 import { EqupmentItemEntity } from './entity/equpment.item.entity';
+import { MarketEntity } from './entity/market.entity';
+import { ItemCategoryEntity } from './entity/item.category.entity';
+import { EqupmentItemService } from './service/equipment.item.service';
+import { MarketService } from './service/market.service';
+import { MoneyModule } from '../money/money.module';
+import { ShopService } from './service/shop.service';
+import { ShopEntity } from './entity/shop.entity';
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             EqupmentItemEntity,
             InventoryEntity,
+            ItemCategoryEntity,
             ArmorEntity,
             ArmorClassEntity,
             ClothesEntity,
@@ -34,7 +42,10 @@ import { EqupmentItemEntity } from './entity/equpment.item.entity';
             VehicleEntity,
             WeaponEntity,
             EquipmentEntity,
+            MarketEntity,
+            ShopEntity,
         ]),
+        MoneyModule,
     ],
     controllers: [BusinessController],
     providers: [
@@ -45,6 +56,9 @@ import { EqupmentItemEntity } from './entity/equpment.item.entity';
         WeaponService,
         VehicleService,
         InventoryService,
+        EqupmentItemService,
+        MarketService,
+        ShopService,
     ],
     exports: [
         ArmorService,
@@ -54,6 +68,8 @@ import { EqupmentItemEntity } from './entity/equpment.item.entity';
         WeaponService,
         VehicleService,
         InventoryService,
+        EqupmentItemService,
+        MarketService,
     ],
 })
 export class ItemsModule {}

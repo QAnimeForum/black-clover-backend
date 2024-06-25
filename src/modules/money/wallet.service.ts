@@ -16,7 +16,7 @@ export class WalletService {
         @InjectRepository(WalletEntity)
         private readonly walletRepository: Repository<WalletEntity>,
         @InjectRepository(MoneyLogEntity)
-        private readonly moneyLogsRepository: Repository<MoneyLogEntity>,
+        private readonly moneyLogsRepository: Repository<MoneyLogEntity>
     ) {}
 
     async addCharacterMoney(dto: MoneyAddDto) {
@@ -107,7 +107,8 @@ export class WalletService {
                 moneyLogEntity1.gold = wallet.gold;
                 moneyLogEntity1.electrum = wallet.electrum;
                 moneyLogEntity1.platinum = wallet.platinum;
-                moneyLogEntity1.note = 'Конвертация валюты. Произошла в меню кошелька. Старая сумма.';
+                moneyLogEntity1.note =
+                    'Конвертация валюты. Произошла в меню кошелька. Старая сумма.';
                 await transactionManager.save(moneyLogEntity1);
                 await transactionManager.update(
                     WalletEntity,
@@ -130,7 +131,8 @@ export class WalletService {
                 moneyLogEntity2.gold = moneyDto.gold;
                 moneyLogEntity2.electrum = moneyDto.electrum;
                 moneyLogEntity2.platinum = moneyDto.platinum;
-                moneyLogEntity2.note = 'Конвертация валюты. Произошла в меню кошелька. Новая сумма.';
+                moneyLogEntity2.note =
+                    'Конвертация валюты. Произошла в меню кошелька. Новая сумма.';
                 await transactionManager.save(moneyLogEntity2);
             }
         );
@@ -161,7 +163,7 @@ export class WalletService {
         return entity;
     }
 
-    async findWalletByUserTgId(tgUserId: number): Promise<WalletEntity> {
+    async findWalletByUserTgId(tgUserId: string): Promise<WalletEntity> {
         const query: string = `select wallet.* from wallet JOIN character ON wallet.id = character.wallet_id JOIN game_user on character.user_id = game_user.id  where game_user.tg_user_id = '${tgUserId}'`;
         const wallets: Array<WalletEntity> =
             await this.walletRepository.query(query);
@@ -173,5 +175,18 @@ export class WalletService {
 
     async findAllTransactions() {
         return await this.moneyLogsRepository.find();
+    }
+
+    async checkMoneyBalance(tgUserId: string): Promise<WalletEntity> {
+        const result: WalletEntity = await this.findWalletByUserTgId(tgUserId);
+        if (result) {
+            return result;
+        } else {
+            throw Error('No user with such id');
+        }
+    }
+
+    payWithMoney(user_id: string, amount: number): void {
+       // this.walletRepository.decrement({ id: user_id }, "money", amount);
     }
 }
