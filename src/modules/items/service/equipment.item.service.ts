@@ -1,17 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, TreeRepository } from 'typeorm';
 
 import { EqupmentItemEntity } from '../entity/equpment.item.entity';
 import { ENUM_ITEM_RARITY } from '../constants/item.entity.enum';
 import { ENUM_BODY_PART_ENUM } from '../constants/body.part.enum';
+import { ItemCategoryEntity } from '../entity/item.category.entity';
+import { paginate, PaginateQuery } from 'nestjs-paginate';
 @Injectable()
 export class EqupmentItemService {
     constructor(
+        @InjectRepository(ItemCategoryEntity)
+        private readonly categoryRepository: TreeRepository<ItemCategoryEntity>,
         @InjectRepository(EqupmentItemEntity)
         private readonly equpmentItemRepository: Repository<EqupmentItemEntity>
     ) {}
 
+    /* public async findAllItemCategories(query: PaginateQuery) {
+        return paginate(query, this.categoryEntity, {
+            sortableColumns: ['id', 'name'],
+            nullSort: 'last',
+            defaultSortBy: [['name', 'DESC']],
+            searchableColumns: ['name'],
+            select: ['id', 'name'],
+        });
+    }*/
+    public async findCategories() {
+        return this.categoryRepository.findRoots();
+    }
+    public async findCategoriesByRoot(categoryId: string) {
+        const item = await this.categoryRepository.findOneBy({
+            id: categoryId,
+        });
+        return this.categoryRepository.findDescendants(item);
+    }
     create(
         itemName: string,
         description: string,
@@ -112,9 +134,9 @@ export class EqupmentItemService {
         }
     }
 
-    async getItemRaririty(item_id: string): Promise<number> {
+    async getItemRaririty(item_id: string): Promise<ENUM_ITEM_RARITY> {
         if (item_id === null) {
-            return 0;
+            return ENUM_ITEM_RARITY.COMMON;
         }
         const res: EqupmentItemEntity[] =
             await this.equpmentItemRepository.findBy({ id: item_id });

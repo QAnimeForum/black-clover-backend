@@ -6,20 +6,26 @@ import {
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
+    Tree,
+    TreeChildren,
+    TreeParent,
 } from 'typeorm';
 import { EquipmentEntity } from './equipment.entity';
 import { EqupmentItemEntity } from './equpment.item.entity';
 @Entity('item_category')
+@Tree('closure-table')
 export class ItemCategoryEntity {
     @ApiProperty()
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @ApiProperty({ required: false })
     @Column({ nullable: true })
-    parentId: number;
+    parentId: string;
 
-    @ManyToOne((type) => ItemCategoryEntity, (category) => category.children)
+    // @ManyToOne((type) => ItemCategoryEntity, (category) => category.children)
+
+    @TreeParent()
     parent: ItemCategoryEntity;
 
     @ApiProperty()
@@ -37,7 +43,8 @@ export class ItemCategoryEntity {
     @CreateDateColumn()
     createdAt: Date;
 
-    @OneToMany((type) => ItemCategoryEntity, (category) => category.parent)
+    // @OneToMany((type) => ItemCategoryEntity, (category) => category.parent)
+    @TreeChildren()
     children: ItemCategoryEntity[];
 
     @OneToMany((type) => EqupmentItemEntity, (item) => item.category)

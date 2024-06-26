@@ -7,6 +7,7 @@ import ArmedForcesSeeder from './ArmedForcesSeeder';
 import MineralSeeder from './MineralSeeder';
 import SprirtSeeder from './SpiritSeeder';
 import UserSeeder from './UserSeeder';
+import ItemsSeeder from './ItemsSeeder';
 export default class InitSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<any> {
         await runSeeders(dataSource, {
@@ -18,6 +19,7 @@ export default class InitSeeder implements Seeder {
                 ArmedForcesSeeder,
                 MineralSeeder,
                 UserSeeder,
+                ItemsSeeder,
             ],
         });
     }

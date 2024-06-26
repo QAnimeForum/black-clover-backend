@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
-import { Scenes, Composer, Telegraf } from 'telegraf';
+import { Scenes, Composer, Telegraf, Markup } from 'telegraf';
 import { message } from 'telegraf/filters';
 import { Logger } from 'typeorm';
 
@@ -12,20 +12,25 @@ import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
 import { LOGGER_INFO } from 'src/modules/tg-bot/utils/logger';
 import { SubmissionService } from 'src/modules/judicial.system/services/submission.service';
 import { ProblemService } from 'src/modules/judicial.system/services/problem.service';
+import { ShopService } from 'src/modules/items/service/shop.service';
+import { EqupmentItemService } from 'src/modules/items/service/equipment.item.service';
 
 @Injectable()
-export class CreateSolveWizard {
+export class CreateOfferWizard {
     readonly scene: Scenes.WizardScene<BotContext>;
     readonly steps: Composer<BotContext>[] = [];
     constructor(
         @InjectBot() bot: Telegraf<BotContext>,
         @Inject(TELEGRAF_STAGE)
         private readonly stage: Scenes.Stage<BotContext>,
+        private readonly shopService: ShopService,
+        private readonly equipmentItemService: EqupmentItemService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {
         this.scene = new Scenes.WizardScene<BotContext>(
             ENUM_SCENES_ID.CREATE_OFFER_SCENE_ID,
-            this.step1()
+            this.step1(),
+            this.step2()
         );
         this.scene.enter(this.start());
         this.stage.register(this.scene);
@@ -33,7 +38,19 @@ export class CreateSolveWizard {
     }
     start() {
         return async (ctx: BotContext) => {
-            await ctx.reply(`🧟 Введи вынесенное решение.`);
+            const categories = await this.equipmentItemService.findCategories();
+            const buttons = [];
+            for (let i = 0; i < categories.length; ++i) {
+                buttons.push([
+                    Markup.button.callback(
+                        categories[i].name,
+                        `CATEGORY_ID:${categories[i].id}`
+                    ),
+                ]);
+            }
+            await ctx.reply('Выберите категорию товара', {
+                ...Markup.inlineKeyboard(buttons),
+            });
         };
     }
     step1() {
@@ -41,10 +58,24 @@ export class CreateSolveWizard {
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
             await ctx.reply('Цели не изменены.');
-            ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
+            ctx.scene.enter(ENUM_SCENES_ID.SHOP_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
-            ctx.scene.enter(ENUM_SCENES_ID.BLACK_MARKET_SCENE_ID);
+            await ctx.reply('Введите цену предмета');
+            ctx.scene.enter(ENUM_SCENES_ID.SHOP_SCENE_ID);
+        });
+        return composer;
+    }
+    step2() {
+        const composer = new Composer<BotContext>();
+        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+        composer.command('cancel', async (ctx) => {
+            await ctx.reply('Цели не изменены.');
+            ctx.scene.enter(ENUM_SCENES_ID.SHOP_SCENE_ID);
+        });
+        composer.on(message('text'), async (ctx) => {
+            //await this.shopService.create();
+            ctx.scene.enter(ENUM_SCENES_ID.SHOP_SCENE_ID);
         });
         return composer;
     }

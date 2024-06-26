@@ -124,6 +124,7 @@ export const SEARCH_OFFERS_BUTTON = '🔎 Поиск предложений';
 export const SEARCH_OFFERS_BY_NAME_BUTTON = '🔎 Поиск по имени';
 export const SEARCH_OFFERS_BY_CATEGORY_BUTTON = '🔎 Поиск по категории';
 export const CREATE_OFFER_BUTTON = '➕ Создать предложение';
+export const DELETE_OFFER_BUTTON = '➖ Удалить предложение';
 export const BLACK_MARKET_BUTTON = '🛍Чёрный рынок';
 export const MY_OFFERS_BUTTON = '🛍️ Мои предложения';
 export const BAR_BUTTON = '🍸Бар';

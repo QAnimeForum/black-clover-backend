@@ -181,7 +181,7 @@ export class InventoryScene {
     async changeLeftHand(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
         const tgUserId = ctx.callbackQuery.from.id.toString();
-        const currentSlot = ENUM_BODY_PART_ENUM.LEFT_HEND;
+        const currentSlot = ENUM_BODY_PART_ENUM.HAND;
         this.chooseItem(ctx, tgUserId, currentSlot);
     }
 
@@ -189,7 +189,7 @@ export class InventoryScene {
     async changeRightHand(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
         const tgUserId = ctx.callbackQuery.from.id.toString();
-        const currentSlot = ENUM_BODY_PART_ENUM.RIGHT_HEND;
+        const currentSlot = ENUM_BODY_PART_ENUM.HAND;
         this.chooseItem(ctx, tgUserId, currentSlot);
     }
 

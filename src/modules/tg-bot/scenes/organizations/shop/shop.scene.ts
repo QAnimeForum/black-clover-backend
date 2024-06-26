@@ -7,17 +7,23 @@ import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
 import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
 import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
 import { KNIGHT_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
-import { BACK_BUTTON } from 'src/modules/tg-bot/constants/button-names.constant';
+import {
+    BACK_BUTTON,
+    CREATE_OFFER_BUTTON,
+    DELETE_OFFER_BUTTON,
+} from 'src/modules/tg-bot/constants/button-names.constant';
 import { ENUM_ACTION_NAMES } from 'src/modules/tg-bot/constants/action-names.constant';
 import { EqupmentItemEntity } from 'src/modules/items/entity/equpment.item.entity';
 import { Paginated } from 'nestjs-paginate';
 import { InlineKeyboardMarkup } from 'telegraf/typings/core/types/typegram';
+import { EqupmentItemService } from 'src/modules/items/service/equipment.item.service';
 
 @Scene(ENUM_SCENES_ID.SHOP_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class ShopScene {
     constructor(
-        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+        private readonly equipmentItemService: EqupmentItemService
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {
@@ -30,9 +36,16 @@ export class ShopScene {
                 {
                     caption:
                         'Добро пожаловать в магазин! Происходит загрузка предложений...',
-                    ...Markup.keyboard([[BACK_BUTTON]]).resize(),
+                    ...Markup.keyboard([
+                        [CREATE_OFFER_BUTTON, DELETE_OFFER_BUTTON],
+                        [BACK_BUTTON],
+                    ]).resize(),
                 }
             );
+            /**
+             *      Markup.button.callback('Создать предложение в магазине', 'create_offer'),
+        Markup.button.callback('Удалить предложение в магазине', 'delete_offer'),],
+             */
         } else {
             ctx.sendPhoto(
                 {
@@ -52,6 +65,45 @@ export class ShopScene {
                 }
             );
         }
+    }
+
+    @Hears(CREATE_OFFER_BUTTON)
+    async createOffer(@Ctx() ctx: BotContext) {
+        const categories = await this.equipmentItemService.findCategories();
+        const buttons = [];
+        for (let i = 0; i < categories.length; ++i) {
+            buttons.push([
+                Markup.button.callback(
+                    categories[i].name,
+                    `CATEGORY_ID:${categories[i].id}`
+                ),
+            ]);
+        }
+        await ctx.reply('Выберите категорию товара', {
+            ...Markup.inlineKeyboard(buttons),
+        });
+        // await ctx.scene.enter(ENUM_SCENES_ID.CREATE_OFFER_SCENE_ID);
+    }
+
+    @Action(/^(CATEGORY_ID.*)$/)
+    async category(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const categoryId = ctx.callbackQuery['data'].split(':')[1];
+        const categories =
+            await this.equipmentItemService.findCategoriesByRoot(categoryId);
+        const buttons = [];
+        for (let i = 0; i < categories.length; ++i) {
+            buttons.push([
+                Markup.button.callback(
+                    categories[i].name,
+                    `CATEGORY_ID:${categories[i].id}`
+                ),
+            ]);
+        }
+        await ctx.editMessageReplyMarkup({
+            inline_keyboard: buttons,
+        });
+        // await ctx.scene.enter(ENUM_SCENES_ID.CREATE_OFFER_SCENE_ID);
     }
 
     @Action(ENUM_ACTION_NAMES.BACK_TO_SHOPPING_DISTRICT_ACTION)

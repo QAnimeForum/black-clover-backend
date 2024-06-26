@@ -70,6 +70,7 @@ import { ShopEntity } from './entity/shop.entity';
         InventoryService,
         EqupmentItemService,
         MarketService,
+        ShopService,
     ],
 })
 export class ItemsModule {}

@@ -102,6 +102,8 @@ import {
     SearchOfferByNameScene,
 } from './scenes/organizations/shop/search-offer.by-name.scene';
 import { MarketService } from '../items/service/market.service';
+import { CreateEquipmentItemWizard } from './scenes/organizations/shop/create-equipment.item.wizard';
+import { CreateOfferWizard } from './scenes/organizations/shop/create-offer.wizard';
 @Module({
     imports: [
         ThrottlerModule.forRoot([
@@ -158,6 +160,7 @@ import { MarketService } from '../items/service/market.service';
         //Map
         MapWizard,
         //organizartions
+        CreateEquipmentItemWizard,
         OrganizationsScene,
         MagicParlamentScene,
         RequestToParlamentWizard,
@@ -178,6 +181,7 @@ import { MarketService } from '../items/service/market.service';
         GrimoireTowerScene,
         //items
         ShopScene,
+        CreateOfferWizard,
         BLackMarketScene,
         SearchOfferByNameScene,
         SearchOfferByCategoryScene,
