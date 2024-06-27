@@ -37,7 +37,7 @@ export class MyOffersScene {
         const names: string[] = [];
         for (const offer of offers) {
             names.push(
-                (await this.equpmentItemService.getItem(offer.item_id)).name
+                (await this.equpmentItemService.findItemById(offer.item_id)).name
             );
         }
         await ctx.replyWithHTML(

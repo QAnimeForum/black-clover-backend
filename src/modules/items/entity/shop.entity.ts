@@ -6,23 +6,24 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { EquipmentEntity } from './equipment.entity';
+import { EqupmentItemEntity } from './equpment.item.entity';
 
 @Entity('shop')
 export class ShopEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @OneToOne(() => EquipmentEntity)
+    @OneToOne(() => EqupmentItemEntity)
     @JoinColumn({
         name: 'item_id',
         referencedColumnName: 'id',
     })
-    item: EquipmentEntity;
+    item: EqupmentItemEntity;
     @Column({
         name: 'item_id',
         type: 'uuid',
     })
-    item_id: string;
+    itemId: string;
 
     @Column({
         name: 'is_active',

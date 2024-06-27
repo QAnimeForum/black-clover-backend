@@ -30,7 +30,6 @@ export class CreateOfferWizard {
         this.scene = new Scenes.WizardScene<BotContext>(
             ENUM_SCENES_ID.CREATE_OFFER_SCENE_ID,
             this.step1(),
-            this.step2()
         );
         this.scene.enter(this.start());
         this.stage.register(this.scene);
@@ -38,19 +37,7 @@ export class CreateOfferWizard {
     }
     start() {
         return async (ctx: BotContext) => {
-            const categories = await this.equipmentItemService.findCategories();
-            const buttons = [];
-            for (let i = 0; i < categories.length; ++i) {
-                buttons.push([
-                    Markup.button.callback(
-                        categories[i].name,
-                        `CATEGORY_ID:${categories[i].id}`
-                    ),
-                ]);
-            }
-            await ctx.reply('Выберите категорию товара', {
-                ...Markup.inlineKeyboard(buttons),
-            });
+            await ctx.reply('Введите цену предмета');
         };
     }
     step1() {
@@ -61,20 +48,9 @@ export class CreateOfferWizard {
             ctx.scene.enter(ENUM_SCENES_ID.SHOP_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
-            await ctx.reply('Введите цену предмета');
-            ctx.scene.enter(ENUM_SCENES_ID.SHOP_SCENE_ID);
-        });
-        return composer;
-    }
-    step2() {
-        const composer = new Composer<BotContext>();
-        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
-        composer.command('cancel', async (ctx) => {
-            await ctx.reply('Цели не изменены.');
-            ctx.scene.enter(ENUM_SCENES_ID.SHOP_SCENE_ID);
-        });
-        composer.on(message('text'), async (ctx) => {
-            //await this.shopService.create();
+            const price = Number.parseInt(ctx.message.text);
+            const itemId = ctx.session.itemId;
+            const result = await this.shopService.create(itemId, price);
             ctx.scene.enter(ENUM_SCENES_ID.SHOP_SCENE_ID);
         });
         return composer;

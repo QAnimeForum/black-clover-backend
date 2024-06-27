@@ -8,6 +8,7 @@ import { DataSource, Repository } from 'typeorm';
 import { EqupmentItemEntity } from '../entity/equpment.item.entity';
 import { MarketEntity } from '../entity/market.entity';
 import { ShopEntity } from '../entity/shop.entity';
+import { FilterOperator, paginate, PaginateQuery } from 'nestjs-paginate';
 
 @Injectable()
 export class ShopService {
@@ -24,12 +25,12 @@ export class ShopService {
         private readonly walletService: WalletService
     ) {}
 
-    create(itemId: string, price: number): void {
+    create(itemId: string, price: number) {
         const newOffer = new ShopEntity();
-        newOffer.item_id = itemId;
+        newOffer.itemId = itemId;
         newOffer.price = price;
         newOffer.isActvie = true;
-        this.shopRepository.save(newOffer);
+        return this.shopRepository.save(newOffer);
     }
 
     async checkMoneyPrice(offerId: string): Promise<number> {
@@ -43,15 +44,11 @@ export class ShopService {
         }
     }
 
-    async getItemId(offerId: string): Promise<string> {
-        const result: ShopEntity[] = await this.shopRepository.findBy({
-            id: offerId,
+    async hasItemOffer(itemId: string): Promise<boolean> {
+        const shopEntity = await this.shopRepository.findOneBy({
+            itemId: itemId,
         });
-        if (result.length) {
-            return result[0].item_id;
-        } else {
-            throw Error('No offer with such id');
-        }
+        return shopEntity !== null;
     }
 
     async checkOfferActive(offerId: string): Promise<boolean> {
@@ -75,7 +72,7 @@ export class ShopService {
             throw Error('No offer with such id');
         }
     }
-/*
+    /*
     async buyOfferWithMoney(
         offerId: string,
         buyerId: number
@@ -96,7 +93,28 @@ export class ShopService {
             resolve(false);
         });
     }*/
-    async getOffers(): Promise<ShopEntity[]> {
-        return await this.shopRepository.findBy({ isActvie: true });
+    async findAllOffers(query: PaginateQuery) {
+        return paginate(query, this.shopRepository, {
+            sortableColumns: ['id'],
+            nullSort: 'last',
+            defaultSortBy: [['id', 'DESC']],
+            searchableColumns: ['id'],
+            select: [
+                'id',
+                'is_active',
+                'item',
+                'item.name',
+                'item.image',
+                'item.bodyPart',
+                'item.description',
+            ],
+            defaultLimit: 5,
+            filterableColumns: {
+                id: [FilterOperator.EQ],
+                isActive: [FilterOperator.EQ],
+            },
+            relations: ['item'],
+        });
+        // return await this.shopRepository.findBy({ isActvie: true });
     }
 }

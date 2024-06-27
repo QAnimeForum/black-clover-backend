@@ -136,7 +136,7 @@ export class InventoryService {
                 bodyPart
             ) {
                 result.push(
-                    await this.equipmentItemService.getItem(inventory.id)
+                    await this.equipmentItemService.findItemById(inventory.id)
                 );
             }
         }

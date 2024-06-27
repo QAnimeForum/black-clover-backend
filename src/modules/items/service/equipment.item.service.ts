@@ -13,7 +13,7 @@ export class EqupmentItemService {
         @InjectRepository(ItemCategoryEntity)
         private readonly categoryRepository: TreeRepository<ItemCategoryEntity>,
         @InjectRepository(EqupmentItemEntity)
-        private readonly equpmentItemRepository: Repository<EqupmentItemEntity>
+        private readonly equipmentItemRepository: Repository<EqupmentItemEntity>
     ) {}
 
     /* public async findAllItemCategories(query: PaginateQuery) {
@@ -32,7 +32,7 @@ export class EqupmentItemService {
         const item = await this.categoryRepository.findOneBy({
             id: categoryId,
         });
-        return this.categoryRepository.findDescendants(item);
+        return this.categoryRepository.findDescendantsTree(item);
     }
     create(
         itemName: string,
@@ -70,10 +70,10 @@ export class EqupmentItemService {
         newItem.evasion = 0;
         newItem.speed = 0;
         newItem.jump = 0;
-        this.equpmentItemRepository.save(newItem);
+        this.equipmentItemRepository.save(newItem);
     }
 
-    async getItem(itemId: string | null): Promise<EqupmentItemEntity> {
+    async findItemById(itemId: string | null): Promise<EqupmentItemEntity> {
         if (itemId === null) {
             const newItem = new EqupmentItemEntity();
             newItem.name = 'Нет';
@@ -105,18 +105,34 @@ export class EqupmentItemService {
             newItem.jump = 0;
             return newItem;
         }
-        const res: EqupmentItemEntity[] =
-            await this.equpmentItemRepository.findBy({ id: itemId });
-        if (res.length) {
-            return res[0];
+        const res: EqupmentItemEntity =
+            await this.equipmentItemRepository.findOne({
+                where: { id: itemId },
+                relations: ['category'],
+            });
+        if (res) {
+            return res;
         } else {
             throw Error('No item with such id' + itemId);
         }
     }
 
+    async findAllEquipmentItems(query: PaginateQuery) {
+        return paginate(query, this.equipmentItemRepository, {
+            sortableColumns: ['id', 'name', 'bodyPart'],
+            nullSort: 'last',
+            defaultSortBy: [['name', 'DESC']],
+            searchableColumns: ['name', 'bodyPart'],
+            select: ['id', 'name', 'bodyPart', 'category', 'categoryId'],
+            filterableColumns: {
+                bodyPart: true,
+                categoryId: true,
+            },
+        });
+    }
     async getIdWithName(itemName: string): Promise<string | null> {
         const res: EqupmentItemEntity[] =
-            await this.equpmentItemRepository.findBy({ name: itemName });
+            await this.equipmentItemRepository.findBy({ name: itemName });
         if (res.length) {
             return res[0].id;
         } else {
@@ -126,7 +142,7 @@ export class EqupmentItemService {
 
     async getItemSlot(itemId: string): Promise<ENUM_BODY_PART_ENUM> {
         const res: EqupmentItemEntity[] =
-            await this.equpmentItemRepository.findBy({ id: itemId });
+            await this.equipmentItemRepository.findBy({ id: itemId });
         if (res.length) {
             return res[0].bodyPart;
         } else {
@@ -139,7 +155,7 @@ export class EqupmentItemService {
             return ENUM_ITEM_RARITY.COMMON;
         }
         const res: EqupmentItemEntity[] =
-            await this.equpmentItemRepository.findBy({ id: item_id });
+            await this.equipmentItemRepository.findBy({ id: item_id });
         if (res.length) {
             return res[0].rarity;
         } else {

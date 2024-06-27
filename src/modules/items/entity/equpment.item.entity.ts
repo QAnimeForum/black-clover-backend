@@ -41,7 +41,7 @@ export class EqupmentItemEntity {
         eager: true,
     })
     @JoinColumn({
-        name: 'caterogry_id',
+        name: 'category_id',
         referencedColumnName: 'id',
     })
     category: ItemCategoryEntity;
