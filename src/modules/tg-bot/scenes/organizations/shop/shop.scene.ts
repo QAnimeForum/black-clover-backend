@@ -270,6 +270,23 @@ export class ShopScene {
         await ctx.scene.enter(ENUM_SCENES_ID.SHOPPING_DISTRICT_SCENE_ID);
     }
 
+ /*   @Action(/^(PREV_ITEM.*)$/)
+    async prevItem(@Ctx() ctx: BotContext) {
+        await this.showOffer(ctx, offers_displayed, formState.num);
+    }
+
+    @Action(/^(NEXT_ITEM.*)$/)
+    async nextItem(@Ctx() ctx: BotContext) {
+        await this.showOffer(ctx, offers_displayed, formState.num);
+        if (formState.num + 1 > offers_displayed.length) {
+            return;
+        }
+
+        formState.num++;
+
+        this.showOffer(ctx, offers_displayed, formState.num);
+    }*/
+
     async showOffer(
         ctx: BotContext,
         offers: Paginated<ShopEntity>,

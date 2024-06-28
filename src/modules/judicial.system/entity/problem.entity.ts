@@ -57,14 +57,23 @@ export class ProblemEntity {
     })
     status: ENUM_PROBLEM_STATUS;
 
-    @ManyToOne(() => CourtWorkerEntity, (worker) => worker.problems, {
+    @ManyToOne(() => CharacterEntity, (worker) => worker.problems, {
         nullable: true,
     })
     @JoinColumn({
         name: 'court_worker_id',
         referencedColumnName: 'id',
     })
-    judge: CourtWorkerEntity;
+    judge: CharacterEntity;
+
+
+    @Column({
+        name: 'court_worker_id',
+        type: 'uuid',
+    })
+    judgeId: string;
+
+
     @Column({
         type: 'varchar',
     })

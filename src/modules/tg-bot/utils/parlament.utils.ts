@@ -8,6 +8,7 @@ import { Paginated } from 'nestjs-paginate';
 import { CourtWorkerEntity } from 'src/modules/judicial.system/entity/court.worker.entity';
 import { ENUM_ACTION_NAMES } from '../constants/action-names.constant';
 import { BotContext } from '../interfaces/bot.context';
+import { CharacterEntity } from 'src/modules/character/entity/character.entity';
 
 export const convertParlamentInfoToText = (
     numberOfAllCourtCases: number,
@@ -100,13 +101,14 @@ export const probmlemListButtons = (
 
 export const getProblemList = (
     problems: Paginated<ProblemEntity>,
-    worker: CourtWorkerEntity
+    character: CharacterEntity
 ): [string, InlineKeyboardButton[][]] => {
     const { data, meta } = problems;
     const { currentPage, totalPages, totalItems } = meta;
     const caption = `Судебные дела\n\n Общее количество дел: ${totalItems}`;
     const buttons: InlineKeyboardButton[][] = [];
     data.map((problem: ProblemEntity) => {
+        console.log(problem.judge.id, character.id);
         if (problem.judge == null) {
             buttons.push([
                 Markup.button.callback(
@@ -118,7 +120,7 @@ export const getProblemList = (
                     `${ENUM_ACTION_NAMES.ADD_PROBLEM_TO_WORK_ACTION}${ENUM_ACTION_NAMES.DELIMITER}${problem.id}`
                 ),
             ]);
-        } else if (problem.judge.id == worker.id) {
+        } else if (problem.judge.id == character.id) {
             buttons.push([
                 Markup.button.callback(
                     `Дело №${problem.displayId}. ${problem.content}`,
@@ -199,7 +201,7 @@ export const problemToText = (problem: ProblemEntity) => {
     let caption = `<strong>Дело № ${problem.displayId}</strong>\n`;
     caption += `<strong>Статус:</strong> ${convertStatusToText(problem.status)}\n`;
     caption += `<strong>Заявитель:</strong> ${problem.creator.background.name}\n`;
-    caption += `<strong>Судья:</strong> ${problem.judge ? problem.judge.character.background.name : 'пока не назначен'}\n`;
+    caption += `<strong>Судья:</strong> ${problem.judge ? problem.judge.background.name : 'пока не назначен'}\n`;
     caption += `<strong>Текст заявки</strong>\n${problem.content}\n`;
     caption += `<strong>Решение</strong>\n ${problem.submission ? problem.submission.content : 'пока не вынесено'}\n`;
     return caption;

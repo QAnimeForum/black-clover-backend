@@ -37,7 +37,7 @@ export class JudicialOfficerRemoveWizard {
     start() {
         return async (ctx: BotContext) => {
             await ctx.reply(
-                `🧟 Введи ID игрока, которого хотите удалить из башни гримуаров.`
+                `🧟 Введи ID игрока, которого хотите снять с должности магического парламента.`
             );
         };
     }
@@ -45,11 +45,12 @@ export class JudicialOfficerRemoveWizard {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Цели не изменены.');
-            ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
+            await ctx.reply('Операция отменена.');
+            ctx.scene.enter(
+                ENUM_SCENES_ID.ADMIN_MAGIC_PARLAMENT_SCENE_SCENE_ID
+            );
         });
         composer.on(message('text'), async (ctx) => {
-            const regex = /^[a-zA-Zа-яА_Я\-]{2,25}$/;
             const message = ctx.update?.message.text;
             const character =
                 await this.characterService.findCharacterByTgId(message);

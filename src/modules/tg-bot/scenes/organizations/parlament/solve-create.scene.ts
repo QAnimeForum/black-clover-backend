@@ -58,7 +58,6 @@ export class CreateSolveWizard {
             try {
                 const submission =
                     await this.submissionService.createSubmission(
-
                         ctx.session.problemId,
                         message
                     );
@@ -66,9 +65,7 @@ export class CreateSolveWizard {
                     LOGGER_INFO,
                     `🟢 Работник башни гримуаров успешно добавлен. * { id: ${message}}`
                 );
-                ctx.scene.enter(
-                    ENUM_SCENES_ID.ADMIN_MAGIC_PARLAMENT_SCENE_SCENE_ID
-                );
+                ctx.scene.enter(ENUM_SCENES_ID.MAGIC_PARLAMENT_SCENE_ID);
             } catch (err) {
                 await ctx.reply(
                     'не удалось добавить пользователя с таким id попробуйте ещё раз'

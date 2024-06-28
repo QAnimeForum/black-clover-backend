@@ -36,15 +36,15 @@ export class AdminMagicParlamentScene {
 
     @Hears(JUDICIAL_OFFICER_BUTTON)
     async workers(@Ctx() ctx: BotContext) {
-        const grimoireWorkers = await this.courtWorkerService.findAllWorkers({
+        const courtsWorkers = await this.courtWorkerService.findAllWorkers({
             path: '',
         });
-        let caption = '<strong>Сотрудники башни гримуаров</strong>\n';
-        grimoireWorkers.data.map((worker, index) => {
+        let caption = '<strong>Сотрудники магического парламента</strong>\n';
+        courtsWorkers.data.map((worker, index) => {
             caption += `${index + 1}) Имя: ${worker.character.background.name}, ID: <code>${worker.character.user.tgUserId}</code>\n`;
         });
 
-        if (grimoireWorkers.data.length == 0) {
+        if (courtsWorkers.data.length == 0) {
             caption +=
                 'В суде никто пока не работает, большое упущение!\nВы можете добавить новых работников\n';
         }
@@ -73,12 +73,12 @@ export class AdminMagicParlamentScene {
             }
         );
     }
+
     @Action(ENUM_ACTION_NAMES.ADD_JUDICIAL_OFFICER_ACTION)
     async addJudicialOfficer(@Ctx() ctx: BotContext) {
         await ctx.answerCbQuery();
         await ctx.scene.enter(ENUM_SCENES_ID.JUDICIAL_OFFICER_ADD_SCENE_ID);
     }
-
 
     @Action(ENUM_ACTION_NAMES.REMOVE_JUDICIAL_OFFICER_ACTION)
     async removeJudicialOfficer(@Ctx() ctx: BotContext) {

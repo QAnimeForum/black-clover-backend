@@ -51,25 +51,25 @@ export class CharacterNameEditWizard {
             ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
-            const regex = /^[a-zA-Zа-яА_Я\-]{2,25}$/;
+            /*  const regex = /^[a-zA-Zа-яА_Я\-]{2,25}$/;*/
             const message = ctx.update?.message.text;
-            if (!regex.test(message)) {
+            /*    if (!regex.test(message)) {
                 await ctx.reply(
                     'Введите имя состоящее из русских или английских букв (от 2-х до 25 букв)'
                 );
                 ctx.wizard.back();
                 ctx.wizard.selectStep(1);
-            } else {
-                await this.backgroundService.updateUserName({
-                    name: message,
-                    telegramId: ctx.update?.message.from.id.toString(),
-                });
-                this.logger.log(
-                    LOGGER_INFO,
-                    `🟢 Пользователь успешно изменил имя персонажа. * { name: ${ctx.update.message.from.first_name} id: ${ctx.update.message.from.id}}`
-                );
-                ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
-            }
+            } else {*/
+            await this.backgroundService.updateUserName({
+                name: message,
+                telegramId: ctx.update?.message.from.id.toString(),
+            });
+            this.logger.log(
+                LOGGER_INFO,
+                `🟢 Пользователь успешно изменил имя персонажа. * { name: ${ctx.update.message.from.first_name} id: ${ctx.update.message.from.id}}`
+            );
+            ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
+            //   }
         });
         return composer;
     }

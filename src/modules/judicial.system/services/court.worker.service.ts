@@ -47,15 +47,12 @@ export class CourtWorkerService {
         return worker;
     }
     public async addJudgeToProblem(characterId: string, problemId: string) {
-        const worker = await this.courtWorkerRepository.findOneBy({
-            characterId: characterId,
-        });
 
         return await this.connection
             .createQueryBuilder()
             .update(ProblemEntity)
             .set({
-                judge: worker,
+                judgeId: characterId,
                 status: ENUM_PROBLEM_STATUS.UNDER_CONSIDERATION,
             })
             .where('id = :id', { id: problemId })

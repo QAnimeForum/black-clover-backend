@@ -20,6 +20,7 @@ import { join } from 'path';
 import fs from 'fs';
 import { KNIGHT_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
 import { WalletService } from 'src/modules/money/wallet.service';
+import { EquipmentEntity } from 'src/modules/items/entity/equipment.entity';
 @Injectable()
 export class CharacterService {
     constructor(
@@ -43,17 +44,23 @@ export class CharacterService {
         @InjectRepository(RaceEntity)
         private readonly raceRepository: Repository<RaceEntity>,
         @InjectRepository(UserEntity)
-        private readonly userRepository: Repository<UserEntity>
+        private readonly userRepository: Repository<UserEntity>,
+        @InjectRepository(EquipmentEntity)
+        private readonly equipmentRepository: Repository<EquipmentEntity>
     ) {}
     async createPlayableCharacter(
         transactionManager: EntityManager,
-        dto: CreatePlayableCharacterDto
+        dto: CreatePlayableCharacterDto,
+        userId: string
     ) {
         /**
          * Создание инвенторя
          */
         const inventory =
             await this.inventoryService.createInventory(transactionManager);
+    
+        const equpmentEntity = new EquipmentEntity();
+        await this.equipmentRepository.save(equpmentEntity);
         /**
          * Создание истории персонажа
          */
@@ -77,13 +84,16 @@ export class CharacterService {
 
         const character = new CharacterEntity();
         character.type = ENUM_CHARCACTER_TYPE.PC;
-        character.avatar = await this.copyDefaultAvatar();
+        character.avatar = KNIGHT_IMAGE_PATH;
+    //    character.avatar = await this.copyDefaultAvatar();
         character.backgroundId = background.id;
         character.characterCharacteristicsId = characteristics.id;
         //   character.grimoireId = grimoire.id;
         character.inventoryId = inventory.id;
+        character.equipment = equpmentEntity;
         character.walletId = wallet.id;
         character.prodigy = false;
+        character.userId = userId;
         await transactionManager.save(character);
         return character;
     }

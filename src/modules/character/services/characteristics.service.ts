@@ -8,6 +8,7 @@ import { AbilityEntity } from '../entity/ability.entity';
 import { ArmorClassEntity } from '../entity/armor.class.entity';
 import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
 import { InventoryService } from 'src/modules/items/service/inventory.service';
+import { EquipmentEntity } from 'src/modules/items/entity/equipment.entity';
 @Injectable()
 export class CharacteristicService {
     constructor(

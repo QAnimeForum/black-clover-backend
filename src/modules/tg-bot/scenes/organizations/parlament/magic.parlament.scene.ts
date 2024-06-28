@@ -189,10 +189,10 @@ export class MagicParlamentScene {
             limit: 5,
             page: 1,
             filter: {
-                judge: `$eq:${worker.id}`,
+                judge: `$eq:${character.id}`,
             },
         });
-        const [problemsText, buttons] = getProblemList(problems, worker);
+        const [problemsText, buttons] = getProblemList(problems, character);
         buttons.push([
             Markup.button.callback(
                 BACK_BUTTON,
@@ -221,7 +221,7 @@ export class MagicParlamentScene {
         const worker = await this.courtWorkerService.findWorkerById(
             character.id
         );
-        const [problemsText, buttons] = getProblemList(problems, worker);
+        const [problemsText, buttons] = getProblemList(problems, character);
         buttons.push([
             Markup.button.callback(
                 BACK_BUTTON,
@@ -281,7 +281,7 @@ export class MagicParlamentScene {
         const buttons = [];
 
         if (
-            problem?.judge?.character?.id == character.id &&
+            problem?.judge?.id == character.id &&
             problem.status == ENUM_PROBLEM_STATUS.UNDER_CONSIDERATION
         ) {
             ctx.session.problemId = problemId;
@@ -324,7 +324,7 @@ export class MagicParlamentScene {
                 judge: '$null',
             },
         });
-        const [problemsText, buttons] = getProblemList(problems, worker);
+        const [problemsText, buttons] = getProblemList(problems, character);
         buttons.push([
             Markup.button.callback(
                 BACK_BUTTON,
@@ -356,7 +356,7 @@ export class MagicParlamentScene {
                 judge: `$eq:${worker.id}`,
             },
         });
-        const [problemsText, buttons] = getProblemList(problems, worker);
+        const [problemsText, buttons] = getProblemList(problems, character);
         buttons.push([
             Markup.button.callback(
                 BACK_BUTTON,

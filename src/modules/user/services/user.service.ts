@@ -68,19 +68,22 @@ export class UserService {
 
     async createUser(dto: UserCreateDto) {
         let user: UserEntity;
-        this.connection.transaction(
+        await this.connection.transaction(
             'READ UNCOMMITTED',
             async (transactionManager) => {
+                user = new UserEntity();
+                user.tgUserId = dto.tgUserId;
+                /*   user.character = character;*/
+                user.type = ENUM_USER_PERMISSION_TYPE.OPRDINARY;
+                await transactionManager.save(user);
+                //  character.userId = user.id;
+
                 const character =
                     await this.characterService.createPlayableCharacter(
                         transactionManager,
-                        dto.character
+                        dto.character,
+                        user.id
                     );
-                user = new UserEntity();
-                user.tgUserId = dto.tgUserId;
-             //  user.characterId = character.id;
-                user.type = ENUM_USER_PERMISSION_TYPE.OPRDINARY;
-                await transactionManager.save(user);
             }
         );
         return user;

@@ -43,9 +43,7 @@ export class ProblemService {
                     background: true,
                 },
                 judge: {
-                    character: {
-                        background: true,
-                    },
+                    background: true,
                 },
                 submission: true,
             },

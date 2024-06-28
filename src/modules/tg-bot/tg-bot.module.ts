@@ -56,7 +56,7 @@ import {
     AdminScene,
     DeleteAdminWizard,
 } from './scenes/admin/admin.scene';
-import { AddMoneyWizard, AdminMoneyScene } from './scenes/admin/money.scene';
+import { AddMoneyWizard, AdminMoneyScene, FineMoneyWizard } from './scenes/admin/money.scene';
 import { AdminGrimoireScene } from './scenes/admin/admin.grimoire.scene';
 
 import { ShopScene } from './scenes/organizations/shop/shop.scene';
@@ -147,6 +147,7 @@ import { CreateOfferWizard } from './scenes/organizations/shop/create-offer.wiza
         DeleteAdminWizard,
         AnnouncementCreateWizard,
         AdminMoneyScene,
+        FineMoneyWizard,
         AddMoneyWizard,
         PlantCreateScene,
         AdminMagicParlamentScene,

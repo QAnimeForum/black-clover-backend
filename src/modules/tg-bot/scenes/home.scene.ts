@@ -34,7 +34,7 @@ export class HomeScene {
     ) {}
 
     @SceneEnter()
-    @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
+  /*  @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)*/
     async enter(@Ctx() ctx: BotContext, @Sender('id') tgId: string) {
         const chatType = ctx.chat.type;
         const isShowAdminButton = await this.userSerivce.isAdmin(tgId);

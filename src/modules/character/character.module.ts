@@ -30,6 +30,7 @@ import { ItemsModule } from '../items/items.module';
 import { MapModule } from '../map/map.module';
 import { RaceModule } from '../race/race.module';
 import { MoneyModule } from '../money/money.module';
+import { EquipmentEntity } from '../items/entity/equipment.entity';
 
 @Module({
     imports: [
@@ -57,6 +58,7 @@ import { MoneyModule } from '../money/money.module';
                 VehicleEntity,
                 WalletEntity,
                 UserEntity,
+                EquipmentEntity
             ],
             process.env.DATABASE_NAME
         ),

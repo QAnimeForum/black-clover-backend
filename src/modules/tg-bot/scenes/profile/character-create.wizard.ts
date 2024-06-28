@@ -57,7 +57,7 @@ export class CharacterCreateWizard {
             this.step3(),
             this.step4(),
             this.step5(),
-            this.step6()
+           // this.step6()
         );
 
         this.stage.register(this.scene);
@@ -251,6 +251,7 @@ export class CharacterCreateWizard {
                 },
                 role: ENUM_ROLE_TYPE.USER,
             });
+            console.log(user);
             this.logger.log(
                 LOGGER_INFO,
                 `🟢 Пользователь успешно создал персонажа. * { name: ${ctx.update.callback_query.from.first_name} id: ${ctx.update.callback_query.from.id}}`
@@ -267,15 +268,16 @@ export class CharacterCreateWizard {
             });
             const afterCreateMessage =
                 'Поздравляем, вы заполнили базувую информацию о себе. Но у вас всё ещё нет магического атрибута и гримуара. Для большинства активностей требуется гримуар. \n\nДля того, чтобы получить гиримуар, перейдите в главном меню во вкладку: `📕 Гримуар`.';
-            await ctx.reply(afterCreateMessage, {
+          /*  await ctx.reply(afterCreateMessage, {
                 ...Markup.keyboard([[GO_TO_HOME]]).resize(),
             });
-            ctx.wizard.next();
+            ctx.wizard.next();*/
+            await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
         });
         return composer;
     }
 
-    step6() {
+   /* step6() {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.hears(GO_TO_HOME, async (ctx) => {
@@ -283,5 +285,5 @@ export class CharacterCreateWizard {
         });
 
         return composer;
-    }
+    }*/
 }
