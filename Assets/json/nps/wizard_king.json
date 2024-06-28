@@ -1,0 +1,59 @@
+{
+  "name": "Джулиус Новахроно",
+  "type": "NPC",
+  "age": 44,
+  "race": "Человек",
+  "state": "Клевер",
+  "sex": "м",
+  "height": 155,
+  "magic": "магия весов",
+    "currentHealth": 500,
+    "maxHealth": 500,
+    "currentLevel": 1,
+    "experience": 0,
+    "maxLevel": 20,
+    "hunger": 0,
+    "sanity": 0,
+    "proficiency": {
+      "level": 1,
+      "extraBonus": 0
+    },
+    "armorClass": {
+      "base": 10,
+      "bonus": 0
+    },
+  "abilities": {
+    "strength": {
+      "score": 10,
+      "modifier": 0
+    },
+    "dexterity":  {
+      "score": 10,
+      "modifier": 0
+    },
+    "constitution":  {
+      "score": 10,
+      "modifier": 0
+    },
+
+    "intelligence":  {
+      "score": 10,
+      "modifier": 0
+    },
+    "wisdom":  {
+      "score": 10,
+      "modifier": 0
+    },
+    "charisma": {
+      "score": 10,
+      "modifier": 0
+    }
+  },
+  "cash": {
+    "copper": 4,
+    "silver": 12,
+    "eclevtrum": 59,
+    "gold": 50,
+    "platinum": 100
+  }
+}

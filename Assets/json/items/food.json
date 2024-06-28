@@ -1,0 +1,663 @@
+{
+  "foodComonentTypes": [
+    {
+     "name": "Специя"
+    },
+    {
+      "name": "Фрукт"
+    },
+    {
+      "name": "Трава"
+    },
+    {
+      "name": "Овощ"
+    },
+    {
+      "name": "Мясо"
+    },
+    {
+      "name": "Морепродукты"
+    }
+  ],
+  "foodCoomponent": {
+    "spices": [
+      {
+        "name": "Чёрный перец",
+        "flavors": ["острый"],
+        "textures": [],
+        "colors": ["красный"]
+      },
+      {
+        "name": "Порошок Чили",
+        "flavors": ["острый"],
+        "textures": [],
+        "colors": ["красный"]
+      },
+      {
+        "name": "Корица",
+        "flavors": ["сладкий"],
+        "textures": [],
+        "colors": ["коричневый"]
+      },
+      {
+        "name": "Гвоздика",
+        "flavors": ["сладкий"],
+        "textures": [],
+        "colors": ["коричневый"]
+      },
+      {
+        "name": "Кориандр",
+        "flavors": ["горький"],
+        "textures": [],
+        "colors": ["коричневый"]
+      },
+      {
+        "name": "Кумин",
+        "flavors": ["горький"],
+        "textures": [],
+        "colors": ["коричневый"]
+      },
+      {
+        "name": "Фенхель",
+        "flavors": ["сладкий"],
+        "textures": [],
+        "colors": ["зелёный"]
+      },
+      {
+        "name": "Имбирь",
+        "flavors": ["сладкий"],
+        "textures": [],
+        "colors": ["коричневый"]
+      },
+      {
+        "name": "Горчица",
+        "flavors": ["горький"],
+        "textures": [],
+        "colors": ["жёлтый"]
+      },
+      {
+        "name": "Мускатный орех",
+        "flavors": ["сладкий"],
+        "textures": [],
+        "colors": ["коричневый"]
+      },
+      {
+        "name": "Паприка",
+        "flavors": ["сладкий"],
+        "textures": [],
+        "colors": ["красный"]
+      },
+      {
+        "name": "Соль",
+        "flavors": ["солёный"],
+        "textures": [],
+        "colors": ["белый"]
+      },
+      {
+        "name": "Куркума",
+        "flavors": ["горький"],
+        "textures": [],
+        "colors": ["жёлтый"]
+      },
+      {
+        "name": "Белый перец",
+        "flavors": ["острый"],
+        "textures": [],
+        "colors": ["белый"]
+      }
+    ],
+    "fruits": [
+        {
+        "name": "Яблоко",
+        "flavors": ["сладкий"],
+        "textures": ["хрустящий"],
+        "colors": ["красный", "зелёный", "жёлтый"]
+      },
+      {
+        "name": "Банан",
+        "flavors": ["сладкий"],
+        "textures": ["мягкий"],
+        "colors": ["жёлтый"]
+      },
+      {
+        "name": "Ежевика",
+        "flavors": ["сладкий"],
+        "textures": ["мягкий"],
+        "colors": ["синий"]
+      },
+      {
+        "name": "Черника",
+        "flavors": ["сладкий"],
+        "textures": ["мягкий"],
+        "colors": ["синий"]
+      },
+      {
+        "name": "Драконий фрукт",
+        "flavors": ["мягкий"],
+        "textures": ["хрустящий"],
+        "colors": ["розовый", "жёлтый"]
+      },
+      {
+        "name": "Виноград",
+        "flavors": ["сладкий"],
+        "textures": ["мягкий"],
+        "colors": ["зелёный", "фиолетовый"]
+      },
+      {
+        "name": "Грейпфрут",
+        "flavors": ["терпкий"],
+        "textures": ["хрустящий"],
+        "colors": ["розовый"]
+      },
+      {
+        "name": "Гуава",
+        "flavors": ["терпкий"],
+        "textures": ["хрустящий"],
+        "colors": ["зелёный"]
+      },
+      {
+        "name": "Киви",
+        "flavors": ["терпкий"],
+        "textures": ["мягкий"],
+        "colors": ["коричневый"]
+      },
+      {
+        "name": "Лимон",
+        "flavors": ["кислый"],
+        "textures": ["хрустящий"],
+        "colors": ["жёлтый"]
+      },
+      {
+        "name": "Лайм",
+        "flavors": ["терпкий"],
+        "textures": ["хрустящий"],
+        "colors": ["зелёный"]
+      },
+      {
+        "name": "Личи",
+        "flavors": ["сладкий"],
+        "textures": ["мягкий"],
+        "colors": ["красный"]
+      },
+      {
+        "name": "Манго",
+        "flavors": ["сладкий"],
+        "textures": ["мягкий"],
+        "colors": ["оранжевый"]
+      },
+      {
+        "name": "Апельсин",
+        "flavors": ["терпкий"],
+        "textures": ["хрустящий"],
+        "colors": ["оранжевый"]
+      },
+      {
+        "name": "Папая",
+        "flavors": ["сладкий"],
+        "textures": ["мягкий"],
+        "colors": ["оранжевый"]
+      },
+      {
+        "name": "Ананас",
+        "flavors": ["сладкий"],
+        "textures": ["хрустящий"],
+        "colors": ["коричневый", "жёлтый"]
+      },
+      {
+        "name": "Малина",
+        "flavors": ["сладкий"],
+        "textures": ["мягкий"],
+        "colors": ["жёлтый"]
+      },
+      {
+        "name": "Клубника",
+        "flavors": ["сладкий"],
+        "textures": ["мягкий"],
+        "colors": ["красный"]
+      },
+      {
+        "name": "Арбуз",
+        "flavors": ["сладкий"],
+        "textures": ["хрустящий"],
+        "colors": ["зелёный", "красный"]
+      }
+    ],
+    "herbs": [
+      {
+        "name": "Базилик",
+        "flavors": [""],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Лавровый лист",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Лук",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Кинза",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Кориандр",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Укроп",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Фенхель",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Базилик святой",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Лаванда",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Мелиса",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Цимбопогон",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Майоран",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Мята",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Орегано",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Петрушка",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Розмарин",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Шалфей",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Эстрагон",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Тимьян",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      }
+    ],
+    "vegitables": [
+      {
+        "name": "Артишок",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Спаржа",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Свёкла",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Болгарский перец",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Броколли",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Цветная капуста",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Морковь",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Цветная копуста",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Сельдерей",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Огурец",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Баклажан",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Капуста",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Лук",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Картофель",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },  {
+        "name": "Редис",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Шпинат",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "сладкий Картофель",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Помидор",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Цукини",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      }
+    ],
+    "meats": [
+      {
+        "name": "Говядина",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Курица",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Утка",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Гусь",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Лось",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Баранина",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Фазан",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Свинина",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Перепёлка",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Кролик",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Индейка",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Оленина",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      }
+    ],
+    "seafood": [
+      {
+        "name": "Анчоусы",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Сом",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Моллюски",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Треска",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Краб",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Палтус",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Лобстер",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Мидии",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Осьминог",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Устрицы",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Окунь",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Лосось",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Сардины",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Гребешки",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },  {
+        "name": "Креветки",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Кальмар",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      },
+      {
+        "name": "Тунец",
+        "flavors": [],
+        "textures": [],
+        "colors": []
+      }
+    ]
+  },
+  "drinkTypes": [
+    {
+      "name": "Эль"
+    },
+    {
+      "name": "Пиво"
+    },
+    {
+      "name": "Лагер"
+    },
+    {
+      "name": "Сидр"
+    },
+    {
+      "name": "Вино"
+    },
+    {
+      "name": "Виски"
+    },
+    {
+      "name": "Бренди"
+    },
+    {
+      "name": "Бурбон"
+    },
+    {
+      "name": "Джин"
+    }  
+  ]
+}

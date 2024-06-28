@@ -1,0 +1,9 @@
+{
+  "squads": [
+   {
+    "name" : "Багровый лев",
+    "description": "Бегает",
+    "image": "/map/clover/clover_kindom.webp"
+   }
+  ]
+}

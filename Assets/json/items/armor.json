@@ -1,0 +1,18 @@
+{
+  "armors": {
+    {
+      "name": "",
+      "armorType": "",
+      "cost": "",
+      "AC": { 
+        "base": 0,
+         "modifier": 0,
+          "bonus": 0 
+      },
+      "strengthPrequisite": 0,
+      "stealthDisadvantage": true,
+      "weight": ""
+    },
+  }
+
+}

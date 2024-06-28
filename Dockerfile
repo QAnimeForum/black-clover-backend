@@ -1,20 +1,22 @@
-# Base image
-FROM node:20
+FROM node:20.11.1-alpine
 
-# Create app directory
+RUN apk add --no-cache bash
+RUN npm i -g @nestjs/cli typescript ts-node
+
+COPY package*.json /tmp/app/
+RUN cd /tmp/app && yarn install
+
+COPY . /usr/src/app
+RUN cp -a /tmp/app/node_modules /usr/src/app
+COPY ./wait-for-it.sh /opt/wait-for-it.sh
+RUN chmod +x /opt/wait-for-it.sh
+COPY ./startup.relational.ci.sh /opt/startup.relational.ci.sh
+RUN chmod +x /opt/startup.relational.ci.sh
+RUN sed -i 's/\r//g' /opt/wait-for-it.sh
+RUN sed -i 's/\r//g' /opt/startup.relational.ci.sh
+
 WORKDIR /usr/src/app
+#RUN if [ ! -f .env ]; then cp env-example-relational .env; fi
+RUN yarn run build
 
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY package*.json ./
-
-# Install app dependencies
-RUN npm install
-
-# Bundle app source
-COPY . .
-
-# Creates a "dist" folder with the production build
-RUN npm run build
-
-# Start the server using the production build
-CMD [ "node", "dist/main.js" ]
+CMD ["/opt/startup.relational.ci.sh"]

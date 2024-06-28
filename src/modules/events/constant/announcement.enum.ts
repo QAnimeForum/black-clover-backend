@@ -1,0 +1,5 @@
+export enum ENUM_ANNOUNCEMENT_TYPE {
+    DRAFT,
+    POSTPONED,
+    PUBLISHED,
+}
