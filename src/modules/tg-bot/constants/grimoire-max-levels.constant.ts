@@ -1,0 +1,25 @@
+export const MAX_LEVEL_CREATION_SPELLS = 5;
+export const MAX_COUNT_CREATION_SPELLS = 5;
+
+export const MAX_LEVEL_HEALING_SPELLS = 4;
+export const MAX_COUNT_HEALING_SPELLS = 4;
+
+
+export const MAX_LEVEL_CURSES_SPELLS = 6;
+export const MAX_COUNT_CURSES_SPELLS = 6;
+
+export const MAX_LEVEL_FORBIDDEN_SPELLS = 3;
+export const MAX_COUNT_FORBIDDEN_SPELLS = 3;
+
+
+export const MAX_LEVEL_REINFORCEMENT_SPELLS = 4;
+export const MAX_COUNT_REINFORCEMENT_SPELLS = 4;
+
+export const MAX_LEVEL_RESTRAINING_SPELLS = 1;
+export const MAX_COUNT_RESTRAINING_SPELLS = 1;
+
+export const MAX_LEVEL_SEAL_SPELLS = 4;
+export const MAX_COUNT_SEAL_SPELLS = 4;
+
+export const MAX_LEVEL_TRAP_SPELLS = 5;
+export const MAX_COUNT_TRAP_SPELLS = 5;

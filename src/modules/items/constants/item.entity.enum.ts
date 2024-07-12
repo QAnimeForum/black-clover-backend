@@ -1,0 +1,7 @@
+export enum ENUM_ITEM_RARITY {
+    COMMON = 'COMMON',
+    UNCOMMON = 'UNCOMMON',
+    RARE = 'RARE',
+    LEGENDARY = 'LEGENDARY',
+    UNIQUE = 'UNIQUE',
+}
