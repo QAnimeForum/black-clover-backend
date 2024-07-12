@@ -1,4 +1,5 @@
 import { Inject, UseFilters } from '@nestjs/common';
+import { maxLength } from 'class-validator';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import {
     Action,
@@ -15,6 +16,7 @@ import {
     ADD_QUOTES_BUTTON,
     BACK_BUTTON,
     EDIT_APPEARANCE_BUTTON,
+    EDIT_AVATAR_BUTTON,
     EDIT_BACKGROUND_BUTTON,
     EDIT_CHRACTER_TRAITS_BUTTON,
     EDIT_GOALS_BUTTON,
@@ -200,7 +202,12 @@ export class BackgroundScene {
         const username = sender.username;
         const background =
             await this.characterService.findBackgroundByTgId(senderId);
-        const history = `<strong>Предыстория пероснажа</strong>\n${background.history}\n`;
+        const MAX_MESSAGE_LENGTH = 1000;
+
+        let history = `<strong>Предыстория пероснажа</strong>\n`;
+        let start = 1;
+        let end = MAX_MESSAGE_LENGTH;
+        history += background.history.slice(start, end);
         await ctx.sendPhoto(
             {
                 source: KNIGHT_IMAGE_PATH,
@@ -218,6 +225,12 @@ export class BackgroundScene {
                 ]),
             }
         );
+        while (end <= background.history.length) {
+            start = end + 1;
+            end = end + MAX_MESSAGE_LENGTH;
+            const caption = background.history.slice(start, end);
+            await ctx.replyWithHTML(caption);
+        }
     }
 
     @Action(ENUM_ACTION_NAMES.SHOW_HOBBIES_ACTION)
@@ -446,6 +459,7 @@ export class BackgroundScene {
             ...Markup.inlineKeyboard(backgroundEditButtons()),
         });
     }
+
     @Action(EDIT_NAME_BUTTON)
     async editName(@Context() ctx: BotContext) {
         await ctx.answerCbQuery();
@@ -454,11 +468,18 @@ export class BackgroundScene {
 
     @Action(EDIT_HISTORY_BUTTON)
     async editHistory(@Context() ctx: BotContext) {
+        await ctx.answerCbQuery();
         await ctx.scene.enter(ENUM_SCENES_ID.EDIT_CHARACTER_HISTORY_SCENE_ID);
     }
 
-    @Action(EDIT_HOBBIES_BUTTON)
+    @Action(EDIT_AVATAR_BUTTON)
     async editAvatar(@Context() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        await ctx.reply('Вы пока не можете изменить фотографию');
+    }
+    @Action(EDIT_HOBBIES_BUTTON)
+    async editHobbies(@Context() ctx: BotContext) {
+        await ctx.answerCbQuery();
         await ctx.scene.enter(ENUM_SCENES_ID.EDIT_HOBBIES_SCENE_ID);
     }
 

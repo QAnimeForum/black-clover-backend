@@ -1,12 +1,4 @@
-import {
-    Action,
-    Ctx,
-    Hears,
-    On,
-    Scene,
-    SceneEnter,
-    Sender,
-} from 'nestjs-telegraf';
+import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { Inject, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 
@@ -159,6 +151,12 @@ export class ArmedForcesScene {
         const character = await this.characterService.getCharacterIdByTgId(
             sender.id
         );
+        if (sender.grimoireId == null) {
+            await ctx.reply(
+                'У вас нет гримуара! Вы не можете вступить в армию вашего королевства.'
+            );
+            return;
+        }
         const isUserSquadMember =
             await this.squadsService.isUserSquadMember(character);
         if (isUserSquadMember) {

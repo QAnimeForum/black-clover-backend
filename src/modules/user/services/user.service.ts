@@ -67,6 +67,7 @@ export class UserService {
     }
 
     async createUser(dto: UserCreateDto) {
+        console.log(dto);
         let user: UserEntity;
         await this.connection.transaction(
             'READ UNCOMMITTED',

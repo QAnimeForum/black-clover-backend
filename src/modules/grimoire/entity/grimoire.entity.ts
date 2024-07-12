@@ -6,11 +6,13 @@ import {
     OneToOne,
     CreateDateColumn,
     UpdateDateColumn,
+    JoinColumn,
 } from 'typeorm';
 import { SpellEntity } from './spell.entity';
 import { CharacterEntity } from '../../character/entity/character.entity';
 import { Expose } from 'class-transformer';
 import { ENUM_GRIMOIRE_STATUS } from '../constants/grimoire.enum.constant';
+import { ManaZoneEntity } from './mana.zone.entity';
 
 @Entity('grimoire')
 export class GrimoireEntity {
@@ -28,7 +30,6 @@ export class GrimoireEntity {
         default: ENUM_GRIMOIRE_STATUS.NOT_APPROVED,
     })
     status: ENUM_GRIMOIRE_STATUS;
-
 
     @Column({
         type: 'varchar',
@@ -51,6 +52,66 @@ export class GrimoireEntity {
 
     @OneToOne(() => CharacterEntity)
     character: CharacterEntity;
+
+    @Column({
+        name: 'elemental_level',
+        type: 'int',
+        default: 1,
+    })
+    elementalLevel: number;
+
+    @Column({
+        name: 'reinforcement_level',
+        type: 'int',
+        default: 1,
+    })
+    reinforcementLevel: number;
+
+    @Column({
+        name: 'restraining_level',
+        type: 'int',
+        default: 1,
+    })
+    restrainingLevel: number;
+    @Column({
+        name: 'seal_level',
+        type: 'int',
+        default: 0,
+    })
+    sealLevel: number;
+
+    @Column({
+        name: 'healing_level',
+        type: 'int',
+        default: 0,
+    })
+    healingLevel: number;
+
+    @Column({
+        name: 'trap_level',
+        type: 'int',
+        default: 0,
+    })
+    trapLevel: number;
+
+    @Column({
+        name: 'forbidden',
+        type: 'int',
+        default: 0,
+    })
+    forbiddenLevel: number;
+    @Column({
+        name: 'curse_level',
+        type: 'int',
+        default: 0,
+    })
+    curseLevel: number;
+    @OneToOne(() => ManaZoneEntity)
+    @JoinColumn({
+        name: 'mana_zone_id',
+        referencedColumnName: 'id',
+    })
+    manaZone: ManaZoneEntity;
 
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;

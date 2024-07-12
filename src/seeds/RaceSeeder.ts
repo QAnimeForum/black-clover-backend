@@ -13,7 +13,7 @@ export default class RaceSeeder implements Seeder {
                 description: race.description,
                 bonusHp: Number.parseInt(race.bonus.hp),
                 bonusMagicPower: Number.parseInt(race.bonus.magicPower),
-                naturalMana: race.bonus.naturalMana,
+            //    naturalMana: race.bonus.naturalMana,
               // increasedEndurance: race.bonus.increasedEndurance,
             });
         }

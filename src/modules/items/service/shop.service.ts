@@ -24,7 +24,7 @@ export class ShopService {
         @Inject(WalletService)
         private readonly walletService: WalletService
     ) {}
-
+ 
     create(itemId: string, price: number) {
         const newOffer = new ShopEntity();
         newOffer.itemId = itemId;

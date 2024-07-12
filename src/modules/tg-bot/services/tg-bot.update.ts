@@ -14,7 +14,6 @@ import { SAMPLE_SPELL_URL } from '../constants/images';
 import { ENUM_SCENES_ID } from '../constants/scenes.id.enum';
 import { InlineQueryResult } from 'telegraf/typings/core/types/typegram';
 import { SEARCH_OFFERS_BY_NAME_BUTTON } from '../constants/button-names.constant';
-import { MarketEntity } from 'src/modules/items/entity/market.entity';
 
 @Injectable()
 @Update()

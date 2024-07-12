@@ -51,7 +51,6 @@ export class ShopScene {
                         ...Markup.keyboard([
                             [SHOP_STATISTICS_BUTTON, GOODS_BUTTON],
                             [CREATE_ITEM_BUTTON, OFFERS_BUTTON],
-                            //   [CREATE_OFFER_BUTTON, DELETE_OFFER_BUTTON],
                             [BACK_BUTTON],
                         ]).resize(),
                     }
@@ -88,10 +87,12 @@ export class ShopScene {
 
     @Hears(OFFERS_BUTTON)
     async offers(@Ctx() ctx: BotContext) {
-        const offers = await this.shopService.findAllOffers({
-            path: '',
-        });
-        await this.showOffer(ctx, offers, 1);
+        const offers =
+            await this.equipmentItemService.findAllEquipmentItemsNotOnShop({
+                path: '',
+            });
+        console.log(offers);
+       /* await this.showOffer(ctx, offers, 1);*/
     }
     @Hears(GOODS_BUTTON)
     async goodsButton(@Ctx() ctx: BotContext) {
@@ -146,7 +147,6 @@ export class ShopScene {
                 await this.equipmentItemService.findCategoriesByRoot(
                     categoryId
                 );
-            console.log(categories);
             const children = categories.children;
             const buttons = [];
             if (children.length > 0) {
@@ -270,7 +270,7 @@ export class ShopScene {
         await ctx.scene.enter(ENUM_SCENES_ID.SHOPPING_DISTRICT_SCENE_ID);
     }
 
- /*   @Action(/^(PREV_ITEM.*)$/)
+    /*   @Action(/^(PREV_ITEM.*)$/)
     async prevItem(@Ctx() ctx: BotContext) {
         await this.showOffer(ctx, offers_displayed, formState.num);
     }
@@ -294,6 +294,24 @@ export class ShopScene {
     ) {
         const data = offers.data;
         const { totalItems } = offers.meta;
+        if (totalItems == 0) {
+            await ctx.replyWithPhoto(
+                {
+                    source: KNIGHT_IMAGE_PATH,
+                },
+                {
+                    caption: 'Предложений пока нет.',
+                    ...Markup.inlineKeyboard([
+                        [
+                            Markup.button.callback(
+                                CREATE_OFFER_BUTTON,
+                                CREATE_OFFER_BUTTON
+                            ),
+                        ],
+                    ]),
+                }
+            );
+        }
         if (offerIndex - 1 < 0 || offerIndex - 1 >= totalItems) {
             return;
         }

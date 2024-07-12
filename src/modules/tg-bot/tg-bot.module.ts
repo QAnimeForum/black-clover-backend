@@ -30,8 +30,6 @@ import { BackgroundScene } from './scenes/profile/background/background.scene';
 import { CharacterHistoryEditWizard } from './scenes/profile/background/history-edit.wizard';
 import { CharacterNameEditDto } from '../character/dto/character.name-edit.dto';
 import { GrimoreScene } from './scenes/profile/grimoire/grimoire.scene';
-import { MagicNameEditWizard } from './scenes/profile/grimoire/magic-name.edit.scene';
-import { SpellCreateWizard } from './scenes/profile/grimoire/spell-create.wizard';
 import { CharacterCreateWizard } from './scenes/profile/character-create.wizard';
 import { InventoryScene } from './scenes/profile/inventory.scene';
 import { CharacterParamsScene } from './scenes/profile/params.scene';
@@ -56,7 +54,11 @@ import {
     AdminScene,
     DeleteAdminWizard,
 } from './scenes/admin/admin.scene';
-import { AddMoneyWizard, AdminMoneyScene, FineMoneyWizard } from './scenes/admin/money.scene';
+import {
+    AddMoneyWizard,
+    AdminMoneyScene,
+    FineMoneyWizard,
+} from './scenes/admin/money.scene';
 import { AdminGrimoireScene } from './scenes/admin/admin.grimoire.scene';
 
 import { ShopScene } from './scenes/organizations/shop/shop.scene';
@@ -77,7 +79,6 @@ import { SpellChangeStatusWizard } from './scenes/admin/spell-change-status.wiza
 import { PlantsModule } from '../plants/plants.module';
 import { PlantsService } from './scenes/admin/plants.scene';
 import { PlantCreateScene } from './scenes/admin/plant.create.scene';
-import { GrimoireTowerScene } from './scenes/organizations/grimoire.tower.scene';
 import { MagicParlamentScene } from './scenes/organizations/parlament/magic.parlament.scene';
 import { RequestToParlamentWizard } from './scenes/organizations/parlament/request.to.parlament.wizard';
 import { AdminMagicParlamentScene } from './scenes/admin/admin.magic.parlament.scene';
@@ -101,9 +102,17 @@ import {
     SearchOfferByCategoryScene,
     SearchOfferByNameScene,
 } from './scenes/organizations/shop/search-offer.by-name.scene';
-import { MarketService } from '../items/service/market.service';
 import { CreateEquipmentItemWizard } from './scenes/organizations/shop/create-equipment.item.wizard';
 import { CreateOfferWizard } from './scenes/organizations/shop/create-offer.wizard';
+import { GrimoireTowerScene } from './scenes/organizations/grmoires/grimoire.tower.scene';
+import { CreateRequestWizard } from './scenes/organizations/grmoires/create.request.wizard';
+import { GrimoireAcceptRequestWizard } from './scenes/admin/grimoire.accept.request.wizard';
+import { EditMagicNameWizard } from './scenes/profile/grimoire/magic-name.edit.scene';
+import { SpellCreateWizard } from './scenes/profile/grimoire/spell-create.wizard';
+import { DevilSpellCreateWizard } from './scenes/devils/devil.spell.create.wizard';
+import { SpellDamageEditWizard } from './scenes/profile/grimoire/spell-damage-edit.wizard';
+import { SpellRangeWizard } from './scenes/profile/grimoire/spell-range.wizard';
+import { SpellCastTimeEditWiazard } from './scenes/profile/grimoire/spell-cast-time.edit.wizard';
 @Module({
     imports: [
         ThrottlerModule.forRoot([
@@ -180,6 +189,8 @@ import { CreateOfferWizard } from './scenes/organizations/shop/create-offer.wiza
         ChangeRankScene,
         ShoppingDistrictScene,
         GrimoireTowerScene,
+        CreateRequestWizard,
+        GrimoireAcceptRequestWizard,
         //items
         ShopScene,
         CreateOfferWizard,
@@ -216,11 +227,15 @@ import { CreateOfferWizard } from './scenes/organizations/shop/create-offer.wiza
 
         GrimoreScene,
         SpellCreateWizard,
-        MagicNameEditWizard,
+        DevilSpellCreateWizard,
+        EditMagicNameWizard,
         GrmoireWorkerAddWizard,
         GrmoireWorkerRemoveWizard,
+        SpellCastTimeEditWiazard,
         SpellNameEditWizard,
         SpellDescriptionEditWizard,
+        SpellRangeWizard,
+        SpellDamageEditWizard,
         SpellTypeEditWizard,
         SpellCostEditWizard,
         SpellDurationEditWizard,

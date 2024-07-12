@@ -70,6 +70,7 @@ export class ProblemEntity {
     @Column({
         name: 'court_worker_id',
         type: 'uuid',
+        nullable: true,
     })
     judgeId: string;
 

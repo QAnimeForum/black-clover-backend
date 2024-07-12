@@ -93,7 +93,7 @@ export default registerAs(
         },
         throttle: {
             ttl: seconds('500'), // 0.5 secs
-            limit: 10, // max request per reset time
+            limit: 5, // max request per reset time
         },
     })
 );

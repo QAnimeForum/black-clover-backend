@@ -9,6 +9,7 @@ import {
     WizardStep,
     Command,
     Action,
+    Sender,
 } from 'nestjs-telegraf';
 import { ADMIN_IMAGE_PATH } from '../../constants/images';
 
@@ -22,6 +23,7 @@ import {
     ANNOUNCEMENTS_BUTTON,
     ARMED_FORCES_BUTTON,
     BACK_BUTTON,
+    CHARACTERS_BUTTON,
     CHRONICLE_BUTTON,
     GAMES_BUTTON,
     GRIMOIRES_BUTTON,
@@ -35,13 +37,27 @@ import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { AnnouncementService } from 'src/modules/events/services/announcement.service';
 import { SquadsService } from 'src/modules/squards/service/squads.service';
+import { CharacterService } from 'src/modules/character/services/character.service';
+import { CharacterEntity } from 'src/modules/character/entity/character.entity';
+import { Paginated } from 'nestjs-paginate';
+import { ProblemEntity } from 'src/modules/judicial.system/entity/problem.entity';
+import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
+import { ENUM_ACTION_NAMES } from '../../constants/action-names.constant';
+import { convertStatusToText } from '../../utils/parlament.utils';
+import { RaceService } from 'src/modules/race/race.service';
+import { CharacteristicService } from 'src/modules/character/services/characteristics.service';
+import { MapService } from 'src/modules/map/service/map.service';
 @Scene(ENUM_SCENES_ID.ADMIN_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class AdminScene {
     constructor(
         private readonly userService: UserService,
+        private readonly characterService: CharacterService,
         private readonly announcementService: AnnouncementService,
         private readonly armedForcesService: SquadsService,
+        private readonly raceService: RaceService,
+        private readonly stateService: MapService,
+        private readonly characteristicService: CharacteristicService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
@@ -57,13 +73,171 @@ export class AdminScene {
                     [PERMITIONS_BUTTON, GRIMOIRES_BUTTON, ITEMS_BUTTON],
                     [PLANTS_BUTTON, GAMES_BUTTON, MONEY_BUTTON],
                     [MAGIC_PARLAMENT_BUTTON, ARMED_FORCES_BUTTON],
-                    [ANNOUNCEMENTS_BUTTON, CHRONICLE_BUTTON],
+                    [CHARACTERS_BUTTON],
+                    //   [ANNOUNCEMENTS_BUTTON, CHRONICLE_BUTTON],
                     [BACK_BUTTON],
                 ]).resize(),
             }
         );
     }
 
+    @Hears(CHARACTERS_BUTTON)
+    async chracters(@Ctx() ctx: BotContext) {
+        const characters = await this.characterService.findAll({
+            path: '',
+            limit: 10,
+        });
+        const [caption, buttons] = charactersListButtons(characters);
+        await ctx.reply(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(buttons),
+        });
+    }
+
+    @Action(/^(CHARACTER_NEXT_PAGE.*)$/)
+    async nextPage(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const data = ctx.callbackQuery['data'].split(':');
+        const page = Number.parseInt(data[1]);
+        const characters = await this.characterService.findAll({
+            path: '',
+            limit: 10,
+            page: page,
+        });
+        const [caption, buttons] = charactersListButtons(characters);
+        await ctx.editMessageText(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(buttons),
+        });
+    }
+
+    @Action(/^(CHARACTER_PREVIOUS_PAGE.*)$/)
+    async previousPage(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
+
+        const characters = await this.characterService.findAll({
+            path: '',
+            limit: 10,
+            page: page,
+        });
+        const [caption, buttons] = charactersListButtons(characters);
+        await ctx.editMessageText(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(buttons),
+        });
+    }
+    @Action(/^CHARACTER:(.*)$/)
+    async characterInfo(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const characterId = await ctx.callbackQuery['data'].split(':')[1];
+        ctx.session.characterIdForChangeRaceAndState = characterId;
+        const character =
+            await this.characterService.findCharacterById(characterId);
+        let caption = 'Персонаж\n';
+        caption += `${character.background.name}\n${character.background.race.name}\n${character.background.state.name}\n`;
+        await ctx.reply(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard([
+                [
+                    Markup.button.callback(
+                        'Изменить расу',
+                        `${ENUM_ACTION_NAMES.CHANGE_RACE_ACTION}:${character.id}`
+                    ),
+                ],
+                [
+                    Markup.button.callback(
+                        'Изменить страну',
+                        `${ENUM_ACTION_NAMES.CHANGE_STATE_ACTION}:${character.id}`
+                    ),
+                ],
+            ]),
+        });
+    }
+    @Action(/^CHANGE_RACE_ACTION:(.*)$/)
+    async changeRace(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const character = await this.characterService.findCharacterById(
+            ctx.session.characterIdForChangeRaceAndState
+        );
+        const races = await this.raceService.findAll({
+            path: '',
+        });
+        const caption = 'Расы';
+        const buttons = [];
+        races.data.map((race) => {
+            buttons.push([
+                Markup.button.callback(race.name, `RACE_CHANGE_ID:${race.id}:`),
+            ]);
+        });
+        await ctx.reply(caption, {
+            ...Markup.inlineKeyboard(buttons),
+        });
+    }
+    @Action(/^RACE_CHANGE_ID:(.*)$/)
+    async changeRace1(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const race = await ctx.callbackQuery['data'].split(':')[1];
+        await this.characteristicService.changeRace({
+            characterId: ctx.session.characterIdForChangeRaceAndState,
+            raceId: race,
+        });
+        const character = await this.characterService.findCharacterById(
+            ctx.session.characterIdForChangeRaceAndState
+        );
+        ctx.session.characterIdForChangeRaceAndState = null;
+        let caption = 'Персонаж\n';
+        caption += `${character.background.name}\n${character.background.race.name}\n${character.background.state.name}\n`;
+
+        await ctx.reply(caption);
+    }
+
+    @Action(/^CHANGE_STATE_ACTION:(.*)$/)
+    async changeState(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const character = await this.characterService.findCharacterById(
+            ctx.session.characterIdForChangeRaceAndState
+        );
+        const races = await this.stateService.findAllStates({
+            path: '',
+        });
+        const caption = 'Страны';
+        const buttons = [];
+        races.data.map((race) => {
+            buttons.push([
+                Markup.button.callback(
+                    race.name,
+                    `STATE_CHANGE_ID:${race.id}:`
+                ),
+            ]);
+        });
+        await ctx.reply(caption, {
+            ...Markup.inlineKeyboard(buttons),
+        });
+    }
+    @Action(/^STATE_CHANGE_ID:(.*)$/)
+    async changeState1(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const state = await ctx.callbackQuery['data'].split(':')[1];
+        await this.characteristicService.changeState({
+            characterId: ctx.session.characterIdForChangeRaceAndState,
+            state: state,
+        });
+        const character = await this.characterService.findCharacterById(
+            ctx.session.characterIdForChangeRaceAndState
+        );
+        ctx.session.characterIdForChangeRaceAndState = null;
+        let caption = 'Персонаж\n';
+        caption += `${character.background.name}\n${character.background.race.name}\n${character.background.state.name}\n`;
+
+        await ctx.reply(caption);
+    }
+    @Action(ENUM_ACTION_NAMES.BACK_TO_CHARACTER)
+    async backToGrimoireTower(@Ctx() ctx: BotContext, @Sender() sender) {
+        /*   ctx.answerCbQuery();
+        await ctx.deleteMessage();
+        this.showEnterMessage(ctx, sender.id);*/
+    }
     @Hears(ARMED_FORCES_BUTTON)
     async armedForces(@Ctx() ctx: BotContext) {
         const armedForces = await this.armedForcesService.findAllArmedForces({
@@ -298,6 +472,71 @@ export class AddAdminWizard {
         }
     }
 }
+
+export const charactersListButtons = (
+    problems: Paginated<CharacterEntity>
+): [string, InlineKeyboardButton[][]] => {
+    const { data, meta } = problems;
+    const { currentPage, totalPages, totalItems } = meta;
+    let caption = `Судебные дела\n\n Общее количество дел: ${totalItems}`;
+    const buttons: InlineKeyboardButton[][] = [];
+    data.map((character, index) => {
+        caption += `${index + 1})${character.background.name} ${character.user.tgUserId} ${character?.grimoire?.magicName ?? ''}\n`;
+        buttons.push([
+            Markup.button.callback(
+                `${index + 1})${character.background.name} ${character.user.tgUserId} ${character?.grimoire?.magicName}\n`,
+                `${ENUM_ACTION_NAMES.CHARACTER_ACTION}${ENUM_ACTION_NAMES.DELIMITER}${character.id}${ENUM_ACTION_NAMES.DELIMITER}${ENUM_ACTION_NAMES.BACK_TO_CHARACTER}`
+            ),
+        ]);
+    });
+    if (totalPages == 0) {
+        buttons.push([
+            Markup.button.callback(`1 из 1`, ENUM_ACTION_NAMES.PAGE_ACTION),
+        ]);
+    } else if (currentPage == 1 && totalPages == 1) {
+        buttons.push([
+            Markup.button.callback(
+                `${currentPage} из ${totalPages}`,
+                ENUM_ACTION_NAMES.PAGE_ACTION
+            ),
+        ]);
+    } else if (currentPage == 1 && problems.meta.totalPages > 1) {
+        buttons.push([
+            Markup.button.callback(
+                `${currentPage} из ${totalPages}`,
+                ENUM_ACTION_NAMES.PAGE_ACTION
+            ),
+            Markup.button.callback(
+                `>>`,
+                `${ENUM_ACTION_NAMES.CHARACTER_NEXT_PAGE_ACTION}${ENUM_ACTION_NAMES.DELIMITER}${currentPage + 1}`
+            ),
+        ]);
+    } else if (currentPage == totalPages) {
+        buttons.push([
+            Markup.button.callback(
+                `<<`,
+                `${ENUM_ACTION_NAMES.CHARACTER_PREVIOUS_ACTION}${ENUM_ACTION_NAMES.DELIMITER}${currentPage - 1}`
+            ),
+            Markup.button.callback(
+                `${problems.meta.currentPage} из ${problems.meta.totalPages}`,
+                `PAGE`
+            ),
+        ]);
+    } else {
+        buttons.push([
+            Markup.button.callback(
+                `<<`,
+                `${ENUM_ACTION_NAMES.CHARACTER_PREVIOUS_ACTION}${ENUM_ACTION_NAMES.DELIMITER}${currentPage - 1}`
+            ),
+            Markup.button.callback(`${currentPage} из ${totalPages}`, `PAGE`),
+            Markup.button.callback(
+                `>>`,
+                `${ENUM_ACTION_NAMES.CHARACTER_NEXT_PAGE_ACTION}${ENUM_ACTION_NAMES.DELIMITER}${currentPage + 1}`
+            ),
+        ]);
+    }
+    return [caption, buttons];
+};
 
 @Wizard(ENUM_SCENES_ID.DELETE_ADMIN_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)

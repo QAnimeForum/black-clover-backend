@@ -231,11 +231,11 @@ export class WalletService {
     }
     async creeateWallet(transactionalEntityManager: EntityManager) {
         const wallet = new WalletEntity();
-        wallet.copper = 0;
-        wallet.silver = 0;
-        wallet.electrum = 0;
-        wallet.gold = 0;
-        wallet.platinum = 0;
+        wallet.copper = 1;
+        wallet.silver = 1;
+        wallet.electrum = 1;
+        wallet.gold = 1;
+        wallet.platinum = 1;
         wallet.useElectrum = false;
         wallet.usePlatinum = false;
         await transactionalEntityManager.save(wallet);

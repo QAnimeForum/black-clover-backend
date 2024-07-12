@@ -28,20 +28,33 @@ export class FieldsScene {
         );
         if (garden === null) {
             const caption = 'У вас не сада';
-            await ctx.sendPhoto(
-                {
-                    source: KNIGHT_IMAGE_PATH,
-                },
-                {
-                    caption,
-                    parse_mode: 'HTML',
-                    ...Markup.keyboard([
-                        [CREATE_GARDEN_BUTTON],
-                        [BACK_BUTTON],
-                    ]).resize(),
-                }
-            );
-            return;
+            if (ctx.chat.type == 'private') {
+                await ctx.sendPhoto(
+                    {
+                        source: KNIGHT_IMAGE_PATH,
+                    },
+                    {
+                        caption,
+                        parse_mode: 'HTML',
+                        ...Markup.keyboard([
+                            [CREATE_GARDEN_BUTTON],
+                            [BACK_BUTTON],
+                        ]).resize(),
+                    }
+                );
+                return;
+            } else {
+                await ctx.sendPhoto(
+                    {
+                        source: KNIGHT_IMAGE_PATH,
+                    },
+                    {
+                        caption,
+                        parse_mode: 'HTML'
+                    }
+                );
+                return;
+            }
         }
 
         this.showGarden(ctx, garden);
@@ -113,8 +126,8 @@ export class FieldsScene {
         const plant = await this.plantService.getPlantById(plantId);
 
         if (plant) {
-            let priceInfo = '';
-           /**
+            const priceInfo = '';
+            /**
             *  if (plant.costMoney >= 0) {
                 priceInfo += `Цена: ${plant.costMoney}💵`;
             }

@@ -6,6 +6,8 @@ import { BackgroundEntity } from '../entity/background.entity';
 import { CreatePlayableCharacterDto } from '../dto/create-playable-character.dto';
 import { CharacterEntity } from '../entity/character.entity';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
+import { StateEntity } from 'src/modules/map/enitity/state.entity';
+import { RaceEntity } from 'src/modules/race/entity/race.entity';
 
 export class UpdateAppearanceDto {
     telegramId: string;
@@ -61,7 +63,11 @@ export class BackgroundService {
         @InjectRepository(CharacterEntity)
         private readonly characterRepository: Repository<CharacterEntity>,
         @InjectRepository(UserEntity)
-        private readonly userRepository: Repository<UserEntity>
+        private readonly userRepository: Repository<UserEntity>,
+        @InjectRepository(RaceEntity)
+        private readonly raceRepository: Repository<RaceEntity>,
+        @InjectRepository(StateEntity)
+        private readonly stateRepository: Repository<StateEntity>
     ) {}
 
     async createBackground(
@@ -82,8 +88,15 @@ export class BackgroundService {
         background.weaknesses = 'не заполнено';
         background.quotes = [];
         background.appearance = 'не заполнено';
+        background.race = await this.raceRepository.findOneBy({
+            id: dto.raceId,
+        });
+        background.state = await this.stateRepository.findOneBy({
+            id: dto.stateId,
+        });
         background.raceId = dto.raceId;
         background.stateId = dto.stateId;
+        console.log(background);
         transactionalEntityManager.save(background);
         return background;
         /**
@@ -113,7 +126,7 @@ export class BackgroundService {
             .createQueryBuilder('background')
             .innerJoinAndSelect(
                 'background.character',
-                'charcter',
+                'character',
                 'character.id = :characterId',
                 { characterId: characterId }
             )

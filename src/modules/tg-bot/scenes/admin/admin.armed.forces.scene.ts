@@ -46,7 +46,7 @@ export class AdminArmedForcesScene {
     async showArmedForcesRequest(ctx: BotContext) {
         const armedForcesId = ctx.session.armedForcesId;
         const query: PaginateQuery = {
-            limit: 10,
+            limit: 5,
             path: '',
             filter: {
                 forces_id: `$eq:${armedForcesId}`,

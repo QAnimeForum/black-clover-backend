@@ -68,7 +68,7 @@ export class AllSpiritsScene {
             ctx.deleteMessage();
         }
         const query: PaginateQuery = {
-            limit: 10,
+            limit: 5,
             path: '',
         };
         const spirits = await this.spiritsService.findAll(query);

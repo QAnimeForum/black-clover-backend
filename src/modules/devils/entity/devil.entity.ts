@@ -6,10 +6,12 @@ import {
     JoinColumn,
     CreateDateColumn,
     UpdateDateColumn,
+    OneToMany,
 } from 'typeorm';
 import { DevilUnionEntity } from './devil.union.entity';
 import { ENUM_DEVIL_RANK } from '../constants/devil.ranks.enum';
 import { ENUM_DEVIL_FLOOR } from '../constants/devil.floor.enum';
+import { DevilDefaultSpellsEntity } from './devil.default.spells.entity';
 
 @Entity('devils')
 export class DevilEntity {
@@ -54,46 +56,15 @@ export class DevilEntity {
     })
     magicType: string;
 
-  /*  @OneToOne(() => DevilUnionEntity)
-    @JoinColumn({
-        name: 'union_10_id',
-    })
-    union_10: DevilUnionEntity;
-
-    @OneToOne(() => DevilUnionEntity)
-    @JoinColumn({
-        name: 'union_25_id',
-    })
-    union_25: DevilUnionEntity;
-
-    @OneToOne(() => DevilUnionEntity)
-    @JoinColumn({
-        name: 'union_50_id',
-    })
-    union_50: DevilUnionEntity;
-
-    @OneToOne(() => DevilUnionEntity)
-    @JoinColumn({
-        name: 'union_65_id',
-    })
-    union_65: DevilUnionEntity;
-
-    @OneToOne(() => DevilUnionEntity)
-    @JoinColumn({
-        name: 'union_80_id',
-    })
-    union_80: DevilUnionEntity;
-
-    @OneToOne(() => DevilUnionEntity)
-    @JoinColumn({
-        name: 'union_100_id',
-    })
-    union_100: DevilUnionEntity;*/
+    @OneToMany(
+        () => DevilDefaultSpellsEntity,
+        (defaultSpell) => defaultSpell.devil
+    )
+    defaultSpells: DevilDefaultSpellsEntity;
 
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;
 
     @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
     updatedAt: Date;
-
 }

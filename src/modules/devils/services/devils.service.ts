@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DevilEntity } from '../entity/devil.entity';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { PaginationListDto } from 'src/common/pagination/dtos/pagination.list.dto';
 import { DevilCreateDto } from '../dtos/devil.create.dto';
 import { DevilUnionEntity } from '../entity/devil.union.entity';
@@ -11,17 +11,25 @@ import { DevilUpdateDescriptionDto } from '../dtos/devil.update-description.dto'
 import { ENUM_DEVIL_RANK } from '../constants/devil.ranks.enum';
 import { ENUM_DEVIL_FLOOR } from '../constants/devil.floor.enum';
 import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import { DevilDefaultSpellsEntity } from '../entity/devil.default.spells.entity';
+import { DevilUnionsPercentEnum } from '../constants/devil.union.percent.enum';
+import { SpellCreateDto } from 'src/modules/grimoire/dto/spell.create.dto';
+import { SpellEntity } from 'src/modules/grimoire/entity/spell.entity';
+import { ENUM_SPELL_STATUS } from 'src/modules/grimoire/constants/spell.status.enum.constant';
 @Injectable()
 export class DevilsService {
     constructor(
+        @InjectDataSource()
+        private readonly connection: DataSource,
         @InjectRepository(DevilEntity)
         private readonly devilRepository: Repository<DevilEntity>,
         @InjectRepository(DevilUnionEntity)
         private readonly devilUnionRepository: Repository<DevilUnionEntity>,
         @InjectRepository(DevilSpellEntity)
-        private readonly devilSpellRepository: Repository<DevilSpellEntity>
+        private readonly devilSpellRepository: Repository<DevilSpellEntity>,
+        @InjectRepository(DevilDefaultSpellsEntity)
+        private readonly devilDefaultSpellsRepository: Repository<DevilDefaultSpellsEntity>
     ) {}
-
 
     public findAll(query: PaginateQuery): Promise<Paginated<DevilEntity>> {
         return paginate(query, this.devilRepository, {
@@ -42,7 +50,7 @@ export class DevilsService {
         return this.devilRepository.findOneBy({ id });
     }
 
-   /* findDevilByIdWithUnions(id: string): Promise<DevilEntity | null> {
+    /* findDevilByIdWithUnions(id: string): Promise<DevilEntity | null> {
         return this.devilRepository.findOne({
             where: {
                 id: id,
@@ -57,7 +65,7 @@ export class DevilsService {
             },
         });
     }*/
-   /* findSpellsByUnion(id: string) {
+    /* findSpellsByUnion(id: string) {
         return this.devilUnionRepository.findOne({
             where: {
                 id: id,
@@ -99,7 +107,7 @@ export class DevilsService {
             rank: ENUM_DEVIL_RANK[dto.rank],
             floor: ENUM_DEVIL_FLOOR[dto.floor],
             magicType: dto.magic_type,
-           /* union_10: devil_union_10,
+            /* union_10: devil_union_10,
             union_25: devil_union_25,
             union_50: devil_union_50,
             union_65: devil_union_65,
@@ -127,8 +135,89 @@ export class DevilsService {
         });
         return entity ? true : false;
     }
+
+    async findDefaultSpells(query: PaginateQuery) {
+        return paginate(query, this.devilDefaultSpellsRepository, {
+            sortableColumns: ['id', 'percent', 'spell.name'],
+            nullSort: 'last',
+            defaultSortBy: [['spell.name', 'DESC']],
+            searchableColumns: [
+                'id',
+                'percent',
+                'devil.id',
+                'devil.name',
+                'spell.id',
+                'spell.name',
+            ],
+            select: [
+                'id',
+                'percent',
+                'devil',
+                'devil.id',
+                'devil.name',
+                'spell',
+                'spell.id',
+                'spell.name',
+            ],
+            relations: {
+                devil: true,
+                spell: true,
+            },
+            filterableColumns: {
+                spell: true,
+                devil_id: true,
+                percent: true
+            },
+        });
+    }
+    async createSpell(
+        dto: SpellCreateDto,
+        devilId: string,
+        percent: DevilUnionsPercentEnum
+    ) {
+        let spellEntity: SpellEntity;
+        await this.connection.transaction(
+            async (transactionalEntityManager) => {
+                // execute queries using transactionalEntityManager
+                spellEntity = new SpellEntity();
+                spellEntity.name = dto.name;
+                spellEntity.description = dto.description;
+                spellEntity.damage = dto.damage;
+                spellEntity.range = dto.range;
+                spellEntity.duration = dto.duration;
+                spellEntity.cost = dto.cost;
+                spellEntity.castTime = dto.castTime;
+                spellEntity.cooldown = dto.cooldown;
+                spellEntity.type = dto.type;
+                spellEntity.goals = dto.goals;
+                spellEntity.status = ENUM_SPELL_STATUS.DRAFT;
+                await transactionalEntityManager.save(spellEntity);
+                // spellEntity.minimalCharacterLevel = dto.minLevel;
+                //  spellEntity.requirements = dto.requipments;
+                const defaultSpellsEntity = new DevilDefaultSpellsEntity();
+                defaultSpellsEntity.spell = spellEntity;
+                defaultSpellsEntity.devilId = devilId;
+                defaultSpellsEntity.percent = percent;
+                await transactionalEntityManager.save(defaultSpellsEntity);
+            }
+        );
+    }
+    findDefaultSpell(defaultSpellId: string) {
+        return this.devilDefaultSpellsRepository.findOne({
+            where: {
+                id: defaultSpellId,
+            },
+            relations: {
+                spell: true,
+            }
+        });
+    }
 }
 
+export class UnionDefaultSpellsDto {
+    devilId: string;
+    unionType: DevilUnionsPercentEnum;
+}
 /**
  *     findAll() {}
     findById() {}

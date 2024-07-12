@@ -4,10 +4,12 @@ import {
     CreateDateColumn,
     Entity,
     JoinColumn,
+    OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
+import { GrimoireReservationEntity } from './grimoire.reservation.entity';
 
 @Entity('grimoire_worker')
 export class GrimoireWorkerEntity {
@@ -26,6 +28,11 @@ export class GrimoireWorkerEntity {
     })
     characterId: string;
 
+    @OneToMany(
+        () => GrimoireReservationEntity,
+        (reservation) => reservation.grimoireWorker
+    )
+    gromoireReservations: GrimoireReservationEntity[];
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;
 

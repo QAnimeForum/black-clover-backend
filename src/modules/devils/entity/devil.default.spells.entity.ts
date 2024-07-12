@@ -3,6 +3,7 @@ import {
     CreateDateColumn,
     Entity,
     JoinColumn,
+    ManyToOne,
     OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
@@ -24,7 +25,7 @@ export class DevilDefaultSpellsEntity {
     })
     percent: DevilUnionsPercentEnum;
 
-    @OneToOne(() => DevilEntity)
+    @ManyToOne(() => DevilEntity,  (devil) => devil.defaultSpells)
     @JoinColumn({
         name: 'devil_id',
         referencedColumnName: 'id',
@@ -32,8 +33,9 @@ export class DevilDefaultSpellsEntity {
     devil: DevilEntity;
 
     @Column({
-        name: 'character_id',
+        name: 'devil_id',
         type: 'uuid',
+        unique: false,
     })
     devilId: string;
 

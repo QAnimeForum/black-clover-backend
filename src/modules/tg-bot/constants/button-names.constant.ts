@@ -54,15 +54,15 @@ export const SHOW_APPEARANCE_BUTTON = 'Внешность';
 
 export const EDIT_BACKGROUND_BUTTON = '✏️Редактировать информацию';
 export const EDIT_NAME_BUTTON = '✏️изменить имя';
-export const EDIT_AVATAR_BUTTON = '✏️Изменить фотографию';
-export const EDIT_HISTORY_BUTTON = '✏️изменить историю';
-export const EDIT_HOBBIES_BUTTON = '✏️изменить хобби';
-export const EDIT_GOALS_BUTTON = '✏️изменить цели';
-export const EDIT_WORLDVIEW_BUTTON = '✏️изменить мировоззрение';
-export const EDIT_CHRACTER_TRAITS_BUTTON = '✏️изменить черты характера';
-export const EDIT_IDEALS_BUTTON = '✏️изменить идеалы';
-export const EDIT_ATTACHMENTS_BUTTON = '✏️изменить привязанности';
-export const EDIT_WEAKNESS_BUTTON = '✏️изменить слабости';
+export const EDIT_AVATAR_BUTTON = '✏️Фотография';
+export const EDIT_HISTORY_BUTTON = '✏️Предыстория';
+export const EDIT_HOBBIES_BUTTON = '✏️Хобби';
+export const EDIT_GOALS_BUTTON = '✏️Цели';
+export const EDIT_WORLDVIEW_BUTTON = '✏️Мировоззрение';
+export const EDIT_CHRACTER_TRAITS_BUTTON = '✏️Черты характера';
+export const EDIT_IDEALS_BUTTON = '✏️Идеалы';
+export const EDIT_ATTACHMENTS_BUTTON = '✏️Привязанности';
+export const EDIT_WEAKNESS_BUTTON = '✏️Слабости';
 export const ADD_QUOTES_BUTTON = '➕ Добавить цитату';
 export const REMOVE_QUOTES_BUTTON = '➖ Удалить цитату';
 export const EDIT_QUOTE_BUTTON = '✏️изменить цитату';
@@ -73,14 +73,19 @@ export const GRIMOIRE_BUTTON = '📕 Гримуар';
 export const COME_UP_WITH_MAGICAL_ATTRIBUTE_BUTTON = '📕 Выбрать самому магию';
 export const ADMIN_CREATE_GRIMOIRE_BUTTON =
     '📕 Боги этого мира одарят вас магией';
+export const GRIMOIRE_STATISTICS_BUTTON = 'Статистика';
 export const SHOW_FULL_GRIMOIRE = 'Показать все заклинания';
 export const CREATE_SPELL_BUTTON = '✏️Создать заклинание';
 export const EDIT_GRIMOIRE_BUTTON = '✏️Редактировать гримуар';
+export const DELETE_SPELL_BUTTON = '🗑Удалить заклинание';
+
 export const EDIT_MAGIC_NAME_BUTTON = '✏️Изменить название магии';
 export const EDIT_SPELL_NAME_BUTTON = '✏️Изменить название';
 export const EDIT_SPELL_TYPE_BUTTON = '✏️Изменить тип';
+export const EDIT_SPELL_RANGE_BUTTON = '✏️Изменить область действия';
 export const EDIT_SPELL_DAMAGE_BUTTON = '✏️Изменить урон';
 export const EDIT_SPELL_DURATION_BUTTON = '✏️Изменить продолжительность';
+export const EDIT_SPELL_CAST_TIME_BUTTON = '✏️Время каста';
 export const EDIT_SPELL_COST_BUTTON = '✏️Изменить стоимость';
 export const EDIT_SPELL_COOLDOWN_BUTTON = '✏️Изменить откат';
 export const EDIT_SPELL_GOALS_BUTTON = '✏️Изменить цели';
@@ -108,7 +113,8 @@ export const MINERALS_BUTTON = '🗿Каталог минералов';
 //MONEY
 export const WALLET_BUTTON = '👛Кошелёк';
 
-export const EXCHANGE_RATES_BUTTON = 'Курс валют';
+export const EXCHANGE_RATES_BUTTON = '💰Курс валют';
+export const TRANSFER_MONEY_BUTTON = '💸Перевести деньги';
 //WORK
 export const WORKS_BUTTON = 'Работа';
 export const ORGANIZATIONS_BUTTON = '🏢Организации';
@@ -136,6 +142,7 @@ export const BAR_BUTTON = '🍸Бар';
 export const CASINO_BUTTON = '🎰Казино';
 
 //ARMED FORCES
+export const CHARACTERS_BUTTON = 'Персонажи';
 export const ARMED_FORCES_BUTTON = '🧙Военный квартал';
 export const TREASURY_BUTTON = '💰Казна';
 export const GET_A_WAGE_BUTTON = 'Получить выплаты';
@@ -189,6 +196,8 @@ export const ADD_EVENT_BUTTON = 'события';
 export const ADD_QUEST_BUTTON = 'квест';
 export const GRIMOIRE_LIST_BUTTON = '📚Список гримуаров';
 export const TOWER_WORKERS_BUTTON = '👤Работники';
+export const TOWER_WORKERS_OFFICE_BUTTON = '💼Офис';
+export const GRIMOIRE_REQUEST_BUTTON = 'Заявки на гримуар';
 export const ADD_TOWER_WORKERS_BUTTON = '➕Назначить работников';
 export const REMOVE_TOWER_WORKERS_BUTTON = '➖Снять с должности';
 export const GRIMOIRE_GET_BUTTON = '📖Получить гримуар';

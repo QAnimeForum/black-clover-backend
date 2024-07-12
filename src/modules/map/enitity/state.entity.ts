@@ -56,6 +56,18 @@ export class StateEntity {
 
   */
 
+    @Column({
+        type: 'int',
+        name: 'bonus_hp',
+    })
+    bonusHp: number;
+
+    @Column({
+        type: 'int',
+        name: 'bonus_magic_power',
+    })
+    bonusMagicPower: number;
+
     @OneToMany(() => BackgroundEntity, (background) => background.state)
     backgrounds: BackgroundEntity[];
     //  @OneToOne(() => StateFormEntity, (form) => form.state, { cascade: true })

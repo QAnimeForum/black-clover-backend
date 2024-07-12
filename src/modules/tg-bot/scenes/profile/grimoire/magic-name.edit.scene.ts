@@ -9,7 +9,7 @@ import { message } from 'telegraf/filters';
 import { Logger } from 'winston';
 
 @Injectable()
-export class MagicNameEditWizard {
+export class EditMagicNameWizard {
     readonly scene: Scenes.WizardScene<BotContext>;
     readonly steps: Composer<BotContext>[] = [];
     constructor(
@@ -36,17 +36,16 @@ export class MagicNameEditWizard {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Имя не изменено.');
-            ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
+            await ctx.reply('Название магического атрибута не изменено.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
             const message = ctx.update?.message.text;
-            const spellId = ctx.session.spellId;
-            const grimoireId = ctx.session.grimoireId;
+            const grimoireId = ctx.session.adminGrimoireId;
             await this.grimoireService.updateGrimoreMagicName(grimoireId, {
                 magicName: message,
             });
-            await ctx.scene.enter(ENUM_SCENES_ID.EDIT_GRIMOIRES_SCENE_ID);
+            await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID);
         });
         return composer;
     }

@@ -37,6 +37,7 @@ export class AnnouncementCreateWizard {
     start() {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+
         composer.command('cancel', async (ctx) => {
             await ctx.reply('Объявление не создано.');
             await ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);

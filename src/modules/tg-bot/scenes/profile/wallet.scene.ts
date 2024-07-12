@@ -17,6 +17,7 @@ import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import {
     BACK_BUTTON,
     EXCHANGE_RATES_BUTTON,
+    TRANSFER_MONEY_BUTTON,
     WALLET_BUTTON,
 } from '../../constants/button-names.constant';
 import { WalletService } from 'src/modules/money/wallet.service';
@@ -41,7 +42,7 @@ export class WalletScene {
                 {
                     caption,
                     ...Markup.keyboard([
-                        [EXCHANGE_RATES_BUTTON],
+                        [EXCHANGE_RATES_BUTTON, TRANSFER_MONEY_BUTTON],
                         [WALLET_BUTTON, BACK_BUTTON],
                     ]).resize(),
                 }
@@ -75,7 +76,8 @@ export class WalletScene {
     @Hears(EXCHANGE_RATES_BUTTON)
     async exchangeRates(@Context() ctx: BotContext) {
         const rateText =
-            '<strong>Курс валюты</strong>\n 1 платиновая = 10 золотых\n 1 золотой = 2 электрумовых\n 1 электрумовых = 5 серебрянных\n 1 серебряная = 10 медных\n';
+            '<strong>Курс валюты</strong>\n 1 платиновая (🪙) = 10 золотых (🟡)\n 1 золотой (🟡) = 2 электрумовых(🔵)\n 1 электрумовая (🔵) = 5 серебрянных(⚪️)\n 1 серебряная (⚪️) = 10 медных (🟤)\n\n';
+
         const title = '|Монета|ММ|СМ|ЭМ|ЗМ|ПМ\n';
         const delimeter =
             '|----------|:-------------:|------:|------:|------:|------:|';
@@ -84,13 +86,14 @@ export class WalletScene {
         const electrumText = `🔵Электрумовая (эм)	50   5	1	1/2	1/20\n`;
         const goldText = `🟡Золотая (зм)	100	    10	    2   1	1/10\n`;
         const platinumText = `🪙 Платиновая (пм)	1,000	100	20	10	1\n\n`;
-        const caption = '';
+        let caption = rateText;
+        caption += '1 🪙 = 10 🟡 = 20 🔵 = 100 ⚪️ = 1000 🟤';
         await ctx.sendPhoto(
             {
                 source: EXCHANGE_RATES_PATH,
             },
             {
-                caption: rateText,
+                caption: caption,
                 parse_mode: 'HTML',
             }
         );

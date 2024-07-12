@@ -3,20 +3,7 @@ import { CharacterService } from '../../../character/services/character.service'
 
 import { Inject, Injectable, UseFilters } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import {
-    Action,
-    Context,
-    Ctx,
-    Hears,
-    InjectBot,
-    Message,
-    On,
-    SceneEnter,
-    Sender,
-    TELEGRAF_STAGE,
-    Wizard,
-    WizardStep,
-} from 'nestjs-telegraf';
+import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
 import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
 import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
 import { Logger } from 'winston';
@@ -26,7 +13,6 @@ import { RaceService } from 'src/modules/race/race.service';
 import { WORLD_MAP_IMAGE_PATH } from '../../constants/images';
 import { message } from 'telegraf/filters';
 import { LOGGER_INFO } from '../../utils/logger';
-import { GO_TO_HOME } from '../../constants/button-names.constant';
 import { UserService } from 'src/modules/user/services/user.service';
 import { ENUM_ROLE_TYPE } from 'src/modules/user/constants/role.enum.constant';
 
@@ -56,8 +42,8 @@ export class CharacterCreateWizard {
             this.step2(),
             this.step3(),
             this.step4(),
-            this.step5(),
-           // this.step6()
+            this.step5()
+            // this.step6()
         );
 
         this.stage.register(this.scene);
@@ -75,7 +61,9 @@ export class CharacterCreateWizard {
                 name: 'не заполнено',
                 age: 15,
                 sex: 'м',
+                stateId: null,
                 stateName: 'королевство Клевер',
+                raceId: null,
                 raceName: 'человек',
                 magic: 'не заполнено',
             };
@@ -112,7 +100,6 @@ export class CharacterCreateWizard {
         });
         return composer;
     }
-
     step2() {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
@@ -121,18 +108,31 @@ export class CharacterCreateWizard {
             await ctx.scene.leave();
         });
         composer.on(message('text'), async (ctx) => {
+            const isNumeric = (string) => /^[+-]?\d+(\.\d+)?$/.test(string)
+
             const message = ctx.update?.message.text;
-            if (message.length < 1 || Number.isInteger(message)) {
+            if (message.length < 1 || !isNumeric(message)) {
                 ctx.reply('возраст введён некорректно');
-                ctx.wizard.back();
+                ctx.wizard.selectStep(2);
+                return;
             }
-            const age = Number(message);
+            const age = Number.parseInt(message);
             if (age < 15) {
-                ctx.reply('вам должно быть больше 15');
+                await ctx.reply('вам должно быть больше 15.');
+                await ctx.reply('Введите возраст. (Больше 15)');
                 ctx.wizard.back();
+                ctx.wizard.selectStep(2);
+                return;
+            }
+            if (age > 100) {
+                await ctx.reply('Вы умерли, введите ещё раз возраст.');
+                await ctx.reply('Введите возраст. (Больше 15)');
+                ctx.wizard.back();
+                ctx.wizard.selectStep(2);
+                return;
             }
             ctx.scene.session.character.age = age;
-            ctx.reply('Выберите пол персонажа', {
+            await ctx.reply('Выберите пол персонажа', {
                 reply_markup: {
                     inline_keyboard: [
                         [
@@ -157,6 +157,7 @@ export class CharacterCreateWizard {
         composer.on('callback_query', async (ctx) => {
             await ctx.answerCbQuery();
             ctx.scene.session.character.sex = ctx.update.callback_query['data'];
+            await ctx.deleteMessage();
             const paginatedRaces = await this.raceService.findAll({
                 path: '',
             });
@@ -165,12 +166,12 @@ export class CharacterCreateWizard {
             ]);
             let description = '';
             paginatedRaces.data.map((race) => {
-                description += `<strong><u>${race.name}</u></strong>\n<u>Характеристики</u>\nБонусы к hp:${race.bonusHp}\nБонусы к маг. силе:${race.bonusMagicPower}\n Использование природной маны: ${race.naturalMana ? 'да' : 'нет'}\n\n`;
+                description += `<strong><u>${race.name}</u></strong>\n<u>Характеристики</u>\nБонусы к hp:${race.bonusHp}\nБонусы к маг. силе:${race.bonusMagicPower}\n\n`;
+                //Использование природной маны: ${race.naturalMana ? 'да' : 'нет'}\n
             });
             /**
              *  ${race.description}\n  <u>Характеристики</u>\nБонусы к hp:${race.bonusHp}\nБонусы к маг. силе:${race.bonusMagicPower}\n${race.naturalMana}\n
              */
-            console.log(description);
             await ctx.sendPhoto(
                 {
                     source: WORLD_MAP_IMAGE_PATH,
@@ -197,7 +198,6 @@ export class CharacterCreateWizard {
         });
         composer.on('callback_query', async (ctx) => {
             await ctx.answerCbQuery();
-            console.log(ctx.update.callback_query['data']);
             const data = ctx.update.callback_query['data'].split(':');
             ctx.scene.session.character.raceId = data[0];
             ctx.scene.session.character.raceName = data[1];
@@ -206,12 +206,15 @@ export class CharacterCreateWizard {
             });
             const buttons = paginateStates.data.map((item) => [
                 {
-                    text: item.fullName,
+                    text: `${item.fullName}\n`,
                     callback_data: `${item.id}:${item.name}`,
                 },
             ]);
             let caption = 'Выбери страну, в которой ты родился, путник! \n';
-            paginateStates.data.map((state) => (caption += `${state.name}`));
+            paginateStates.data.map(
+                (state) =>
+                    (caption += `${state.name}\n hp: ${state.bonusHp}\n маг. сила: ${state.bonusMagicPower}\n`)
+            );
             await ctx.sendPhoto(
                 {
                     source: WORLD_MAP_IMAGE_PATH,
@@ -235,23 +238,21 @@ export class CharacterCreateWizard {
             await ctx.scene.leave();
         });
         composer.on('callback_query', async (ctx) => {
-            //    await ctx.answerCbQuery();
+            await ctx.answerCbQuery();
             const data = ctx.update.callback_query['data'].split(':');
             ctx.scene.session.character.stateId = data[0];
             ctx.scene.session.character.stateName = data[1];
-
             const user = await this.userService.createUser({
                 tgUserId: ctx.update.callback_query.from.id.toString(),
                 character: {
-                    name: ctx.scene.session.character.name,
-                    age: ctx.scene.session.character.age,
-                    sex: ctx.scene.session.character.sex,
+                    name: ctx.scene.session.character.name ?? '',
+                    age: ctx.scene.session.character.age ?? 15,
+                    sex: ctx.scene.session.character.sex ?? 'ж',
                     raceId: ctx.scene.session.character.raceId,
                     stateId: ctx.scene.session.character.stateId,
                 },
                 role: ENUM_ROLE_TYPE.USER,
             });
-            console.log(user);
             this.logger.log(
                 LOGGER_INFO,
                 `🟢 Пользователь успешно создал персонажа. * { name: ${ctx.update.callback_query.from.first_name} id: ${ctx.update.callback_query.from.id}}`
@@ -268,7 +269,7 @@ export class CharacterCreateWizard {
             });
             const afterCreateMessage =
                 'Поздравляем, вы заполнили базувую информацию о себе. Но у вас всё ещё нет магического атрибута и гримуара. Для большинства активностей требуется гримуар. \n\nДля того, чтобы получить гиримуар, перейдите в главном меню во вкладку: `📕 Гримуар`.';
-          /*  await ctx.reply(afterCreateMessage, {
+            /*  await ctx.reply(afterCreateMessage, {
                 ...Markup.keyboard([[GO_TO_HOME]]).resize(),
             });
             ctx.wizard.next();*/
@@ -277,7 +278,7 @@ export class CharacterCreateWizard {
         return composer;
     }
 
-   /* step6() {
+    /* step6() {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.hears(GO_TO_HOME, async (ctx) => {

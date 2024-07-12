@@ -87,7 +87,7 @@ export class BackgroundEntity {
 
     @Column({
         name: 'race_id',
-        type: 'string',
+        type: 'varchar',
     })
     raceId: string;
 
@@ -97,7 +97,7 @@ export class BackgroundEntity {
 
     @Column({
         name: 'state_id',
-        type: 'string',
+        type: 'varchar',
     })
     stateId: string;
 

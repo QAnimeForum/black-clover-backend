@@ -21,6 +21,8 @@ import fs from 'fs';
 import { KNIGHT_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
 import { WalletService } from 'src/modules/money/wallet.service';
 import { EquipmentEntity } from 'src/modules/items/entity/equipment.entity';
+import { GrimoireEntity } from 'src/modules/grimoire/entity/grimoire.entity';
+import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 @Injectable()
 export class CharacterService {
     constructor(
@@ -48,6 +50,42 @@ export class CharacterService {
         @InjectRepository(EquipmentEntity)
         private readonly equipmentRepository: Repository<EquipmentEntity>
     ) {}
+    public findAll(query: PaginateQuery): Promise<Paginated<CharacterEntity>> {
+        return paginate(query, this.characterRepository, {
+            sortableColumns: ['id'],
+            nullSort: 'last',
+            defaultSortBy: [['id', 'DESC']],
+            searchableColumns: [
+                'id',
+                'background',
+                'background.id',
+                'background.name',
+                'background.state',
+                'background.state.id',
+                'background.state.name',
+                'background.race',
+                'background.race.id',
+                'background.race.name',
+            ],
+            select: [
+                'id',
+                'background',
+                'background.name',
+                'background.race',
+                'background.state',
+                'user',
+                'user.tgUserId',
+                'grimoire',
+                'grimoire.id',
+                'grimoire.magicName',
+            ],
+            relations: {
+                background: true,
+                user: true,
+                grimoire: true,
+            },
+        });
+    }
     async createPlayableCharacter(
         transactionManager: EntityManager,
         dto: CreatePlayableCharacterDto,
@@ -58,7 +96,7 @@ export class CharacterService {
          */
         const inventory =
             await this.inventoryService.createInventory(transactionManager);
-    
+
         const equpmentEntity = new EquipmentEntity();
         await this.equipmentRepository.save(equpmentEntity);
         /**
@@ -77,7 +115,9 @@ export class CharacterService {
         );
         const characteristics =
             await this.characteristicsService.createCharacteristics(
-                transactionManager
+                transactionManager,
+                dto.raceId,
+                dto.stateId
             );
         const wallet =
             await this.walletService.creeateWallet(transactionManager);
@@ -85,7 +125,7 @@ export class CharacterService {
         const character = new CharacterEntity();
         character.type = ENUM_CHARCACTER_TYPE.PC;
         character.avatar = KNIGHT_IMAGE_PATH;
-    //    character.avatar = await this.copyDefaultAvatar();
+        //    character.avatar = await this.copyDefaultAvatar();
         character.backgroundId = background.id;
         character.characterCharacteristicsId = characteristics.id;
         //   character.grimoireId = grimoire.id;
@@ -121,6 +161,14 @@ export class CharacterService {
 
     updateCharacter(character: CharacterEntity) {
         return this.characterRepository.save(character);
+    }
+    updateGrimoire(characterId: string, grimoireId: string) {
+        return this.connection
+            .createQueryBuilder()
+            .update(CharacterEntity)
+            .set({ grimoireId: grimoireId })
+            .where('id = :id', { id: characterId })
+            .execute();
     }
     getCharacterBacgroundByTgId(telegramId: string) {
         return this.userRepository.findOne({
@@ -218,15 +266,18 @@ export class CharacterService {
     }
 
     async findCharacterByTgId(tgId: string) {
-        const user = await this.userRepository.findOne({
+        return this.characterRepository.findOne({
             where: {
-                tgUserId: tgId,
+                user: {
+                    tgUserId: tgId,
+                },
             },
             relations: {
-                character: true,
+                background: {
+                    state: true,
+                },
             },
         });
-        return user.character;
     }
     findCharacterById(characterId: string) {
         return this.characterRepository.findOne({
@@ -289,7 +340,6 @@ export class CharacterService {
                 },
             },
         });
-        console.log(entity);
         return entity.character;
     }
 

@@ -143,7 +143,7 @@ export class CharacterEntity {
     @OneToOne(() => SquadMemberEntity)
     squadMember: SquadMemberEntity;
 
-    @OneToOne(() => UserEntity)
+    @OneToOne(() => UserEntity, (user) => user.character)
     @JoinColumn({
         name: 'user_id',
         referencedColumnName: 'id',
@@ -151,9 +151,8 @@ export class CharacterEntity {
     user: UserEntity;
 
     @Column({
-        type: 'uuid',
         name: 'user_id',
-     //   nullable: false,
+        type: 'uuid',
     })
     userId: string;
 

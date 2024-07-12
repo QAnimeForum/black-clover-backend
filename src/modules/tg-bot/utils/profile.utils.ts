@@ -53,11 +53,12 @@ export const fullProfileToText = (
     const characteristics = character.characterCharacteristics;
     const levelBlock = `<strong>🏆Уровень персонажа</strong>: ${characteristics.currentLevel}/${characteristics.maxLevel}\n`;
     const sanityBlock = `<strong>🤪Здравомыслие</strong>: ${characteristics.sanity}`;
-    const hpBlock = `<strong>🏃Ловкость</strong>: ${characteristics.dexterity.score}`;
+    //    const hpBlock = `<strong>🏃Ловкость</strong>: ${characteristics.dexterity.score}`;
     const constitutionBlock = `<strong>🏋️Телосложение</strong>: ${characteristics.constitution.score}`;
     const intelligenceBlock = `<strong>🎓Интеллект</strong>: ${characteristics.intelligence.score}`;
     const wisdomBlock = `<strong>📚Мудрость</strong>: ${characteristics.wisdom.score}`;
     const charismaBlock = `<stron>♥️Уровень здоровья</strong>: ${characteristics.currentHealth}/${characteristics.maxHealth}`;
+    const hpBlock = `<strong>♥️Уровень здоровья</strong>: ${characteristics.currentHealth}/${characteristics.maxHealth}`;
     const magicPowerBlock = `<strong>🌀Магическая сила</strong>: ${characteristics.magicPower}`;
     const strengthBlock = `<strong>💪Сила</strong>: ${characteristics.strength.score}`;
     const dexterityBlock = `g>🗣Харизма</strong>: ${characteristics.charisma.score}`;
@@ -146,7 +147,7 @@ export const backgroundShowButtons = () => {
         ],
     ];
     return buttons;
-}
+};
 export const backgroundEditButtons = () => {
     const buttons = [
         [
@@ -181,13 +182,7 @@ export const backgroundEditButtons = () => {
             ),
             Markup.button.callback(EDIT_WEAKNESS_BUTTON, EDIT_WEAKNESS_BUTTON),
         ],
-        [
-            Markup.button.callback(
-                EDIT_WORLDVIEW_BUTTON,
-                EDIT_WORLDVIEW_BUTTON
-            ),
-            Markup.button.callback(EDIT_HOBBIES_BUTTON, EDIT_HOBBIES_BUTTON),
-        ],
+        [Markup.button.callback(EDIT_HOBBIES_BUTTON, EDIT_HOBBIES_BUTTON)],
         [
             Markup.button.callback(ADD_QUOTES_BUTTON, ADD_QUOTES_BUTTON),
             Markup.button.callback(REMOVE_QUOTES_BUTTON, REMOVE_QUOTES_BUTTON),

@@ -10,7 +10,6 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ENUM_SCENES_ID } from '../constants/scenes.id.enum';
 import { Logger } from 'winston';
 import { START_TREVEL_BUTTON } from '../constants/button-names.constant';
-import { Command } from 'nestjs-command';
 @Scene(ENUM_SCENES_ID.START_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class StartScene {
@@ -21,6 +20,19 @@ export class StartScene {
 
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender('id') senderId) {
+        ctx.session.devilsList = null;
+        ctx.session.grimoireRequestId = null;
+        ctx.session.devilId = null;
+        ctx.session.adminSelectedArmedForcesId = null;
+        ctx.session.armedForcesId = null;
+        ctx.session.problemId = null;
+        ctx.session.itemId = null;
+        ctx.session.devilPaginateQuery = null;
+        ctx.session.adminGrimoireId = null;
+        ctx.session.adminSpellId = null;
+        ctx.session.spellEdit = null;
+        ctx.session.devilCreateSpellDto = null;
+        ctx.session.editUnionSpellId = null;
         const chatType = ctx.message.chat.type;
         const isUserExist = await this.userService.exists(senderId);
         if (isUserExist) {

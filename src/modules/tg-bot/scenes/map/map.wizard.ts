@@ -20,7 +20,9 @@ export class MapWizard {
 
     @SceneEnter()
     async start(@Context() ctx: BotContext) {
-        const paginateStates = await this.mapService.findAllStates({
+        await ctx.replyWithHTML('Временно недоступна');
+    /**
+     *     const paginateStates = await this.mapService.findAllStates({
             path: '',
         });
         await ctx.replyWithPhoto(
@@ -35,6 +37,7 @@ export class MapWizard {
                 },
             }
         );
+     */
     }
 
     @WizardStep(1)

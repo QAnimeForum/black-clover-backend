@@ -15,6 +15,7 @@ import { CharacterService } from 'src/modules/character/services/character.servi
 
 @Injectable()
 export class TgBotService {
+   
     
     async downloadAndSaveLocalFile(filePath: string, avatarPath: string) {
         //  const botToken = this.configService.get(EnvVariablesKeys.tgBotToken);

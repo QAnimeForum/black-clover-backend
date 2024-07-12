@@ -108,7 +108,6 @@ export const getProblemList = (
     const caption = `Судебные дела\n\n Общее количество дел: ${totalItems}`;
     const buttons: InlineKeyboardButton[][] = [];
     data.map((problem: ProblemEntity) => {
-        console.log(problem.judge.id, character.id);
         if (problem.judge == null) {
             buttons.push([
                 Markup.button.callback(

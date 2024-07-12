@@ -61,14 +61,14 @@ export class SpellChangeStatusWizard {
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
             await ctx.reply('Имя не изменено.');
-            await ctx.scene.enter(ENUM_SCENES_ID.EDIT_GRIMOIRES_SCENE_ID);
+            await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         composer.action(BACK_BUTTON, async (ctx) => {
-            await ctx.scene.enter(ENUM_SCENES_ID.EDIT_GRIMOIRES_SCENE_ID);
+            await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         composer.action(/^(STATUS.*)$/, async (ctx) => {
             try {
-                const spellId = ctx.session.spellId;
+                const spellId = ctx.session.adminSpellId;
                 const status = ctx.callbackQuery['data'].split(':')[1];
                 await this.grimoireService.updateSpellStatus(spellId, {
                     status: status,
@@ -76,7 +76,7 @@ export class SpellChangeStatusWizard {
             } catch (err) {
                 console.log(err);
             }
-            await ctx.scene.enter(ENUM_SCENES_ID.EDIT_GRIMOIRES_SCENE_ID);
+            await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         return composer;
     }

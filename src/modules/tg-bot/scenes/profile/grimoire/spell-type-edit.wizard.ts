@@ -61,12 +61,12 @@ export class SpellTypeEditWizard {
                             'MAGIC_TYPE:' + ENUM_SPELL_TYPE.TRAP
                         ),
                     ],
-                    [
+                    /*  [
                         Markup.button.callback(
                             'Комибнированная магия',
                             'MAGIC_TYPE:' + ENUM_SPELL_TYPE.COMPOUND
                         ),
-                    ],
+                    ],*/
                     [
                         Markup.button.callback(
                             'Запретная магия',
@@ -96,7 +96,7 @@ export class SpellTypeEditWizard {
         });
         composer.action(/^(MAGIC_TYPE.*)$/, async (ctx) => {
             try {
-                const spellId = ctx.session.spellId;
+                const spellId = ctx.session.spellEdit.spellId;
                 const type = ctx.callbackQuery['data'].split(':')[1];
                 await this.grimoireService.updateSpellType(spellId, {
                     type: type,

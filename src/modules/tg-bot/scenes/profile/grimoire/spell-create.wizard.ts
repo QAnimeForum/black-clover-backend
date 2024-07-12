@@ -1,16 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
-import { BackgroundService } from 'src/modules/character/services/background.service';
 import { ENUM_SPELL_TYPE } from 'src/modules/grimoire/constants/spell.type.enum';
 import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
-import {
-    ADD_SPELL_BUTTON,
-    EDIT_GRIMOIRE_BUTTON,
-    EDIT_NAME_BUTTON,
-} from 'src/modules/tg-bot/constants/button-names.constant';
+import { ENUM_HELP_DOCUMENTATION } from 'src/modules/tg-bot/constants/help.constant';
+
 import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
 import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
+import { spellTypeToText } from 'src/modules/tg-bot/utils/grimoire.utils';
 import { LOGGER_INFO } from 'src/modules/tg-bot/utils/logger';
 import { Composer, Markup, Scenes, Telegraf } from 'telegraf';
 import { message } from 'telegraf/filters';
@@ -38,9 +35,7 @@ export class SpellCreateWizard {
             this.step7(),
             this.step8(),
             this.step9(),
-            this.step10(),
-            this.step11(),
-            this.step12()
+            this.step10()
         );
         this.scene.enter(this.start());
         this.stage.register(this.scene);
@@ -53,46 +48,40 @@ export class SpellCreateWizard {
                 name: 'не заполнено',
                 description: 'не заполнено',
                 type: ENUM_SPELL_TYPE.OTHER,
-                damage: 0,
+                damage: '0',
                 range: 'не заполнено',
                 duration: 'не заполнено',
-                cost: 0,
+                cost: '0',
                 castTime: '1',
                 cooldown: '0',
                 goals: 'не заполнено',
                 minLevel: 1,
                 requipments: 'нет',
-                grimoireId: ctx.session.grimoireId,
+                grimoireId: ctx.session.spellEdit.grimoireId,
             };
-            const title = '<strong><u>Шаблон заклинания</u></strong>';
-            const name = `<strong>Название: </strong>`;
-            const type = `<strong>Тип: </strong>`;
-            const damage = '<strong>Урон: </strong>';
-            const range = '<strong>Область действия заклинания: </strong>';
-            const duration = '<strong>Продолжительность: </strong>';
-            const cost = '<strong>Стоимость: </strong>';
-            const castTime =
-                '<strong>Сколько времени нужно для создания заклинания: </strong>';
-            const cooldown = '<strong>Время отката заклинания: </strong>';
-            const goals = '<strong>Цели: </strong>';
-            const minLevel = '<strong>Минимальный уровень персонажа: </strong>';
-            const requipments = '<strong>Требования: </strong>';
-            const description = `<strong>Описание</strong>`;
-            const template = `${title}\n${name}\n${type}\n${damage}\n${range}\n${duration}\n${cost}\n${castTime}\n${cooldown}\b${goals}\n${minLevel}\n${requipments}${description}`;
-            await ctx.reply(template, {
+            const caption =
+                '<strong><u>Шаблон заклинания</u></strong>\nДля выхода из формы нажмите на /cancel.\n Черновик сохранится';
+            await ctx.reply(caption, {
                 parse_mode: 'HTML',
+                ...Markup.inlineKeyboard([
+                    [
+                        Markup.button.url(
+                            'Шаблон',
+                            ENUM_HELP_DOCUMENTATION.SPELL_TEMPLATE
+                        ),
+                    ],
+                ]),
             });
-            await ctx.reply(
-                'Введите название заклинания. \n Для того, чтобы выйти из формы, нажмите на /cancel (черновик заклинания сохранится)".'
-            );
+            await ctx.reply('Введите название заклинания.\n');
         };
     }
     step1() {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Имя не изменено.');
-            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+            await ctx.reply('Сохранён черновик заклинания.');
+            await this.grimoireService.createSpell(ctx.scene.session.spell);
+            ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
             ctx.scene.session.spell.name = ctx.update.message.text;
@@ -130,16 +119,6 @@ export class SpellCreateWizard {
                     ],
                     [
                         Markup.button.callback(
-                            'Комибнированная магия',
-                            'MAGIC_TYPE:' + ENUM_SPELL_TYPE.COMPOUND
-                        ),
-                        Markup.button.callback(
-                            'Магия проклятий',
-                            'MAGIC_TYPE:' + ENUM_SPELL_TYPE.CURSE
-                        ),
-                    ],
-                    [
-                        Markup.button.callback(
                             'Запретная магия',
                             'MAGIC_TYPE:' + ENUM_SPELL_TYPE.FORBIDDEN
                         ),
@@ -153,6 +132,10 @@ export class SpellCreateWizard {
                             'Другой вариант',
                             'MAGIC_TYPE:' + ENUM_SPELL_TYPE.OTHER
                         ),
+                        Markup.button.url(
+                            'Описания типов заклинаний',
+                            ENUM_HELP_DOCUMENTATION.SPELL_TEMPLATE
+                        ),
                     ],
                 ]),
             });
@@ -165,10 +148,12 @@ export class SpellCreateWizard {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Тип не сохранён.');
-            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+            await ctx.reply('Сохранён черновик заклинания.');
+            await this.grimoireService.createSpell(ctx.scene.session.spell);
+            ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         composer.action(/^(MAGIC_TYPE.*)$/, async (ctx) => {
+            await ctx.answerCbQuery();
             try {
                 ctx.scene.session.spell.type =
                     ctx.callbackQuery['data'].split(':')[1];
@@ -185,12 +170,13 @@ export class SpellCreateWizard {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Имя не изменено.');
-            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+            await ctx.reply('Сохранён черновик заклинания.');
+            await this.grimoireService.createSpell(ctx.scene.session.spell);
+            ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
             ctx.scene.session.spell.description = ctx.update.message.text;
-            await ctx.reply('Урон заклинания');
+            await ctx.reply('Урон заклинания (целое число > 0)');
             ctx.wizard.next();
         });
         return composer;
@@ -200,15 +186,14 @@ export class SpellCreateWizard {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Имя не изменено.');
-            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+            await ctx.reply('Сохранён черновик заклинания.');
+            await this.grimoireService.createSpell(ctx.scene.session.spell);
+            ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
-            ctx.scene.session.spell.damage = Number.parseInt(
-                ctx.update.message.text
-            );
+            ctx.scene.session.spell.damage = ctx.update.message.text;
             await ctx.reply(
-                'Область действия заклинания заклинания\n(Пример: не определено/на самого персонажа/в области на опрелеённом расстоянии персонажа)'
+                'Область действия заклинания заклинания\n(Пример: не определено/на самого персонажа/в радиусе 5 метров на всех)'
             );
             ctx.wizard.next();
         });
@@ -219,12 +204,15 @@ export class SpellCreateWizard {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Имя не изменено.');
-            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+            await ctx.reply('Сохранён черновик заклинания.');
+            await this.grimoireService.createSpell(ctx.scene.session.spell);
+            ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
             ctx.scene.session.spell.range = ctx.update.message.text;
-            await ctx.reply('Продолжительность заклинания \n ()');
+            await ctx.reply(
+                'Максимальная продолжительность заклинания \n (в минутах)'
+            );
             ctx.wizard.next();
         });
         return composer;
@@ -234,11 +222,12 @@ export class SpellCreateWizard {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Имя не изменено.');
-            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+            await ctx.reply('Сохранён черновик заклинания.');
+            await this.grimoireService.createSpell(ctx.scene.session.spell);
+            ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
-            ctx.scene.session.spell.castTime = ctx.update.message.text;
+            ctx.scene.session.spell.duration = ctx.update.message.text;
             await ctx.reply('Затраты магической силы');
             ctx.wizard.next();
         });
@@ -249,15 +238,14 @@ export class SpellCreateWizard {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Имя не изменено.');
-            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+            await ctx.reply('Сохранён черновик заклинания.');
+            await this.grimoireService.createSpell(ctx.scene.session.spell);
+            ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
-            ctx.scene.session.spell.cost = Number.parseInt(
-                ctx.update.message.text
-            );
+            ctx.scene.session.spell.cost =  ctx.update.message.text;
             await ctx.reply(
-                'Сколько времени нужно для создания заклинания \n (Пример: мгновенно/)'
+                'Время каста заклинания \n (Пример: в секундах'
             );
             ctx.wizard.next();
         });
@@ -268,8 +256,9 @@ export class SpellCreateWizard {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Имя не изменено.');
-            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+            await ctx.reply('Сохранён черновик заклинания.');
+            await this.grimoireService.createSpell(ctx.scene.session.spell);
+            ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
             ctx.scene.session.spell.castTime = ctx.update.message.text;
@@ -283,30 +272,32 @@ export class SpellCreateWizard {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Имя не изменено.');
-            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+            await ctx.reply('Сохранён черновик заклинания.');
+            await this.grimoireService.createSpell(ctx.scene.session.spell);
+            ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
             ctx.scene.session.spell.castTime = ctx.update.message.text;
             await ctx.reply(
-                'Цели заклинания. (не опредено/сам пользователь/до 3-х людей в доступном диапазоне)'
+                'Цели заклинания. \n(Пример: не опредено/сам пользователь/до 3-х людей в доступном диапазоне)'
             );
             ctx.wizard.next();
         });
         return composer;
     }
-
+    /*
     step10() {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Имя не изменено.');
-            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+            await ctx.reply('Сохранён черновик заклинания.');
+            await this.grimoireService.createSpell(ctx.scene.session.spell);
+            ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
             ctx.scene.session.spell.goals = ctx.update.message.text;
             await ctx.reply(
-                'Минимальный уровень персонажа для каста заклинания'
+                'Минимальный уровень персонажа для возможности использования заклинания.'
             );
             ctx.wizard.next();
         });
@@ -317,8 +308,9 @@ export class SpellCreateWizard {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Имя не изменено.');
-            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+            await ctx.reply('Сохранён черновик заклинания.');
+            await this.grimoireService.createSpell(ctx.scene.session.spell);
+            ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
             ctx.scene.session.spell.minLevel = Number.parseInt(
@@ -328,39 +320,40 @@ export class SpellCreateWizard {
             ctx.wizard.next();
         });
         return composer;
-    }
+    }*/
 
-    step12() {
+    step10() {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Имя не изменено.');
-            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
+            await ctx.reply('Сохранён черновик заклинания.');
+            await this.grimoireService.createSpell(ctx.scene.session.spell);
+            ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
-            ctx.scene.session.spell.requipments = ctx.update.message.text;
+            //     ctx.scene.session.spell.requipments = ctx.update.message.text;
+            ctx.scene.session.spell.goals = ctx.update.message.text;
             const spell = ctx.scene.session.spell;
             const title = '<strong><u>Заклинание</u></strong>';
             const name = `<strong>Название: </strong> ${spell.name}`;
-            const type = `<strong>Тип: </strong> ${spell.type}`;
+            const type = `<strong>Тип: </strong> ${spellTypeToText(spell.type)}`;
             const damage = `<strong>Урон: </strong> ${spell.damage}`;
             const range = `<strong>Область действия заклинания: </strong> ${spell.range}`;
             const duration = `<strong>Продолжительность: </strong> ${spell.duration}`;
-            const cost = `<strong>Стоимость: </strong> ${spell.cost}`;
-            const castTime = `<strong>Сколько времени нужно для создания заклинания: </strong> ${spell.castTime}`;
+            const cost = `<strong>Затраты маг.силы.: </strong> ${spell.cost}`;
+            const castTime = `<strong>Время каста заклинания: </strong> ${spell.castTime}`;
             const cooldown = `<strong>Время отката заклинания: </strong> ${spell.cooldown}`;
-            const goals = `<strong>Цели: </strong> ${spell.goals}`;
-            const minLevel = `<strong>Минимальный уровень персонажа: </strong> ${spell.minLevel}`;
-            const requipments = '<strong>Требования: </strong>';
+            const goals = `<strong>Цели:</strong> ${spell.goals}`;
+            const minLevel = `<strong>Минимальный уровень: </strong> ${spell.minLevel}`;
             const description = `<strong>Описание</strong>\n ${spell.description}`;
-            const template = `${title}\n${name}\n${type}\n${damage}\n${range}\n${duration}\n${cost}\n${castTime}\n${cooldown}\n${goals}\n${minLevel}\n${requipments}\n${description}`;
+            const template = `${title}\n${name}\n${type}\n${damage}\n${range}\n${duration}\n${cost}\n${castTime}\n${cooldown}\n${goals}\n${minLevel}\n${description}`;
             await ctx.reply(template, {
                 parse_mode: 'HTML',
             });
 
             await this.grimoireService.createSpell(spell);
 
-            ctx.scene.enter(ENUM_SCENES_ID.EDIT_GRIMOIRES_SCENE_ID);
+            ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         return composer;
     }

@@ -1,9 +1,5 @@
 import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
-import {
-    GRIMOURE_IMAGE_PATH,
-    INVENTORY_IMAGE_PATH,
-    KNIGHT_IMAGE_PATH,
-} from '../../constants/images';
+import { KNIGHT_IMAGE_PATH } from '../../constants/images';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { UseFilters } from '@nestjs/common';
@@ -11,15 +7,13 @@ import { CharacterService } from '../../../character/services/character.service'
 import { Markup } from 'telegraf';
 import { GrimoireService } from '../../../grimoire/services/grimoire.service';
 import {
-    ALCOHOL_BUTTON,
-    ARMOR_BUTTON,
     BACK_BUTTON,
     BACKGROUND_BUTTON,
     CREATE_SPELL_BUTTON,
     EDIT_GRIMOIRE_BUTTON,
     EDIT_MAGIC_NAME_BUTTON,
-    EDIT_SPELL_BUTTON,
     GRIMOIRE_BUTTON,
+    GRIMOIRE_TOWER_BUTTON,
     INVENTORY_BUTTON,
     MY_DEVILS_BUTTON,
     MY_SPIRITS_BUTTON,
@@ -28,10 +22,8 @@ import {
     WALLET_BUTTON,
 } from '../../constants/button-names.constant';
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
-import { SpellEntity } from 'src/modules/grimoire/entity/spell.entity';
 import { UserService } from 'src/modules/user/services/user.service';
 import { fullProfileToText } from '../../utils/profile.utils';
-import { spellToText } from '../../utils/grimoire.utils';
 import { ENUM_ACTION_NAMES } from '../../constants/action-names.constant';
 
 @Scene(ENUM_SCENES_ID.PROFILE_SCENE_ID)
@@ -44,7 +36,6 @@ export class ProfileScene {
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
-    
         const chatType = ctx.chat.type;
         const senderId = sender.id;
         const username = sender.username;
@@ -61,6 +52,7 @@ export class ProfileScene {
                     ]),
                 }
             );
+            return;
         }
         const character =
             await this.characterService.findFullCharacterInfoByTgId(senderId);
@@ -74,7 +66,8 @@ export class ProfileScene {
                     caption,
                     parse_mode: 'HTML',
                     ...Markup.keyboard([
-                        [GRIMOIRE_BUTTON, BACKGROUND_BUTTON, PARAMS_BUTTON],
+                        //PARAMS_BUTTON
+                        [GRIMOIRE_BUTTON, BACKGROUND_BUTTON],
                         [WALLET_BUTTON, INVENTORY_BUTTON],
                         [MY_DEVILS_BUTTON, MY_SPIRITS_BUTTON],
                         [PROFILE_BUTTON, BACK_BUTTON],
@@ -83,7 +76,18 @@ export class ProfileScene {
             );
             if (character.grimoire == null) {
                 ctx.reply(
-                    `Вы ещё не получили гримуар. Сходите в ближайшую башню, где выдают гримуары, и оставьте заявку на гримуар. \n (Перейдите во вкадку: ${GRIMOIRE_BUTTON})`
+                    `Вы ещё не получили гримуар. Сходите в ближайшую башню гримуаров, и оставьте заявку на гримуар. \n`,
+                    {
+                        reply_markup: 'HTML',
+                        ...Markup.inlineKeyboard([
+                            [
+                                Markup.button.callback(
+                                    GRIMOIRE_TOWER_BUTTON,
+                                    ENUM_ACTION_NAMES.GO_TO_GRIMOIRE_TOWER_ACTION
+                                ),
+                            ],
+                        ]),
+                    }
                 );
             }
         } else {
@@ -127,83 +131,34 @@ export class ProfileScene {
     @Action(ENUM_ACTION_NAMES.GET_MY_GRIMOIRE_ACTION)
     @Hears(GRIMOIRE_BUTTON)
     async grimoire(@Ctx() ctx: BotContext, @Sender() sender) {
-        ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_SCENE_ID);
-        /**
-         *     const grimoire = await this.grimoireService.findGrimoireByUserTgId(
+        const hasUserGrimoire = await this.grimoireService.hasGrimoire(
             sender.id
         );
-        if (!grimoire) {
-            await ctx.reply('У вас ещё нет гримуара');
-            return;
-        }
-
-        const spells: Array<SpellEntity> = [];
-        const title = '<strong><u>ГРИМУАР</u></strong>\n\n';
-        const magicBlock = `<strong>Магия</strong>: ${grimoire.magicName}\n`;
-        let caption = `${title}${magicBlock}<strong>Обложка</strong>: ${grimoire.coverSymbol}\n`;
-        //<strong>Цвет магии</strong>: ${grimoire.magicColor}
-        const spellListMessages: Array<{
-            id: string;
-            text: string;
-        }> = [];
-        if (spells.length === 0) {
-            caption = caption.concat(`У вас нет заклинаний`);
+        if (hasUserGrimoire) {
+            ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_SCENE_ID);
         } else {
-            let spellListBlock = '';
-            spellListBlock = spellListBlock.concat(
-                `<strong>Список заклинаний</strong>\n`
-            );
-            spells.map((spell, index) => {
-                spellListBlock = spellListBlock.concat(
-                    `${index + 1}) ${spell.name}\n`
-                );
-                const spellMessage = spellToText(spell, index + 1);
-                spellListMessages.push({
-                    id: spell.id,
-                    text: spellMessage,
-                });
-            });
-            caption = caption.concat(spellListBlock);
-        }
-        await ctx.sendPhoto(
-            {
-                source: GRIMOURE_IMAGE_PATH,
-            },
-            {
-                caption,
-                parse_mode: 'HTML',
-                ...Markup.inlineKeyboard([
-                    [
-                        Markup.button.callback(
-                            CREATE_SPELL_BUTTON,
-                            CREATE_SPELL_BUTTON
-                        ),
-                    ],
-                    [
-                        Markup.button.callback(
-                            EDIT_MAGIC_NAME_BUTTON,
-                            EDIT_MAGIC_NAME_BUTTON
-                        ),
-                    ],
-                ]),
-            }
-        );
-        spellListMessages.map(
-            async (spell) =>
-                await ctx.reply(spell.text, {
-                    parse_mode: 'HTML',
+            await ctx.reply(
+                'У вас нет гримуара!\n\n Перейдите в башню гримуаров, чтобы получить гримуар',
+                {
+                    reply_markup: 'HTML',
                     ...Markup.inlineKeyboard([
                         [
                             Markup.button.callback(
-                                EDIT_SPELL_BUTTON,
-                                `EDIT_SPELL:${spell.id}`
+                                GRIMOIRE_TOWER_BUTTON,
+                                ENUM_ACTION_NAMES.GO_TO_GRIMOIRE_TOWER_ACTION
                             ),
                         ],
                     ]),
-                })
-        );
-         */
-        //await ctx.scene.enter(ENUM_SCENES_ID.grimoire);
+                }
+            );
+        }
+    }
+
+    @Action(ENUM_ACTION_NAMES.GO_TO_GRIMOIRE_TOWER_ACTION)
+    async grimoireTower(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        await ctx.deleteMessage();
+        await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
     }
     @Hears(BACKGROUND_BUTTON)
     async bioHears(@Ctx() ctx: BotContext) {
@@ -254,10 +209,6 @@ export class ProfileScene {
          * @param ctx
          */
     }
-    @Action(CREATE_SPELL_BUTTON)
-    async createSpell(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.CREATE_SPELL_FORM_SCENE_ID);
-    }
 
     @Action(EDIT_MAGIC_NAME_BUTTON)
     async editMagicName(@Ctx() ctx: BotContext) {
@@ -265,9 +216,7 @@ export class ProfileScene {
     }
 }
 
-
-
-    /**
+/**
      * 
      * @param ctx         /**
          * 「🏷️」Имя: 

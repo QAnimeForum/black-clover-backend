@@ -3,6 +3,8 @@ import { DevilEntity } from 'src/modules/devils/entity/devil.entity';
 import { Markup } from 'telegraf';
 import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
 import { BACK_BUTTON } from '../constants/button-names.constant';
+import { ENUM_DEVIL_RANK } from 'src/modules/devils/constants/devil.ranks.enum';
+import { button } from 'telegraf/typings/markup';
 
 export const devilListToButtons = (
     devils: Paginated<DevilEntity>,
@@ -13,7 +15,7 @@ export const devilListToButtons = (
     const buttons: InlineKeyboardButton[][] = [];
     data.map((devil: DevilEntity) => {
         buttons.push([
-            Markup.button.callback(`${devil.name}`, `devilId:${devil.id}`),
+            Markup.button.callback(`${devil.name}`, `DEVIL_ID:${devil.id}`),
         ]);
     });
     if (totalPages == 0) {
@@ -49,10 +51,71 @@ export const devilListToButtons = (
     return buttons;
 };
 export const defilInformationToText = (devil: DevilEntity) => {
-    const nameBlock = `<strong>Имя</strong>: ${devil.name}\n`;
-    const floorBLock = `<strong>Этаж</strong>: ${devil.floor}\n`;
-    const rankBlock = `<strong>Ранг</strong>: ${devil.rank}\n`;
-    const descriptionBlock = `<strong>Описание</strong>\n${devil.description}\n`;
-    const text = `<strong>Профиль дьявола</strong>\n\n${nameBlock}${floorBLock}${rankBlock}${descriptionBlock}`;
-    return text;
+    let caption = `<strong>Профиль дьявола</strong>\n\n`;
+    caption += `<strong>Имя</strong>: ${devil.name}\n`;
+    caption += `<strong>Магический атрибут</strong>: ${devil.magicType}\n`;
+    caption += `<strong>Этаж</strong>: ${devil.floor}\n`;
+    caption += `<strong>Ранг</strong>: ${magicRank(devil.rank)}\n`;
+
+    caption += `<strong>Описание</strong>\n${devil.description}\n`;
+    return caption;
+};
+
+export const magicRank = (rank: ENUM_DEVIL_RANK) => {
+    switch (rank) {
+        case ENUM_DEVIL_RANK.HIGHEST: {
+            return 'Высший дьявол';
+        }
+        case ENUM_DEVIL_RANK.HIGH: {
+            return 'Высокоранговый дьявол';
+        }
+        case ENUM_DEVIL_RANK.MID: {
+            return 'Среднеранговый дьявол';
+        }
+        case ENUM_DEVIL_RANK.LOW: {
+            return 'Низкоранговый дьявол';
+        }
+    }
+};
+
+export const devilUnionToText = () => {
+    const caption = `<strong>Единение с дьяволом</strong>`;
+    return caption;
+};
+
+export const devilButtons = (devilId: string, isAdmin: boolean) => {
+    const buttons = [
+        [
+            Markup.button.callback(`Единение 10%`, `DEVIL_UNION:${devilId}:10`),
+            Markup.button.callback(`Единение 25%`, `DEVIL_UNION:${devilId}:25`),
+        ],
+
+        [
+            Markup.button.callback(`Единение 50%`, `DEVIL_UNION:${devilId}:50`),
+            Markup.button.callback(`Единение 65%`, `DEVIL_UNION:${devilId}:65`),
+        ],
+        [
+            Markup.button.callback(`Единение 80%`, `DEVIL_UNION:${devilId}:80`),
+            Markup.button.callback(
+                `Единение 100%`,
+                `DEVIL_UNION:${devilId}:100`
+            ),
+        ],
+        [
+            Markup.button.callback(
+                `Показать все единения`,
+                `SHOW_ALL_DEVIL_UNIONS:${devilId}`
+            ),
+        ],
+    ];
+    if (isAdmin) {
+        buttons.push([
+            Markup.button.callback(
+                `Редактирование дьявола`,
+                `EDIT_INFORMATION:${devilId}`
+            ),
+        ]);
+    }
+    buttons.push([Markup.button.callback(BACK_BUTTON, `BACK_TO_DEVIL_LIST`)]);
+    return buttons;
 };

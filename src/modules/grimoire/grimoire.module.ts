@@ -11,11 +11,14 @@ import { ManaZoneEntity } from './entity/mana.zone.entity';
 import { SpellRequirementsEntity } from './entity/spell.requirements.entity';
 import { GrimoireWorkerEntity } from './entity/grimoire.worker.entity';
 import { GrmoireWorkerService } from './services/grimoire.worker.service';
+import { GrimoireRequestEntity } from './entity/grimoire.request.entity';
+import { GrimoireReservationEntity } from './entity/grimoire.reservation.entity';
 @Module({
     imports: [
         TypeOrmModule.forFeature(
             [
                 GrimoireWorkerEntity,
+                GrimoireRequestEntity,
                 GrimoireEntity,
                 SpellEntity,
                 SpellRequirementsEntity,
@@ -23,6 +26,7 @@ import { GrmoireWorkerService } from './services/grimoire.worker.service';
                 CharacterEntity,
                 ManaSkinEntity,
                 ManaZoneEntity,
+                GrimoireReservationEntity,
             ],
             process.env.DATABASE_NAME
         ),

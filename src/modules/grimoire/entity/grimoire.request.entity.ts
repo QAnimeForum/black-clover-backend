@@ -1,3 +1,4 @@
+import { tr } from '@faker-js/faker';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('grimoire_request')
@@ -19,6 +20,7 @@ export class GrimoireRequestEntity {
     @Column({
         type: 'varchar',
         name: 'tg_user_id',
+        unique: true
     })
     tgUserId: string;
 }

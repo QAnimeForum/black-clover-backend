@@ -37,9 +37,9 @@ export class SpellEntity {
     description: string;
 
     @Column({
-        type: 'int',
+        type: 'varchar',
     })
-    damage: number;
+    damage: string;
 
     @Column({
         type: 'varchar',
@@ -55,9 +55,9 @@ export class SpellEntity {
 
      */
     @Column({
-        type: 'int',
+        type: 'varchar',
     })
-    cost: number;
+    cost: string;
 
     /**
      * количество ходов
@@ -100,13 +100,13 @@ export class SpellEntity {
 
      */
 
-    @OneToOne(() => SpellRequirementsEntity)
-    @JoinColumn({ name: 'requirements_id', referencedColumnName: 'id' })
-    requirements: SpellRequirementsEntity;
+    /*  @Column({ name: 'minimal_character_level', type: 'int' })
+    minimalCharacterLevel: number;
 
-    @Column({ name: 'requirements_id', type: 'string' })
-    requirementsId: string;
-
+    @Column({
+        type: 'varchar',
+    })*/
+    requirements: string;
     @Column({
         type: 'enum',
         default: ENUM_SPELL_STATUS.DRAFT,
@@ -120,16 +120,19 @@ export class SpellEntity {
     @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
     updatedAt: Date;
 
-    @ManyToOne(() => GrimoireEntity, (grimoire) => grimoire.spells)
+    @ManyToOne(() => GrimoireEntity, (grimoire) => grimoire.spells, {
+        nullable: true,
+    })
     @JoinColumn({
-        name: 'gromoire_id',
+        name: 'grimoire_id',
         referencedColumnName: 'id',
     })
     grimoire: GrimoireEntity;
 
     @Column({
-        type: 'varchar',
+        type: 'uuid',
         name: 'grimoire_id',
+        nullable: true,
     })
     grimoireId: string;
 }

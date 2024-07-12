@@ -34,11 +34,11 @@ export class RaceEntity {
     })
     bonusMagicPower: number;
 
-    @Column({
+  /*  @Column({
         type: 'bool',
         name: 'natural_mana',
     })
-    naturalMana: boolean;
+    naturalMana: boolean;*/
    /**
     *  @Column({
         type: 'boolean',

@@ -4,10 +4,10 @@ export class SpellCreateDto {
     grimoireId?: string;
     name: string;
     description: string;
-    damage: number;
+    damage: string;
     range: string;
     duration: string;
-    cost: number;
+    cost: string;
     castTime: string;
     cooldown: string;
     type: ENUM_SPELL_TYPE;

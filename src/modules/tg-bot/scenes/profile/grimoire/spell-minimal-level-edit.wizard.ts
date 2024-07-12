@@ -45,11 +45,11 @@ export class SpellMinimalLevelEditWizard {
         });
         composer.on(message('text'), async (ctx) => {
             const message = ctx.update?.message.text;
-            const spellId = ctx.session.spellId;
-            await this.grimoireService.updateMinimalLevel(spellId, {
+            const spellId = ctx.session.spellEdit.spellId;
+            /*await this.grimoireService.updateMinimalLevel(spellId, {
                 minimalLevel: Number.parseInt(message),
-            });
-            await ctx.scene.enter(ENUM_SCENES_ID.EDIT_GRIMOIRES_SCENE_ID);
+            });*/
+            await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         return composer;
     }

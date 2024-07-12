@@ -138,11 +138,11 @@ export default class UserSeeder implements Seeder {
         await characteristitcsRepository.save(characteristitcsEntity);
 
         const wallet = new WalletEntity();
-        wallet.copper = 0;
-        wallet.silver = 0;
-        wallet.electrum = 0;
-        wallet.gold = 0;
-        wallet.platinum = 0;
+        wallet.copper = 1;
+        wallet.silver = 1;
+        wallet.electrum = 1;
+        wallet.gold = 1;
+        wallet.platinum = 1;
         wallet.useElectrum = false;
         wallet.usePlatinum = false;
         await walletRepository.save(wallet);
@@ -157,6 +157,7 @@ export default class UserSeeder implements Seeder {
         character.walletId = wallet.id;
         character.prodigy = false;
 
+        
         const user = new UserEntity();
         user.tgUserId = '237798019';
         user.type = ENUM_USER_PERMISSION_TYPE.OWNER;

@@ -7,6 +7,7 @@ import { ENUM_ITEM_RARITY } from '../constants/item.entity.enum';
 import { ENUM_BODY_PART_ENUM } from '../constants/body.part.enum';
 import { ItemCategoryEntity } from '../entity/item.category.entity';
 import { paginate, PaginateQuery } from 'nestjs-paginate';
+import { ShopEntity } from '../entity/shop.entity';
 @Injectable()
 export class EqupmentItemService {
     constructor(
@@ -115,6 +116,29 @@ export class EqupmentItemService {
         } else {
             throw Error('No item with such id' + itemId);
         }
+    }
+
+    async findAllEquipmentItemsNotOnShop(query: PaginateQuery) {
+        /*   const sqlQuery = 'select * from equpment_item LEFT_JOIN shop ON equipment_item.id = shop.item_id where shop.id is null';*/
+        const queryBuilder = this.equipmentItemRepository
+            .createQueryBuilder()
+            .select('equipment_item')
+            .from(EqupmentItemEntity, 'equipment_item')
+            .leftJoinAndMapOne(
+                'equipment_item.id',
+                ShopEntity,
+                'shop',
+                'shop.item_id = equipment_item.id'
+            )
+            .where('shop.id = :id', { id: null });
+        return paginate(query, queryBuilder, {
+            sortableColumns: ['id', 'name', 'bodyPart'],
+            nullSort: 'last',
+            defaultSortBy: [['name', 'DESC']],
+            searchableColumns: ['name', 'bodyPart'],
+            select: ['id', 'name', 'bodyPart', 'category', 'categoryId'],
+            filterableColumns: {},
+        });
     }
 
     async findAllEquipmentItems(query: PaginateQuery) {

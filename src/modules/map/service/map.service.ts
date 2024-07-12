@@ -33,7 +33,7 @@ export class MapService {
             nullSort: 'last',
             defaultSortBy: [['id', 'DESC']],
             searchableColumns: ['id'],
-            select: ['id', 'name','fullName'],
+            select: ['id', 'name','fullName', 'bonusHp', 'bonusMagicPower'],
             relations: ['form'],
             filterableColumns: {
                 state_id: true,

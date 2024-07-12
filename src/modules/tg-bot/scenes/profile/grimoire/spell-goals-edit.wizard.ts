@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
+import { DevilsService } from 'src/modules/devils/services/devils.service';
 import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
 import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
 import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
@@ -17,6 +18,7 @@ export class SpellGoalsEditWizard {
         @Inject(TELEGRAF_STAGE)
         private readonly stage: Scenes.Stage<BotContext>,
         private readonly grimoireService: GrimoireService,
+        private readonly devilService: DevilsService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {
         this.scene = new Scenes.WizardScene<BotContext>(
@@ -41,11 +43,21 @@ export class SpellGoalsEditWizard {
         });
         composer.on(message('text'), async (ctx) => {
             const message = ctx.update?.message.text;
-            const spellId = ctx.session.spellId;
-            await this.grimoireService.updateSpellGoals(spellId, {
-                goals: message,
-            });
-            await ctx.scene.enter(ENUM_SCENES_ID.EDIT_GRIMOIRES_SCENE_ID);
+            if (ctx.session.editUnionSpellId) {
+                const unionId = ctx.session.editUnionSpellId;
+                const union = await this.devilService.findDefaultSpell(unionId);
+                await this.grimoireService.updateSpellGoals(union.spell.id, {
+                    goals: message,
+                });
+                await ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
+            } else {
+                const spellId = ctx.session.spellEdit.spellId;
+                await this.grimoireService.updateSpellGoals(spellId, {
+                    goals: message,
+                });
+                await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
+            }
+            await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         return composer;
     }

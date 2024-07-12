@@ -9,6 +9,9 @@ import { ArmorClassEntity } from '../entity/armor.class.entity';
 import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
 import { InventoryService } from 'src/modules/items/service/inventory.service';
 import { EquipmentEntity } from 'src/modules/items/entity/equipment.entity';
+import { StateEntity } from 'src/modules/map/enitity/state.entity';
+import { RaceEntity } from 'src/modules/race/entity/race.entity';
+import { BackgroundEntity } from '../entity/background.entity';
 @Injectable()
 export class CharacteristicService {
     constructor(
@@ -22,11 +25,20 @@ export class CharacteristicService {
         private readonly proficiencyRepository: Repository<ProficiencyEntity>,
         @InjectRepository(AbilityEntity)
         private readonly abilityRepository: Repository<AbilityEntity>,
-
         @InjectRepository(ArmorClassEntity)
-        private readonly armorClassRepository: Repository<ArmorClassEntity>
+        private readonly armorClassRepository: Repository<ArmorClassEntity>,
+        @InjectRepository(StateEntity)
+        private readonly stateRepository: Repository<StateEntity>,
+        @InjectRepository(RaceEntity)
+        private readonly raceRepository: Repository<RaceEntity>,
+        @InjectRepository(CharacterEntity)
+        private readonly characterRepository: Repository<CharacterEntity>
     ) {}
-    async createCharacteristics(transactionalEntityManager: EntityManager) {
+    async createCharacteristics(
+        transactionalEntityManager: EntityManager,
+        raceId: string,
+        stateId: string
+    ) {
         const proficiency = new ProficiencyEntity();
         proficiency.level = 1;
         proficiency.extraBonus = 0;
@@ -69,15 +81,22 @@ export class CharacteristicService {
         armorClassEntity.bonus = 0;
         await transactionalEntityManager.save(armorClassEntity);
 
+        const race = await this.raceRepository.findOneBy({
+            id: raceId,
+        });
+        const state = await this.stateRepository.findOneBy({
+            id: stateId,
+        });
         const characteristitcsEntity = new CharacterCharacteristicsEntity();
-        characteristitcsEntity.currentHealth = 500;
-        characteristitcsEntity.maxHealth = 500;
+        characteristitcsEntity.currentHealth = race.bonusHp + state.bonusHp;
+        characteristitcsEntity.maxHealth = race.bonusHp + state.bonusHp;
         characteristitcsEntity.currentLevel = 1;
-        characteristitcsEntity.magicPower = 500;
+        characteristitcsEntity.magicPower =
+            race.bonusMagicPower + state.bonusMagicPower;
         characteristitcsEntity.experience = 0;
         characteristitcsEntity.maxLevel = 20;
         characteristitcsEntity.hunger = 0;
-        characteristitcsEntity.sanity = 0;
+        characteristitcsEntity.sanity = 100;
         characteristitcsEntity.proficiency = proficiency;
         characteristitcsEntity.strength = strengthEntity;
         characteristitcsEntity.dexterity = dexterityEntity;
@@ -110,4 +129,114 @@ export class CharacteristicService {
         });
         return entity;
     }
+
+    async changeRace(dto: ChangeRaceDto) {
+        await this.connection.transaction(
+            'READ UNCOMMITTED',
+            async (transactionManager) => {
+                const race = await this.raceRepository.findOneBy({
+                    id: dto.raceId,
+                });
+                const character = await this.characterRepository.findOne({
+                    where: {
+                        id: dto.characterId,
+                    },
+                    relations: {
+                        background: {
+                            race: true,
+                            state: true,
+                        },
+                        characterCharacteristics: true,
+                    },
+                });
+
+                await transactionManager
+                    .createQueryBuilder()
+                    .update(CharacterCharacteristicsEntity)
+                    .set({
+                        currentHealth:
+                            race.bonusHp + character.background.state.bonusHp,
+                        maxHealth:
+                            race.bonusHp + character.background.state.bonusHp,
+                        magicPower:
+                            race.bonusMagicPower +
+                            character.background.state.bonusMagicPower,
+                    })
+                    .where('id = :id', {
+                        id: character.characterCharacteristics.id,
+                    })
+                    .execute();
+                await transactionManager
+                    .createQueryBuilder()
+                    .update(BackgroundEntity)
+                    .set({
+                        raceId: race.id,
+                    })
+                    .where('id = :id', {
+                        id: character.background.id,
+                    })
+                    .execute();
+            }
+        );
+    }
+
+    async changeState(dto: ChangeStateDto) {
+        await this.connection.transaction(
+            'READ UNCOMMITTED',
+            async (transactionManager) => {
+                const state = await this.stateRepository.findOneBy({
+                    id: dto.state,
+                });
+                const character = await this.characterRepository.findOne({
+                    where: {
+                        id: dto.characterId,
+                    },
+                    relations: {
+                        background: {
+                            race: true,
+                            state: true,
+                        },
+                        characterCharacteristics: true,
+                    },
+                });
+
+                await transactionManager
+                    .createQueryBuilder()
+                    .update(CharacterCharacteristicsEntity)
+                    .set({
+                        currentHealth:
+                            state.bonusHp + character.background.race.bonusHp,
+                        maxHealth:
+                            state.bonusHp + character.background.race.bonusHp,
+                        magicPower:
+                            state.bonusMagicPower +
+                            character.background.race.bonusMagicPower,
+                    })
+                    .where('id = :id', {
+                        id: character.characterCharacteristics.id,
+                    })
+                    .execute();
+                await transactionManager
+                    .createQueryBuilder()
+                    .update(BackgroundEntity)
+                    .set({
+                        stateId: state.id,
+                    })
+                    .where('id = :id', {
+                        id: character.background.id,
+                    })
+                    .execute();
+            }
+        );
+    }
+}
+
+export class ChangeRaceDto {
+    raceId: string;
+    characterId: string;
+}
+
+export class ChangeStateDto {
+    state: string;
+    characterId: string;
 }
