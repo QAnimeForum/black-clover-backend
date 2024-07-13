@@ -12,6 +12,7 @@ import { TgBotModule } from '../modules/tg-bot/tg-bot.module';
 import { session } from 'telegraf';
 import { Postgres } from '@telegraf/session/pg';
 import { PostgresAdapter } from 'kysely';
+import fs from "fs";
 import {
     LOGGER_BOTCHECK,
     LOGGER_ERROR,
@@ -125,7 +126,7 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
                     infer: true,
                 }),
                 database: configService.get('database.name', { infer: true }),
-               
+
                 ssl: configService.get('database.sslEnabled', {
                     infer: true,
                 })
@@ -135,9 +136,11 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
                               { infer: true }
                           ),
                           ca:
-                              configService.get('database.ca', {
-                                  infer: true,
-                              }) ?? undefined,
+                              fs.readFileSync(
+                                  configService.get('database.ca', {
+                                      infer: true,
+                                  })
+                              ) ?? undefined,
                           key:
                               configService.get('database.key', {
                                   infer: true,
