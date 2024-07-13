@@ -4,9 +4,13 @@ import { AppModule } from 'src/app/app.module';
 import { ConfigService } from '@nestjs/config';
 import { useContainer } from 'class-validator';
 import swaggerInit from './swagger';
-
+import fs from 'fs';
 async function bootstrap() {
-    const app: NestApplication = await NestFactory.create(AppModule);
+    const app: NestApplication = await NestFactory.create(AppModule, {
+        httpsOptions: {
+            ca: fs.readFileSync(process.env.DATABASE_CA),
+        },
+    });
     const configService = app.get(ConfigService);
     const databaseUri: string = configService.get<string>('database.host');
     const env: string = configService.get<string>('app.env');
@@ -46,6 +50,7 @@ async function bootstrap() {
     // Swagger
     await swaggerInit(app);
 
+    
     // Listen
     await app.listen(port, host);
     logger.log(`==========================================================`);
