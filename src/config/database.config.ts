@@ -108,5 +108,6 @@ export default registerAs<DatabaseConfig>('database', () => {
         key: process.env.DATABASE_KEY,
         cert: process.env.DATABASE_CERT,
     };
+    console.log(data);
     return data;
 });
