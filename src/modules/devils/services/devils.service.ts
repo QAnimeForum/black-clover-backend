@@ -151,6 +151,7 @@ export class DevilsService {
             ],
             select: [
                 'id',
+                'devilId',
                 'percent',
                 'devil',
                 'devil.id',
@@ -166,7 +167,7 @@ export class DevilsService {
             filterableColumns: {
                 spell: true,
                 devil_id: true,
-                percent: true
+                percent: true,
             },
         });
     }

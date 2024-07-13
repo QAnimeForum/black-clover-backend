@@ -43,6 +43,8 @@ import {
     DEVIL_RANK_4_BUTTON,
     DEVIL_TYPE_SORT_FLOOR_BUTTON,
     DEVIL_TYPE_SORT_RANK_BUTTON,
+    EDIT_SPELL_CAST_TIME_BUTTON,
+    EDIT_SPELL_CHANGE_STATUS_BUTTON,
     EDIT_SPELL_COOLDOWN_BUTTON,
     EDIT_SPELL_COST_BUTTON,
     EDIT_SPELL_DAMAGE_BUTTON,
@@ -51,6 +53,7 @@ import {
     EDIT_SPELL_GOALS_BUTTON,
     EDIT_SPELL_MINIMAL_LEVEL_BUTTON,
     EDIT_SPELL_NAME_BUTTON,
+    EDIT_SPELL_RANGE_BUTTON,
     EDIT_SPELL_TYPE_BUTTON,
 } from '../../constants/button-names.constant';
 import {
@@ -99,7 +102,6 @@ export class AllDevilsScene {
                     ]).resize(),
                 }
             );
-            ctx.session.devilCreateSpellDto
             if (ctx.session.editUnionSpellId) {
                 const buttons = [];
                 const isAdmin = await this.userService.isAdmin(
@@ -116,10 +118,6 @@ export class AllDevilsScene {
                                 DELETE_SPELL_BUTTON,
                                 `DELETE_SPELL:${ctx.session.editUnionSpellId}`
                             ),
-                            Markup.button.callback(
-                                EDIT_SPELL_COST_BUTTON,
-                                EDIT_SPELL_COST_BUTTON
-                            ),
                         ],
                         [
                             Markup.button.callback(
@@ -129,6 +127,16 @@ export class AllDevilsScene {
                             Markup.button.callback(
                                 EDIT_SPELL_DESCRIPTION_BUTTON,
                                 EDIT_SPELL_DESCRIPTION_BUTTON
+                            ),
+                        ],
+                        [
+                            Markup.button.callback(
+                                EDIT_SPELL_TYPE_BUTTON,
+                                EDIT_SPELL_TYPE_BUTTON
+                            ),
+                            Markup.button.callback(
+                                EDIT_SPELL_COST_BUTTON,
+                                EDIT_SPELL_COST_BUTTON
                             ),
                         ],
                         [
@@ -150,15 +158,30 @@ export class AllDevilsScene {
                                 EDIT_SPELL_DAMAGE_BUTTON,
                                 EDIT_SPELL_DAMAGE_BUTTON
                             ),
+                        ],
+                        [
+                            Markup.button.callback(
+                                EDIT_SPELL_CHANGE_STATUS_BUTTON,
+                                EDIT_SPELL_CHANGE_STATUS_BUTTON
+                            ),
+                            Markup.button.callback(
+                                EDIT_SPELL_RANGE_BUTTON,
+                                EDIT_SPELL_RANGE_BUTTON
+                            ),
+                        ],
+                        [
+                            Markup.button.callback(
+                                EDIT_SPELL_CAST_TIME_BUTTON,
+                                EDIT_SPELL_CAST_TIME_BUTTON
+                            ),
+                            Markup.button.callback(
+                                BACK_BUTTON,
+                                `DEVIL_UNION:${union.devilId}:${union.percent}`
+                            ),
                         ]
                     );
                 }
-                buttons.push([
-                    Markup.button.callback(
-                        BACK_BUTTON,
-                        `DEVIL_UNION:${union.devilId}:${union.percent}`
-                    ),
-                ]);
+
                 await ctx.editMessageCaption(caption, {
                     parse_mode: 'HTML',
                     ...Markup.inlineKeyboard(buttons),
@@ -759,10 +782,6 @@ export class AllDevilsScene {
                         DELETE_SPELL_BUTTON,
                         `DELETE_SPELL:${union}`
                     ),
-                    Markup.button.callback(
-                        EDIT_SPELL_COST_BUTTON,
-                        EDIT_SPELL_COST_BUTTON
-                    ),
                 ],
                 [
                     Markup.button.callback(
@@ -772,6 +791,16 @@ export class AllDevilsScene {
                     Markup.button.callback(
                         EDIT_SPELL_DESCRIPTION_BUTTON,
                         EDIT_SPELL_DESCRIPTION_BUTTON
+                    ),
+                ],
+                [
+                    Markup.button.callback(
+                        EDIT_SPELL_TYPE_BUTTON,
+                        EDIT_SPELL_TYPE_BUTTON
+                    ),
+                    Markup.button.callback(
+                        EDIT_SPELL_COST_BUTTON,
+                        EDIT_SPELL_COST_BUTTON
                     ),
                 ],
                 [
@@ -902,6 +931,7 @@ export class AllDevilsScene {
     @Action(EDIT_SPELL_COST_BUTTON)
     async editSpellCost(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
+        console.log(ctx.session.editUnionSpellId);
         ctx.scene.enter(ENUM_SCENES_ID.EDIT_SPELL_COST_SCENE_ID);
     }
 

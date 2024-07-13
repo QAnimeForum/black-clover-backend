@@ -179,9 +179,11 @@ export const spellTypeToText = (status: ENUM_SPELL_TYPE) => {
         case ENUM_SPELL_TYPE.SEAL:
             return 'Печать';
         case ENUM_SPELL_TYPE.TRAP:
-            return 'ловушка';
+            return 'Ловушка';
         case ENUM_SPELL_TYPE.WEAKING:
-            return 'магия ослабления';
+            return 'Магия ослабления';
+        case ENUM_SPELL_TYPE.DEVIL_UNION:
+            return 'Единение с дьяволом';
         case ENUM_SPELL_TYPE.OTHER:
             return 'другой вариант';
         default:
