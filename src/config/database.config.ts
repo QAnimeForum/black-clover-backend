@@ -9,6 +9,7 @@ import {
     IsBoolean,
 } from 'class-validator';
 import validateConfig from 'src/utils/validate-config';
+import fs from "fs";
 export type DatabaseConfig = {
     url?: string;
     type?: string;
@@ -103,7 +104,7 @@ export default registerAs<DatabaseConfig>('database', () => {
             : 100,
         sslEnabled: process.env.DATABASE_SSL_ENABLED === 'true',
         rejectUnauthorized: process.env.DATABASE_REJECT_UNAUTHORIZED === 'true',
-        ca: process.env.DATABASE_CA,
+        ca: fs.readFileSync(process.env.DATABASE_CA),
         key: process.env.DATABASE_KEY,
         cert: process.env.DATABASE_CERT,
     };
