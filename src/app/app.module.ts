@@ -116,6 +116,29 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
             useFactory: (configService: ConfigService) => ({
                 type: 'postgres',
                 url: configService.get('database.url', { infer: true }),
+                ssl: configService.get('database.sslEnabled', {
+                    infer: true,
+                })
+                    ? {
+                          rejectUnauthorized: configService.get(
+                              'database.rejectUnauthorized',
+                              { infer: true }
+                          ),
+                          ca:
+                              configService.get('database.ca', {
+                                  infer: true,
+                              }) ?? undefined,
+                          key:
+                              configService.get('database.key', {
+                                  infer: true,
+                              }) ?? undefined,
+                          cert:
+                              configService.get('database.cert', {
+                                  infer: true,
+                              }) ?? undefined,
+                      }
+                    : undefined,
+
                 /*   host: configService.get('database.host', { infer: true }),
                 port: configService.get('database.port', { infer: true }),
                 username: configService.get('database.username', {
