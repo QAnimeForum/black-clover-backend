@@ -115,7 +115,17 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => ({
                 type: 'postgres',
-                url: configService.get('database.url', { infer: true }),
+               // url: configService.get('database.url', { infer: true }),
+                host: configService.get('database.host', { infer: true }),
+                port: configService.get('database.port', { infer: true }),
+                username: configService.get('database.username', {
+                    infer: true,
+                }),
+                password: configService.get('database.password', {
+                    infer: true,
+                }),
+                database: configService.get('database.name', { infer: true }),
+               
                 ssl: configService.get('database.sslEnabled', {
                     infer: true,
                 })
@@ -138,16 +148,6 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
                               }) ?? undefined,
                       }
                     : undefined,
-
-                /*   host: configService.get('database.host', { infer: true }),
-                port: configService.get('database.port', { infer: true }),
-                username: configService.get('database.username', {
-                    infer: true,
-                }),
-                password: configService.get('database.password', {
-                    infer: true,
-                }),
-                database: configService.get('database.name', { infer: true }),*/
                 synchronize: configService.get('database.synchronize', {
                     infer: true,
                 }),
