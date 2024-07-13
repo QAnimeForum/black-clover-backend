@@ -67,14 +67,13 @@ class EnvironmentVariablesValidator {
 
 export default registerAs<DatabaseConfig>('database', () => {
     validateConfig(process.env, EnvironmentVariablesValidator);
-    console.log(process.env.DATABASE_PASSWORD);
-    return {
+    const data = {
         url: process.env.DATABASE_URL,
         type: process.env.DATABASE_TYPE,
         host: process.env.DATABASE_HOST,
         port: process.env.DATABASE_PORT
             ? parseInt(process.env.DATABASE_PORT, 10)
-            : 6432,
+            : 5432,
         password: process.env.DATABASE_PASSWORD,
         name: process.env.DATABASE_NAME,
         username: process.env.DATABASE_USERNAME,
@@ -83,4 +82,7 @@ export default registerAs<DatabaseConfig>('database', () => {
             ? parseInt(process.env.DATABASE_MAX_CONNECTIONS, 10)
             : 100,
     };
+    console.log(process.env);
+    console.log(data);
+    return data;
 });

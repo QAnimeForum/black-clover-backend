@@ -90,7 +90,7 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
                 JOB_ENABLE: Joi.boolean().default(false).required(),
 
                 DATABASE_URL: Joi.string()
-                    .default('postgresql://localhost:6432')
+                    .default('postgresql://localhost:5432')
                     .required(),
                 DATABASE_TYPE: Joi.string().default('postgres').required(),
                 DATABASE_HOST: Joi.string().required(),
