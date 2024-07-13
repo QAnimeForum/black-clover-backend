@@ -31,7 +31,7 @@ export class SpellDamageEditWizard {
     }
     start() {
         return async (ctx: BotContext) => {
-            await ctx.reply('Введите новое название.');
+            await ctx.reply('Введите новый уроно.');
         };
     }
     step1() {
@@ -43,7 +43,7 @@ export class SpellDamageEditWizard {
         });
         composer.on(message('text'), async (ctx) => {
             const message = ctx.update?.message.text;
-            const spellId = ctx.session.spellEdit.spellId;
+
             if (ctx.session.editUnionSpellId) {
                 const unionId = ctx.session.editUnionSpellId;
                 const union = await this.devilService.findDefaultSpell(unionId);
@@ -59,7 +59,6 @@ export class SpellDamageEditWizard {
 
                 await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
             }
-            await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         return composer;
     }

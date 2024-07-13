@@ -105,7 +105,7 @@ export class DevilSpellCreateWizard {
                 ctx.session.devilCreateSpellDto.devilId,
                 ctx.session.devilCreateSpellDto.percent
             );
-             ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
+            ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
             ctx.scene.session.spell.description = ctx.update.message.text;
@@ -125,7 +125,7 @@ export class DevilSpellCreateWizard {
                 ctx.session.devilCreateSpellDto.devilId,
                 ctx.session.devilCreateSpellDto.percent
             );
-             ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
+            ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
             ctx.scene.session.spell.damage = ctx.update.message.text;
@@ -147,7 +147,7 @@ export class DevilSpellCreateWizard {
                 ctx.session.devilCreateSpellDto.devilId,
                 ctx.session.devilCreateSpellDto.percent
             );
-             ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
+            ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
             ctx.scene.session.spell.range = ctx.update.message.text;
@@ -169,7 +169,7 @@ export class DevilSpellCreateWizard {
                 ctx.session.devilCreateSpellDto.devilId,
                 ctx.session.devilCreateSpellDto.percent
             );
-             ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
+            ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
             ctx.scene.session.spell.duration = ctx.update.message.text;
@@ -185,13 +185,11 @@ export class DevilSpellCreateWizard {
         composer.command('cancel', async (ctx) => {
             await ctx.reply('Сохранён черновик заклинания.');
             await this.grimoireService.createSpell(ctx.scene.session.spell);
-             ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
+            ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
-            ctx.scene.session.spell.cost =  ctx.update.message.text;
-            await ctx.reply(
-                'Время каста заклинания \n (Пример: в секундах'
-            );
+            ctx.scene.session.spell.cost = ctx.update.message.text;
+            await ctx.reply('Время каста заклинания \n (Пример: в секундах');
             ctx.wizard.next();
         });
         return composer;
@@ -206,8 +204,8 @@ export class DevilSpellCreateWizard {
                 ctx.scene.session.spell,
                 ctx.session.devilCreateSpellDto.devilId,
                 ctx.session.devilCreateSpellDto.percent
-            );;
-             ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
+            );
+            ctx.scene.enter(ENUM_SCENES_ID.ALL_DEVILS_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
             ctx.scene.session.spell.castTime = ctx.update.message.text;
