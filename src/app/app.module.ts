@@ -42,7 +42,7 @@ import { AnnouncementModule } from 'src/modules/events/event.module';
 import { PlantService } from 'src/modules/plants/services/plant.service';
 import { PlantsModule } from 'src/modules/plants/plants.module';
 import { CuisineModule } from 'src/modules/cuisine/cuisine.module';
-
+import fs from 'fs';
 const logDir = 'logs/service/';
 const infoLogDir = `${logDir}${LOGGER_INFO}`;
 const errorLogDir = `${logDir}${LOGGER_ERROR}`;
@@ -115,7 +115,7 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => ({
                 type: 'postgres',
-               // url: configService.get('database.url', { infer: true }),
+                // url: configService.get('database.url', { infer: true }),
                 host: configService.get('database.host', { infer: true }),
                 port: configService.get('database.port', { infer: true }),
                 username: configService.get('database.username', {
@@ -125,7 +125,7 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
                     infer: true,
                 }),
                 database: configService.get('database.name', { infer: true }),
-               
+
                 ssl: configService.get('database.sslEnabled', {
                     infer: true,
                 })
@@ -135,9 +135,11 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
                               { infer: true }
                           ),
                           ca:
-                              configService.get('database.ca', {
-                                  infer: true,
-                              }) ?? undefined,
+                              fs.readFileSync(
+                                  configService.get('database.ca', {
+                                      infer: true,
+                                  })
+                              ) ?? undefined,
                           key:
                               configService.get('database.key', {
                                   infer: true,
