@@ -12,7 +12,7 @@ import { TgBotModule } from '../modules/tg-bot/tg-bot.module';
 import { session } from 'telegraf';
 import { Postgres } from '@telegraf/session/pg';
 import { PostgresAdapter } from 'kysely';
-import fs from "fs";
+import fs from 'fs';
 import {
     LOGGER_BOTCHECK,
     LOGGER_ERROR,
@@ -213,12 +213,49 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
 })
 export class AppModule {}
 
-const store = (config: ConfigService) => {
+const store = (configService: ConfigService) => {
     return Postgres<PostgresAdapter>({
-        database: config.get<string>('DATABASE_NAME'),
+        /*   database: config.get<string>('DATABASE_NAME'),
         host: config.get<string>('DATABASE_HOST'),
         user: config.get<string>('DATABASE_USERNAME'),
-        password: config.get<string>('DATABASE_PASSWORD'),
+        password: config.get<string>('DATABASE_PASSWORD'),*/
+        host: configService.get('database.host', { infer: true }),
+        port: configService.get('database.port', { infer: true }),
+        username: configService.get('database.username', {
+            infer: true,
+        }),
+        password: configService.get('database.password', {
+            infer: true,
+        }),
+        database: configService.get('database.name', { infer: true }),
+
+        ssl: configService.get('database.sslEnabled', {
+            infer: true,
+        })
+            ? {
+                  rejectUnauthorized: configService.get(
+                      'database.rejectUnauthorized',
+                      { infer: true }
+                  ),
+                  ca:
+                      fs.readFileSync(
+                          configService.get('database.ca', {
+                              infer: true,
+                          })
+                      ) ?? undefined,
+                  key:
+                      configService.get('database.key', {
+                          infer: true,
+                      }) ?? undefined,
+                  cert:
+                      configService.get('database.cert', {
+                          infer: true,
+                      }) ?? undefined,
+              }
+            : undefined,
+        synchronize: configService.get('database.synchronize', {
+            infer: true,
+        }),
         onInitError(err) {
             throw new NotFoundException(`Config value in not found`, err);
         },
