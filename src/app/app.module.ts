@@ -221,41 +221,13 @@ const store = (configService: ConfigService) => {
         password: config.get<string>('DATABASE_PASSWORD'),*/
         host: configService.get('database.host', { infer: true }),
         port: configService.get('database.port', { infer: true }),
-        username: configService.get('database.username', {
+        user: configService.get('database.username', {
             infer: true,
         }),
         password: configService.get('database.password', {
             infer: true,
         }),
         database: configService.get('database.name', { infer: true }),
-
-        ssl: configService.get('database.sslEnabled', {
-            infer: true,
-        })
-            ? {
-                  rejectUnauthorized: configService.get(
-                      'database.rejectUnauthorized',
-                      { infer: true }
-                  ),
-                  ca:
-                      fs.readFileSync(
-                          configService.get('database.ca', {
-                              infer: true,
-                          })
-                      ) ?? undefined,
-                  key:
-                      configService.get('database.key', {
-                          infer: true,
-                      }) ?? undefined,
-                  cert:
-                      configService.get('database.cert', {
-                          infer: true,
-                      }) ?? undefined,
-              }
-            : undefined,
-        synchronize: configService.get('database.synchronize', {
-            infer: true,
-        }),
         onInitError(err) {
             throw new NotFoundException(`Config value in not found`, err);
         },
