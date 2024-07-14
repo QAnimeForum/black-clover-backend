@@ -214,7 +214,7 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
 export class AppModule {}
 
 const store = (configService: ConfigService) => {
-    return Postgres<PostgresAdapter>({
+    const data = {
         /*   database: config.get<string>('DATABASE_NAME'),
         host: config.get<string>('DATABASE_HOST'),
         user: config.get<string>('DATABASE_USERNAME'),
@@ -231,5 +231,7 @@ const store = (configService: ConfigService) => {
         onInitError(err) {
             throw new NotFoundException(`Config value in not found`, err);
         },
-    });
+    };
+    console.log(data);
+    return Postgres<PostgresAdapter>(data);
 };

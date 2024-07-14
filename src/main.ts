@@ -6,11 +6,7 @@ import { useContainer } from 'class-validator';
 import swaggerInit from './swagger';
 import fs from 'fs';
 async function bootstrap() {
-    const app: NestApplication = await NestFactory.create(AppModule, {
-        httpsOptions: {
-            ca: fs.readFileSync(process.env.DATABASE_CA),
-        },
-    });
+    const app: NestApplication = await NestFactory.create(AppModule);
     const configService = app.get(ConfigService);
     const databaseUri: string = configService.get<string>('database.host');
     const env: string = configService.get<string>('app.env');
