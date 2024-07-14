@@ -230,6 +230,30 @@ const store = (configService: ConfigService) => {
             infer: true,
         }),
         database: configService.get('database.name', { infer: true }),
+        ssl: configService.get('database.sslEnabled', {
+            infer: true,
+        })
+            ? {
+                  rejectUnauthorized: configService.get(
+                      'database.rejectUnauthorized',
+                      { infer: true }
+                  ),
+                  ca:
+                      fs.readFileSync(
+                          configService.get('database.ca', {
+                              infer: true,
+                          })
+                      ) ?? undefined,
+                  key:
+                      configService.get('database.key', {
+                          infer: true,
+                      }) ?? undefined,
+                  cert:
+                      configService.get('database.cert', {
+                          infer: true,
+                      }) ?? undefined,
+              }
+            : undefined,
         onInitError(err) {
             throw new NotFoundException(`Config value in not found`, err);
         },
