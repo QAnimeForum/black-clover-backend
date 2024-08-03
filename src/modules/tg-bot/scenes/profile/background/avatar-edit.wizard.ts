@@ -81,7 +81,7 @@ export class AvatarEditWizard {
                     source: file,
                 });
                 console.log(file);
-                this.backgroundService.updatePhoto({
+                await this.backgroundService.updatePhoto({
                     telegramId: ctx.from.id.toString(),
                     avatar: file,
                 });
