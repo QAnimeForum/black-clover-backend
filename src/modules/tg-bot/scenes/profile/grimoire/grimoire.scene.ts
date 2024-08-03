@@ -173,6 +173,7 @@ export class GrimoireScene {
     }
 
     @Hears(SHOW_FULL_GRIMOIRE)
+    @Action(SHOW_FULL_GRIMOIRE)
     async showFullGrimoire(@Ctx() ctx: BotContext, @Sender('id') tgId: number) {
         const grimoire =
             await this.grimoireService.findGrimoireByUserTgId(tgId);
@@ -224,6 +225,7 @@ export class GrimoireScene {
                 })
         );
     }
+
     @Hears(EDIT_GRIMOIRE_COVER_BUTTON)
     async editGrimoireCover(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.EDIT_GRIMOIRE_COVER_SCENE_ID);
