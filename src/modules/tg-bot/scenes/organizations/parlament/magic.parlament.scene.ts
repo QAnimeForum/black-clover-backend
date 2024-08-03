@@ -3,7 +3,10 @@ import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { Inject, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 import { ProblemService } from 'src/modules/judicial.system/services/problem.service';
-import { ENUM_PROBLEM_STATUS, ProblemEntity } from 'src/modules/judicial.system/entity/problem.entity';
+import {
+    ENUM_PROBLEM_STATUS,
+    ProblemEntity,
+} from 'src/modules/judicial.system/entity/problem.entity';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
@@ -268,7 +271,7 @@ export class MagicParlamentScene {
             ...Markup.inlineKeyboard(buttons),
         });
     }
-    @Action(/^(PROBLEM.*)$/)
+    @Action(/^(PROBLEM_.*)$/)
     async showProblem(@Ctx() ctx: BotContext, @Sender() sender) {
         await ctx.answerCbQuery();
         const problemId = ctx.callbackQuery['data'].split(':')[1];
@@ -293,7 +296,11 @@ export class MagicParlamentScene {
             ]);
         }
         buttons.push([Markup.button.callback(BACK_BUTTON, backAction)]);
-        await ctx.editMessageCaption(caption, {
+        let slicedCaption = caption.slice(0, 1020);
+        if (slicedCaption.length < caption.length) {
+            slicedCaption += '...';
+        }
+        await ctx.editMessageCaption(slicedCaption, {
             parse_mode: 'HTML',
             ...Markup.inlineKeyboard(buttons),
         });
@@ -366,6 +373,41 @@ export class MagicParlamentScene {
 
         await ctx.editMessageReplyMarkup({
             inline_keyboard: buttons,
+        });
+    }
+
+    @Action(/^(PROBLEMS_NEXT_PAGE.*)$/)
+    async nextPage(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
+        const problems = await this.problemService.findAllProblems({
+            path: '',
+            sortBy: [['displayId', 'ASC']],
+            limit: 5,
+            page: page,
+        });
+
+        const [caption, buttons] = probmlemListButtons(problems);
+        await ctx.editMessageCaption(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(buttons),
+        });
+    }
+
+    @Action(/^(PROBLEMS_PREVIOUS_PAGE.*)$/)
+    async previousPage(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
+        const problems = await this.problemService.findAllProblems({
+            path: '',
+            sortBy: [['displayId', 'ASC']],
+            limit: 5,
+            page: page,
+        });
+        const [caption, buttons] = probmlemListButtons(problems);
+        await ctx.editMessageCaption(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(buttons),
         });
     }
 

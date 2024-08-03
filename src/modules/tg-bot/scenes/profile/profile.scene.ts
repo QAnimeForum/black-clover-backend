@@ -25,6 +25,7 @@ import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import { UserService } from 'src/modules/user/services/user.service';
 import { fullProfileToText } from '../../utils/profile.utils';
 import { ENUM_ACTION_NAMES } from '../../constants/action-names.constant';
+import fs from 'fs';
 
 @Scene(ENUM_SCENES_ID.PROFILE_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -58,10 +59,14 @@ export class ProfileScene {
             await this.characterService.findFullCharacterInfoByTgId(senderId);
         const caption = fullProfileToText(character, username, senderId);
         if (chatType == 'private') {
+            const avatarName =
+                await this.characterService.findAvatarByTgId(senderId);
+            const avatar = `${process.env.APP_API_URL}/${avatarName}`;
             await ctx.sendPhoto(
                 {
-                    source: KNIGHT_IMAGE_PATH,
+                    source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
                 },
+
                 {
                     caption,
                     parse_mode: 'HTML',
@@ -91,10 +96,14 @@ export class ProfileScene {
                 );
             }
         } else {
+            const avatarName =
+                await this.characterService.findAvatarByTgId(senderId);
+            const avatar = `${process.env.APP_API_URL}/${avatarName}`;
             await ctx.sendPhoto(
                 {
-                    source: KNIGHT_IMAGE_PATH,
+                    source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
                 },
+
                 {
                     caption,
                     parse_mode: 'HTML',
@@ -117,6 +126,51 @@ export class ProfileScene {
                             Markup.button.callback(
                                 WALLET_BUTTON,
                                 ENUM_ACTION_NAMES.GET_MY_WALLET_ACTION
+                            ),
+                        ],
+                    ]),
+                }
+            );
+        }
+    }
+
+    @Hears(PROFILE_BUTTON)
+    async profileButton(@Ctx() ctx: BotContext, @Sender() sender) {
+        const senderId = sender.id;
+        const username = sender.username;
+        const character =
+            await this.characterService.findFullCharacterInfoByTgId(senderId);
+        const caption = fullProfileToText(character, username, senderId);
+        const avatarName =
+            await this.characterService.findAvatarByTgId(senderId);
+        const avatar = `${process.env.APP_API_URL}/${avatarName}`;
+        await ctx.sendPhoto(
+            {
+                source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
+            },
+
+            {
+                caption,
+                parse_mode: 'HTML',
+                ...Markup.keyboard([
+                    //PARAMS_BUTTON
+                    [GRIMOIRE_BUTTON, BACKGROUND_BUTTON],
+                    [WALLET_BUTTON, INVENTORY_BUTTON],
+                    [MY_DEVILS_BUTTON, MY_SPIRITS_BUTTON],
+                    [PROFILE_BUTTON, BACK_BUTTON],
+                ]).resize(),
+            }
+        );
+        if (character.grimoire == null) {
+            ctx.reply(
+                `Вы ещё не получили гримуар. Сходите в ближайшую башню гримуаров, и оставьте заявку на гримуар. \n`,
+                {
+                    reply_markup: 'HTML',
+                    ...Markup.inlineKeyboard([
+                        [
+                            Markup.button.callback(
+                                GRIMOIRE_TOWER_BUTTON,
+                                ENUM_ACTION_NAMES.GO_TO_GRIMOIRE_TOWER_ACTION
                             ),
                         ],
                     ]),

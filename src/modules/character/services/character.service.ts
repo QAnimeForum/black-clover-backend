@@ -187,7 +187,7 @@ export class CharacterService {
     }
 
     async getCharacterIdByTgId(telegramId: string) {
-        return (
+      /*  return (
             await this.userRepository.findOne({
                 where: {
                     tgUserId: telegramId,
@@ -196,7 +196,29 @@ export class CharacterService {
                     character: true,
                 },
             })
-        ).character;
+        ).character;*/
+        return await this.characterRepository.findOne({
+            where: {
+                user: {
+                    tgUserId: telegramId,
+                },
+            },
+            relations: {
+                user: true,
+                grimoire: true,
+            },
+        });
+    }
+    async findAvatarByTgId(telegramId: string) {
+        const user = await this.userRepository.findOne({
+            where: {
+                tgUserId: telegramId,
+            },
+            relations: {
+                character: true,
+            },
+        });
+        return user.character.avatar;
     }
     async findBackgroundByTgId(telegramId: string) {
         const user = await this.userRepository.findOne({

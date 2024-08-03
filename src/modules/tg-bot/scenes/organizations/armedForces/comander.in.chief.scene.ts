@@ -213,11 +213,11 @@ export class CommanderInChiefScene {
 
         const caption = await this.showCharacterInfo(ctx, selectedId);
         const keyboard = [];
-        ranks.map((rank) => {
+     /*   ranks.map((rank) => {
             keyboard.push([
                 Markup.button.callback(rank.name, `RANK:${rank.id}`),
             ]);
-        });
+        });*/
         keyboard.push([
             Markup.button.callback(BACK_BUTTON, `MEMBER:${selectedId}`),
         ]);

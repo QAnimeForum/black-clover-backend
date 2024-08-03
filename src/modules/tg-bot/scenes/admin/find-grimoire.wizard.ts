@@ -1,15 +1,16 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
-import { BackgroundService } from 'src/modules/character/services/background.service';
-import { Scenes, Composer, Telegraf } from 'telegraf';
+import { Scenes, Composer, Telegraf, Markup } from 'telegraf';
 import { message } from 'telegraf/filters';
-import { Logger } from 'typeorm';
-import { EDIT_GOALS_BUTTON } from '../../constants/button-names.constant';
+import { Logger } from 'winston';
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import { BotContext } from '../../interfaces/bot.context';
-import { LOGGER_INFO } from '../../utils/logger';
-
+import { LOGGER_ERROR, LOGGER_INFO } from '../../utils/logger';
+import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
+import { grimoireToText } from '../../utils/grimoire.utils';
+import { GRIMOIRE_IMAGE_PATH } from '../../constants/images';
+import fs from 'fs';
 @Injectable()
 export class FindGrimoireByTgIdWizard {
     readonly scene: Scenes.WizardScene<BotContext>;
@@ -18,11 +19,11 @@ export class FindGrimoireByTgIdWizard {
         @InjectBot() bot: Telegraf<BotContext>,
         @Inject(TELEGRAF_STAGE)
         private readonly stage: Scenes.Stage<BotContext>,
-        private readonly backgroundService: BackgroundService,
+        private readonly grimoireService: GrimoireService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {
         this.scene = new Scenes.WizardScene<BotContext>(
-            ENUM_SCENES_ID.EDIT_GOALS_SCENE_ID,
+            ENUM_SCENES_ID.FIND_GRIMOIRE_BY_TG_SCENE_ID,
             this.step1()
         );
         this.scene.enter(this.start());
@@ -32,7 +33,11 @@ export class FindGrimoireByTgIdWizard {
     start() {
         return async (ctx: BotContext) => {
             await ctx.reply(
-                `🧟 Введи  ID игрока, чей гримуар хотите посмотреть.`
+                `🧟 Введи  ID игрока, чей гримуар хотите посмотреть.\n(Для отмены поиска нажмите /cancel)`,
+                {
+                    parse_mode: 'HTML',
+                    ...Markup.removeKeyboard(),
+                }
             );
         };
     }
@@ -40,21 +45,58 @@ export class FindGrimoireByTgIdWizard {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Цели не изменены.');
-            ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
+            await ctx.reply('Вы отменили поиск гримуара.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
-            const regex = /^[a-zA-Zа-яА_Я\-]{2,25}$/;
-            const message = ctx.update?.message.text;
-            await this.backgroundService.updateUserGoals({
-                goals: message,
-                telegramId: ctx.update?.message.from.id.toString(),
-            });
-            this.logger.log(
-                LOGGER_INFO,
-                `🟢 Пользователь успешно изменил цели персонажа. * { name: ${ctx.update.message.from.first_name} id: ${ctx.update.message.from.id}}`
-            );
-            ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
+            const message = Number.parseInt(ctx.update?.message.text);
+            if (Number.isNaN(message)) {
+                await ctx.reply(
+                    `❗️Введён неккоректный id {${ctx.update?.message.text}}.`
+                );
+                await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID);
+                return;
+            }
+            const character =
+                await this.grimoireService.findCharacterWithGrimoireByUserTgId(
+                    message
+                );
+            if (!character || !character.grimoire) {
+                await ctx.reply(
+                    `❗️ Системе не удалось найти гримуар пользователя с id {${message}}.`
+                );
+                this.logger.log(
+                    LOGGER_ERROR,
+                    `🔴 Системе не удалось найти гримуар пользователя с id {${message}}.`
+                );
+            } else if (character.grimoire) {
+                this.logger.log(
+                    LOGGER_INFO,
+                    `🟢 Гримуар пользователя * { ${message} } успешно найден`
+                );
+                const caption = grimoireToText(character);
+                const avatar = `${process.env.APP_API_URL}/${character.grimoire.coverImagePath}`;
+                await ctx.sendPhoto(
+                    {
+                        source: fs.existsSync(avatar)
+                            ? avatar
+                            : GRIMOIRE_IMAGE_PATH,
+                    },
+                    {
+                        caption: caption,
+                        parse_mode: 'HTML',
+                    }
+                );
+            } else {
+                await ctx.reply(
+                    `❗️ Системе не удалось найти гримуар пользователя с id {${message}}.`
+                );
+                this.logger.log(
+                    LOGGER_ERROR,
+                    `🔴 Системе не удалось найти гримуар пользователя с id {${message}}.`
+                );
+            }
+            await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID);
         });
         return composer;
     }

@@ -113,6 +113,7 @@ export class GrimoireEntity {
     })
     manaZone: ManaZoneEntity;
 
+
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;
 

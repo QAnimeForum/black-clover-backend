@@ -147,10 +147,18 @@ export class EqupmentItemService {
             nullSort: 'last',
             defaultSortBy: [['name', 'DESC']],
             searchableColumns: ['name', 'bodyPart'],
-            select: ['id', 'name', 'bodyPart', 'category', 'categoryId'],
+            select: [
+                'id',
+                'name',
+                'bodyPart',
+                'category',
+                'categoryId',
+                'rarity',
+            ],
             filterableColumns: {
                 bodyPart: true,
                 categoryId: true,
+                rarity: true,
             },
         });
     }

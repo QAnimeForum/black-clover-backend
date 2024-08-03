@@ -2,6 +2,7 @@ export enum ENUM_ITEM_RARITY {
     COMMON = 'COMMON',
     UNCOMMON = 'UNCOMMON',
     RARE = 'RARE',
+    EPIC = 'EPIC',
     LEGENDARY = 'LEGENDARY',
     UNIQUE = 'UNIQUE',
 }

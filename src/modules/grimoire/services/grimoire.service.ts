@@ -27,6 +27,7 @@ import { SpellUpdateGoalsDto } from '../dto/spell.update-goals.dto';
 import { CharacterEntity } from 'src/modules/character/entity/character.entity';
 import { GrimoireRequestEntity } from '../entity/grimoire.request.entity';
 import { GrimoireReservationEntity } from '../entity/grimoire.reservation.entity';
+import { ENUM_GRIMOIRE_STATUS } from '../constants/grimoire.enum.constant';
 
 @Injectable()
 export class GrimoireService {
@@ -96,34 +97,6 @@ export class GrimoireService {
             },
         });
     }
-   /**
-    * 
-    * @param query  public findAllGrimoires(
-        query: PaginateQuery
-    ): Promise<Paginated<GrimoireEntity>> {
-        return paginate(query, this.grimoireRepository, {
-            sortableColumns: ['id', 'coverSymbol', 'magicName', 'status'],
-            nullSort: 'last',
-            defaultSortBy: [['magicName', 'DESC']],
-            searchableColumns: ['coverSymbol', 'magicName', 'status'],
-            select: [
-                'id',
-                'coverSymbol',
-                'magicName',
-                'coverImagePath',
-                'status',
-                'character',
-                'character.background',
-                'character.background.name',
-            ],
-            filterableColumns: {
-                magicName: true,
-            },
-            relations: ['character', 'character.background'],
-        });
-    }
-    * @returns 
-    */
 
     async findGrimoiresWithoutReservation(query: PaginateQuery) {
         /*   const sqlQuery = 'select * from equpment_item LEFT_JOIN shop ON equipment_item.id = shop.item_id where shop.id is null';*/
@@ -376,6 +349,12 @@ export class GrimoireService {
         );
     }
 
+    async updateGrimoreImage(telegramId: number, coverImagePath: string) {
+        const grimoire = await this.findGrimoireByUserTgId(telegramId);
+        grimoire.coverImagePath = coverImagePath;
+        return await this.grimoireRepository.save(grimoire);
+    }
+
     async updateGrimoreMagicName(id: string, dto: GrimoireUpdateNameDto) {
         const character = await this.findGrimoireById(id);
         character.grimoire.magicName = dto.magicName;
@@ -448,6 +427,15 @@ export class GrimoireService {
         const spell = await this.findSpellById(id);
         spell.status = dto.status;
         return await this.spellRepository.save(spell);
+    }
+
+    async updateGrimoireStatus(
+        id: string,
+        grimoireStatus: ENUM_GRIMOIRE_STATUS
+    ) {
+        const character = await this.findGrimoireById(id);
+        character.grimoire.status = grimoireStatus;
+        return await this.grimoireRepository.save(character.grimoire);
     }
     async deleteSpell(id: string) {
         return await this.spellRepository.delete(id);

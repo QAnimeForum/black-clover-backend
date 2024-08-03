@@ -29,7 +29,7 @@ import { AvatarEditWizard } from './scenes/profile/background/avatar-edit.wizard
 import { BackgroundScene } from './scenes/profile/background/background.scene';
 import { CharacterHistoryEditWizard } from './scenes/profile/background/history-edit.wizard';
 import { CharacterNameEditDto } from '../character/dto/character.name-edit.dto';
-import { GrimoreScene } from './scenes/profile/grimoire/grimoire.scene';
+import { GrimoireScene } from './scenes/profile/grimoire/grimoire.scene';
 import { CharacterCreateWizard } from './scenes/profile/character-create.wizard';
 import { InventoryScene } from './scenes/profile/inventory.scene';
 import { CharacterParamsScene } from './scenes/profile/params.scene';
@@ -113,6 +113,9 @@ import { DevilSpellCreateWizard } from './scenes/devils/devil.spell.create.wizar
 import { SpellDamageEditWizard } from './scenes/profile/grimoire/spell-damage-edit.wizard';
 import { SpellRangeWizard } from './scenes/profile/grimoire/spell-range.wizard';
 import { SpellCastTimeEditWiazard } from './scenes/profile/grimoire/spell-cast-time.edit.wizard';
+import { FindGrimoireByTgIdWizard } from './scenes/admin/find-grimoire.wizard';
+import { GrimoireCoverEditWizard } from './scenes/profile/grimoire/grimoire.cover.edit.wizard';
+import { GrimoireChangeStatusWizard } from './scenes/admin/grimoire.change.status.wizard';
 @Module({
     imports: [
         ThrottlerModule.forRoot([
@@ -189,6 +192,8 @@ import { SpellCastTimeEditWiazard } from './scenes/profile/grimoire/spell-cast-t
         ChangeRankScene,
         ShoppingDistrictScene,
         GrimoireTowerScene,
+        GrimoireChangeStatusWizard,
+        FindGrimoireByTgIdWizard,
         CreateRequestWizard,
         GrimoireAcceptRequestWizard,
         //items
@@ -225,7 +230,8 @@ import { SpellCastTimeEditWiazard } from './scenes/profile/grimoire/spell-cast-t
         IdealsEditWizard,
         //grimoire
 
-        GrimoreScene,
+        GrimoireScene,
+        GrimoireCoverEditWizard,
         SpellCreateWizard,
         DevilSpellCreateWizard,
         EditMagicNameWizard,
