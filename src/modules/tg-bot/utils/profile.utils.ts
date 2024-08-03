@@ -32,6 +32,7 @@ import { BackgroundEntity } from 'src/modules/character/entity/background.entity
 import { KNIGHT_IMAGE_PATH } from '../constants/images';
 import { ENUM_ACTION_NAMES } from '../constants/action-names.constant';
 import { button } from 'telegraf/typings/markup';
+import { ENUM_SPELL_STATUS } from 'src/modules/grimoire/constants/spell.status.enum.constant';
 
 export const fullProfileToText = (
     character: CharacterEntity,
@@ -74,7 +75,20 @@ export const fullProfileToText = (
 
     // const characteristicsTitle = `\n<strong><u>Характеристики персонажа</u></strong>\n\n`;
     // const characteristicsBlock = `${levelBlock}\n${hpBlock}\n${magicPowerBlock}\n${sanityBlock}\n${strengthBlock}\n${dexterityBlock}\n${constitutionBlock}\n${intelligenceBlock}\n${wisdomBlock}\n${charismaBlock}\n`;
-    const spellsBlock = `<strong>☄️Заклинания</strong>\n У вас заклинаний нет`;
+    let spellsBlock = `<strong>☄️Заклинания</strong>\n`;
+    let spellsApprovedCount = 0;
+    if (character.grimoire) {
+        const spells = character.grimoire.spells;
+        for (let i = 0; i < spells.length; ++i) {
+            if (spells[i].status == ENUM_SPELL_STATUS.APPROVED) {
+                spellsBlock += `${spellsApprovedCount + 1}) ${spells[i].name}\n`;
+                spellsApprovedCount += 1;
+            }
+        }
+    }
+    if (spellsApprovedCount == 0) {
+        spellsBlock += 'У вас заклинаний нет';
+    }
     const devilsBlock = `<strong>😈Дьяволы:</strong>\n Контрактов с дьяволами нет`;
     const spiritsBlock = `<strong>🧚Духи:</strong>\n Союза с духами нет`;
     const equippedItemsBlock = `<strong>🤹Оборудованные предметы:</strong>\n Ничего не надето`;

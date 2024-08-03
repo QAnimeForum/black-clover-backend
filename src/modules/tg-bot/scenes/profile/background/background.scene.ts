@@ -28,16 +28,7 @@ import {
     EDIT_WEAKNESS_BUTTON,
     EDIT_WORLDVIEW_BUTTON,
     REMOVE_QUOTES_BUTTON,
-    SHOW_APPEARANCE_BUTTON,
-    SHOW_ATTACHMENTS_BUTTON,
-    SHOW_CHRACTER_TRAITS_BUTTON,
     SHOW_FULL_BACKGROUND_BUTTON,
-    SHOW_GOALS_BUTTON,
-    SHOW_HISTORY_BUTTON,
-    SHOW_HOBBIES_BUTTON,
-    SHOW_QUOTES_BUTTON,
-    SHOW_WEAKNESS_BUTTON,
-    SHOW_WORLDVIEW_BUTTON,
 } from 'src/modules/tg-bot/constants/button-names.constant';
 import { KNIGHT_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
 import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
