@@ -344,7 +344,9 @@ export class CharacterService {
             },
             relations: {
                 character: {
-                    grimoire: true,
+                    grimoire: {
+                        spells: true,
+                    },
                     background: {
                         race: true,
                         state: true,
