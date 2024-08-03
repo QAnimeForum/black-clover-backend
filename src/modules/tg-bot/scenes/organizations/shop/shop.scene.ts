@@ -14,6 +14,8 @@ import {
     CREATE_OFFER_BUTTON,
     DELETE_OFFER_BUTTON,
     GOODS_BUTTON,
+    GOODS_BY_CATEOGORY_BUTTON,
+    GOODS_BY_RARITY_BUTTON,
     OFFERS_BUTTON,
     SHOP_STATISTICS_BUTTON,
 } from 'src/modules/tg-bot/constants/button-names.constant';
@@ -24,6 +26,8 @@ import { InlineKeyboardMarkup } from 'telegraf/typings/core/types/typegram';
 import { EqupmentItemService } from 'src/modules/items/service/equipment.item.service';
 import { ShopService } from 'src/modules/items/service/shop.service';
 import { ShopEntity } from 'src/modules/items/entity/shop.entity';
+import { ENUM_ITEM_RARITY } from 'src/modules/items/constants/item.entity.enum';
+import { convertBodyPartToText, convertRarityToText } from 'src/modules/tg-bot/utils/items.utils';
 
 @Scene(ENUM_SCENES_ID.SHOP_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -92,19 +96,103 @@ export class ShopScene {
                 path: '',
             });
         console.log(offers);
-       /* await this.showOffer(ctx, offers, 1);*/
+        /* await this.showOffer(ctx, offers, 1);*/
     }
     @Hears(GOODS_BUTTON)
     async goodsButton(@Ctx() ctx: BotContext) {
         await ctx.replyWithHTML(
             'Список товаров',
             Markup.inlineKeyboard([
-                [Markup.button.callback(ALL_GOODS_BUTTON, ALL_GOODS_BUTTON)],
+                [
+                    Markup.button.callback(
+                        GOODS_BY_CATEOGORY_BUTTON,
+                        GOODS_BY_CATEOGORY_BUTTON
+                    ),
+                ],
+                [
+                    Markup.button.callback(
+                        GOODS_BY_RARITY_BUTTON,
+                        GOODS_BY_RARITY_BUTTON
+                    ),
+                ],
             ])
         );
     }
-    @Action(ALL_GOODS_BUTTON)
-    async AllGoodsButton(@Ctx() ctx: BotContext) {
+
+    @Action(GOODS_BY_RARITY_BUTTON)
+    async goodsByRarity(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+
+        await ctx.deleteMessage();
+        await ctx.reply('Выберите редкость товара', {
+            ...Markup.inlineKeyboard([
+                [
+                    Markup.button.callback(
+                        'Обычные',
+                        `RARITY:${ENUM_ITEM_RARITY.COMMON}`
+                    ),
+                ],
+                [
+                    Markup.button.callback(
+                        'Необычные',
+                        `RARITY:${ENUM_ITEM_RARITY.UNCOMMON}`
+                    ),
+                ],
+                [
+                    Markup.button.callback(
+                        'Редкие',
+                        `RARITY:${ENUM_ITEM_RARITY.RARE}`
+                    ),
+                ],
+                [
+                    Markup.button.callback(
+                        'Эпичные',
+                        `RARITY:${ENUM_ITEM_RARITY.EPIC}`
+                    ),
+                ],
+                [
+                    Markup.button.callback(
+                        'Легендарые',
+                        `RARITY:${ENUM_ITEM_RARITY.LEGENDARY}`
+                    ),
+                ],
+                [
+                    Markup.button.callback(
+                        'Уникальные',
+                        `RARITY:${ENUM_ITEM_RARITY.UNIQUE}`
+                    ),
+                ],
+            ]),
+        });
+    }
+    @Action(/^(RARITY.*)$/)
+    async showItemsByRarity(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const rarity = ctx.callbackQuery['data'].split(':')[1];
+        const items = await this.equipmentItemService.findAllEquipmentItems({
+            path: '',
+            filter: {
+                rarity: `$eq:${rarity}`,
+            },
+        });
+        console.log(items);
+        const buttons = [];
+        for (let i = 0; i < items.data.length; ++i) {
+            buttons.push([
+                Markup.button.callback(
+                    items.data[i].name,
+                    `RARITY_ITEM_ID:${items.data[i].id}`
+                ),
+            ]);
+        }
+        buttons.push([Markup.button.callback(BACK_BUTTON, `RARITY:${rarity}`)]);
+        await ctx.deleteMessage();
+        await ctx.replyWithHTML('Предметы', {
+            ...Markup.inlineKeyboard(buttons),
+        });
+    }
+    @Action(GOODS_BY_CATEOGORY_BUTTON)
+    async goodsByCategory(@Ctx() ctx: BotContext) {
         await ctx.answerCbQuery();
         const categories = await this.equipmentItemService.findCategories();
         const buttons = [];
@@ -120,7 +208,6 @@ export class ShopScene {
         await ctx.reply('Выберите категорию товара', {
             ...Markup.inlineKeyboard(buttons),
         });
-        // await ctx.scene.enter(ENUM_SCENES_ID.CREATE_OFFER_SCENE_ID);
     }
 
     @Action(/^(CATEGORY_ID.*)$/)
@@ -180,7 +267,7 @@ export class ShopScene {
                     buttons.push([
                         Markup.button.callback(
                             items.data[i].name,
-                            `ITEM_ID:${items.data[i].id}`
+                            `CATEGORY_ITEM_ID:${items.data[i].id}`
                         ),
                     ]);
                 }
@@ -198,34 +285,32 @@ export class ShopScene {
         }
     }
 
-    @Action(/^(ITEM_ID.*)$/)
-    async item(@Ctx() ctx: BotContext) {
+    @Action(/^(RARITY_ITEM_ID.*)$/)
+    async rarityItem(@Ctx() ctx: BotContext) {
         await ctx.answerCbQuery();
         const itemId = ctx.callbackQuery['data'].split(':')[1];
         this.showItem(ctx, itemId);
     }
 
-    async showItem(ctx: BotContext, itemId) {
+    @Action(/^(CATEGORY_ITEM_ID.*)$/)
+    async categoryItem(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const itemId = ctx.callbackQuery['data'].split(':')[1];
+        this.showItem(ctx, itemId);
+    }
+
+    async showItem(ctx: BotContext, itemId: string) {
         const item = await this.equipmentItemService.findItemById(itemId);
-        const hasItemOffer = await this.shopService.hasItemOffer(itemId);
-        let caption = `<strong>${item.name}</strong>\n\n`;
-        caption += `<strong>Описание</strong>\n${item.description}`;
+        let caption = `<strong>${item.name}</strong>\n`;
+        caption += `<strong>Редость: </strong> ${convertRarityToText(item.rarity)}\n`;
+        caption += `<strong>Часть тела: </strong> ${convertBodyPartToText(item.bodyPart)}\n`;
+        caption += `<strong>Категория: </strong>${item.category.name}\n`;
+        caption += `<strong>Маг. урон: </strong>${item.magicAttackDamage}\n`;
+        caption += `<strong>Физ. урон: </strong>${item.physicalAttackDamage}\n`;
+        caption += `<strong>Магическая защита: </strong>${item.magicDefense}\n`;
+        caption += `<strong>Физическая защита: </strong>${item.physicalDefense}\n`;
+        caption += `<strong>Описание</strong>${item.description}\n`;
         const buttons = [];
-        /*  if (hasItemOffer) {
-            buttons.push([
-                Markup.button.callback(
-                    DELETE_OFFER_BUTTON,
-                    `DELETE_OFFER_BUTTON:${item.id}`
-                ),
-            ]);
-        } else {
-            buttons.push([
-                Markup.button.callback(
-                    CREATE_OFFER_BUTTON,
-                    `CREATE_OFFER_BUTTON:${item.id}`
-                ),
-            ]);
-        }*/
         buttons.push([
             Markup.button.callback(
                 BACK_BUTTON,

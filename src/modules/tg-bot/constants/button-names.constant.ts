@@ -73,9 +73,10 @@ export const GRIMOIRE_BUTTON = '📕 Гримуар';
 export const COME_UP_WITH_MAGICAL_ATTRIBUTE_BUTTON = '📕 Выбрать самому магию';
 export const ADMIN_CREATE_GRIMOIRE_BUTTON =
     '📕 Боги этого мира одарят вас магией';
-export const GRIMOIRE_STATISTICS_BUTTON = 'Статистика';
+export const GRIMOIRE_STATISTICS_BUTTON = '📊Статистика';
 export const SHOW_FULL_GRIMOIRE = 'Показать все заклинания';
 export const CREATE_SPELL_BUTTON = '✏️Создать заклинание';
+export const EDIT_GRIMOIRE_COVER_BUTTON = '✏️Изменить обложку';
 export const EDIT_GRIMOIRE_BUTTON = '✏️Редактировать гримуар';
 export const DELETE_SPELL_BUTTON = '🗑Удалить заклинание';
 
@@ -90,7 +91,7 @@ export const EDIT_SPELL_COST_BUTTON = '✏️Изменить стоимость
 export const EDIT_SPELL_COOLDOWN_BUTTON = '✏️Изменить откат';
 export const EDIT_SPELL_GOALS_BUTTON = '✏️Изменить цели';
 export const EDIT_SPELL_MINIMAL_LEVEL_BUTTON = '✏️Изменить мин. уровень';
-export const EDIT_SPELL_CHANGE_STATUS_BUTTON = '✏️Изменить статус заклинания';
+export const EDIT_SPELL_CHANGE_STATUS_BUTTON = '✏️Изменить статус';
 export const EDIT_SPELL_DESCRIPTION_BUTTON = '✏️Изменить описание';
 //INVENTORY
 export const INVENTORY_BUTTON = '🎒Инвентарь';
@@ -133,6 +134,8 @@ export const SHOP_STATISTICS_BUTTON = '📊Статистика магазина
 export const CREATE_ITEM_BUTTON = '➕Создать предмет';
 export const GOODS_BUTTON = '🎒Товары';
 export const ALL_GOODS_BUTTON = '🎒 Все товары';
+export const GOODS_BY_CATEOGORY_BUTTON = 'По категории';
+export const GOODS_BY_RARITY_BUTTON = 'По редкости';
 export const OFFERS_BUTTON = 'Позиции магазина';
 export const CREATE_OFFER_BUTTON = '➕ Создать предложение';
 export const DELETE_OFFER_BUTTON = '➖ Удалить предложение';
@@ -149,6 +152,7 @@ export const GET_A_WAGE_BUTTON = 'Получить выплаты';
 export const SHOW_SQUAD_REQUESTS_BUTTON = '📔 Заявки';
 export const COMMANDER_IN_CHIEF_BUTTON = '📘меню главнокомандующего';
 export const PEOPLE_MANAGEMENT_BUTTON = '👤Управление людьми';
+export const ARMED_FORCES_RANKS_BUTTON = 'Ранги';
 export const JOIN_TO_ARMED_FORCES_BUTTON = '🛡Вступить';
 export const CREATE_SQUAD_BUTTON = '🛡Создать отряд';
 export const JOIN_TO_SQUAD_BUTTON = '🛡Подать заявку в отряд';

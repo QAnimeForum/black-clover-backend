@@ -12,6 +12,7 @@ import { TgBotModule } from '../modules/tg-bot/tg-bot.module';
 import { session } from 'telegraf';
 import { Postgres } from '@telegraf/session/pg';
 import { PostgresAdapter } from 'kysely';
+import fs from 'fs';
 import {
     LOGGER_BOTCHECK,
     LOGGER_ERROR,
@@ -116,7 +117,8 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
             useFactory: (configService: ConfigService) => ({
                 type: 'postgres',
                 url: configService.get('database.url', { infer: true }),
-                host: configService.get('database.host', { infer: true }),
+              /**
+               *   host: configService.get('database.host', { infer: true }),
                 port: configService.get('database.port', { infer: true }),
                 username: configService.get('database.username', {
                     infer: true,
@@ -125,6 +127,32 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
                     infer: true,
                 }),
                 database: configService.get('database.name', { infer: true }),
+
+               */
+                ssl: configService.get('database.sslEnabled', {
+                    infer: true,
+                })
+                    ? {
+                          rejectUnauthorized: configService.get(
+                              'database.rejectUnauthorized',
+                              { infer: true }
+                          ),
+                          ca:
+                              fs.readFileSync(
+                                  configService.get('database.ca', {
+                                      infer: true,
+                                  })
+                              ) ?? undefined,
+                          key:
+                              configService.get('database.key', {
+                                  infer: true,
+                              }) ?? undefined,
+                          cert:
+                              configService.get('database.cert', {
+                                  infer: true,
+                              }) ?? undefined,
+                      }
+                    : undefined,
                 synchronize: configService.get('database.synchronize', {
                     infer: true,
                 }),
@@ -187,14 +215,49 @@ if (!existsSync(exceptionLogDir)) mkdirSync(exceptionLogDir);
 })
 export class AppModule {}
 
-const store = (config: ConfigService) => {
-    return Postgres<PostgresAdapter>({
-        database: config.get<string>('DATABASE_NAME'),
+const store = (configService: ConfigService) => {
+    const data = {
+        /*   database: config.get<string>('DATABASE_NAME'),
         host: config.get<string>('DATABASE_HOST'),
         user: config.get<string>('DATABASE_USERNAME'),
-        password: config.get<string>('DATABASE_PASSWORD'),
+        password: config.get<string>('DATABASE_PASSWORD'),*/
+        host: configService.get('database.host', { infer: true }),
+        port: configService.get('database.port', { infer: true }),
+        user: configService.get('database.username', {
+            infer: true,
+        }),
+        password: configService.get('database.password', {
+            infer: true,
+        }),
+        database: configService.get('database.name', { infer: true }),
+        ssl: configService.get('database.sslEnabled', {
+            infer: true,
+        })
+            ? {
+                  rejectUnauthorized: configService.get(
+                      'database.rejectUnauthorized',
+                      { infer: true }
+                  ),
+                  ca:
+                      fs.readFileSync(
+                          configService.get('database.ca', {
+                              infer: true,
+                          })
+                      ) ?? undefined,
+                  key:
+                      configService.get('database.key', {
+                          infer: true,
+                      }) ?? undefined,
+                  cert:
+                      configService.get('database.cert', {
+                          infer: true,
+                      }) ?? undefined,
+              }
+            : undefined,
         onInitError(err) {
             throw new NotFoundException(`Config value in not found`, err);
         },
-    });
+    };
+    console.log(data);
+    return Postgres<PostgresAdapter>(data);
 };

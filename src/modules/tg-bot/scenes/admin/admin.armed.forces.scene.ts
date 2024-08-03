@@ -5,6 +5,7 @@ import { Inject, Logger, UseFilters } from '@nestjs/common';
 import { BotContext } from '../../interfaces/bot.context';
 import { Markup } from 'telegraf';
 import {
+    ARMED_FORCES_RANKS_BUTTON,
     BACK_BUTTON,
     PEOPLE_MANAGEMENT_BUTTON,
     SHOW_SQUAD_REQUESTS_BUTTON,
@@ -13,6 +14,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { SquadsService } from 'src/modules/squards/service/squads.service';
 import { ArmedForcesRequestEntity } from 'src/modules/squards/entity/armed.forces.request.entity';
 import { PaginateQuery } from 'nestjs-paginate';
+import { ArmedForcesRankEntity } from 'src/modules/squards/entity/armed.forces.rank.entity';
 
 @Scene(ENUM_SCENES_ID.ADMIN_ARMED_FORCES_MAGIC_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -24,12 +26,13 @@ export class AdminArmedForcesScene {
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {
         const selectedId = ctx.session.adminSelectedArmedForcesId;
+        console.log(selectedId);
         const armedForces =
             await this.squadsService.findArmedForcesById(selectedId);
-        console.log(armedForces);
         const caption = `Админка армии ${armedForces.name}\n${armedForces.state.name}\n${armedForces.descripiton}`;
         const keyboardButtons = [];
         keyboardButtons.push([
+            ARMED_FORCES_RANKS_BUTTON,
             SHOW_SQUAD_REQUESTS_BUTTON,
             PEOPLE_MANAGEMENT_BUTTON,
         ]);
@@ -65,8 +68,50 @@ export class AdminArmedForcesScene {
         });
     }
 
+    @Hears(ARMED_FORCES_RANKS_BUTTON)
+    async showRanks(@Ctx() ctx: BotContext) {
+        const armedForcesId = ctx.session.adminSelectedArmedForcesId;
+        /**
+ *         const ranks = await this.squadsService.findAllRanks({
+            path: '',
+            filter: {
+                armedForcesId: `$eq:${armedForcesId}`,
+            },
+        });
+ */
+        const rank =
+            await this.squadsService.findRanksByArmedForces(armedForcesId);
+        console.log(rank);
+        let caption = '<strong>Ранги</strong>\n';
+        caption += this.showRankInfo(rank);
+        caption += this.showRanksInfo(rank.children);
+        await ctx.reply(caption, {
+            parse_mode: 'HTML',
+        });
+    }
+    showRanksInfo(children: Array<ArmedForcesRankEntity>) {
+        let caption = '';
+        children.map((item) => {
+            caption += this.showRankInfo(item);
+            caption += this.showRanksInfo(item.children);
+        });
+        return caption;
+    }
+    showRankInfo(rank: ArmedForcesRankEntity) {
+        let caption = '';
+        caption += `<strong>${rank.name}</strong>\n`;
+        caption += 'Зарплата: ';
+        caption += `${rank.salary.copper} 🟤`;
+        caption += `${rank.salary.silver} ⚪️`;
+        caption += `${rank.salary.eclevtrum} 🔵`;
+        caption += `${rank.salary.gold} 🟡`;
+        caption += `${rank.salary.platinum} 🪙\n`;
+        caption += `Звёзды для получения: ${rank.star}\n\n`;
+        return caption;
+    }
     @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
+        ctx.session.adminSelectedArmedForcesId = null;
         await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
     }
 }

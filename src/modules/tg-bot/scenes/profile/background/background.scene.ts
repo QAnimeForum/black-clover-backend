@@ -51,6 +51,7 @@ import {
 } from 'src/modules/tg-bot/utils/profile.utils';
 import { Markup } from 'telegraf';
 import { Logger } from 'winston';
+import fs from 'fs';
 @Scene(ENUM_SCENES_ID.BACKGROUND_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class BackgroundScene {
@@ -63,9 +64,13 @@ export class BackgroundScene {
         const type = ctx.chat.type;
         if (type == 'private') {
             const caption = 'Вы попали в свой кабинет и достали свои бумаги.';
+            const senderId = sender.id;
+            const avatarName =
+                await this.characterService.findAvatarByTgId(senderId);
+            const avatar = `${process.env.APP_API_URL}/${avatarName}`;
             await ctx.sendPhoto(
                 {
-                    source: KNIGHT_IMAGE_PATH,
+                    source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
                 },
                 {
                     caption,
@@ -79,6 +84,8 @@ export class BackgroundScene {
         } else {
             const senderId = sender.id;
             const username = sender.username;
+            const avatar =
+                await this.characterService.findAvatarByTgId(senderId);
             const background =
                 await this.characterService.findBackgroundByTgId(senderId);
 
@@ -96,7 +103,7 @@ export class BackgroundScene {
             ]);
             await ctx.sendPhoto(
                 {
-                    source: KNIGHT_IMAGE_PATH,
+                    source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
                 },
                 {
                     caption,
@@ -115,10 +122,14 @@ export class BackgroundScene {
             await this.characterService.findBackgroundByTgId(senderId);
         const caption = shortBackgroundToText(background, username, senderId);
         const buttons = backgroundShowButtons();
+        const avatarName =
+            await this.characterService.findAvatarByTgId(senderId);
+        const avatar = `${process.env.APP_API_URL}/${avatarName}`;
         await ctx.sendPhoto(
             {
-                source: KNIGHT_IMAGE_PATH,
+                source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
             },
+
             {
                 caption,
                 parse_mode: 'HTML',
@@ -147,10 +158,14 @@ export class BackgroundScene {
             await this.characterService.findBackgroundByTgId(senderId);
         const appearance = `<strong>Описание внешности</strong>\n${background.appearance}\n`;
 
+        const avatarName =
+            await this.characterService.findAvatarByTgId(senderId);
+        const avatar = `${process.env.APP_API_URL}/${avatarName}`;
         await ctx.sendPhoto(
             {
-                source: KNIGHT_IMAGE_PATH,
+                source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
             },
+
             {
                 caption: appearance,
                 parse_mode: 'HTML',
@@ -175,10 +190,14 @@ export class BackgroundScene {
         const background =
             await this.characterService.findBackgroundByTgId(senderId);
         const characterTraits = `<strong>Черты характера</strong>: ${background.characterTraits}\n`;
+        const avatarName =
+            await this.characterService.findAvatarByTgId(senderId);
+        const avatar = `${process.env.APP_API_URL}/${avatarName}`;
         await ctx.sendPhoto(
             {
-                source: KNIGHT_IMAGE_PATH,
+                source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
             },
+
             {
                 caption: characterTraits,
                 parse_mode: 'HTML',
@@ -208,10 +227,14 @@ export class BackgroundScene {
         let start = 1;
         let end = MAX_MESSAGE_LENGTH;
         history += background.history.slice(start, end);
+        const avatarName =
+            await this.characterService.findAvatarByTgId(senderId);
+        const avatar = `${process.env.APP_API_URL}/${avatarName}`;
         await ctx.sendPhoto(
             {
-                source: KNIGHT_IMAGE_PATH,
+                source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
             },
+
             {
                 caption: history,
                 parse_mode: 'HTML',
@@ -242,10 +265,14 @@ export class BackgroundScene {
         const background =
             await this.characterService.findBackgroundByTgId(senderId);
         const hobbies = `<strong>Хобби</strong>\n${background.hobbies}\n`;
+        const avatarName =
+            await this.characterService.findAvatarByTgId(senderId);
+        const avatar = `${process.env.APP_API_URL}/${avatarName}`;
         await ctx.sendPhoto(
             {
-                source: KNIGHT_IMAGE_PATH,
+                source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
             },
+
             {
                 caption: hobbies,
                 parse_mode: 'HTML',
@@ -270,9 +297,12 @@ export class BackgroundScene {
         const background =
             await this.characterService.findBackgroundByTgId(senderId);
         const goals = `<strong>Цели</strong>\n${background.goals}\n`;
+        const avatarName =
+            await this.characterService.findAvatarByTgId(senderId);
+        const avatar = `${process.env.APP_API_URL}/${avatarName}`;
         await ctx.sendPhoto(
             {
-                source: KNIGHT_IMAGE_PATH,
+                source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
             },
             {
                 caption: goals,
@@ -298,10 +328,14 @@ export class BackgroundScene {
         const background =
             await this.characterService.findBackgroundByTgId(senderId);
         const worldview = `<strong>Мировоззрение персонажа</strong>: ${background.worldview}\n`;
+        const avatarName =
+            await this.characterService.findAvatarByTgId(senderId);
+        const avatar = `${process.env.APP_API_URL}/${avatarName}`;
         await ctx.sendPhoto(
             {
-                source: KNIGHT_IMAGE_PATH,
+                source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
             },
+
             {
                 caption: worldview,
                 parse_mode: 'HTML',
@@ -326,10 +360,14 @@ export class BackgroundScene {
         const background =
             await this.characterService.findBackgroundByTgId(senderId);
         const ideals = `<strong>Идеалы</strong>\n${background.ideals}\n`;
+        const avatarName =
+            await this.characterService.findAvatarByTgId(senderId);
+        const avatar = `${process.env.APP_API_URL}/${avatarName}`;
         await ctx.sendPhoto(
             {
-                source: KNIGHT_IMAGE_PATH,
+                source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
             },
+
             {
                 caption: ideals,
                 parse_mode: 'HTML',
@@ -354,10 +392,14 @@ export class BackgroundScene {
         const background =
             await this.characterService.findBackgroundByTgId(senderId);
         const weaknesses = `<strong>Слабости</strong>: ${background.weaknesses}\n`;
+        const avatarName =
+            await this.characterService.findAvatarByTgId(senderId);
+        const avatar = `${process.env.APP_API_URL}/${avatarName}`;
         await ctx.sendPhoto(
             {
-                source: KNIGHT_IMAGE_PATH,
+                source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
             },
+
             {
                 caption: weaknesses,
                 parse_mode: 'HTML',
@@ -385,10 +427,14 @@ export class BackgroundScene {
         background.quotes.map((quote, index) => {
             quotes += `${index}) ${quote}\n`;
         });
+        const avatarName =
+            await this.characterService.findAvatarByTgId(senderId);
+        const avatar = `${process.env.APP_API_URL}/${avatarName}`;
         await ctx.sendPhoto(
             {
-                source: KNIGHT_IMAGE_PATH,
+                source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
             },
+
             {
                 caption: quotes,
                 parse_mode: 'HTML',
@@ -413,10 +459,14 @@ export class BackgroundScene {
         const background =
             await this.characterService.findBackgroundByTgId(senderId);
         const attachments = `<strong>Привязанности</strong>\n${background.attachments}\n`;
+        const avatarName =
+            await this.characterService.findAvatarByTgId(senderId);
+        const avatar = `${process.env.APP_API_URL}/${avatarName}`;
         await ctx.sendPhoto(
             {
-                source: KNIGHT_IMAGE_PATH,
+                source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
             },
+
             {
                 caption: attachments,
                 parse_mode: 'HTML',
@@ -442,9 +492,12 @@ export class BackgroundScene {
             await this.characterService.findBackgroundByTgId(senderId);
         const caption = shortBackgroundToText(background, username, senderId);
         const buttons = backgroundShowButtons();
+        const avatarName =
+            await this.characterService.findAvatarByTgId(senderId);
+        const avatar = `${process.env.APP_API_URL}/${avatarName}`;
         await ctx.sendPhoto(
             {
-                source: KNIGHT_IMAGE_PATH,
+                source: fs.existsSync(avatar) ? avatar : KNIGHT_IMAGE_PATH,
             },
             {
                 caption,
@@ -475,7 +528,7 @@ export class BackgroundScene {
     @Action(EDIT_AVATAR_BUTTON)
     async editAvatar(@Context() ctx: BotContext) {
         await ctx.answerCbQuery();
-        await ctx.reply('Вы пока не можете изменить фотографию');
+        await ctx.scene.enter(ENUM_SCENES_ID.EDIT_AVATAR_SCENE_ID);
     }
     @Action(EDIT_HOBBIES_BUTTON)
     async editHobbies(@Context() ctx: BotContext) {

@@ -204,6 +204,7 @@ export const grimoireStatusToText = (status: ENUM_GRIMOIRE_STATUS) => {
     }
 };
 export const spellToText = (spell: SpellEntity, index?: number) => {
+    console.log(spell);
     const title = `<strong><u>Заклинание ${index ?? ''}</u></strong>`;
     const name = `<strong>Название: </strong> ${spell.name}`;
     const status = `<strong>Статус: </strong> ${spellStatusToText(spell.status)}`;
@@ -457,8 +458,8 @@ export const spellEditInlineKeyboard = (
         ],
         [
             Markup.button.callback(
-                EDIT_SPELL_CHANGE_STATUS_BUTTON,
-                EDIT_SPELL_CHANGE_STATUS_BUTTON
+                EDIT_SPELL_CAST_TIME_BUTTON,
+                EDIT_SPELL_CAST_TIME_BUTTON
             ),
             Markup.button.callback(
                 EDIT_SPELL_RANGE_BUTTON,
@@ -467,8 +468,8 @@ export const spellEditInlineKeyboard = (
         ],
         [
             Markup.button.callback(
-                EDIT_SPELL_CAST_TIME_BUTTON,
-                EDIT_SPELL_CAST_TIME_BUTTON
+                EDIT_SPELL_CHANGE_STATUS_BUTTON,
+                EDIT_SPELL_CHANGE_STATUS_BUTTON
             ),
             Markup.button.callback(
                 BACK_BUTTON,

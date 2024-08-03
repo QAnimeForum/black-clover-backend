@@ -37,6 +37,7 @@ import {
     EDIT_SPELL_DAMAGE_BUTTON,
     EDIT_SPELL_RANGE_BUTTON,
     EDIT_SPELL_CAST_TIME_BUTTON,
+    EDIT_SPELL_CHANGE_STATUS_BUTTON,
 } from 'src/modules/tg-bot/constants/button-names.constant';
 import { ENUM_HELP_DOCUMENTATION } from 'src/modules/tg-bot/constants/help.constant';
 import { GRIMOIRE_TOWER_PATH } from 'src/modules/tg-bot/constants/images';
@@ -171,7 +172,10 @@ export class GrimoireTowerScene {
             this.showEnterMessage(ctx, sender.id);
         }
     }
-
+    @Hears(FIND_GRIMOIRE_BY_TG_BUTTON)
+    async findGrimoireByTgButton(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.FIND_GRIMOIRE_BY_TG_SCENE_ID);
+    }
     @Action(ENUM_ACTION_NAMES.GRIMOIRE_LIST_ACTION)
     @Hears(GRIMOIRE_LIST_BUTTON)
     async findByGrimoireList(@Ctx() ctx: BotContext) {
@@ -215,16 +219,14 @@ export class GrimoireTowerScene {
         await ctx.answerCbQuery();
         const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
 
-        const paginatedGrimoires = await this.grimoireService.findAllGrimoires(
-            {
-                path: '',
-                limit: 5,
-                page: page,
-                filter: {
-                    grimoire: '$not:$null',
-                },
-            }
-        );
+        const paginatedGrimoires = await this.grimoireService.findAllGrimoires({
+            path: '',
+            limit: 5,
+            page: page,
+            filter: {
+                grimoire: '$not:$null',
+            },
+        });
         const [text, buttons] =
             convertGrimoiresToTextAndInlineButtons(paginatedGrimoires);
         buttons.push([
@@ -561,15 +563,16 @@ export class GrimoireTowerScene {
         await ctx.answerCbQuery();
         const data = ctx.callbackQuery['data'].split(':');
         const page = Number.parseInt(data[1]);
-        const paginatedCharacters =
-            await this.grimoireService.findAllGrimoires({
+        const paginatedCharacters = await this.grimoireService.findAllGrimoires(
+            {
                 path: '',
                 limit: 5,
                 page: page,
                 filter: {
                     grimoire: '$not:$null',
                 },
-            });
+            }
+        );
         let text = '';
         let buttons = [];
         if (data.length >= 3) {
@@ -596,16 +599,14 @@ export class GrimoireTowerScene {
         await ctx.answerCbQuery();
         const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
 
-        const paginatedGrimoires = await this.grimoireService.findAllGrimoires(
-            {
-                path: '',
-                limit: 5,
-                page: page,
-                filter: {
-                    grimoire: '$not:$null',
-                },
-            }
-        );
+        const paginatedGrimoires = await this.grimoireService.findAllGrimoires({
+            path: '',
+            limit: 5,
+            page: page,
+            filter: {
+                grimoire: '$not:$null',
+            },
+        });
         const [text, buttons] =
             convertGrimoiresToTextAndInlineButtons(paginatedGrimoires);
         buttons.push([
@@ -632,11 +633,9 @@ export class GrimoireTowerScene {
         }
         ctx.session.spellEdit.spellId == null;
         ctx.session.spellEdit.grimoireId == null;
-        const paginatedGrimoires = await this.grimoireService.findAllGrimoires(
-            {
-                path: '',
-            }
-        );
+        const paginatedGrimoires = await this.grimoireService.findAllGrimoires({
+            path: '',
+        });
         const [text, buttons] =
             convertGrimoiresToTextAndInlineButtons(paginatedGrimoires);
         await ctx.editMessageText(text, {
@@ -1002,6 +1001,12 @@ export class GrimoireTowerScene {
     async editSpellMinLevel(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
         ctx.scene.enter(ENUM_SCENES_ID.EDIT_SPELL_MINIMAL_LEVEL_SCENE_ID);
+    }
+
+    @Action(EDIT_SPELL_CHANGE_STATUS_BUTTON)
+    async changeSpellStatus(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        ctx.scene.enter(ENUM_SCENES_ID.EDIT_SPELL_CHANGE_STATUS_SCENE_ID);
     }
     @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {

@@ -63,12 +63,31 @@ class EnvironmentVariablesValidator {
     @IsInt()
     @IsOptional()
     DATABASE_MAX_CONNECTIONS: number;
+
+    @IsBoolean()
+    @IsOptional()
+    DATABASE_SSL_ENABLED: boolean;
+
+    @IsBoolean()
+    @IsOptional()
+    DATABASE_REJECT_UNAUTHORIZED: boolean;
+
+    @IsString()
+    @IsOptional()
+    DATABASE_CA: string;
+
+    @IsString()
+    @IsOptional()
+    DATABASE_KEY: string;
+
+    @IsString()
+    @IsOptional()
+    DATABASE_CERT: string;
 }
 
 export default registerAs<DatabaseConfig>('database', () => {
     validateConfig(process.env, EnvironmentVariablesValidator);
-    console.log(process.env.DATABASE_PASSWORD);
-    return {
+    const data = {
         url: process.env.DATABASE_URL,
         type: process.env.DATABASE_TYPE,
         host: process.env.DATABASE_HOST,
@@ -82,5 +101,11 @@ export default registerAs<DatabaseConfig>('database', () => {
         maxConnections: process.env.DATABASE_MAX_CONNECTIONS
             ? parseInt(process.env.DATABASE_MAX_CONNECTIONS, 10)
             : 100,
+        sslEnabled: process.env.DATABASE_SSL_ENABLED === 'true',
+        rejectUnauthorized: process.env.DATABASE_REJECT_UNAUTHORIZED === 'true',
+        ca: process.env.DATABASE_CA,
+        key: process.env.DATABASE_KEY,
+        cert: process.env.DATABASE_CERT,
     };
+    return data;
 });

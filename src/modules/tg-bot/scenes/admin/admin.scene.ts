@@ -261,8 +261,9 @@ export class AdminScene {
 
     @Action(/^(ARMED_FORCES.*)$/)
     async armedForcesSelected(@Ctx() ctx: BotContext) {
-        const selectedId = ctx.callbackQuery['data'].split(':')[1];
+        const selectedId = ctx.callbackQuery['data'].split(':')[1]; 
         ctx.session.adminSelectedArmedForcesId = selectedId;
+        console.log(     ctx.session.adminSelectedArmedForcesId);
         await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_ARMED_FORCES_MAGIC_SCENE_ID);
     }
 

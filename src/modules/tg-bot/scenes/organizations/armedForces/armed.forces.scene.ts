@@ -73,23 +73,12 @@ export class ArmedForcesScene {
         const buttons = await this.generateMainArmedForcesKeyboard(userTgId);
         let caption =
             '🛡️Добро пожаловать в Палату Рыцарей-Чародеев Королевства Клевер!🛡️\n\nЗдесь ты найдешь информацию о рыцарях-чародеях, системе рангов, своих будущих обязанностях,  о системе обучения, о боевых  отрядах  и о всех важных вещах, необходимых для твоего прохождения  службы. Готовься к геройству!\n';
-        const linkRanks = `Система рангов рыцарей-чародеев: <a href='https://telegra.ph/Grimuar-i-zaklinaniya-02-03'>перейти</a>\n`;
-        const linkJobTitles = `Какие должности возможны (и зарплата): <a href='https://telegra.ph/Grimuar-i-zaklinaniya-02-03'>перейти</a>\n\n`;
         const isUserHasRequest =
             await this.squadsService.isUserHasRequest(userTgId);
-        caption += linkRanks;
-        caption += linkJobTitles;
         if (isUserHasRequest) {
             caption +=
                 '<strong><u>ВНИМАНИЕ:</u></strong> Вы отправили заявку в рыцари-чародеи. Ваша заявка на рассмотрении. \n';
         }
-
-        /**
-
- */
-        /*  if(isUserSuperAdmin) {
-            buttons.push([COMMANDER_IN_CHIEF_BUTTON, BACK_BUTTON]);
-        }*/
         const type = ctx.chat.type;
         if (type == 'private') {
             await ctx.sendPhoto(
@@ -151,7 +140,7 @@ export class ArmedForcesScene {
         const character = await this.characterService.getCharacterIdByTgId(
             sender.id
         );
-        if (sender.grimoireId == null) {
+        if (character.grimoireId == null) {
             await ctx.reply(
                 'У вас нет гримуара! Вы не можете вступить в армию вашего королевства.'
             );

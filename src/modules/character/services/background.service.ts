@@ -28,6 +28,11 @@ export class UpdateHistoryDto {
     history: string;
 }
 
+export class UpdateAvatarDto {
+    telegramId: string;
+    avatar: string;
+}
+
 export class UpdateHobbiesDto {
     telegramId: string;
     hobbies: string;
@@ -172,6 +177,24 @@ export class BackgroundService {
             .update(BackgroundEntity)
             .set({ name: dto.name })
             .where('id = :id', { id: backgroundId })
+            .execute();
+    }
+
+    async updatePhoto(dto: UpdateAvatarDto) {
+        const userEntity = await this.userRepository.findOne({
+            where: {
+                tgUserId: dto.telegramId,
+            },
+            relations: {
+                character: true,
+            },
+        });
+        const characterId = userEntity.character.id;
+        return await this.connection
+            .createQueryBuilder()
+            .update(CharacterEntity)
+            .set({ avatar: dto.avatar })
+            .where('id = :id', { id: characterId })
             .execute();
     }
 

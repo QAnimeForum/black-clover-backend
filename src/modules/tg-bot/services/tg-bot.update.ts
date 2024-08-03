@@ -64,7 +64,8 @@ export class TgBotUpdate extends Telegraf<BotContext> {
 
     @Command('about')
     async about1(@Context() ctx: BotContext) {
-        ctx.reply('Бот разрабатывался для аниме форума', {
+        console.log('about');
+        await ctx.reply('Бот разрабатывался для аниме форума', {
             reply_markup: {
                 inline_keyboard: [
                     [

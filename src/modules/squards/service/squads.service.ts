@@ -175,18 +175,35 @@ export class SquadsService {
             nullSort: 'last',
             defaultSortBy: [['id', 'DESC']],
             searchableColumns: ['name'],
-            select: ['id', 'name'],
+            select: ['id', 'name', 'armorForcesId'],
             filterableColumns: {
                 name: [FilterOperator.EQ, FilterSuffix.NOT],
+                armorForcesId: true,
             },
         });
     }
 
     async findRanksByArmedForces(armedForceId: string) {
-        return await this.rankRepository.find({
+        /*return await this.rankRepository.find({
             where: {
                 armorForcesId: armedForceId,
+        
             },
+            relations: {
+                salary: true,
+            },
+        });*/
+        const entities = await this.rankRepository.findRoots({
+            relations: ['salary'],
+        });
+        console.log(armedForceId);
+        const entity = entities.find(
+            (item) => item.armorForcesId == armedForceId
+        );
+        console.log(entities);
+        console.log(entity);
+        return await this.rankRepository.findDescendantsTree(entity, {
+            relations: ['salary'],
         });
     }
     findRankById(id: string): Promise<ArmedForcesRankEntity | null> {
@@ -266,7 +283,7 @@ export class SquadsService {
 
     async findAllArmedForcesMembers(
         query: PaginateQuery
-    ): Promise<Paginated<any>> {
+    ): Promise<Paginated<ArmedForcesMemberEntity>> {
         return paginate(query, this.armedForcesMemberRepository, {
             sortableColumns: ['id', 'character'],
             nullSort: 'last',
@@ -313,7 +330,7 @@ export class SquadsService {
             where: { id },
             relations: {
                 state: true,
-            }
+            },
         });
     }
 

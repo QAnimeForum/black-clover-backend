@@ -9,9 +9,10 @@ import { Composer, Markup, Scenes, Telegraf } from 'telegraf';
 import { Logger } from 'winston';
 import { BACK_BUTTON } from '../../constants/button-names.constant';
 import { ENUM_SPELL_STATUS } from 'src/modules/grimoire/constants/spell.status.enum.constant';
+import { ENUM_GRIMOIRE_STATUS } from 'src/modules/grimoire/constants/grimoire.enum.constant';
 
 @Injectable()
-export class SpellChangeStatusWizard {
+export class GrimoireChangeStatusWizard {
     readonly scene: Scenes.WizardScene<BotContext>;
     readonly steps: Composer<BotContext>[] = [];
     constructor(
@@ -22,7 +23,7 @@ export class SpellChangeStatusWizard {
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {
         this.scene = new Scenes.WizardScene<BotContext>(
-            ENUM_SCENES_ID.EDIT_SPELL_CHANGE_STATUS_SCENE_ID,
+            ENUM_SCENES_ID.CHANGE_GRIMOIRE_STATUS_SCENE_ID,
             this.step1()
         );
         this.scene.enter(this.start());
@@ -31,24 +32,18 @@ export class SpellChangeStatusWizard {
     }
     start() {
         return async (ctx: BotContext) => {
-            await ctx.reply('Измените статус заклинания', {
+            await ctx.reply('Измените статус гримуара', {
                 ...Markup.inlineKeyboard([
                     [
                         Markup.button.callback(
-                            'Черновик',
-                            'STATUS:' + ENUM_SPELL_STATUS.DRAFT
-                        ),
-                    ],
-                    [
-                        Markup.button.callback(
-                            'На одобрении',
-                            'STATUS:' + ENUM_SPELL_STATUS.NOT_APPROVED
+                            'Не одобрено',
+                            'STATUS:' + ENUM_GRIMOIRE_STATUS.NOT_APPROVED
                         ),
                     ],
                     [
                         Markup.button.callback(
                             'Одобрено',
-                            'STATUS:' + ENUM_SPELL_STATUS.APPROVED
+                            'STATUS:' + ENUM_GRIMOIRE_STATUS.APPROVED
                         ),
                     ],
                     [Markup.button.callback(BACK_BUTTON, BACK_BUTTON)],
@@ -68,19 +63,17 @@ export class SpellChangeStatusWizard {
         });
         composer.action(/^(STATUS.*)$/, async (ctx) => {
             try {
-                const spellId = ctx.session.spellEdit.spellId;
-                const status = ctx.callbackQuery['data'].split(':')[1];
-                const result = await this.grimoireService.updateSpellStatus(
-                    spellId,
-                    {
-                        status: status,
-                    }
+                const grimoireId = ctx.session.adminGrimoireId;
+                const status: ENUM_GRIMOIRE_STATUS =
+                    ctx.callbackQuery['data'].split(':')[1];
+                const result = await this.grimoireService.updateGrimoireStatus(
+                    grimoireId,
+                    status
                 );
-                console.log(result);
             } catch (err) {
                 console.log(err);
             }
-            await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
+            await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID);
         });
         return composer;
     }

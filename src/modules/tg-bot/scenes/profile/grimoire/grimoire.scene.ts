@@ -2,14 +2,16 @@ import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { Inject, Logger, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 import { GrimoireService } from '../../../../grimoire/services/grimoire.service';
-import { GRIMOURE_IMAGE_PATH } from '../../../constants/images';
+import { GRIMOIRE_IMAGE_PATH } from '../../../constants/images';
 import { TelegrafExceptionFilter } from '../../../filters/tg-bot.filter';
 import { BotContext } from '../../../interfaces/bot.context';
 import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import {
     BACK_BUTTON,
+    EDIT_GRIMOIRE_COVER_BUTTON,
     EDIT_SPELL_BUTTON,
+    EDIT_SPELL_CHANGE_STATUS_BUTTON,
     GRIMOIRE_BUTTON,
     GRIMOIRE_STATISTICS_BUTTON,
     GRIMOIRE_TOWER_BUTTON,
@@ -23,10 +25,10 @@ import {
     grimoireToText,
     spellToText,
 } from 'src/modules/tg-bot/utils/grimoire.utils';
-
+import fs from 'fs';
 @Scene(ENUM_SCENES_ID.GRIMOIRE_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
-export class GrimoreScene {
+export class GrimoireScene {
     constructor(
         private readonly grimoireService: GrimoireService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
@@ -59,10 +61,6 @@ export class GrimoreScene {
                     }
                 );
             } else {
-                /**
-                 * await ctx.answerCbQuery();
-                await ctx.deleteMessage();
-                 */
                 await ctx.reply(
                     'У вас нет гримуара!\n\n Перейдите в башню гримуаров, чтобы получить гримуар',
                     {
@@ -97,23 +95,30 @@ export class GrimoreScene {
             caption += `${index + 1}) ${spell.name}\n`;
         });
         if (ctx.chat.type == 'private') {
+            const avatar = `${process.env.APP_API_URL}/${grimoire.coverImagePath}`;
             await ctx.sendPhoto(
                 {
-                    source: GRIMOURE_IMAGE_PATH,
+                    source: fs.existsSync(avatar)
+                        ? avatar
+                        : GRIMOIRE_IMAGE_PATH,
                 },
                 {
                     caption,
                     parse_mode: 'HTML',
                     ...Markup.keyboard([
                         [GRIMOIRE_STATISTICS_BUTTON, SHOW_FULL_GRIMOIRE],
-                        [GRIMOIRE_BUTTON, BACK_BUTTON],
+                        [GRIMOIRE_BUTTON, EDIT_GRIMOIRE_COVER_BUTTON],
+                        [BACK_BUTTON],
                     ]).resize(),
                 }
             );
         } else {
+            const avatar = `${process.env.APP_API_URL}/${grimoire.coverImagePath}`;
             await ctx.sendPhoto(
                 {
-                    source: GRIMOURE_IMAGE_PATH,
+                    source: fs.existsSync(avatar)
+                        ? avatar
+                        : GRIMOIRE_IMAGE_PATH,
                 },
                 {
                     caption,
@@ -155,9 +160,10 @@ export class GrimoreScene {
             );
 
         const caption = grimoireToText(character);
+        const avatar = `${process.env.APP_API_URL}/${character.grimoire.coverImagePath}`;
         await ctx.sendPhoto(
             {
-                source: GRIMOURE_IMAGE_PATH,
+                source: fs.existsSync(avatar) ? avatar : GRIMOIRE_IMAGE_PATH,
             },
             {
                 parse_mode: 'HTML',
@@ -173,7 +179,7 @@ export class GrimoreScene {
         const spells = grimoire.spells;
         const title = '<strong><u>ГРИМУАР</u></strong>\n\n';
         const magicBlock = `<strong>Магия</strong>: ${grimoire.magicName}\n`;
-        const statusBlock = `<strong>Статус</strong>: ${grimoire.status}\n`;
+        const statusBlock = `<strong>Статус</strong>: ${grimoireStatusToText(grimoire.status)}\n`;
         const coverBlock = `<strong>Обложка</strong>: ${grimoire.coverSymbol}\n`;
         let caption = `${title}${magicBlock}${coverBlock}${statusBlock}\n`;
         const spellListMessages: Array<{
@@ -201,9 +207,10 @@ export class GrimoreScene {
             });
             caption = caption.concat(spellListBlock);
         }
+        const avatar = `${process.env.APP_API_URL}/${grimoire.coverImagePath}`;
         await ctx.sendPhoto(
             {
-                source: GRIMOURE_IMAGE_PATH,
+                source: fs.existsSync(avatar) ? avatar : GRIMOIRE_IMAGE_PATH,
             },
             {
                 caption,
@@ -217,6 +224,11 @@ export class GrimoreScene {
                 })
         );
     }
+    @Hears(EDIT_GRIMOIRE_COVER_BUTTON)
+    async editGrimoireCover(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.EDIT_GRIMOIRE_COVER_SCENE_ID);
+    }
+
     @Action(ENUM_ACTION_NAMES.GO_TO_GRIMOIRE_TOWER_ACTION)
     async grimoireTower(@Ctx() ctx: BotContext) {
         await ctx.answerCbQuery();

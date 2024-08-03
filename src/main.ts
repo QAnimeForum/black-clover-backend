@@ -4,7 +4,7 @@ import { AppModule } from 'src/app/app.module';
 import { ConfigService } from '@nestjs/config';
 import { useContainer } from 'class-validator';
 import swaggerInit from './swagger';
-
+import fs from 'fs';
 async function bootstrap() {
     const app: NestApplication = await NestFactory.create(AppModule);
     const configService = app.get(ConfigService);
@@ -46,8 +46,10 @@ async function bootstrap() {
     // Swagger
     await swaggerInit(app);
 
+    
     // Listen
-    await app.listen(port, host);
+  //  await app.listen(port, host);
+  await app.listen(port);
     logger.log(`==========================================================`);
 
     logger.log(`Environment Variable`, 'Black clover application');

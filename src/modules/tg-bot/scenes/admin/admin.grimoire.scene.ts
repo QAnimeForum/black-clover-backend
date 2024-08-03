@@ -10,14 +10,6 @@ import {
     CHANGE_GRIMOIRE_STATUS,
     EDIT_MAGIC_NAME_BUTTON,
     EDIT_SPELL_CHANGE_STATUS_BUTTON,
-    EDIT_SPELL_COOLDOWN_BUTTON,
-    EDIT_SPELL_COST_BUTTON,
-    EDIT_SPELL_DESCRIPTION_BUTTON,
-    EDIT_SPELL_DURATION_BUTTON,
-    EDIT_SPELL_GOALS_BUTTON,
-    EDIT_SPELL_MINIMAL_LEVEL_BUTTON,
-    EDIT_SPELL_NAME_BUTTON,
-    EDIT_SPELL_TYPE_BUTTON,
     FIND_GRIMOIRE_BY_TG_BUTTON,
     GRIMOIRE_LIST_BUTTON,
     GRIMOIRE_REQUEST_BUTTON,
@@ -30,8 +22,6 @@ import {
     convertGrimoiresToTextAndInlineButtons,
     grimoireAdminInlineKeyboard,
     grimoireToText,
-    grimoireTowerInlineKeyboard,
-    spellEditInlineKeyboard,
     spellToText,
 } from '../../utils/grimoire.utils';
 import { GRIMOIRE_TOWER_PATH } from '../../constants/images';
@@ -52,8 +42,6 @@ export class AdminGrimoireScene {
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {
-        ctx.session.adminGrimoireId = null;
-        ctx.session.adminSpellId = null;
         if (ctx.session.adminGrimoireId) {
             const character = await this.grimoireService.findGrimoireById(
                 ctx.session.adminGrimoireId
@@ -204,16 +192,14 @@ export class AdminGrimoireScene {
             page = ctx.callbackQuery['data'].split(':')[1];
         }
 
-        const paginatedGrimoires = await this.grimoireService.findAllGrimoires(
-            {
-                path: '',
-                limit: 5,
-                page: page,
-                filter: {
-                    grimoire: '$not:$null',
-                },
-            }
-        );
+        const paginatedGrimoires = await this.grimoireService.findAllGrimoires({
+            path: '',
+            limit: 5,
+            page: page,
+            filter: {
+                grimoire: '$not:$null',
+            },
+        });
         const [text, buttons] =
             convertGrimoiresToTextAndInlineButtons(paginatedGrimoires);
         await ctx.deleteMessage();
@@ -234,16 +220,14 @@ export class AdminGrimoireScene {
         await ctx.answerCbQuery();
         const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
 
-        const paginatedGrimoires = await this.grimoireService.findAllGrimoires(
-            {
-                path: '',
-                limit: 5,
-                page: page,
-                filter: {
-                    grimoire: '$not:$null',
-                },
-            }
-        );
+        const paginatedGrimoires = await this.grimoireService.findAllGrimoires({
+            path: '',
+            limit: 5,
+            page: page,
+            filter: {
+                grimoire: '$not:$null',
+            },
+        });
         const [text, buttons] =
             convertGrimoiresToTextAndInlineButtons(paginatedGrimoires);
         await ctx.editMessageCaption(text, {
@@ -257,16 +241,14 @@ export class AdminGrimoireScene {
         await ctx.answerCbQuery();
         const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
 
-        const paginatedGrimoires = await this.grimoireService.findAllGrimoires(
-            {
-                path: '',
-                limit: 5,
-                page: page,
-                filter: {
-                    grimoire: '$not:$null',
-                },
-            }
-        );
+        const paginatedGrimoires = await this.grimoireService.findAllGrimoires({
+            path: '',
+            limit: 5,
+            page: page,
+            filter: {
+                grimoire: '$not:$null',
+            },
+        });
         const [text, buttons] =
             convertGrimoiresToTextAndInlineButtons(paginatedGrimoires);
         await ctx.editMessageCaption(text, {
@@ -284,10 +266,6 @@ export class AdminGrimoireScene {
     async removeWorker(@Ctx() ctx: BotContext) {
         await ctx.answerCbQuery();
         await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_WORKER_REMOVE_SCENE_ID);
-    }
-    @Action(CHANGE_GRIMOIRE_STATUS)
-    async changeGrimoreStatus(@Ctx() ctx: BotContext) {
-        ctx.scene.enter(ENUM_SCENES_ID.CHANGE_GRIMOIRE_STATUS_SCENE_ID);
     }
     @Action(/^(GRIMOIRE.*)$/)
     async showGrimoire(@Ctx() ctx: BotContext) {
@@ -324,6 +302,11 @@ export class AdminGrimoireScene {
         }
     }
 
+    @Action(CHANGE_GRIMOIRE_STATUS)
+    async changeGrimoreStatus(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        ctx.scene.enter(ENUM_SCENES_ID.CHANGE_GRIMOIRE_STATUS_SCENE_ID);
+    }
     @Action(EDIT_MAGIC_NAME_BUTTON)
     async editMagicName(@Ctx() ctx: BotContext) {
         await ctx.answerCbQuery();
@@ -342,13 +325,11 @@ export class AdminGrimoireScene {
             ...Markup.inlineKeyboard(grimoireAdminInlineKeyboard()),
         });
     }
-    @Action(EDIT_SPELL_CHANGE_STATUS_BUTTON)
-    async changeSpellStatus(@Ctx() ctx: BotContext) {
-        ctx.scene.enter(ENUM_SCENES_ID.EDIT_SPELL_CHANGE_STATUS_SCENE_ID);
-    }
     @Hears(FIND_GRIMOIRE_BY_TG_BUTTON)
     async findByTgId(@Ctx() ctx: BotContext) {
-        await ctx.reply('В разработке');
+        ctx.session.adminGrimoireId = null;
+        ctx.session.adminSpellId = null;
+        await ctx.scene.enter(ENUM_SCENES_ID.FIND_GRIMOIRE_BY_TG_SCENE_ID);
     }
     @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {

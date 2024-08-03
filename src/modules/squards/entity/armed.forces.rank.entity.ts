@@ -30,6 +30,11 @@ export class ArmedForcesRankEntity {
     })
     description: string;
 
+    @Column({
+        type: 'int',
+    })
+    star: number;
+
     @TreeParent()
     parent: ArmedForcesRankEntity;
 
@@ -75,6 +80,12 @@ export class ArmedForcesRankEntity {
         name: 'forces_id',
     })
     armorForcesId: string;
+
+    @Column({
+        type: 'uuid',
+        name: 'parentId',
+    })
+    parentId: string | null;
     /*   @Column({
         type: 'varchar',
     })
