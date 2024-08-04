@@ -1,4 +1,4 @@
-import { Action, Ctx, Hears, Scene, SceneEnter } from 'nestjs-telegraf';
+import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import { Inject, Logger, UseFilters } from '@nestjs/common';
@@ -15,16 +15,23 @@ import { SquadsService } from 'src/modules/squards/service/squads.service';
 import { ArmedForcesRequestEntity } from 'src/modules/squards/entity/armed.forces.request.entity';
 import { PaginateQuery } from 'nestjs-paginate';
 import { ArmedForcesRankEntity } from 'src/modules/squards/entity/armed.forces.rank.entity';
+import { UserService } from 'src/modules/user/services/user.service';
 
 @Scene(ENUM_SCENES_ID.ADMIN_ARMED_FORCES_MAGIC_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class AdminArmedForcesScene {
     constructor(
         private readonly squadsService: SquadsService,
+        private readonly userService: UserService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
-    async enter(@Ctx() ctx: BotContext) {
+    async enter(@Ctx() ctx: BotContext, @Sender() sender) {
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        if (!isAdmin) {
+            await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+            return;
+        }
         const selectedId = ctx.session.adminSelectedArmedForcesId;
         console.log(selectedId);
         const armedForces =
@@ -43,7 +50,12 @@ export class AdminArmedForcesScene {
     }
 
     @Hears(SHOW_SQUAD_REQUESTS_BUTTON)
-    async squadRequests(@Ctx() ctx: BotContext) {
+    async squadRequests(@Ctx() ctx: BotContext, @Sender() sender) {
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        if (!isAdmin) {
+            await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+            return;
+        }
         await this.showArmedForcesRequest(ctx);
     }
     async showArmedForcesRequest(ctx: BotContext) {
@@ -69,7 +81,12 @@ export class AdminArmedForcesScene {
     }
 
     @Hears(ARMED_FORCES_RANKS_BUTTON)
-    async showRanks(@Ctx() ctx: BotContext) {
+    async showRanks(@Ctx() ctx: BotContext, @Sender() sender) {
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        if (!isAdmin) {
+            await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+            return;
+        }
         const armedForcesId = ctx.session.adminSelectedArmedForcesId;
         /**
  *         const ranks = await this.squadsService.findAllRanks({
