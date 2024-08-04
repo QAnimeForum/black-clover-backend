@@ -1,4 +1,4 @@
-import { Action, Ctx, Hears, Scene, SceneEnter } from 'nestjs-telegraf';
+import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import { Inject, Logger, UseFilters } from '@nestjs/common';
@@ -31,6 +31,7 @@ import {
     GRIMOIRE_NEXT_PAGE_REGEX,
     GRIMOIRE_PREVIOUS_PAGE_REGEX,
 } from '../../constants/action-names.constant';
+import { UserService } from 'src/modules/user/services/user.service';
 
 @Scene(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -38,10 +39,16 @@ export class AdminGrimoireScene {
     constructor(
         private readonly grimoireService: GrimoireService,
         private readonly grmoireWorkerService: GrmoireWorkerService,
+        private readonly userService: UserService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
-    async enter(@Ctx() ctx: BotContext) {
+    async enter(@Ctx() ctx: BotContext, @Sender() sender) {
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        if (!isAdmin) {
+            await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+            return;
+        }
         if (ctx.session.adminGrimoireId) {
             const character = await this.grimoireService.findGrimoireById(
                 ctx.session.adminGrimoireId
@@ -75,7 +82,12 @@ export class AdminGrimoireScene {
         }
     }
     @Hears(GRIMOIRE_REQUEST_BUTTON)
-    async grimoireRequest(@Ctx() ctx: BotContext) {
+    async grimoireRequest(@Ctx() ctx: BotContext, @Sender() sender) {
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        if (!isAdmin) {
+            await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+            return;
+        }
         const requests = await this.grimoireService.findAllGrimoireRequests({
             path: '',
         });
@@ -95,8 +107,13 @@ export class AdminGrimoireScene {
     }
 
     @Action(/^(REQUEST_ACTION.*)$/)
-    async request(@Ctx() ctx: BotContext) {
+    async request(@Ctx() ctx: BotContext, @Sender() sender) {
         await ctx.answerCbQuery();
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        if (!isAdmin) {
+            await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+            return;
+        }
         const id = ctx.callbackQuery['data'].split(':')[1];
         const request = await this.grimoireService.findGrimoireRequest(id);
         console.log(request);
@@ -115,14 +132,24 @@ export class AdminGrimoireScene {
         });
     }
     @Action(/^(ACCEPT_REQUEST.*)$/)
-    async acceptRequest(@Ctx() ctx: BotContext) {
+    async acceptRequest(@Ctx() ctx: BotContext, @Sender() sender) {
         await ctx.answerCbQuery();
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        if (!isAdmin) {
+            await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+            return;
+        }
         ctx.session.grimoireRequestId = ctx.callbackQuery['data'].split(':')[1];
         await ctx.scene.enter(ENUM_SCENES_ID.ACCPEPT_GRIMOIRE_REQUEST_SCENE_ID);
     }
     @Action('BACK_TO_REQUESTS')
-    async backToRequestList(@Ctx() ctx: BotContext) {
+    async backToRequestList(@Ctx() ctx: BotContext, @Sender() sender) {
         await ctx.answerCbQuery();
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        if (!isAdmin) {
+            await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+            return;
+        }
         const requests = await this.grimoireService.findAllGrimoireRequests({
             path: '',
         });
@@ -144,7 +171,12 @@ export class AdminGrimoireScene {
         });
     }
     @Hears(TOWER_WORKERS_BUTTON)
-    async workers(@Ctx() ctx: BotContext) {
+    async workers(@Ctx() ctx: BotContext, @Sender() sender) {
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        if (!isAdmin) {
+            await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+            return;
+        }
         const grimoireWorkers =
             await this.grmoireWorkerService.findAllGrimoireWorkers({
                 path: '',
@@ -185,7 +217,12 @@ export class AdminGrimoireScene {
     }
     @Hears(GRIMOIRE_LIST_BUTTON)
     @Action(BACK_BUTTON)
-    async findByGrimoireList(@Ctx() ctx: BotContext) {
+    async findByGrimoireList(@Ctx() ctx: BotContext, @Sender() sender) {
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        if (!isAdmin) {
+            await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+            return;
+        }
         let page = 1;
         if (ctx.callbackQuery) {
             ctx.answerCbQuery();
@@ -216,8 +253,13 @@ export class AdminGrimoireScene {
     }
 
     @Action(GRIMOIRE_NEXT_PAGE_REGEX)
-    async nextPage(@Ctx() ctx: BotContext) {
+    async nextPage(@Ctx() ctx: BotContext, @Sender() sender) {
         await ctx.answerCbQuery();
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        if (!isAdmin) {
+            await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+            return;
+        }
         const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
 
         const paginatedGrimoires = await this.grimoireService.findAllGrimoires({
@@ -237,8 +279,13 @@ export class AdminGrimoireScene {
     }
 
     @Action(GRIMOIRE_PREVIOUS_PAGE_REGEX)
-    async previousPage(@Ctx() ctx: BotContext) {
+    async previousPage(@Ctx() ctx: BotContext, @Sender() sender) {
         await ctx.answerCbQuery();
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        if (!isAdmin) {
+            await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+            return;
+        }
         const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
 
         const paginatedGrimoires = await this.grimoireService.findAllGrimoires({
@@ -268,9 +315,16 @@ export class AdminGrimoireScene {
         await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_WORKER_REMOVE_SCENE_ID);
     }
     @Action(/^(GRIMOIRE.*)$/)
-    async showGrimoire(@Ctx() ctx: BotContext) {
+    async showGrimoire(@Ctx() ctx: BotContext, @Sender() sender) {
         if ('data' in ctx.callbackQuery) {
             ctx.answerCbQuery();
+            const isAdmin = await this.userService.isAdmin(
+                sender.id.toString()
+            );
+            if (!isAdmin) {
+                await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+                return;
+            }
             const selectedGrimoireId = ctx.callbackQuery.data.split(':')[1];
             ctx.session.adminGrimoireId = selectedGrimoireId;
             const character =
@@ -283,9 +337,16 @@ export class AdminGrimoireScene {
         }
     }
     @Action(/^(SPELL.*)$/)
-    async showSpell(@Ctx() ctx: BotContext) {
+    async showSpell(@Ctx() ctx: BotContext, @Sender() sender) {
         if ('data' in ctx.callbackQuery) {
             ctx.answerCbQuery();
+            const isAdmin = await this.userService.isAdmin(
+                sender.id.toString()
+            );
+            if (!isAdmin) {
+                await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+                return;
+            }
             const selectedSpellId = ctx.callbackQuery.data.split(':')[1];
             ctx.session.adminSpellId = selectedSpellId;
             const spell = await this.grimoireService.findSpellById(
@@ -326,9 +387,14 @@ export class AdminGrimoireScene {
         });
     }
     @Hears(FIND_GRIMOIRE_BY_TG_BUTTON)
-    async findByTgId(@Ctx() ctx: BotContext) {
+    async findByTgId(@Ctx() ctx: BotContext, @Sender() sender) {
         ctx.session.adminGrimoireId = null;
         ctx.session.adminSpellId = null;
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        if (!isAdmin) {
+            await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+            return;
+        }
         await ctx.scene.enter(ENUM_SCENES_ID.FIND_GRIMOIRE_BY_TG_SCENE_ID);
     }
     @Hears(BACK_BUTTON)

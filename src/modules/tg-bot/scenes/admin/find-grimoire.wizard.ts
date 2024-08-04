@@ -46,7 +46,7 @@ export class FindGrimoireByTgIdWizard {
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
             await ctx.reply('Вы отменили поиск гримуара.');
-            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID);
+            ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {
             const message = Number.parseInt(ctx.update?.message.text);
@@ -54,7 +54,7 @@ export class FindGrimoireByTgIdWizard {
                 await ctx.reply(
                     `❗️Введён неккоректный id {${ctx.update?.message.text}}.`
                 );
-                await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID);
+                await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
                 return;
             }
             const character =
@@ -96,7 +96,7 @@ export class FindGrimoireByTgIdWizard {
                     `🔴 Системе не удалось найти гримуар пользователя с id {${message}}.`
                 );
             }
-            await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID);
+            await ctx.scene.enter(ENUM_SCENES_ID.GRIMOIRE_TOWER_SCENE_ID);
         });
         return composer;
     }
