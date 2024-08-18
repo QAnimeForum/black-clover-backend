@@ -23,7 +23,7 @@ export default class ArmedForcesSeeder implements Seeder {
         const cloverArmedForcesEntity = (
             await armedForcesRepository.insert({
                 name: clover.name,
-                descripiton: clover.description,
+                description: clover.description,
                 state: state,
             })
         ).raw[0];

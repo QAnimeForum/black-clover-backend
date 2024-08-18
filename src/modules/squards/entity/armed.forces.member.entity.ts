@@ -62,6 +62,13 @@ export class ArmedForcesMemberEntity {
     })
     jobTitle: ArmedForcesJobTitleEntity;
 
+    @Column({
+        type: 'int',
+        name: 'stars',
+        default: 0,
+    })
+    stars: number;
+
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;
 

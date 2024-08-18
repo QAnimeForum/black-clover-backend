@@ -312,6 +312,7 @@ export class CharacterService {
                     race: true,
                     state: true,
                 },
+                user: true,
                 characterCharacteristics: {
                     strength: true,
                     dexterity: true,

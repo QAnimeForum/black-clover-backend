@@ -13,7 +13,7 @@ import { StateEntity } from '../../map/enitity/state.entity';
 import { ArmedForcesRequestEntity } from './armed.forces.request.entity';
 import { ArmedForcesMemberEntity } from './armed.forces.member.entity';
 
-@Entity('armer_forces')
+@Entity('armed_forces')
 export class ArmedForcesEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -26,7 +26,7 @@ export class ArmedForcesEntity {
     @Column({
         type: 'varchar',
     })
-    descripiton: string;
+    description: string;
 
     /**
     *  @Column({

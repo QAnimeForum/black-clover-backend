@@ -240,33 +240,8 @@ export class AdminScene {
     }
     @Hears(ARMED_FORCES_BUTTON)
     async armedForces(@Ctx() ctx: BotContext) {
-        const armedForces = await this.armedForcesService.findAllArmedForces({
-            path: '',
-        });
-        const inlineKeyboard = [];
-        armedForces.data.map((item) =>
-            inlineKeyboard.push([
-                Markup.button.callback(
-                    `${item.name}`,
-                    `ARMED_FORCES:${item.id}`
-                ),
-            ])
-        );
-        const caption = 'Админка армии';
-        await ctx.reply(caption, {
-            parse_mode: 'HTML',
-            ...Markup.inlineKeyboard(inlineKeyboard),
-        });
-    }
-
-    @Action(/^(ARMED_FORCES.*)$/)
-    async armedForcesSelected(@Ctx() ctx: BotContext) {
-        const selectedId = ctx.callbackQuery['data'].split(':')[1]; 
-        ctx.session.adminSelectedArmedForcesId = selectedId;
-        console.log(     ctx.session.adminSelectedArmedForcesId);
         await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_ARMED_FORCES_MAGIC_SCENE_ID);
     }
-
     @Hears(MAGIC_PARLAMENT_BUTTON)
     async magicParlament(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(

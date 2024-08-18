@@ -147,12 +147,15 @@ export const CASINO_BUTTON = '🎰Казино';
 //ARMED FORCES
 export const CHARACTERS_BUTTON = 'Персонажи';
 export const ARMED_FORCES_BUTTON = '🧙Военный квартал';
+export const ARMED_FORCES_MAIN_BUTTON = '🧙Главный офис';
+export const ARMED_FORCES_INFORMATION_BUTTON = '🧙Информация об армиях';
 export const TREASURY_BUTTON = '💰Казна';
+export const EXIT_FROM_ARMY_FORCES_BUTTON = '🚪Выйти';
 export const GET_A_WAGE_BUTTON = 'Получить выплаты';
 export const SHOW_SQUAD_REQUESTS_BUTTON = '📔 Заявки';
 export const COMMANDER_IN_CHIEF_BUTTON = '📘меню главнокомандующего';
 export const PEOPLE_MANAGEMENT_BUTTON = '👤Управление людьми';
-export const ARMED_FORCES_RANKS_BUTTON = 'Ранги';
+export const ARMED_FORCES_RANKS_BUTTON = '📊Ранги';
 export const JOIN_TO_ARMED_FORCES_BUTTON = '🛡Вступить';
 export const CREATE_SQUAD_BUTTON = '🛡Создать отряд';
 export const JOIN_TO_SQUAD_BUTTON = '🛡Подать заявку в отряд';

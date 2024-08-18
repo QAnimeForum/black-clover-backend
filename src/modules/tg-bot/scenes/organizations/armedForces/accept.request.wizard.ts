@@ -57,12 +57,12 @@ export class AcceptRequestWizard {
             const armedForces = await this.squadService.findArmedForcesById(
                 ctx.session.armedForcesId
             );
-            await this.squadService.acceptMember(
+           /* await this.squadService.acceptMember(
                 character,
                 armedForces,
                 message.text,
                 ENUM_ARMED_FORCES_REQUEST.ACCEPTED
-            );
+            );*/
             ctx.telegram.sendMessage(
                 tgChatId,
                 'Вашу заявку в боевые маги одобрили.'
