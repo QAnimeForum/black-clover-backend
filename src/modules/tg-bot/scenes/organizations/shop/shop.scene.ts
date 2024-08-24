@@ -74,7 +74,7 @@ export class ShopScene {
                 const buttons = [];
                 buttons.push([OFFERS_BUTTON, GOODS_BUTTON]);
                 if (isAdmin) {
-                    buttons.push([OFFERS_BUTTON, GOODS_BUTTON]);
+                    buttons.push([CREATE_ITEM_BUTTON, SHOP_STATISTICS_BUTTON]);
                 }
                 buttons.push([BACK_BUTTON]);
                 await ctx.replyWithPhoto(
