@@ -1,37 +1,40 @@
 import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
-import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
-import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
-import { Inject, Logger, UseFilters } from '@nestjs/common';
-import { BotContext } from '../../interfaces/bot.context';
-import { Markup } from 'telegraf';
-import {
-    ADD_TOWER_WORKERS_BUTTON,
-    BACK_BUTTON,
-    CHANGE_GRIMOIRE_STATUS,
-    EDIT_MAGIC_NAME_BUTTON,
-    EDIT_SPELL_CHANGE_STATUS_BUTTON,
-    FIND_GRIMOIRE_BY_TG_BUTTON,
-    GRIMOIRE_LIST_BUTTON,
-    GRIMOIRE_REQUEST_BUTTON,
-    REMOVE_TOWER_WORKERS_BUTTON,
-    TOWER_WORKERS_BUTTON,
-} from '../../constants/button-names.constant';
+
 import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import {
-    convertGrimoiresToTextAndInlineButtons,
-    grimoireAdminInlineKeyboard,
-    grimoireToText,
-    spellToText,
-} from '../../utils/grimoire.utils';
-import { GRIMOIRE_TOWER_PATH } from '../../constants/images';
+
 import { GrmoireWorkerService } from 'src/modules/grimoire/services/grimoire.worker.service';
+
+import { UserService } from 'src/modules/user/services/user.service';
+import { UseFilters, Inject } from '@nestjs/common';
 import {
     ENUM_ACTION_NAMES,
     GRIMOIRE_NEXT_PAGE_REGEX,
     GRIMOIRE_PREVIOUS_PAGE_REGEX,
-} from '../../constants/action-names.constant';
-import { UserService } from 'src/modules/user/services/user.service';
+} from 'src/modules/tg-bot/constants/action-names.constant';
+import {
+    TOWER_WORKERS_BUTTON,
+    GRIMOIRE_REQUEST_BUTTON,
+    GRIMOIRE_LIST_BUTTON,
+    FIND_GRIMOIRE_BY_TG_BUTTON,
+    BACK_BUTTON,
+    ADD_TOWER_WORKERS_BUTTON,
+    REMOVE_TOWER_WORKERS_BUTTON,
+    CHANGE_GRIMOIRE_STATUS,
+    EDIT_MAGIC_NAME_BUTTON,
+} from 'src/modules/tg-bot/constants/button-names.constant';
+import { GRIMOIRE_TOWER_PATH } from 'src/modules/tg-bot/constants/images';
+import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
+import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
+import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
+import {
+    grimoireToText,
+    grimoireAdminInlineKeyboard,
+    spellToText,
+    convertGrimoiresToTextAndInlineButtons,
+} from 'src/modules/tg-bot/utils/grimoire.utils';
+import { Markup } from 'telegraf';
+import { Logger } from 'typeorm';
 
 @Scene(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)

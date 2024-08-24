@@ -1,18 +1,14 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
-import { BackgroundService } from 'src/modules/character/services/background.service';
 import { Scenes, Composer, Telegraf } from 'telegraf';
 import { message } from 'telegraf/filters';
 import { Logger } from 'typeorm';
-import { EDIT_GOALS_BUTTON } from '../../constants/button-names.constant';
-import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
-import { BotContext } from '../../interfaces/bot.context';
-import { LOGGER_INFO } from '../../utils/logger';
-import { GrmoireWorkerService } from 'src/modules/grimoire/services/grimoire.worker.service';
 import { CharacterService } from 'src/modules/character/services/character.service';
-import { CourtWorkerService } from 'src/modules/judicial.system/services/court.worker.service';
 import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
+import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
+import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
+import { LOGGER_INFO } from 'src/modules/tg-bot/utils/logger';
 
 @Injectable()
 export class GrimoireAcceptRequestWizard {

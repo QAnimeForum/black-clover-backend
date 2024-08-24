@@ -1,15 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
-import { ENUM_SPELL_TYPE } from 'src/modules/grimoire/constants/spell.type.enum';
 import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
 import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
 import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
 import { Composer, Markup, Scenes, Telegraf } from 'telegraf';
 import { Logger } from 'winston';
-import { BACK_BUTTON } from '../../constants/button-names.constant';
-import { ENUM_SPELL_STATUS } from 'src/modules/grimoire/constants/spell.status.enum.constant';
 import { ENUM_GRIMOIRE_STATUS } from 'src/modules/grimoire/constants/grimoire.enum.constant';
+import { BACK_BUTTON } from 'src/modules/tg-bot/constants/button-names.constant';
 
 @Injectable()
 export class GrimoireChangeStatusWizard {

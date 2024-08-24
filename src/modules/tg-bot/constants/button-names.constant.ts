@@ -2,7 +2,8 @@
 //COMMON
 export const START_TREVEL_BUTTON = '🌍 Начать путешествие';
 export const GO_TO_HOME = '🌍 На главное меню';
-export const BACK_BUTTON = '◀️Назад';
+export const BACK_BUTTON = '🔙Назад';
+export const BACK_TO_ADMIN_BUTTON = '🔙В главную админку';
 export const HELP_BUTTON = '❓Помощь';
 export const KNOWLEGE_BASE_BUTTON = '🗂 База знаний';
 export const GUIDES_BUTTON = '📚 Гайды';
@@ -143,9 +144,15 @@ export const BLACK_MARKET_BUTTON = '🛍Чёрный рынок';
 export const MY_OFFERS_BUTTON = '🛍️ Мои предложения';
 export const BAR_BUTTON = '🍸Бар';
 export const CASINO_BUTTON = '🎰Казино';
-
+export const EDIT_ITEM_NAME = '✏️Название';
+export const EDIT_ITEM_DESCRIPTION = '✏️Описание';
+export const EDIT_ITEM_PHOTO = '✏️Фото';
+export const EDIT_ITEM_SLOT = '✏️Место ношения';
+export const EDIT_ITEM_RARITY = '✏️Редкость';
+export const DELETE_ITEM = '🗑Удалить предмет';
 //ARMED FORCES
-export const CHARACTERS_BUTTON = 'Персонажи';
+export const CHARACTERS_BUTTON = '👤Пользователи';
+export const CHARACTERS_LIST_BUTTON = '👤Пользователи';
 export const ARMED_FORCES_BUTTON = '🧙Военный квартал';
 export const ARMED_FORCES_MAIN_BUTTON = '🧙Главный офис';
 export const ARMED_FORCES_INFORMATION_BUTTON = '🧙Информация об армиях';

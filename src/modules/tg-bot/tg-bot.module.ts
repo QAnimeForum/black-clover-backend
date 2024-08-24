@@ -49,17 +49,8 @@ import { WorldviewEditWizard } from './scenes/profile/background/worldview-edit.
 import { CharacterTraitsEditWizard } from './scenes/profile/background/character-traits-edit.wizard';
 import { IdealsEditWizard } from './scenes/profile/background/ideals-edit.wizard';
 import { AnnouncementCreateWizard } from './scenes/admin/announcement.create.wizard';
-import {
-    AddAdminWizard,
-    AdminScene,
-    DeleteAdminWizard,
-} from './scenes/admin/admin.scene';
-import {
-    AddMoneyWizard,
-    AdminMoneyScene,
-    FineMoneyWizard,
-} from './scenes/admin/money.scene';
-import { AdminGrimoireScene } from './scenes/admin/admin.grimoire.scene';
+import { AdminScene } from './scenes/admin/admin.scene';
+
 
 import { ShopScene } from './scenes/organizations/shop/shop.scene';
 import { BLackMarketScene } from './scenes/organizations/shop/black.market.scene';
@@ -75,14 +66,12 @@ import { SpellMinimalLevelEditWizard } from './scenes/profile/grimoire/spell-min
 import { SpellDurationEditWizard } from './scenes/profile/grimoire/spell-duration-edit.wizard';
 import { SpellGoalsEditWizard } from './scenes/profile/grimoire/spell-goals-edit.wizard';
 import { SpellCooldownEditWizard } from './scenes/profile/grimoire/spell-cooldown-edit.wizard';
-import { SpellChangeStatusWizard } from './scenes/admin/spell-change-status.wizard';
 import { PlantsModule } from '../plants/plants.module';
 import { PlantsService } from './scenes/admin/plants.scene';
 import { PlantCreateScene } from './scenes/admin/plant.create.scene';
 import { MagicParlamentScene } from './scenes/organizations/parlament/magic.parlament.scene';
 import { RequestToParlamentWizard } from './scenes/organizations/parlament/request.to.parlament.wizard';
-import { AdminMagicParlamentScene } from './scenes/admin/admin.magic.parlament.scene';
-import { AdminArmedForcesScene } from './scenes/admin/admin.armed.forces.scene';
+
 import { MinesScene } from './scenes/organizations/mines.scene';
 import { AcceptRequestWizard } from './scenes/organizations/armedForces/accept.request.wizard';
 import { ArmedForcesScene } from './scenes/organizations/armedForces/armed.forces.scene';
@@ -91,10 +80,6 @@ import {
     ChangeRankScene,
 } from './scenes/organizations/armedForces/comander.in.chief.scene';
 import { SquadScene } from './scenes/organizations/armedForces/squad.scene';
-import { GrmoireWorkerAddWizard } from './scenes/admin/grimoire-worker-add.scene';
-import { GrmoireWorkerRemoveWizard } from './scenes/admin/grimoire-worker-remove.scene';
-import { JudicialOfficerAddWizard } from './scenes/admin/judicial-officer-add.scene';
-import { JudicialOfficerRemoveWizard } from './scenes/admin/judicial-officer-remove.scene';
 import { CreateSolveWizard } from './scenes/organizations/parlament/solve-create.scene';
 import { CheckOffersScene } from './scenes/organizations/shop/check-offers.scene';
 import { MyOffersScene } from './scenes/organizations/shop/my-offers.scene';
@@ -106,16 +91,37 @@ import { CreateEquipmentItemWizard } from './scenes/organizations/shop/create-eq
 import { CreateOfferWizard } from './scenes/organizations/shop/create-offer.wizard';
 import { GrimoireTowerScene } from './scenes/organizations/grmoires/grimoire.tower.scene';
 import { CreateRequestWizard } from './scenes/organizations/grmoires/create.request.wizard';
-import { GrimoireAcceptRequestWizard } from './scenes/admin/grimoire.accept.request.wizard';
 import { EditMagicNameWizard } from './scenes/profile/grimoire/magic-name.edit.scene';
 import { SpellCreateWizard } from './scenes/profile/grimoire/spell-create.wizard';
 import { DevilSpellCreateWizard } from './scenes/devils/devil.spell.create.wizard';
 import { SpellDamageEditWizard } from './scenes/profile/grimoire/spell-damage-edit.wizard';
 import { SpellRangeWizard } from './scenes/profile/grimoire/spell-range.wizard';
 import { SpellCastTimeEditWiazard } from './scenes/profile/grimoire/spell-cast-time.edit.wizard';
-import { FindGrimoireByTgIdWizard } from './scenes/admin/find-grimoire.wizard';
 import { GrimoireCoverEditWizard } from './scenes/profile/grimoire/grimoire.cover.edit.wizard';
-import { GrimoireChangeStatusWizard } from './scenes/admin/grimoire.change.status.wizard';
+
+import { FineMoneyWizard } from './scenes/admin/money/fine.money.wizard';
+import { AdminMoneyScene } from './scenes/admin/money/money.scene';
+import { AddAdminWizard } from './scenes/admin/add.admin.wizard';
+import { AdminArmedForcesScene } from './scenes/admin/armed.forces/admin.armed.forces.scene';
+import { AdminGrimoireScene } from './scenes/admin/grimoires/admin.grimoire.scene';
+import { FindGrimoireByTgIdWizard } from './scenes/admin/grimoires/find-grimoire.wizard';
+import { GrmoireWorkerAddWizard } from './scenes/admin/grimoires/grimoire-worker-add.scene';
+import { GrmoireWorkerRemoveWizard } from './scenes/admin/grimoires/grimoire-worker-remove.scene';
+import { GrimoireAcceptRequestWizard } from './scenes/admin/grimoires/grimoire.accept.request.wizard';
+import { GrimoireChangeStatusWizard } from './scenes/admin/grimoires/grimoire.change.status.wizard';
+import { SpellChangeStatusWizard } from './scenes/admin/grimoires/spell-change-status.wizard';
+import { AddMoneyWizard } from './scenes/admin/money/add.money.wizard';
+import { AdminMagicParlamentScene } from './scenes/admin/parlament/admin.magic.parlament.scene';
+import { JudicialOfficerAddWizard } from './scenes/admin/parlament/judicial-officer-add.scene';
+import { JudicialOfficerRemoveWizard } from './scenes/admin/parlament/judicial-officer-remove.scene';
+import { DeleteAdminWizard } from './scenes/admin/remove.admin.wizard';
+import { CharactersSettingsScene } from './scenes/admin/characters.settings.scene';
+import { ItemNameEditWiazard } from './scenes/organizations/shop/item.edit-name.wizard';
+import { ItemDescriptionEditWiazard } from './scenes/organizations/shop/item.edit-description.wizard';
+import { ItemEditRarityWizard } from './scenes/organizations/shop/item.edit-rarity.wizard';
+import { ItemEditSlotDescriptionWizard } from './scenes/organizations/shop/item.edit-slot.description';
+import { ItemPhotoChangeWizard } from './scenes/organizations/shop/item.photo-change.wizard';
+
 @Module({
     imports: [
         ThrottlerModule.forRoot([
@@ -154,10 +160,12 @@ import { GrimoireChangeStatusWizard } from './scenes/admin/grimoire.change.statu
 
         //admin
         AdminScene,
+        CharactersSettingsScene,
         AdminGrimoireScene,
         AddAdminWizard,
         DeleteAdminWizard,
         AnnouncementCreateWizard,
+        //admin money
         AdminMoneyScene,
         FineMoneyWizard,
         AddMoneyWizard,
@@ -198,6 +206,7 @@ import { GrimoireChangeStatusWizard } from './scenes/admin/grimoire.change.statu
         GrimoireAcceptRequestWizard,
         //items
         ShopScene,
+        CreateEquipmentItemWizard,
         CreateOfferWizard,
         BLackMarketScene,
         SearchOfferByNameScene,
@@ -206,6 +215,13 @@ import { GrimoireChangeStatusWizard } from './scenes/admin/grimoire.change.statu
         CreateSolveWizard,
         MyOffersScene,
         CheckOffersScene,
+
+        //change item
+        ItemNameEditWiazard,
+        ItemDescriptionEditWiazard,
+        ItemEditRarityWizard,
+        ItemEditSlotDescriptionWizard,
+        ItemPhotoChangeWizard,
         //profile
         CharacterCreateWizard,
         BackgroundScene,

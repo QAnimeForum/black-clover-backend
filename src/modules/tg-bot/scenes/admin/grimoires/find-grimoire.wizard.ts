@@ -4,13 +4,13 @@ import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
 import { Scenes, Composer, Telegraf, Markup } from 'telegraf';
 import { message } from 'telegraf/filters';
 import { Logger } from 'winston';
-import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
-import { BotContext } from '../../interfaces/bot.context';
-import { LOGGER_ERROR, LOGGER_INFO } from '../../utils/logger';
 import { GrimoireService } from 'src/modules/grimoire/services/grimoire.service';
-import { grimoireToText } from '../../utils/grimoire.utils';
-import { GRIMOIRE_IMAGE_PATH } from '../../constants/images';
 import fs from 'fs';
+import { GRIMOIRE_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
+import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
+import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
+import { grimoireToText } from 'src/modules/tg-bot/utils/grimoire.utils';
+import { LOGGER_ERROR, LOGGER_INFO } from 'src/modules/tg-bot/utils/logger';
 @Injectable()
 export class FindGrimoireByTgIdWizard {
     readonly scene: Scenes.WizardScene<BotContext>;

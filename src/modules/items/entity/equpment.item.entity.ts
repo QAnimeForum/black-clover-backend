@@ -5,12 +5,14 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
 import { ItemCategoryEntity } from './item.category.entity';
 import { ENUM_ITEM_RARITY } from '../constants/item.entity.enum';
 import { ENUM_BODY_PART_ENUM } from '../constants/body.part.enum';
+import { InventoryEqipmentItemsEntity } from './inventory.entity';
 
 @Entity('equpment_item')
 export class EqupmentItemEntity {
@@ -145,6 +147,12 @@ export class EqupmentItemEntity {
 
     @Column({ name: 'jump', default: 0 })
     jump: number;
+
+    @OneToMany(
+        () => InventoryEqipmentItemsEntity,
+        (items) => items.equpmentItem
+    )
+    inventoryEqipmentItems: InventoryEqipmentItemsEntity[];
 
     @ApiProperty()
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })

@@ -4,6 +4,7 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { ENUM_USER_PERMISSION_TYPE, UserEntity } from '../entities/user.entity';
 import { UserCreateDto } from '../dtos/user.create.dto';
 import { CharacterService } from 'src/modules/character/services/character.service';
+import { ENUM_ROLE_TYPE } from '../constants/role.enum.constant';
 //implements IUserService
 @Injectable()
 export class UserService {
@@ -138,21 +139,19 @@ export class UserService {
         });
         return users;
     }
-    /**
- * 
+
     async changeUserRole(
         tgUserId: string,
-        userRole: ENUM_ROLE_TYPE
+        userRole: ENUM_USER_PERMISSION_TYPE
     ): Promise<UserEntity> {
         const user = await this.userRepository.findOne({
             where: {
                 tgUserId: tgUserId,
             },
         });
-        user.role = userRole;
+        user.type = userRole;
         return this.userRepository.save(user);
     }
- */
 }
 /*
     async findAll<T = IUserDoc>(

@@ -5,6 +5,10 @@ import {
     JoinTable,
     CreateDateColumn,
     UpdateDateColumn,
+    ManyToOne,
+    Column,
+    OneToMany,
+    JoinColumn,
 } from 'typeorm';
 import { ToolKitEnity } from '../../items/entity/toolkit.entity';
 import { VehicleEntity } from '../../items/entity/vehicle.entity';
@@ -62,16 +66,23 @@ export class InventoryEntity {
     
     */
 
-    @ManyToMany(() => EqupmentItemEntity)
+    /*  @ManyToMany(() => EqupmentItemEntity)
     @JoinTable({
         name: 'inventory_eqipment_items',
-    })
-    items: EqupmentItemEntity[];
+    })*/
+    @OneToMany(() => InventoryEqipmentItemsEntity, (items) => items.inventory)
+    inventoryEqipmentItems: InventoryEqipmentItemsEntity[];
 
     @ManyToMany(() => DrinkEntity)
     @JoinTable({ name: 'inventory_drinks' })
     drink: DrinkEntity[];
 
+    @Column({
+        name: 'devil_fragments',
+        type: 'int',
+        default: 0,
+    })
+    devilFragments: number;
     @ManyToMany(() => ToolKitEnity)
     @JoinTable({
         name: 'intentory_toolkit',
@@ -97,4 +108,32 @@ export class InventoryEntity {
 
     @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
     updatedAt: Date;
+}
+
+@Entity('inventory_equipment_items')
+export class InventoryEqipmentItemsEntity {
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
+    @ManyToOne(
+        () => InventoryEntity,
+        (inventory) => inventory.inventoryEqipmentItems
+    )
+    @JoinColumn({ name: 'inventory_id', referencedColumnName: 'id' })
+    public inventory: InventoryEntity;
+
+    @Column({
+        type: 'varchar',
+        name: 'inventory_id',
+    })
+    public invetoryId: string;
+
+    @ManyToOne(() => EqupmentItemEntity, (item) => item.inventoryEqipmentItems)
+    @JoinColumn({ name: 'equpment_item_id', referencedColumnName: 'id' })
+    public equpmentItem: EqupmentItemEntity;
+
+    @Column({
+        type: 'varchar',
+        name: 'equpment_item_id',
+    })
+    public equpmentItemId: string;
 }

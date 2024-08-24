@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, TreeRepository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository, TreeRepository } from 'typeorm';
 
 import { EqupmentItemEntity } from '../entity/equpment.item.entity';
 import { ENUM_ITEM_RARITY } from '../constants/item.entity.enum';
@@ -8,13 +8,17 @@ import { ENUM_BODY_PART_ENUM } from '../constants/body.part.enum';
 import { ItemCategoryEntity } from '../entity/item.category.entity';
 import { paginate, PaginateQuery } from 'nestjs-paginate';
 import { ShopEntity } from '../entity/shop.entity';
+import { EquipmentItemDto } from '../dto/equipment.item.dto';
+import fs from 'fs';
 @Injectable()
 export class EqupmentItemService {
     constructor(
         @InjectRepository(ItemCategoryEntity)
         private readonly categoryRepository: TreeRepository<ItemCategoryEntity>,
         @InjectRepository(EqupmentItemEntity)
-        private readonly equipmentItemRepository: Repository<EqupmentItemEntity>
+        private readonly equipmentItemRepository: Repository<EqupmentItemEntity>,
+        @InjectDataSource()
+        private readonly connection: DataSource
     ) {}
 
     /* public async findAllItemCategories(query: PaginateQuery) {
@@ -35,21 +39,29 @@ export class EqupmentItemService {
         });
         return this.categoryRepository.findDescendantsTree(item);
     }
-    create(
-        itemName: string,
+    /**
+     *  itemName: string,
         description: string,
         picture: string,
         categoryId: string,
         rarity: ENUM_ITEM_RARITY,
         bodyPart: ENUM_BODY_PART_ENUM
-    ): void {
+     */
+    async create(dto: EquipmentItemDto) {
         const newItem = new EqupmentItemEntity();
-        newItem.name = itemName;
-        newItem.description = description;
-        newItem.image = picture;
-        newItem.categoryId = categoryId;
-        newItem.rarity = rarity;
-        newItem.bodyPart = bodyPart;
+
+        const image = dto.image;
+        const saveFormat = image
+            .split('.')
+            [image.split('.').length - 1].toLowerCase();
+        const newName = `0.${saveFormat}`;
+
+        newItem.name = dto.name;
+        newItem.description = dto.description;
+        newItem.image = newName;
+        newItem.categoryId = dto.categoryId;
+        newItem.rarity = dto.rarity;
+        newItem.bodyPart = dto.body;
         newItem.heal = 0;
         newItem.strength = 0;
         newItem.dexterity = 0;
@@ -62,16 +74,25 @@ export class EqupmentItemService {
         newItem.maxMagicPower = 0;
         newItem.mapHealth = 0;
         newItem.armor = 0;
-        newItem.physicalAttackDamage = 0;
-        newItem.magicAttackDamage = 0;
+        newItem.physicalAttackDamage = dto.physicalAttackDamage;
+        newItem.magicAttackDamage = dto.magicAttackDamage;
         newItem.inventorySpace = 0;
-        newItem.physicalDefense = 0;
-        newItem.magicDefense = 0;
+        newItem.physicalDefense = dto.physicalDefense;
+        newItem.magicDefense = dto.magicDefense;
         newItem.accuracyRate = 0;
         newItem.evasion = 0;
         newItem.speed = 0;
         newItem.jump = 0;
-        this.equipmentItemRepository.save(newItem);
+        const savedItem = await this.equipmentItemRepository.save(newItem);
+
+        const dir =
+            `${process.env.APP_API_URL}/Assets/images/items/${savedItem.id}`;
+
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        fs.copyFileSync(image, `${dir}/${newName}`);
+        return savedItem;
     }
 
     async findItemById(itemId: string | null): Promise<EqupmentItemEntity> {
@@ -194,4 +215,81 @@ export class EqupmentItemService {
             throw Error('No item with such id' + item_id);
         }
     }
+    async changeItemName(dto: ChangeNameDto) {
+        return await this.connection
+            .createQueryBuilder()
+            .update(EqupmentItemEntity)
+            .set({ name: dto.name })
+            .where('id = :id', { id: dto.id })
+            .returning('*')
+            .updateEntity(true)
+            .execute();
+    }
+    async changeItemDescription(dto: ChangeDescriptionDto) {
+        return await this.connection
+            .createQueryBuilder()
+            .update(EqupmentItemEntity)
+            .set({ description: dto.description })
+            .where('id = :id', { id: dto.id })
+            .returning('*')
+            .updateEntity(true)
+            .execute();
+    }
+
+    async changeItemRarity(dto: ChangeRarityDto) {
+        return await this.connection
+            .createQueryBuilder()
+            .update(EqupmentItemEntity)
+            .set({ rarity: dto.rarity })
+            .where('id = :id', { id: dto.id })
+            .returning('*')
+            .updateEntity(true)
+            .execute();
+    }
+
+    async changeBodyPart(dto: ChangeBodyPartDto) {
+        return await this.connection
+            .createQueryBuilder()
+            .update(EqupmentItemEntity)
+            .set({ bodyPart: dto.bodyPart })
+            .where('id = :id', { id: dto.id })
+            .returning('*')
+            .updateEntity(true)
+            .execute();
+    }
+    async changePhoto(dto: ChangePhotoDto) {
+        return await this.connection
+            .createQueryBuilder()
+            .update(EqupmentItemEntity)
+            .set({ image: dto.photoPath })
+            .where('id = :id', { id: dto.id })
+            .returning('*')
+            .updateEntity(true)
+            .execute();
+    }
+}
+
+class ChangeNameDto {
+    id: string;
+    name: string;
+}
+
+class ChangeDescriptionDto {
+    id: string;
+    description: string;
+}
+
+class ChangeRarityDto {
+    id: string;
+    rarity: ENUM_ITEM_RARITY;
+}
+
+class ChangeBodyPartDto {
+    id: string;
+    bodyPart: ENUM_BODY_PART_ENUM;
+}
+
+class ChangePhotoDto {
+    id: string;
+    photoPath: string;
 }

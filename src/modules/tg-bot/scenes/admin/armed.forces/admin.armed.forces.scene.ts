@@ -1,16 +1,7 @@
 import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
-import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
-import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
+
 import { Inject, Logger, UseFilters } from '@nestjs/common';
-import { BotContext } from '../../interfaces/bot.context';
 import { Markup } from 'telegraf';
-import {
-    ARMED_FORCES_INFORMATION_BUTTON,
-    ARMED_FORCES_RANKS_BUTTON,
-    BACK_BUTTON,
-    PEOPLE_MANAGEMENT_BUTTON,
-    SHOW_SQUAD_REQUESTS_BUTTON,
-} from '../../constants/button-names.constant';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { SquadsService } from 'src/modules/squards/service/squads.service';
 import { ArmedForcesRequestEntity } from 'src/modules/squards/entity/armed.forces.request.entity';
@@ -18,9 +9,19 @@ import { Paginated, PaginateQuery } from 'nestjs-paginate';
 import { ArmedForcesRankEntity } from 'src/modules/squards/entity/armed.forces.rank.entity';
 import { UserService } from 'src/modules/user/services/user.service';
 import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
-import { ENUM_ACTION_NAMES } from '../../constants/action-names.constant';
 import { CharacterService } from 'src/modules/character/services/character.service';
 import { ENUM_ARMED_FORCES_REQUEST } from 'src/modules/squards/constants/armed.forces.request.list';
+import { ENUM_ACTION_NAMES } from 'src/modules/tg-bot/constants/action-names.constant';
+import {
+    ARMED_FORCES_INFORMATION_BUTTON,
+    BACK_BUTTON,
+    ARMED_FORCES_RANKS_BUTTON,
+    SHOW_SQUAD_REQUESTS_BUTTON,
+    PEOPLE_MANAGEMENT_BUTTON,
+} from 'src/modules/tg-bot/constants/button-names.constant';
+import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
+import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
+import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
 
 @Scene(ENUM_SCENES_ID.ADMIN_ARMED_FORCES_MAGIC_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
