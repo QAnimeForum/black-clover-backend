@@ -1,6 +1,10 @@
 import { EquipmentEntity } from 'src/modules/items/entity/equipment.entity';
 import { Markup } from 'telegraf';
 import { ENUM_ACTION_NAMES } from '../constants/action-names.constant';
+import { InventoryEntity } from 'src/modules/items/entity/inventory.entity';
+import { BotContext } from '../interfaces/bot.context';
+import { EQUIPMENT_BUTTON, RESOURCES_BUTTON, INVENTORY_BUTTON, BACK_BUTTON } from '../constants/button-names.constant';
+import { INVENTORY_IMAGE_PATH } from '../constants/images';
 
 export const equipmentToText = (
     equipmentEntity: EquipmentEntity,
@@ -135,4 +139,39 @@ export const equipmentInlineKeyBoard = () => {
         ),
     ]);
     return buttons;
+};
+
+export const showInvnentoryStatistics = async (
+    ctx: BotContext,
+    inventory: InventoryEntity
+) => {
+    const chatType = ctx.chat.type;
+    let caption = '<strong><u>Инвентарь</u></strong>\n\n';
+    caption += `<strong>Демонические осколки</strong>: ${inventory.devilFragments}\n`;
+    if (chatType == 'private') {
+        await ctx.sendPhoto(
+            {
+                source: INVENTORY_IMAGE_PATH,
+            },
+            {
+                caption,
+                parse_mode: 'HTML',
+                ...Markup.keyboard([
+                    [EQUIPMENT_BUTTON, RESOURCES_BUTTON],
+                    [INVENTORY_BUTTON, BACK_BUTTON],
+                ]).resize(),
+            }
+        );
+    } else {
+        await ctx.sendPhoto(
+            {
+                source: INVENTORY_IMAGE_PATH,
+            },
+            {
+                caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard(equipmentInlineKeyBoard()),
+            }
+        );
+    }
 };

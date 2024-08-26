@@ -15,6 +15,7 @@ import {
     EQUIPMENT_BUTTON,
     FOOD_BUTTON,
     GEARS_BUTTON,
+    INVENTORY_BUTTON,
     JEWEIRY_BUTTON,
     MINERALS_BUTTON,
     RESOURCES_BUTTON,
@@ -24,10 +25,12 @@ import {
 import {
     equipmentInlineKeyBoard,
     equipmentToText,
+    showInvnentoryStatistics,
 } from '../../utils/inventory.utils';
 import { ENUM_ACTION_NAMES } from '../../constants/action-names.constant';
 import { Paginated } from 'nestjs-paginate';
 import { ENUM_BODY_PART_ENUM } from 'src/modules/items/constants/body.part.enum';
+import { InventoryEqipmentItemsEntity } from 'src/modules/items/entity/inventory.entity';
 
 @Scene(ENUM_SCENES_ID.INVENTORY_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -38,112 +41,22 @@ export class InventoryScene {
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
-        const equipment = await this.inventoryService.findEquipmentByTgId(
-            sender.id
+        const inventory = await this.inventoryService.findInventoryIdByTgId(
+            sender.tgUserId
         );
-        const chatType = ctx.chat.type;
-        if (chatType == 'private') {
-            const caption = equipmentToText(equipment, sender.username);
-            await ctx.sendPhoto(
-                {
-                    source: INVENTORY_IMAGE_PATH,
-                },
-                {
-                    caption,
-                    parse_mode: 'HTML',
-                    ...Markup.keyboard([
-                        [CHANGE_EQUIPMENT_BUTTON],
-                        [EQUIPMENT_BUTTON, RESOURCES_BUTTON],
-                        [BACK_BUTTON],
-                    ]).resize(),
-                }
-            );
-        } else {
-            const caption = equipmentToText(equipment, sender.username);
-            await ctx.sendPhoto(
-                {
-                    source: INVENTORY_IMAGE_PATH,
-                },
-                {
-                    caption,
-                    parse_mode: 'HTML',
-                    ...Markup.inlineKeyboard(equipmentInlineKeyBoard()),
-                }
-            );
-        }
-
-        /**
-         *  ...Markup.keyboard([
-                    [EQUIPMENT_BUTTON, RESOURCES_BUTTON],
-                    [BACK_BUTTON],
-                ]).resize(),
-         */
-        /**
-         *  ...Markup.keyboard([
-                    [EQUIPMENT_BUTTON, RESOURCES_BUTTON],
-                    [BACK_BUTTON],
-                ]).resize(),
-         */
+        console.log(inventory);
+        await showInvnentoryStatistics(ctx, inventory);
     }
-    /**
-     * 
-     * @param ctx 
-    /**
-    *  const weaponBlock = `${WEAPONS_BUTTON}:-\n`;
-    const armorBlock = `${ARMOR_BUTTON}: -\n`;
-    const jeweiryBlock = `${JEWEIRY_BUTTON}: -\n`;
-    const foodBlock = `${FOOD_BUTTON}: -\n`;
-    const alcoholBlock = `${ALCOHOL_BUTTON}: -\n`;
-    const toolKitBlock = `${TOOLKIT_BUTTON}: -\n`;
-    const gearsBlock = `${GEARS_BUTTON}: -\n`;
-    const vehiclesBlock = `${VEHICLES_BUTTON}: -\n`;
+    @Hears(INVENTORY_BUTTON)
+    async inventory(@Ctx() ctx: BotContext, @Sender() sender) {
+        const inventory = await this.inventoryService.findInventoryIdByTgId(
+            sender.tgUserId
+        );
+        console.log(inventory);
+        await showInvnentoryStatistics(ctx, inventory);
+    }
 
-    const resourcesTitle = `strong><u>♻️ Ресурсы</u></strong>\n\n`;
-    */
-    /**
-     * 🤴️sanscri 🔸5 ❤️(268/268)
-
-Надетая экипировка:
-
-🔪 Оружие: Деревянный меч [I]  (11/25)
-🎩 Шлем: -
-🎽 Доспех: -
-🧤 Перчатки: Перчатки новичка [I]  (25/25)
-🥾 Сапоги: -
-🛡 Щит: -
-💍 Кольцо: -
-📿 Колье: -
-🌂 Аксессуар: -
-🔧 Инструменты: -
-    {
-            source: INVENTORY_IMAGE_PATH,
-        },
-        {
-            caption,
-            parse_mode: 'HTML',
-            ...Markup.inlineKeyboard([
-                [
-                    Markup.button.callback(MINERALS_BUTTON, MINERALS_BUTTON),
-                    Markup.button.callback(JEWEIRY_BUTTON, JEWEIRY_BUTTON),
-                ],
-                [
-                    Markup.button.callback(ALCOHOL_BUTTON, ALCOHOL_BUTTON),
-                    Markup.button.callback(FOOD_BUTTON, FOOD_BUTTON),
-                ],
-
-                [
-                    Markup.button.callback(WEAPONS_BUTTON, WEAPONS_BUTTON),
-                    Markup.button.callback(ARMOR_BUTTON, ARMOR_BUTTON),
-                ],
-                [
-                    Markup.button.callback(GEARS_BUTTON, GEARS_BUTTON),
-                    Markup.button.callback(VEHICLES_BUTTON, VEHICLES_BUTTON),
-                ],
-            ]),
-        }
-    );*/
-
-    @Hears(CHANGE_EQUIPMENT_BUTTON)
+    @Hears(EQUIPMENT_BUTTON)
     async changeEquipment(@Ctx() ctx: BotContext, @Sender() sender) {
         const equipment = await this.inventoryService.findEquipmentByTgId(
             sender.id
@@ -166,7 +79,7 @@ export class InventoryScene {
         ctx.answerCbQuery();
         const tgUserId = ctx.callbackQuery.from.id.toString();
         const currentSlot = ENUM_BODY_PART_ENUM.HEARDRESS;
-        this.chooseItem(ctx, tgUserId, currentSlot);
+        await this.chooseItem(ctx, tgUserId, currentSlot);
     }
 
     @Action(ENUM_ACTION_NAMES.CHANGE_ARMOR)
@@ -174,7 +87,7 @@ export class InventoryScene {
         ctx.answerCbQuery();
         const tgUserId = ctx.callbackQuery.from.id.toString();
         const currentSlot = ENUM_BODY_PART_ENUM.ARMOR;
-        this.chooseItem(ctx, tgUserId, currentSlot);
+        await this.chooseItem(ctx, tgUserId, currentSlot);
     }
 
     @Action(ENUM_ACTION_NAMES.CHANGE_LEFT_HAND)
@@ -182,7 +95,7 @@ export class InventoryScene {
         ctx.answerCbQuery();
         const tgUserId = ctx.callbackQuery.from.id.toString();
         const currentSlot = ENUM_BODY_PART_ENUM.HAND;
-        this.chooseItem(ctx, tgUserId, currentSlot);
+        await this.chooseItem(ctx, tgUserId, currentSlot);
     }
 
     @Action(ENUM_ACTION_NAMES.CHANGE_RIGHT_HAND)
@@ -190,7 +103,7 @@ export class InventoryScene {
         ctx.answerCbQuery();
         const tgUserId = ctx.callbackQuery.from.id.toString();
         const currentSlot = ENUM_BODY_PART_ENUM.HAND;
-        this.chooseItem(ctx, tgUserId, currentSlot);
+        await this.chooseItem(ctx, tgUserId, currentSlot);
     }
 
     @Action(ENUM_ACTION_NAMES.CHANGE_CLOAK_ACTION)
@@ -198,7 +111,7 @@ export class InventoryScene {
         ctx.answerCbQuery();
         const tgUserId = ctx.callbackQuery.from.id.toString();
         const currentSlot = ENUM_BODY_PART_ENUM.CLOAK;
-        this.chooseItem(ctx, tgUserId, currentSlot);
+        await this.chooseItem(ctx, tgUserId, currentSlot);
     }
 
     @Action(ENUM_ACTION_NAMES.CHANGE_GLOVES_ACTION)
@@ -206,7 +119,7 @@ export class InventoryScene {
         ctx.answerCbQuery();
         const tgUserId = ctx.callbackQuery.from.id.toString();
         const currentSlot = ENUM_BODY_PART_ENUM.GLOVES;
-        this.chooseItem(ctx, tgUserId, currentSlot);
+        await this.chooseItem(ctx, tgUserId, currentSlot);
     }
 
     @Action(ENUM_ACTION_NAMES.CHANGE_RING_ACTION)
@@ -214,7 +127,7 @@ export class InventoryScene {
         ctx.answerCbQuery();
         const tgUserId = ctx.callbackQuery.from.id.toString();
         const currentSlot = ENUM_BODY_PART_ENUM.RING;
-        this.chooseItem(ctx, tgUserId, currentSlot);
+        await this.chooseItem(ctx, tgUserId, currentSlot);
     }
 
     @Action(ENUM_ACTION_NAMES.CHANGE_SHOES_ACTION)
@@ -222,7 +135,7 @@ export class InventoryScene {
         ctx.answerCbQuery();
         const tgUserId = ctx.callbackQuery.from.id.toString();
         const currentSlot = ENUM_BODY_PART_ENUM.SHOES;
-        this.chooseItem(ctx, tgUserId, currentSlot);
+        await this.chooseItem(ctx, tgUserId, currentSlot);
     }
 
     @Action(ENUM_ACTION_NAMES.CHANGE_VEHICLE_ACTION)
@@ -230,39 +143,39 @@ export class InventoryScene {
         ctx.answerCbQuery();
         const tgUserId = ctx.callbackQuery.from.id.toString();
         const currentSlot = ENUM_BODY_PART_ENUM.VEHICLE;
-        this.chooseItem(ctx, tgUserId, currentSlot);
+        await this.chooseItem(ctx, tgUserId, currentSlot);
     }
     async chooseItem(
         ctx: BotContext,
         tgUserId: string,
         currentSlot: ENUM_BODY_PART_ENUM
     ) {
-        let items: Paginated<any>;
-        if (currentSlot == ENUM_BODY_PART_ENUM.VEHICLE) {
-            items = await this.inventoryService.findAllVehicles(
-                {
-                    path: '',
+        const inventory =
+            await this.inventoryService.findInventoryIdByTgId(tgUserId);
+        /**
+       *   if (currentSlot == ENUM_BODY_PART_ENUM.VEHICLE) {
+            items = await this.inventoryService.findAllVehicles({
+                path: '',
+                filter: {
+                    inventoryId: `$eq:${inventoryId}`,
                 },
-                tgUserId
-            );
-        } else {
-            items = await this.inventoryService.findAllEquipmentItems(
-                {
-                    path: '',
-                    filter: {
-                        bodyPart: `$eq:${currentSlot}`,
-                    },
-                },
-                tgUserId
-            );
-        }
+            });
+        } else */
+        const items = await this.inventoryService.findAllEquipmentItems({
+            path: '',
+            filter: {
+                'equpmentItem.bodyPart': `$eq:${currentSlot}`,
+                inventory_id: `$eq:${inventory.id}`,
+            },
+        });
+
         let caption = '';
         if (items.data.length == 0) {
             caption = 'У вас нет экипировки подходящего типа!';
         } else {
             caption = 'Теперь выберите предмет, который вы хотите надеть:\n';
             items.data.map((item, index) => {
-                caption += `${index + 1})${item.name}\n`;
+                caption += `${index + 1})${item.equpmentItem.name}\n`;
             });
             caption += 'Чтобы убрать предмет из слота введите 0';
         }

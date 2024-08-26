@@ -21,6 +21,10 @@ import {
     CREATE_SQUAD_BUTTON,
     MY_SQUAD_BUTTON,
     COMMANDER_IN_CHIEF_BUTTON,
+    ARMED_FORCES_INFORMATION_BUTTON,
+    ARMED_FORCES_RANKS_BUTTON,
+    ARMED_FORCES_MAIN_BUTTON,
+    EXIT_FROM_ARMY_FORCES_BUTTON,
 } from 'src/modules/tg-bot/constants/button-names.constant';
 import {
     ARMED_FORCES,
@@ -29,6 +33,9 @@ import {
 import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
 import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
 import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
+import { ArmedForcesRankEntity } from 'src/modules/squards/entity/armed.forces.rank.entity';
+import { CharacterEntity } from 'src/modules/character/entity/character.entity';
+import { button } from 'telegraf/typings/markup';
 @Scene(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class ArmedForcesScene {
@@ -40,120 +47,234 @@ export class ArmedForcesScene {
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender('id') userTgId) {
-        const state = await this.characterService.getStateByTgId(userTgId);
-        const armedForces =
-            await this.squadsService.findArmedForcesByState(state);
-        ctx.session.armedForcesId = armedForces.id;
-        await this.showArmedForces(ctx, userTgId);
-    }
-
-    @Hears(ARMED_FORCES_BUTTON)
-    async armedForces(@Ctx() ctx: BotContext, @Sender('id') userTgId) {
-        await this.showArmedForces(ctx, userTgId);
-    }
-
-    async generateMainArmedForcesKeyboard(userTgId: string) {
-        const isUserSuperAdmin = this.userService.isSuperAdmin(userTgId);
+        ctx.session.armedForcesId = null;
         const character =
             await this.characterService.getCharacterIdByTgId(userTgId);
         const isUserArmedForcesMember =
             await this.squadsService.isUserArmedForcesMember(character);
-        const isUserHasRequest =
-            await this.squadsService.isUserHasRequest(userTgId);
+        const isSquadMember =
+            await this.squadsService.isUserSquadMember(character);
         const buttons = [];
-        if (!isUserArmedForcesMember && !isUserHasRequest) {
-            buttons.push([JOIN_TO_ARMED_FORCES_BUTTON]);
+        if (isUserArmedForcesMember) {
+            buttons.push([SQUAD_LIST_BUTTON]);
+            buttons.push([ARMED_FORCES_MAIN_BUTTON]);
         }
-        buttons.push([SQUAD_LIST_BUTTON]);
-        buttons.push([ARMED_FORCES_BUTTON, BACK_BUTTON]);
-
-        return buttons;
-    }
-    async showArmedForces(ctx: BotContext, userTgId: string) {
-        const buttons = await this.generateMainArmedForcesKeyboard(userTgId);
-        let caption =
-            '🛡️Добро пожаловать в Палату Рыцарей-Чародеев Королевства Клевер!🛡️\n\nЗдесь ты найдешь информацию о рыцарях-чародеях, системе рангов, своих будущих обязанностях,  о системе обучения, о боевых  отрядах  и о всех важных вещах, необходимых для твоего прохождения  службы. Готовься к геройству!\n';
-        const isUserHasRequest =
-            await this.squadsService.isUserHasRequest(userTgId);
-        if (isUserHasRequest) {
-            caption +=
-                '<strong><u>ВНИМАНИЕ:</u></strong> Вы отправили заявку в рыцари-чародеи. Ваша заявка на рассмотрении. \n';
+        if (isSquadMember) {
+            buttons.push([MY_SQUAD_BUTTON]);
         }
-        const type = ctx.chat.type;
-        if (type == 'private') {
-            await ctx.sendPhoto(
-                {
-                    source: ARMED_FORCES,
-                },
-                {
-                    caption,
-                    parse_mode: 'HTML',
-                    ...Markup.keyboard(buttons).resize(),
-                }
-            );
-        } else {
-            await ctx.sendPhoto(
-                {
-                    source: ARMED_FORCES,
-                },
-                {
-                    caption,
-                    parse_mode: 'HTML',
-                }
-            );
-        }
-        /*
-        const ranks = await this.squadsService.findRanksByArmedForces(
-            armedForces.id
+        buttons.push([ARMED_FORCES_INFORMATION_BUTTON, BACK_BUTTON]);
+        await ctx.sendPhoto(
+            {
+                source: ARMED_FORCES,
+            },
+            {
+                caption: 'Добро пожаловать в военный квартал',
+                parse_mode: 'HTML',
+                ...Markup.keyboard(buttons).resize(),
+            }
         );
-        const isUserArmedForcesMember =
-            await this.squadsService.isUserArmedForcesMember(character);
-        const nameBlock = `<strong><u>${armedForces.name}</u></strong>`;
-        const descripitonBlock = `<strong>Описание</strong>\n${armedForces.descripiton}`;
-        let ranksBlock = `Ранговая система\n`;
-        ranks.map((rank) => (ranksBlock += `<strong>${rank.name}</strong>\n`));
-        const caption = `${nameBlock}\n\n${descripitonBlock}\n${ranksBlock}`;
+    }
+
+    @Hears(ARMED_FORCES_INFORMATION_BUTTON)
+    async armedList(@Ctx() ctx: BotContext) {
+        const armedForces = await this.squadsService.findAllArmedForces({
+            path: '',
+        });
+        const caption = 'Информацию о какой армии вы хотите узнать?';
         const buttons = [];
-        if (!isUserArmedForcesMember) {
-            buttons.push([JOIN_TO_ARMED_FORCES_BUTTON]);
-        }
-        buttons.push(
-            [MY_SQUAD_BUTTON, TREASURY_BUTTON],
-            [SQUAD_LIST_BUTTON],
-            [COMMANDER_IN_CHIEF_BUTTON, BACK_BUTTON]
-        )
-        ctx.sendPhoto(
+        armedForces.data.map((item) => {
+            buttons.push([
+                Markup.button.callback(
+                    `${item.name} (${item.state.name})`,
+                    `ARMED_FORCES:${item.id}`
+                ),
+            ]);
+        });
+        await ctx.sendPhoto(
             {
                 source: ARMED_FORCES,
             },
             {
                 caption,
                 parse_mode: 'HTML',
-                ...Markup.keyboard(buttons).resize(),
+                ...Markup.inlineKeyboard(buttons),
             }
-        );*/
+        );
     }
-    @Hears(JOIN_TO_ARMED_FORCES_BUTTON)
+    @Action(/^ARMED_FORCES:(.*)$/)
+    async armedForcesAction(@Ctx() ctx: BotContext, @Sender('id') userTgId) {
+        await ctx.answerCbQuery();
+        const armedForcesId = await ctx.callbackQuery['data'].split(':')[1];
+        ctx.session.armedForcesId = armedForcesId;
+        const character =
+            await this.characterService.getCharacterIdByTgId(userTgId);
+        await this.showArmedForcesWelcomeInformation(
+            ctx,
+            armedForcesId,
+            character
+        );
+    }
+
+    @Action(ARMED_FORCES_BUTTON)
+    async main(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const armedForces = await this.squadsService.findAllArmedForces({
+            path: '',
+        });
+        const caption = 'Информацию о какой армии вы хотите узнать?';
+        const buttons = [];
+        armedForces.data.map((item) => {
+            buttons.push([
+                Markup.button.callback(
+                    `${item.name} (${item.state.name})`,
+                    `ARMED_FORCES:${item.id}`
+                ),
+            ]);
+        });
+        await ctx.deleteMessage();
+        await ctx.sendPhoto(
+            {
+                source: ARMED_FORCES,
+            },
+            {
+                caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard(buttons),
+            }
+        );
+    }
+    async showArmedForcesWelcomeInformation(
+        ctx: BotContext,
+        armedForcesId: string,
+        character: CharacterEntity
+    ) {
+        const armedForces =
+            await this.squadsService.findArmedForcesById(armedForcesId);
+        let caption = `🛡️Добро пожаловать в Палату организации "${armedForces.name}" (${armedForces.state.fullName})!🛡️\n\n`;
+        caption += `<strong>Описание</strong>\n${armedForces.description}\n\n`;
+        caption += `Здесь ты найдешь информацию о рыцарях-чародеях, системе рангов, своих будущих обязанностях,  о системе обучения, о боевых  отрядах  и о всех важных вещах, необходимых для твоего прохождения  службы. Готовься к геройству!`;
+        const isUserArmedForcesMember =
+            await this.squadsService.isUserArmedForcesMember(character);
+        const isUserHasAnyRequest =
+            await this.squadsService.isUserHasAnyRequest(
+                character.user.tgUserId
+            );
+
+        const buttons = [];
+        buttons.push(
+            [
+                Markup.button.callback(
+                    ARMED_FORCES_RANKS_BUTTON,
+                    `ARMED_FORCES_RANK:${armedForcesId}`
+                ),
+            ],
+            [
+                Markup.button.callback(
+                    SQUAD_LIST_BUTTON,
+                    `SQUAD_LIST_BUTTON:${armedForcesId}`
+                ),
+            ]
+        );
+        if (!isUserArmedForcesMember && !isUserHasAnyRequest) {
+            buttons.push([
+                Markup.button.callback(
+                    JOIN_TO_ARMED_FORCES_BUTTON,
+                    JOIN_TO_ARMED_FORCES_BUTTON
+                ),
+            ]);
+        }
+        buttons.push([
+            Markup.button.callback(BACK_BUTTON, ARMED_FORCES_BUTTON),
+        ]);
+        const isUserHasRequest = await this.squadsService.isUserHasRequest(
+            character.user.tgUserId,
+            armedForcesId
+        );
+        if (isUserHasRequest) {
+            caption +=
+                '\n\n <strong> Вы подали заявку. C вами свяжутся.</strong>';
+        }
+        await ctx.deleteMessage();
+        await ctx.replyWithPhoto(
+            {
+                source: ARMED_FORCES,
+            },
+            {
+                caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard(buttons),
+            }
+        );
+    }
+    @Action(/^ARMED_FORCES_RANK:(.*)$/)
+    async showRanks(@Ctx() ctx: BotContext, @Sender() sender) {
+        await ctx.answerCbQuery();
+        const armedForcesId = await ctx.callbackQuery['data'].split(':')[1];
+        const rank =
+            await this.squadsService.findRanksByArmedForces(armedForcesId);
+        let caption = '<strong>Ранги</strong>\n';
+        caption += this.showRankInfo(rank);
+        caption += this.showRanksInfo(rank.children);
+        await ctx.deleteMessage();
+        await ctx.reply(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard([
+                [
+                    Markup.button.callback(
+                        BACK_BUTTON,
+                        `ARMED_FORCES:${armedForcesId}`
+                    ),
+                ],
+            ]),
+        });
+    }
+    showRanksInfo(children: Array<ArmedForcesRankEntity>) {
+        let caption = '';
+        children.map((item) => {
+            caption += this.showRankInfo(item);
+            caption += this.showRanksInfo(item.children);
+        });
+        return caption;
+    }
+    showRankInfo(rank: ArmedForcesRankEntity) {
+        let caption = '';
+        caption += `<strong>${rank.name}</strong>\n`;
+        caption += 'Зарплата: ';
+        caption += `${rank.salary.copper} 🟤`;
+        caption += `${rank.salary.silver} ⚪️`;
+        caption += `${rank.salary.eclevtrum} 🔵`;
+        caption += `${rank.salary.gold} 🟡`;
+        caption += `${rank.salary.platinum} 🪙\n`;
+        caption += `Звёзды для получения: ${rank.star}\n\n`;
+        return caption;
+    }
+
+    @Action(JOIN_TO_ARMED_FORCES_BUTTON)
     async joinToArmedForces(@Ctx() ctx: BotContext, @Sender() sender) {
+        await ctx.answerCbQuery();
         const tgUserId = sender.id;
         const tgUsername: string = sender.username;
         const character = await this.characterService.getCharacterIdByTgId(
             sender.id
         );
-        if (character.grimoireId == null) {
+        /**
+         * if (character.grimoire == null) {
             await ctx.reply(
                 'У вас нет гримуара! Вы не можете вступить в армию вашего королевства.'
             );
             return;
         }
-        const isUserSquadMember =
-            await this.squadsService.isUserSquadMember(character);
+         */
+
+        const isUserSquadMember = false;
+        // await this.squadsService.isUserSquadMember(character);
         if (isUserSquadMember) {
             await ctx.reply('Вы уже являетесь членом какого-либо отряда.');
             return;
         }
-        const isUserHasRequest =
-            await this.squadsService.isUserSquadMemberRequest(character);
+        const isUserHasRequest = await this.squadsService.isUserHasAnyRequest(
+            character.user.tgUserId
+        );
         if (isUserHasRequest) {
             await ctx.reply(
                 'От вас уже есть заявка на рассмотрение, ждите ответа.'
@@ -167,21 +288,25 @@ export class ArmedForcesScene {
             tgUsername: tgUsername,
         };
         this.squadsService.createArmedForcesRequest(dto);
-        const buttons = await this.generateMainArmedForcesKeyboard(tgUserId);
+        //  const buttons = await this.generateMainArmedForcesKeyboard(tgUserId);
         await ctx.reply(
-            'Вы отправили заявку на вступление в вооружённые силы вышей страны! Через время с вами свяжутся.',
-            {
-                parse_mode: 'HTML',
-                ...Markup.keyboard(buttons),
-            }
+            'Вы отправили заявку на вступление в вооружённые силы вышей страны! Через время с вами свяжутся.'
         );
     }
 
-    @Hears(TREASURY_BUTTON)
-    async treasury(@Ctx() ctx: BotContext) {
-        const caption =
-            'Это сокровищница 💰 вашего королевства, здесь раз в сутки можно получать деньги. \nВаша выплата: 100 рублей.\n';
-
+    @Hears(ARMED_FORCES_MAIN_BUTTON)
+    async mainOffice(@Ctx() ctx: BotContext) {
+        const buttons = [];
+        buttons.push([
+            Markup.button.callback(TREASURY_BUTTON, TREASURY_BUTTON),
+        ]);
+        buttons.push([
+            Markup.button.callback(
+                EXIT_FROM_ARMY_FORCES_BUTTON,
+                EXIT_FROM_ARMY_FORCES_BUTTON
+            ),
+        ]);
+        const caption = '';
         await ctx.sendPhoto(
             {
                 source: ARMED_FORCES,
@@ -189,25 +314,61 @@ export class ArmedForcesScene {
             {
                 caption,
                 parse_mode: 'HTML',
-                ...Markup.inlineKeyboard([
-                    [
-                        Markup.button.callback(
-                            GET_A_WAGE_BUTTON,
-                            GET_A_WAGE_BUTTON
-                        ),
-                    ],
-                ]),
+                ...Markup.inlineKeyboard(buttons),
             }
         );
+    }
+    @Action(EXIT_FROM_ARMY_FORCES_BUTTON)
+    async exit(@Ctx() ctx: BotContext) {
+        const caption = 'Вы точно хотите уволиться?';
+        const buttons = [
+            [Markup.button.callback('Да', 'YES_FIRE')],
+
+            [Markup.button.callback('Нет', 'NO_FIRE')],
+        ];
+
+        await ctx.editMessageCaption(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(buttons),
+        });
+    }
+
+    @Action('YES_FIRE')
+    async yesFire(@Ctx() ctx: BotContext, @Sender('id') tgId) {
+        await ctx.answerCbQuery();
+        const member =
+            await this.squadsService.findArmedForcesMemberByTgId(tgId);
+        const result = await this.squadsService.fire(member.id);
+        await ctx.scene.enter(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID);
+    }
+
+    @Action('NO_FIRE')
+    async noFire(@Ctx() ctx: BotContext) {
+        await ctx.reply('Вы остались.');
+    }
+    @Action(TREASURY_BUTTON)
+    async treasury(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const caption =
+            'Это сокровищница 💰 вашего королевства, здесь раз в сутки можно получать деньги. \nВаша выплата.\n';
+
+        await ctx.editMessageCaption(caption, {
+            ...Markup.inlineKeyboard([
+                [Markup.button.callback(GET_A_WAGE_BUTTON, GET_A_WAGE_BUTTON)],
+            ]),
+        });
     }
     @Hears(CREATE_SQUAD_BUTTON)
     async createSquad(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.CREATE_SQUAD_SCENE_ID);
     }
 
-    @Hears(SQUAD_LIST_BUTTON)
+    @Action(/^SQUAD_LIST_BUTTON:(.*)$/)
     async squadList(@Ctx() ctx: BotContext) {
-        await this.showSquadsList(ctx, 1);
+        await ctx.answerCbQuery();
+        const armedForcesId = await ctx.callbackQuery['data'].split(':')[1];
+        ctx.session.armedForcesId = armedForcesId;
+        await this.showSquadsList(ctx, armedForcesId, 1);
     }
 
     @Action(GET_A_WAGE_BUTTON)
@@ -216,15 +377,16 @@ export class ArmedForcesScene {
         await ctx.reply(caption);
     }
 
-    @Action(/^(GET_SQUADS.*)$/)
+    @Action(/^(SQUAD.*)$/)
     async getSquads(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
         const [action, value] = ctx.callbackQuery['data'].split(':');
-        this.showSquadInformation(ctx, value);
+        await this.showSquadInformation(ctx, value);
     }
 
-    @Action('BACK_TO_SQUADS_LIST')
+    @Action('BACK_TO_ARMED_FORCES')
     async backToSquadList(@Ctx() ctx: BotContext) {
-        await this.showSquadsList(ctx, 1);
+        //   await this.showSquadsList(ctx, 1);
     }
     /**
    * 
@@ -272,6 +434,10 @@ export class ArmedForcesScene {
         await ctx.scene.enter(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID);
     }
 
+    @Action('BACK_TO_SQUADS_LIST')
+    async backToSquadsList(@Ctx() ctx: BotContext) {
+        await this.showSquadsList(ctx, ctx.session.armedForcesId, 1);
+    }
     async showSquadInformation(ctx: BotContext, squadId: string) {
         const squad = await this.squadsService.findSquadById(squadId);
         const membersCount = await this.squadsService.membersCount(squad.id);
@@ -279,6 +445,7 @@ export class ArmedForcesScene {
         const description = `<strong>Описание</strong>\n ${squad.description}\n`;
         const membersCountBlock = `<strong>Количество людей в отряде</strong>: ${membersCount}\n`;
         const caption = title + membersCountBlock + description;
+        await ctx.deleteMessage();
         await ctx.replyWithPhoto(
             {
                 source: `${STATIC_IMAGE_BASE_PATH}/${squad.image}`,
@@ -297,8 +464,7 @@ export class ArmedForcesScene {
             }
         );
     }
-    async showSquadsList(ctx: BotContext, page: number) {
-        const armedForcesId = ctx.session.armedForcesId;
+    async showSquadsList(ctx: BotContext, armedForcesId: string, page: number) {
         const query: PaginateQuery = {
             limit: SQUAD_DEFAULT_PER_PAGE,
             path: '',
@@ -313,7 +479,7 @@ export class ArmedForcesScene {
         const inlineButtons = [];
         data.map((squad) => {
             inlineButtons.push([
-                Markup.button.callback(`${squad.name}`, `SQUAD:${squad.name}`),
+                Markup.button.callback(`${squad.name}`, `SQUAD:${squad.id}`),
             ]);
         });
         if (totalPages == 0) {
@@ -351,7 +517,13 @@ export class ArmedForcesScene {
                 Markup.button.callback(`>>`, `NEXT_PAGE:${page + 1}`),
             ]);
         }
-        await ctx.reply('Отряды вашего королевства', {
+        inlineButtons.push([
+            Markup.button.callback(
+                BACK_BUTTON,
+                `ARMED_FORCES:${armedForcesId}`
+            ),
+        ]);
+        await ctx.editMessageCaption('Отряды вашего королевства', {
             ...Markup.inlineKeyboard(inlineButtons),
         });
     }

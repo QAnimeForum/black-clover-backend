@@ -24,6 +24,7 @@ import {
 import { ArmedForcesRankEntity } from '../entity/armed.forces.rank.entity';
 import { ArmedForcesMemberEntity } from '../entity/armed.forces.member.entity';
 import { ArmedForcesMemberCreateDto } from '../dto/armed.forces.member.create.dto';
+import { MoneyEntity } from 'src/modules/money/entity/money.entity';
 
 @Injectable()
 export class SquadsService {
@@ -72,6 +73,16 @@ export class SquadsService {
         });
     }
 
+    public findRequestById(id: string) {
+        return this.armedForcesRequestRepository.findOne({
+            where: {
+                id,
+            },
+            relations: {
+                armedForces: true,
+            },
+        });
+    }
     public findAllRequests(
         query: PaginateQuery
     ): Promise<Paginated<ArmedForcesRequestEntity>> {
@@ -99,12 +110,45 @@ export class SquadsService {
             ],
             filterableColumns: {
                 name: [FilterOperator.EQ, FilterSuffix.NOT],
+                status: [FilterOperator.EQ, FilterSuffix.NOT],
                 'armedForces.id': true,
             },
         });
     }
 
-    public async acceptMember(
+    async changeRank(rankId: string, memberId: string) {
+        console.log(rankId, memberId);
+        let result = null;
+        await this.connection.transaction(
+            async (transactionalEntityManager) => {
+                const rank = await transactionalEntityManager.findOne(
+                    ArmedForcesRankEntity,
+                    {
+                        where: {
+                            id: rankId,
+                        },
+                    }
+                );
+                const member = await transactionalEntityManager.findOne(
+                    ArmedForcesMemberEntity,
+                    {
+                        where: {
+                            id: memberId,
+                        },
+                    }
+                );
+                console.log(member);
+                member.rank = rank;
+                member.rankId = rankId;
+
+                result = await transactionalEntityManager.save(member);
+            }
+        );
+        return result;
+    }
+    /**
+    * 
+    * @param id  public async acceptMember(
         character: CharacterEntity,
         armedForces: ArmedForcesEntity,
         tgUserId: number,
@@ -125,7 +169,6 @@ export class SquadsService {
         member.rankId = rank.id;
 
         await this.armedForcesMemberRepository.insert(member);
-        //  member.rank = ENUM_MEMB
         this.changeRequestStatus(tgUserId, requestStatus);
     }
     public async changeRequestStatus(
@@ -141,6 +184,91 @@ export class SquadsService {
             .where('tgUserId = :tgUserId', { tgUserId: tgUserId })
             .execute();
         return true;
+    }
+    * @returns 
+    */
+
+    public async acceptRequest(requestId: string) {
+        let member: ArmedForcesMemberEntity | null = null;
+        await this.connection.transaction(
+            async (transactionalEntityManager) => {
+                const request = await transactionalEntityManager.findOne(
+                    ArmedForcesRequestEntity,
+                    {
+                        where: {
+                            id: requestId,
+                        },
+                        relations: {
+                            armedForces: true,
+                        },
+                    }
+                );
+                const isCharacterMember =
+                    await transactionalEntityManager.exists(
+                        ArmedForcesMemberEntity,
+                        {
+                            where: {
+                                characterId: request.characterId,
+                            },
+                        }
+                    );
+
+                if (!isCharacterMember) {
+                    request.status = ENUM_ARMED_FORCES_REQUEST.ACCEPTED;
+                    await transactionalEntityManager.save(request);
+                    /* await transactionalEntityManager
+                        .createQueryBuilder()
+                        .update(this.armedForcesRequestRepository)
+                        .set({
+                            status: ENUM_ARMED_FORCES_REQUEST.ACCEPTED.toString(),
+                        })
+                        .where('id = :id', { id: `${requestId}` })
+                        .execute();*/
+
+                    let ranks = await this.findRanksByArmedForces(
+                        request.armedForces.id
+                    );
+
+                    member = new ArmedForcesMemberEntity();
+                    member.armedForcesId = request.forcesId;
+                    member.characterId = request.characterId;
+
+                    while (ranks.children.length > 0) {
+                        ranks = ranks.children[0];
+                    }
+                    member.rank = ranks;
+                    member.rankId = ranks.id;
+
+                    await transactionalEntityManager.save(member);
+                } else {
+                    request.status = ENUM_ARMED_FORCES_REQUEST.REJECTED;
+                    await transactionalEntityManager.save(request);
+                }
+            }
+        );
+        return member;
+    }
+
+    public async rejectRequest(requestId: string) {
+        const isChanged = false;
+        await this.connection.transaction(
+            async (transactionalEntityManager) => {
+                const request = await transactionalEntityManager.findOne(
+                    ArmedForcesRequestEntity,
+                    {
+                        where: {
+                            id: requestId,
+                        },
+                        relations: {
+                            armedForces: true,
+                        },
+                    }
+                );
+                request.status = ENUM_ARMED_FORCES_REQUEST.ACCEPTED;
+                await transactionalEntityManager.save(request);
+            }
+        );
+        return isChanged;
     }
     findSquadById(id: string): Promise<SquadEntity | null> {
         return this.squadRepository.findOneBy({ id });
@@ -196,12 +324,9 @@ export class SquadsService {
         const entities = await this.rankRepository.findRoots({
             relations: ['salary'],
         });
-        console.log(armedForceId);
         const entity = entities.find(
             (item) => item.armorForcesId == armedForceId
         );
-        console.log(entities);
-        console.log(entity);
         return await this.rankRepository.findDescendantsTree(entity, {
             relations: ['salary'],
         });
@@ -236,10 +361,25 @@ export class SquadsService {
         });
     }
 
-    findArmedForcesMember(characterId: string) {
+    findArmedForcesMember(memberId: string) {
         return this.armedForcesMemberRepository.findOne({
             where: {
-                characterId: characterId,
+                id: memberId,
+            },
+            relations: {
+                rank: true,
+            },
+        });
+    }
+
+    findArmedForcesMemberByTgId(tgId: string) {
+        return this.armedForcesMemberRepository.findOne({
+            where: {
+                character: {
+                    user: {
+                        tgUserId: tgId,
+                    },
+                },
             },
             relations: {
                 rank: true,
@@ -318,11 +458,12 @@ export class SquadsService {
             nullSort: 'last',
             defaultSortBy: [['id', 'DESC']],
             searchableColumns: ['name'],
-            select: ['id', 'name'],
+            select: ['id', 'name', 'state', 'state.name'],
             filterableColumns: {
                 name: [FilterOperator.EQ, FilterSuffix.NOT],
                 forces_id: true,
             },
+            relations: ['state'],
         });
     }
     findArmedForcesById(id: string): Promise<ArmedForcesEntity | null> {
@@ -342,7 +483,7 @@ export class SquadsService {
     async createArmedForces(dto: ArmedForcesCreateDto) {
         const armedForces = new ArmedForcesEntity();
         armedForces.name = dto.name;
-        armedForces.descripiton = dto.description;
+        armedForces.description = dto.description;
         return this.armedForcesRepository.insert(armedForces);
     }
 
@@ -363,12 +504,27 @@ export class SquadsService {
         await this.armedForcesRepository.delete(id);
     }
 
-    async isUserHasRequest(tgId: string): Promise<boolean> {
+    async isUserHasAnyRequest(tgId: string): Promise<boolean> {
         //  `select wallet.* from wallet JOIN character ON wallet.id = character.wallet_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = ${dto.tgId}`
 
         return this.armedForcesRequestRepository.exists({
             where: {
                 tgUserId: tgId,
+                status: ENUM_ARMED_FORCES_REQUEST.PENDING,
+            },
+        });
+    }
+
+    async isUserHasRequest(
+        tgId: string,
+        armedForceId: string
+    ): Promise<boolean> {
+        //  `select wallet.* from wallet JOIN character ON wallet.id = character.wallet_id JOIN game_user on character.id = game_user.character_id  where game_user.tg_user_id = ${dto.tgId}`
+
+        return this.armedForcesRequestRepository.exists({
+            where: {
+                tgUserId: tgId,
+                forcesId: armedForceId,
                 status: ENUM_ARMED_FORCES_REQUEST.PENDING,
             },
         });
@@ -384,7 +540,13 @@ export class SquadsService {
         });
     }
     async isUserSquadMember(character: CharacterEntity): Promise<boolean> {
-        return false;
+        return this.squadMemberRepository.exists({
+            where: {
+                armedForcesMember: {
+                    characterId: character.id,
+                },
+            },
+        });
     }
 
     async isUserSquadMemberRequest(
@@ -409,4 +571,72 @@ export class SquadsService {
             status: ENUM_ARMED_FORCES_REQUEST.PENDING,
         });
     }
+
+    async addStar(memberId: string) {
+        await this.connection.transaction(
+            async (transactionalEntityManager) => {
+                const member = await transactionalEntityManager.findOne(
+                    ArmedForcesMemberEntity,
+                    {
+                        where: {
+                            id: memberId,
+                        },
+                        relations: {
+                            rank: true,
+                        },
+                    }
+                );
+                member.stars += 1;
+                const parentsTree = await transactionalEntityManager
+                    .getTreeRepository(ArmedForcesRankEntity)
+                    .findAncestorsTree(member.rank);
+                const parentRank = parentsTree.parent;
+                if (parentRank && parentRank.star <= member.stars) {
+                    member.rank = parentRank;
+                }
+                await transactionalEntityManager.save(member);
+            }
+        );
+    }
+    async removeStar(memberId: string) {
+        let isRemoved = false;
+        await this.connection.transaction(
+            async (transactionalEntityManager) => {
+                const member = await transactionalEntityManager.findOne(
+                    ArmedForcesMemberEntity,
+                    {
+                        where: {
+                            id: memberId,
+                        },
+                        relations: {
+                            rank: true,
+                        },
+                    }
+                );
+                if (member.stars > 0) {
+                    member.stars -= 1;
+                    isRemoved = true;
+                }
+
+                const parentsTree = await transactionalEntityManager
+                    .getTreeRepository(ArmedForcesRankEntity)
+                    .findDescendantsTree(member.rank, { depth: 1 });
+
+                const childrenRank = parentsTree.children;
+                if (
+                    childrenRank.length > 0 &&
+                    childrenRank[0].star <= member.stars
+                ) {
+                    member.rank = childrenRank[0];
+                }
+                await transactionalEntityManager.save(member);
+            }
+        );
+        return isRemoved;
+    }
+
+    async fire(memberId: string) {
+        return await this.armedForcesMemberRepository.delete(memberId);
+    }
+
 }

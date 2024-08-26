@@ -20,20 +20,12 @@ import { Markup } from 'telegraf';
 import { UserService } from 'src/modules/user/services/user.service';
 
 import {
-    ANNOUNCEMENTS_BUTTON,
-    ARMED_FORCES_BUTTON,
     BACK_BUTTON,
     BACK_TO_ADMIN_BUTTON,
-    CHARACTERS_BUTTON,
     CHARACTERS_LIST_BUTTON,
-    CHRONICLE_BUTTON,
-    GAMES_BUTTON,
     GRIMOIRES_BUTTON,
-    ITEMS_BUTTON,
-    MAGIC_PARLAMENT_BUTTON,
     MONEY_BUTTON,
     PERMITIONS_BUTTON,
-    PLANTS_BUTTON,
 } from '../../constants/button-names.constant';
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -47,14 +39,12 @@ import { ENUM_ACTION_NAMES } from '../../constants/action-names.constant';
 import { RaceService } from 'src/modules/race/race.service';
 import { CharacteristicService } from 'src/modules/character/services/characteristics.service';
 import { MapService } from 'src/modules/map/service/map.service';
-@Scene(ENUM_SCENES_ID.ADMIN_SCENE_ID)
+@Scene(ENUM_SCENES_ID.ADMIN_CHARACTERS_SETTINGS_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
-export class AdminScene {
+export class CharactersSettingsScene {
     constructor(
         private readonly userService: UserService,
         private readonly characterService: CharacterService,
-        private readonly announcementService: AnnouncementService,
-        private readonly armedForcesService: SquadsService,
         private readonly raceService: RaceService,
         private readonly stateService: MapService,
         private readonly characteristicService: CharacteristicService,
@@ -62,7 +52,7 @@ export class AdminScene {
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {
-        const caption = 'Админская панель';
+        const caption = 'Меню редактирования персонажей';
         await ctx.sendPhoto(
             {
                 source: ADMIN_IMAGE_PATH,
@@ -70,84 +60,161 @@ export class AdminScene {
             {
                 caption,
                 ...Markup.keyboard([
-                    [CHARACTERS_BUTTON, ITEMS_BUTTON],
-                    [MAGIC_PARLAMENT_BUTTON, ARMED_FORCES_BUTTON],
-                    [BACK_BUTTON],
-                    /*     [PERMITIONS_BUTTON, GRIMOIRES_BUTTON, ITEMS_BUTTON],
-                    [PLANTS_BUTTON, GAMES_BUTTON, MONEY_BUTTON],
-                    [MAGIC_PARLAMENT_BUTTON, ARMED_FORCES_BUTTON],
-                    [CHARACTERS_BUTTON],
-                  [ANNOUNCEMENTS_BUTTON, CHRONICLE_BUTTON],
-                    [BACK_BUTTON],*/
+                    [PERMITIONS_BUTTON, GRIMOIRES_BUTTON],
+                    [MONEY_BUTTON, CHARACTERS_LIST_BUTTON],
+                    [BACK_TO_ADMIN_BUTTON],
                 ]).resize(),
             }
         );
     }
 
-    @Hears(CHARACTERS_BUTTON)
-    async chracters(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(
-            ENUM_SCENES_ID.ADMIN_CHARACTERS_SETTINGS_SCENE_ID
-        );
+    @Hears(BACK_TO_ADMIN_BUTTON)
+    async backToMainAdmin(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_SCENE_ID);
     }
-    @Hears(ARMED_FORCES_BUTTON)
-    async armedForces(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_ARMED_FORCES_MAGIC_SCENE_ID);
+    @Action(/^(CHARACTER_NEXT_PAGE.*)$/)
+    async nextPage(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const data = ctx.callbackQuery['data'].split(':');
+        const page = Number.parseInt(data[1]);
+        const characters = await this.characterService.findAll({
+            path: '',
+            limit: 10,
+            page: page,
+        });
+        const [caption, buttons] = charactersListButtons(characters);
+        await ctx.editMessageText(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(buttons),
+        });
     }
-    @Hears(MAGIC_PARLAMENT_BUTTON)
-    async magicParlament(@Ctx() ctx: BotContext) {
-        await ctx.scene.enter(
-            ENUM_SCENES_ID.ADMIN_MAGIC_PARLAMENT_SCENE_SCENE_ID
-        );
+
+    @Action(/^(CHARACTER_PREVIOUS_PAGE.*)$/)
+    async previousPage(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
+
+        const characters = await this.characterService.findAll({
+            path: '',
+            limit: 10,
+            page: page,
+        });
+        const [caption, buttons] = charactersListButtons(characters);
+        await ctx.editMessageText(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(buttons),
+        });
     }
-    @Hears(ITEMS_BUTTON)
-    async items(@Ctx() ctx: BotContext) {
-        await ctx.reply('Предметы', {
+    @Action(/^CHARACTER:(.*)$/)
+    async characterInfo(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const characterId = await ctx.callbackQuery['data'].split(':')[1];
+        ctx.session.characterIdForChangeRaceAndState = characterId;
+        const character =
+            await this.characterService.findCharacterById(characterId);
+        let caption = 'Персонаж\n';
+        caption += `${character.background.name}\n${character.background.race.name}\n${character.background.state.name}\n`;
+        await ctx.reply(caption, {
             parse_mode: 'HTML',
             ...Markup.inlineKeyboard([
-                [Markup.button.callback('Список предметов', 'create_item')],
-                [Markup.button.callback('Создать предмет', 'create_item')],
                 [
                     Markup.button.callback(
-                        'Выдать предмет пользователю',
-                        'GIVE_ITEM_TO_USER'
+                        'Изменить расу',
+                        `${ENUM_ACTION_NAMES.CHANGE_RACE_ACTION}:${character.id}`
                     ),
                 ],
                 [
                     Markup.button.callback(
-                        'Создать предложение в магазине',
-                        'CREATE_OFFER'
-                    ),
-                ],
-                [
-                    Markup.button.callback(
-                        'Удалить предложение в магазине',
-                        'DELETE_OFFER'
+                        'Изменить страну',
+                        `${ENUM_ACTION_NAMES.CHANGE_STATE_ACTION}:${character.id}`
                     ),
                 ],
             ]),
         });
     }
+    @Action(/^CHANGE_RACE_ACTION:(.*)$/)
+    async changeRace(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const character = await this.characterService.findCharacterById(
+            ctx.session.characterIdForChangeRaceAndState
+        );
+        const races = await this.raceService.findAll({
+            path: '',
+        });
+        const caption = 'Расы';
+        const buttons = [];
+        races.data.map((race) => {
+            buttons.push([
+                Markup.button.callback(race.name, `RACE_CHANGE_ID:${race.id}:`),
+            ]);
+        });
+        await ctx.reply(caption, {
+            ...Markup.inlineKeyboard(buttons),
+        });
+    }
+    @Action(/^RACE_CHANGE_ID:(.*)$/)
+    async changeRace1(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const race = await ctx.callbackQuery['data'].split(':')[1];
+        await this.characteristicService.changeRace({
+            characterId: ctx.session.characterIdForChangeRaceAndState,
+            raceId: race,
+        });
+        const character = await this.characterService.findCharacterById(
+            ctx.session.characterIdForChangeRaceAndState
+        );
+        ctx.session.characterIdForChangeRaceAndState = null;
+        let caption = 'Персонаж\n';
+        caption += `${character.background.name}\n${character.background.race.name}\n${character.background.state.name}\n`;
 
-    @Action('GIVE_ITEM_TO_USER')
-    async giveItemToUser(@Ctx() ctx: BotContext) {
-        await ctx.answerCbQuery();
-        await ctx.scene.enter(ENUM_SCENES_ID.GIVE_ITEM_SCENE_ID);
-    }
-    @Action('CREATE_OFFER')
-    async createOffer(@Ctx() ctx: BotContext) {
-        await ctx.answerCbQuery();
-        await ctx.scene.enter(ENUM_SCENES_ID.CREATE_OFFER_SCENE_ID);
+        await ctx.reply(caption);
     }
 
-    @Action('DELETE_OFFER')
-    async deleteOffer(@Ctx() ctx: BotContext) {
+    @Action(/^CHANGE_STATE_ACTION:(.*)$/)
+    async changeState(@Ctx() ctx: BotContext) {
         await ctx.answerCbQuery();
-        await ctx.scene.enter(ENUM_SCENES_ID.DELETE_OFFER_SCENE_ID);
+        const character = await this.characterService.findCharacterById(
+            ctx.session.characterIdForChangeRaceAndState
+        );
+        const races = await this.stateService.findAllStates({
+            path: '',
+        });
+        const caption = 'Страны';
+        const buttons = [];
+        races.data.map((race) => {
+            buttons.push([
+                Markup.button.callback(
+                    race.name,
+                    `STATE_CHANGE_ID:${race.id}:`
+                ),
+            ]);
+        });
+        await ctx.reply(caption, {
+            ...Markup.inlineKeyboard(buttons),
+        });
     }
-    @Hears(PLANTS_BUTTON)
-    async plants(@Ctx() ctx: BotContext) {
-        ctx.scene.enter(ENUM_SCENES_ID.PLANTS_SCENE_ID);
+    @Action(/^STATE_CHANGE_ID:(.*)$/)
+    async changeState1(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const state = await ctx.callbackQuery['data'].split(':')[1];
+        await this.characteristicService.changeState({
+            characterId: ctx.session.characterIdForChangeRaceAndState,
+            state: state,
+        });
+        const character = await this.characterService.findCharacterById(
+            ctx.session.characterIdForChangeRaceAndState
+        );
+        ctx.session.characterIdForChangeRaceAndState = null;
+        let caption = 'Персонаж\n';
+        caption += `${character.background.name}\n${character.background.race.name}\n${character.background.state.name}\n`;
+
+        await ctx.reply(caption);
+    }
+    @Action(ENUM_ACTION_NAMES.BACK_TO_CHARACTER)
+    async backToGrimoireTower(@Ctx() ctx: BotContext, @Sender() sender) {
+        /*   ctx.answerCbQuery();
+      await ctx.deleteMessage();
+      this.showEnterMessage(ctx, sender.id);*/
     }
     @Hears(PERMITIONS_BUTTON)
     async permitions(@Ctx() ctx: BotContext) {
@@ -181,51 +248,6 @@ export class AdminScene {
         });
     }
 
-    @Hears(ANNOUNCEMENTS_BUTTON)
-    async annoncements(@Ctx() ctx: BotContext) {
-        ctx.reply('Меню по управлению объявлениями', {
-            ...Markup.inlineKeyboard([
-                [
-                    Markup.button.callback(
-                        'Создать новое объявление',
-                        `ADD_NEW_ANNOUNCEMENT`
-                    ),
-                ],
-                [
-                    Markup.button.callback(
-                        'Список объявлений',
-                        `SHOW_LIST_ANNOUNCEMENTS`
-                    ),
-                ],
-            ]),
-        });
-    }
-    @Action('ADD_NEW_ANNOUNCEMENT')
-    async addAnnouncement(@Ctx() ctx: BotContext) {
-        ctx.scene.enter(ENUM_SCENES_ID.ANNOUNCEMENT_CREATE_SCENE_ID);
-    }
-
-    @Action('SHOW_LIST_ANNOUNCEMENTS')
-    async showAnnouncement(@Ctx() ctx: BotContext) {
-        const announcements =
-            await this.announcementService.findAllAnnouncements({
-                path: '',
-            });
-        const caption = `Объявления\n Общее количество объявлений: ${announcements.meta.totalItems}`;
-        const buttons = [];
-        announcements.data.map((announcement, index) =>
-            buttons.push([
-                Markup.button.callback(
-                    announcement.title,
-                    `ANNOUNCEMENTS:${announcement.id}`
-                ),
-            ])
-        );
-        ctx.reply(caption, {
-            ...Markup.inlineKeyboard([buttons]),
-        });
-    }
-
     @Hears(MONEY_BUTTON)
     async money(@Ctx() ctx: BotContext) {
         ctx.scene.enter(ENUM_SCENES_ID.ADMIN_MONEY_SCENE_ID);
@@ -236,20 +258,6 @@ export class AdminScene {
         await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_GRIMOIRES_SCENE_ID);
     }
 
-    @Hears(CHRONICLE_BUTTON)
-    async chronicle(@Ctx() ctx: BotContext) {
-        ctx.reply('Меню по управлению объявлениями', {
-            ...Markup.inlineKeyboard([
-                [
-                    Markup.button.callback(
-                        'Создать новое событие в хронологии',
-                        `ADD_NEW_EVENT`
-                    ),
-                ],
-                [Markup.button.callback('хроника', `SHOW_LIST_EVENTS`)],
-            ]),
-        });
-    }
 
     @Action('ACTION_ADD_ADMIN')
     async addAdmin(@Ctx() ctx: BotContext) {
@@ -261,23 +269,6 @@ export class AdminScene {
         await ctx.scene.enter(ENUM_SCENES_ID.DELETE_ADMIN_SCENE_ID);
     }
 
-    @Hears(GAMES_BUTTON)
-    async games(@Ctx() ctx: BotContext) {
-        await ctx.reply('ff', {
-            ...Markup.keyboard([
-                [
-                    Markup.button.callback(
-                        'Создать игру в казино',
-                        'create_game'
-                    ),
-                    Markup.button.callback(
-                        'Удалить игру в казино',
-                        'delete_game'
-                    ),
-                ],
-            ]),
-        });
-    }
     @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);

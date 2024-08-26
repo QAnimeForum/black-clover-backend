@@ -50,15 +50,15 @@ export class RejectrequestWizard {
             );
             ctx.wizard.back();
         } else {
-            const tgChatId: string = message.text;
-            await this.squadService.changeRequestStatus(
+            /* const tgChatId: string = message.text;
+            await this.squadService.rejectRequest(
                 message.text,
                 ENUM_ARMED_FORCES_REQUEST.REJECTED
             );
             ctx.telegram.sendMessage(
                 tgChatId,
                 'Вашу заявку в боевые маги не одобрили.'
-            );
+            );*/
             await ctx.scene.enter(ENUM_SCENES_ID.ARMED_FORCES_SCENE_ID);
         }
     }

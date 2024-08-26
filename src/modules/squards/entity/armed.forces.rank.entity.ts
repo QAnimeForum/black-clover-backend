@@ -14,7 +14,7 @@ import { SquadMemberEntity } from './squad.member.entity';
 import { ArmedForcesEntity } from './armed.forces.entity';
 import { MoneyEntity } from '../../money/entity/money.entity';
 
-@Tree('nested-set')
+@Tree('materialized-path')
 @Entity('armed_forces_rank')
 export class ArmedForcesRankEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -36,7 +36,7 @@ export class ArmedForcesRankEntity {
     star: number;
 
     @TreeParent()
-    parent: ArmedForcesRankEntity;
+    parent: ArmedForcesRankEntity | null;
 
     @TreeChildren()
     children: ArmedForcesRankEntity[];
@@ -57,13 +57,12 @@ export class ArmedForcesRankEntity {
     })
     parentRankId: string;
      */
-     @OneToOne(() => MoneyEntity)
+    @OneToOne(() => MoneyEntity)
     @JoinColumn({
         name: 'salary_id',
         referencedColumnName: 'id',
     })
     salary: MoneyEntity;
-
 
     @OneToMany(() => SquadMemberEntity, (member) => member.squad)
     members: Array<SquadMemberEntity>;
@@ -84,6 +83,7 @@ export class ArmedForcesRankEntity {
     @Column({
         type: 'uuid',
         name: 'parentId',
+        nullable: true,
     })
     parentId: string | null;
     /*   @Column({

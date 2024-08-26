@@ -1,19 +1,19 @@
 import { Action, Ctx, Hears, Scene, SceneEnter } from 'nestjs-telegraf';
-import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
-import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import { Inject, Logger, UseFilters } from '@nestjs/common';
-import { BotContext } from '../../interfaces/bot.context';
 import { Markup } from 'telegraf';
-import {
-    ADD_JUDICIAL_OFFICER_BUTTON,
-    BACK_BUTTON,
-    JUDICIAL_OFFICER_BUTTON,
-    REMOVE_JUDICIAL_OFFICER_BUTTON,
-} from '../../constants/button-names.constant';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CourtWorkerService } from 'src/modules/judicial.system/services/court.worker.service';
-import { PARLAMENT } from '../../constants/images';
-import { ENUM_ACTION_NAMES } from '../../constants/action-names.constant';
+import { ENUM_ACTION_NAMES } from 'src/modules/tg-bot/constants/action-names.constant';
+import {
+    JUDICIAL_OFFICER_BUTTON,
+    BACK_BUTTON,
+    ADD_JUDICIAL_OFFICER_BUTTON,
+    REMOVE_JUDICIAL_OFFICER_BUTTON,
+} from 'src/modules/tg-bot/constants/button-names.constant';
+import { PARLAMENT } from 'src/modules/tg-bot/constants/images';
+import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
+import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
+import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
 
 @Scene(ENUM_SCENES_ID.ADMIN_MAGIC_PARLAMENT_SCENE_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)

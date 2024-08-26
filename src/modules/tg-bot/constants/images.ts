@@ -15,6 +15,7 @@ export const ADMIN_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/settings.jpg`
 export const BIO_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/bio.webp`;
 export const CLOVER_SQUADS_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/clover-squads.jpg`;
 export const GRIMOIRE_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/grimoire.webp`;
+export const SHOP_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/default/shop.jpg`;
 //export const GRIMOURE_IMAGE_PATH = `${STATIC_IMAGE_BASE_PATH}/grimoire/default-grimoire.jpg`;
 export const MINES_PATH = `${STATIC_IMAGE_BASE_PATH}/minerals/mines.jpg`;
 export const ARMED_FORCES = `${STATIC_IMAGE_BASE_PATH}/organization/forced.jpg`;

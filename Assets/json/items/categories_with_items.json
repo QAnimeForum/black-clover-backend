@@ -1,0 +1,834 @@
+{
+  "categories": [
+    {
+      "name": "Броня",
+      "children": [
+        {
+          "name": "Нагрудник", "isItem": false,
+          "children": [
+            {
+              "name": "Нагрудник",
+              "isItem": true,
+              "bodyPart": "ARMOR",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "гофрированный нагрудник",
+              "isItem": true,
+              "bodyPart": "ARMOR",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "кираса",
+              "isItem": true,
+              "bodyPart": "ARMOR",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Готическая кираса",
+              "isItem": true,
+              "bodyPart": "ARMOR",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Латная кираса",
+              "isItem": true,
+              "bodyPart": "ARMOR",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Нагрудник с юбкой",
+              "isItem": true,
+              "bodyPart": "ARMOR",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "Кольчуга", "isItem": false,
+          "children": [
+            {
+              "name": "хауберк",
+              "isItem": true,
+              "bodyPart": "ARMOR",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "кольчужная рубашка",
+              "isItem": true,
+              "bodyPart": "ARMOR",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "кольчужный жилет",
+              "isItem": true,
+              "bodyPart": "ARMOR",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "шлем", "isItem": false,
+          "children": [
+            {
+              "name": "Армет",
+              "isItem": true,
+              "bodyPart": "HEARDRESS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Бацинет",
+              "isItem": true,
+              "bodyPart": "HEARDRESS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Топфхелм",
+              "isItem": true,
+              "bodyPart": "HEARDRESS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Железная шапка",
+              "isItem": true,
+              "bodyPart": "HEARDRESS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Шлем с наносником",
+              "isItem": true,
+              "bodyPart": "HEARDRESS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Горшковый шлем",
+              "isItem": true,
+              "bodyPart": "HEARDRESS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Каркасный шлем",
+              "isItem": true,
+              "bodyPart": "HEARDRESS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "Кожаная броня", "isItem": false,
+          "children": [
+            {
+              "name": "бригандина",
+              "isItem": true,
+              "bodyPart": "ARMOR",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "Щит", "isItem": false,
+          "children": [
+            {
+              "name": "Круглый щит",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Квадратный щит",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Треугольный щит",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Оружие",
+      "children": [
+        {
+          "name": "меч", "isItem": false,
+          "children": [
+            {
+              "name": "короткий меч",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "длинный меч",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Палаш",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Двуручный меч",
+              "isItem": true,
+              "bodyPart": "TWO_HANDS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Полутораручный меч",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Ятаган",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Фальшион",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Рапира",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "абордажная сабля",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "коса", "isItem": false,
+          "children": [
+            {
+              "name": "Боевая коса",
+              "isItem": true,
+              "bodyPart": "TWO_HANDS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Серп",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "нож", "isItem": false,
+          "children": [
+            {
+              "name": "Нож",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Охотничий нож",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "кинжал", "isItem": false,
+          "children": [
+            {
+              "name": "Кинжал",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Кукри",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "топор", "isItem": false,
+          "children": [
+            {
+              "name": "Широколезвийная секира",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Боевой топор",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Метательный топор",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Двусторонний боевой топор",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "посох", "isItem": false,
+          "children": [
+            {
+              "name": "Посох",
+              "isItem": true,
+              "bodyPart": "TWO_HANDS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "копьё", "isItem": false,
+          "children": [
+            {
+              "name": "копьё",
+              "isItem": true,
+              "bodyPart": "TWO_HANDS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "короткое копьё",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "трезубец",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "древковое оружие", "isItem": false,
+          "children": [
+            {
+              "name": "алебарда",
+              "isItem": true,
+              "bodyPart": "TWO_HANDS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Полэкс",
+              "isItem": true,
+              "bodyPart": "TWO_HANDS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "Молот", "isItem": false,
+          "children": [
+            {
+              "name": "Боевой молот",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Молот",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Большая булава/большой молот",
+              "isItem": true,
+              "bodyPart": "TWO_HANDS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "булава", "isItem": false,
+          "children": [
+            {
+              "name": "Моргенштерн",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Булава",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "дубина", "isItem": false,
+          "children": [
+            {
+              "name": "Дубина",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Тяжёлая дубина",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Большая дубина",
+              "isItem": true,
+              "bodyPart": "TWO_HANDS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "арбалет", "isItem": false,
+          "children": [
+            {
+              "name": "арбалет",
+              "isItem": true,
+              "bodyPart": "TWO_HANDS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Компактный арбалет",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "лук", "isItem": false,
+          "children": [
+            {
+              "name": "Длинный лук",
+              "isItem": true,
+              "bodyPart": "TWO_HANDS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Короткий лук",
+              "isItem": true,
+              "bodyPart": "TWO_HANDS",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "кнут", "isItem": false,
+          "children": [
+            {
+              "name": "Кнут",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        },
+        {
+          "name": "цеп", "isItem": false,
+          "children": [
+            {
+              "name": "Цеп",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            },
+            {
+              "name": "Боевой Цеп",
+              "isItem": true,
+              "bodyPart": "HAND",
+              "description": "",
+              "image": "",
+              "rarity": "COMMON",
+              "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

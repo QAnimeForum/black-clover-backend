@@ -1,4 +1,4 @@
-import { Action, Ctx, Hears, Scene, SceneEnter } from 'nestjs-telegraf';
+import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
 import { Inject, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -6,13 +6,18 @@ import { Logger } from 'winston';
 import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
 import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
 import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
-import { KNIGHT_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
+import { SHOP_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
 import {
     ALL_GOODS_BUTTON,
     BACK_BUTTON,
     CREATE_ITEM_BUTTON,
     CREATE_OFFER_BUTTON,
-    DELETE_OFFER_BUTTON,
+    DELETE_ITEM,
+    EDIT_ITEM_DESCRIPTION,
+    EDIT_ITEM_NAME,
+    EDIT_ITEM_PHOTO,
+    EDIT_ITEM_RARITY,
+    EDIT_ITEM_SLOT,
     GOODS_BUTTON,
     GOODS_BY_CATEOGORY_BUTTON,
     GOODS_BY_RARITY_BUTTON,
@@ -20,54 +25,72 @@ import {
     SHOP_STATISTICS_BUTTON,
 } from 'src/modules/tg-bot/constants/button-names.constant';
 import { ENUM_ACTION_NAMES } from 'src/modules/tg-bot/constants/action-names.constant';
-import { EqupmentItemEntity } from 'src/modules/items/entity/equpment.item.entity';
 import { Paginated } from 'nestjs-paginate';
 import { InlineKeyboardMarkup } from 'telegraf/typings/core/types/typegram';
 import { EqupmentItemService } from 'src/modules/items/service/equipment.item.service';
 import { ShopService } from 'src/modules/items/service/shop.service';
 import { ShopEntity } from 'src/modules/items/entity/shop.entity';
 import { ENUM_ITEM_RARITY } from 'src/modules/items/constants/item.entity.enum';
-import { convertBodyPartToText, convertRarityToText } from 'src/modules/tg-bot/utils/items.utils';
-
+import {
+    convertBodyPartToText,
+    convertRarityToText,
+} from 'src/modules/tg-bot/utils/items.utils';
+import fs from 'fs';
+import { UserService } from 'src/modules/user/services/user.service';
 @Scene(ENUM_SCENES_ID.SHOP_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class ShopScene {
     constructor(
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
         private readonly equipmentItemService: EqupmentItemService,
+        private readonly userService: UserService,
         private readonly shopService: ShopService
     ) {}
     @SceneEnter()
-    async enter(@Ctx() ctx: BotContext) {
+    async enter(@Ctx() ctx: BotContext, @Sender() sender) {
+    // await this.shopService.createCategories();
         const caption = 'Магазин';
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
         if (ctx.chat.type == 'private') {
             if (ctx.session.itemId) {
-                await this.showItem(ctx, ctx.session.itemId);
-                ctx.session.itemId = null;
-            } else {
+                const buttons = [];
+                buttons.push([OFFERS_BUTTON, GOODS_BUTTON]);
+                if (isAdmin) {
+                    buttons.push([CREATE_ITEM_BUTTON, SHOP_STATISTICS_BUTTON]);
+                }
+                buttons.push([BACK_BUTTON]);
                 await ctx.replyWithPhoto(
                     {
-                        source: KNIGHT_IMAGE_PATH,
+                        source: SHOP_IMAGE_PATH,
                     },
                     {
-                        caption:
-                            'Добро пожаловать в магазин! Происходит загрузка предложений...',
-                        ...Markup.keyboard([
-                            [SHOP_STATISTICS_BUTTON, GOODS_BUTTON],
-                            [CREATE_ITEM_BUTTON, OFFERS_BUTTON],
-                            [BACK_BUTTON],
-                        ]).resize(),
+                        caption: 'Вы вернулись в магазин',
+                        ...Markup.keyboard(buttons).resize(),
+                    }
+                );
+                await this.showItem(ctx, ctx.session.itemId, isAdmin);
+                ctx.session.itemId = null;
+            } else {
+                const buttons = [];
+                buttons.push([OFFERS_BUTTON, GOODS_BUTTON]);
+                if (isAdmin) {
+                    buttons.push([CREATE_ITEM_BUTTON, SHOP_STATISTICS_BUTTON]);
+                }
+                buttons.push([BACK_BUTTON]);
+                await ctx.replyWithPhoto(
+                    {
+                        source: SHOP_IMAGE_PATH,
+                    },
+                    {
+                        caption: 'Добро пожаловать в магазин',
+                        ...Markup.keyboard(buttons).resize(),
                     }
                 );
             }
-            /**
-             *      Markup.button.callback('Создать предложение в магазине', 'create_offer'),
-        Markup.button.callback('Удалить предложение в магазине', 'delete_offer'),],
-             */
         } else {
             ctx.sendPhoto(
                 {
-                    source: KNIGHT_IMAGE_PATH,
+                    source: SHOP_IMAGE_PATH,
                 },
                 {
                     caption,
@@ -89,6 +112,10 @@ export class ShopScene {
         }
     }
 
+    @Hears(CREATE_ITEM_BUTTON)
+    async createItem(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.ITEM_CREATE_SCENE_ID);
+    }
     @Hears(OFFERS_BUTTON)
     async offers(@Ctx() ctx: BotContext) {
         const offers =
@@ -100,22 +127,27 @@ export class ShopScene {
     }
     @Hears(GOODS_BUTTON)
     async goodsButton(@Ctx() ctx: BotContext) {
-        await ctx.replyWithHTML(
-            'Список товаров',
-            Markup.inlineKeyboard([
-                [
-                    Markup.button.callback(
-                        GOODS_BY_CATEOGORY_BUTTON,
-                        GOODS_BY_CATEOGORY_BUTTON
-                    ),
-                ],
-                [
-                    Markup.button.callback(
-                        GOODS_BY_RARITY_BUTTON,
-                        GOODS_BY_RARITY_BUTTON
-                    ),
-                ],
-            ])
+        await ctx.sendPhoto(
+            {
+                source: SHOP_IMAGE_PATH,
+            },
+            {
+                caption: 'Список товаров',
+                ...Markup.inlineKeyboard([
+                    [
+                        Markup.button.callback(
+                            GOODS_BY_CATEOGORY_BUTTON,
+                            GOODS_BY_CATEOGORY_BUTTON
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            GOODS_BY_RARITY_BUTTON,
+                            GOODS_BY_RARITY_BUTTON
+                        ),
+                    ],
+                ]),
+            }
         );
     }
 
@@ -124,48 +156,54 @@ export class ShopScene {
         await ctx.answerCbQuery();
 
         await ctx.deleteMessage();
-        await ctx.reply('Выберите редкость товара', {
-            ...Markup.inlineKeyboard([
-                [
-                    Markup.button.callback(
-                        'Обычные',
-                        `RARITY:${ENUM_ITEM_RARITY.COMMON}`
-                    ),
-                ],
-                [
-                    Markup.button.callback(
-                        'Необычные',
-                        `RARITY:${ENUM_ITEM_RARITY.UNCOMMON}`
-                    ),
-                ],
-                [
-                    Markup.button.callback(
-                        'Редкие',
-                        `RARITY:${ENUM_ITEM_RARITY.RARE}`
-                    ),
-                ],
-                [
-                    Markup.button.callback(
-                        'Эпичные',
-                        `RARITY:${ENUM_ITEM_RARITY.EPIC}`
-                    ),
-                ],
-                [
-                    Markup.button.callback(
-                        'Легендарые',
-                        `RARITY:${ENUM_ITEM_RARITY.LEGENDARY}`
-                    ),
-                ],
-                [
-                    Markup.button.callback(
-                        'Уникальные',
-                        `RARITY:${ENUM_ITEM_RARITY.UNIQUE}`
-                    ),
-                ],
-            ]),
-        });
+        await ctx.sendPhoto(
+            {
+                source: SHOP_IMAGE_PATH,
+            },
+            {
+                caption: 'Выберите редкость товара',
+                ...Markup.inlineKeyboard([
+                    [
+                        Markup.button.callback(
+                            'Обычные',
+                            `RARITY:${ENUM_ITEM_RARITY.COMMON}`
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            'Необычные',
+                            `RARITY:${ENUM_ITEM_RARITY.UNCOMMON}`
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            'Редкие',
+                            `RARITY:${ENUM_ITEM_RARITY.RARE}`
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            'Эпические',
+                            `RARITY:${ENUM_ITEM_RARITY.EPIC}`
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            'Легендарные',
+                            `RARITY:${ENUM_ITEM_RARITY.LEGENDARY}`
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            'Уникальные',
+                            `RARITY:${ENUM_ITEM_RARITY.UNIQUE}`
+                        ),
+                    ],
+                ]),
+            }
+        );
     }
-    @Action(/^(RARITY.*)$/)
+    @Action(/^(RARITY:.*)$/)
     async showItemsByRarity(@Ctx() ctx: BotContext) {
         await ctx.answerCbQuery();
         const rarity = ctx.callbackQuery['data'].split(':')[1];
@@ -175,7 +213,6 @@ export class ShopScene {
                 rarity: `$eq:${rarity}`,
             },
         });
-        console.log(items);
         const buttons = [];
         for (let i = 0; i < items.data.length; ++i) {
             buttons.push([
@@ -187,9 +224,15 @@ export class ShopScene {
         }
         buttons.push([Markup.button.callback(BACK_BUTTON, `RARITY:${rarity}`)]);
         await ctx.deleteMessage();
-        await ctx.replyWithHTML('Предметы', {
-            ...Markup.inlineKeyboard(buttons),
-        });
+        await ctx.sendPhoto(
+            {
+                source: SHOP_IMAGE_PATH,
+            },
+            {
+                caption: 'Товар',
+                ...Markup.inlineKeyboard(buttons),
+            }
+        );
     }
     @Action(GOODS_BY_CATEOGORY_BUTTON)
     async goodsByCategory(@Ctx() ctx: BotContext) {
@@ -205,9 +248,15 @@ export class ShopScene {
             ]);
         }
         await ctx.deleteMessage();
-        await ctx.reply('Выберите категорию товара', {
-            ...Markup.inlineKeyboard(buttons),
-        });
+        await ctx.sendPhoto(
+            {
+                source: SHOP_IMAGE_PATH,
+            },
+            {
+                caption: 'Выберите категорию товара',
+                ...Markup.inlineKeyboard(buttons),
+            }
+        );
     }
 
     @Action(/^(CATEGORY_ID.*)$/)
@@ -226,9 +275,15 @@ export class ShopScene {
                 ]);
             }
             await ctx.deleteMessage();
-            await ctx.replyWithHTML('Категории', {
-                ...Markup.inlineKeyboard(buttons),
-            });
+            await ctx.sendPhoto(
+                {
+                    source: SHOP_IMAGE_PATH,
+                },
+                {
+                    caption: 'Выберите категорию товара',
+                    ...Markup.inlineKeyboard(buttons),
+                }
+            );
         } else {
             const categories =
                 await this.equipmentItemService.findCategoriesByRoot(
@@ -252,9 +307,15 @@ export class ShopScene {
                     ),
                 ]);
                 await ctx.deleteMessage();
-                await ctx.replyWithHTML('Категории', {
-                    ...Markup.inlineKeyboard(buttons),
-                });
+                await ctx.sendPhoto(
+                    {
+                        source: SHOP_IMAGE_PATH,
+                    },
+                    {
+                        caption: 'Выберите категорию товара',
+                        ...Markup.inlineKeyboard(buttons),
+                    }
+                );
             } else {
                 const items =
                     await this.equipmentItemService.findAllEquipmentItems({
@@ -274,33 +335,42 @@ export class ShopScene {
                 buttons.push([
                     Markup.button.callback(
                         BACK_BUTTON,
-                        `CATEGORY_ID:${categories.id}`
+                        `CATEGORY_ID:${categories.parentId}`
                     ),
                 ]);
                 await ctx.deleteMessage();
-                await ctx.replyWithHTML('Предметы', {
-                    ...Markup.inlineKeyboard(buttons),
-                });
+                await ctx.sendPhoto(
+                    {
+                        source: SHOP_IMAGE_PATH,
+                    },
+                    {
+                        caption: 'Предметы',
+                        ...Markup.inlineKeyboard(buttons),
+                    }
+                );
             }
         }
     }
 
-    @Action(/^(RARITY_ITEM_ID.*)$/)
-    async rarityItem(@Ctx() ctx: BotContext) {
+    @Action(/^(RARITY_ITEM_ID:.*)$/)
+    async rarityItem(@Ctx() ctx: BotContext, @Sender() sender) {
         await ctx.answerCbQuery();
         const itemId = ctx.callbackQuery['data'].split(':')[1];
-        this.showItem(ctx, itemId);
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        await this.showItem(ctx, itemId, isAdmin);
     }
 
     @Action(/^(CATEGORY_ITEM_ID.*)$/)
-    async categoryItem(@Ctx() ctx: BotContext) {
+    async categoryItem(@Ctx() ctx: BotContext, @Sender() sender) {
         await ctx.answerCbQuery();
         const itemId = ctx.callbackQuery['data'].split(':')[1];
-        this.showItem(ctx, itemId);
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        await this.showItem(ctx, itemId, isAdmin);
     }
 
-    async showItem(ctx: BotContext, itemId: string) {
+    async showItem(ctx: BotContext, itemId: string, isAdmin: boolean) {
         const item = await this.equipmentItemService.findItemById(itemId);
+
         let caption = `<strong>${item.name}</strong>\n`;
         caption += `<strong>Редость: </strong> ${convertRarityToText(item.rarity)}\n`;
         caption += `<strong>Часть тела: </strong> ${convertBodyPartToText(item.bodyPart)}\n`;
@@ -309,8 +379,37 @@ export class ShopScene {
         caption += `<strong>Физ. урон: </strong>${item.physicalAttackDamage}\n`;
         caption += `<strong>Магическая защита: </strong>${item.magicDefense}\n`;
         caption += `<strong>Физическая защита: </strong>${item.physicalDefense}\n`;
-        caption += `<strong>Описание</strong>${item.description}\n`;
+        caption += `<strong>Описание</strong>\n${item.description}\n`;
         const buttons = [];
+        if (isAdmin) {
+            buttons.push([
+                Markup.button.callback(
+                    EDIT_ITEM_NAME,
+                    `EDIT_ITEM_NAME:${item.id}`
+                ),
+                Markup.button.callback(
+                    EDIT_ITEM_DESCRIPTION,
+                    `EDIT_ITEM_DESCRIPTION:${item.id}`
+                ),
+            ]);
+            buttons.push([
+                Markup.button.callback(
+                    EDIT_ITEM_RARITY,
+                    `EDIT_ITEM_RARITY:${item.id}`
+                ),
+                Markup.button.callback(
+                    EDIT_ITEM_SLOT,
+                    `EDIT_ITEM_SLOT:${item.id}`
+                ),
+            ]);
+            buttons.push([
+                Markup.button.callback(
+                    EDIT_ITEM_PHOTO,
+                    `EDIT_ITEM_PHOTO:${item.id}`
+                ),
+                Markup.button.callback(DELETE_ITEM, `DELETE_ITEM:${item.id}`),
+            ]);
+        }
         buttons.push([
             Markup.button.callback(
                 BACK_BUTTON,
@@ -318,9 +417,14 @@ export class ShopScene {
             ),
         ]);
         await ctx.deleteMessage();
+        const avatar = `${process.env.APP_API_URL}/Assets/images/items/${itemId}/${item.image}`;
+
         await ctx.replyWithPhoto(
             {
-                source: KNIGHT_IMAGE_PATH,
+                source:
+                    fs.existsSync(avatar) && fs.lstatSync(avatar).isFile()
+                        ? avatar
+                        : SHOP_IMAGE_PATH,
             },
             {
                 caption: caption,
@@ -328,6 +432,48 @@ export class ShopScene {
                 ...Markup.inlineKeyboard(buttons),
             }
         );
+    }
+    @Action(/^(EDIT_ITEM_NAME:.*)$/)
+    async editItemName(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+
+        const itemId = ctx.callbackQuery['data'].split(':')[1];
+        ctx.session.itemId = itemId;
+        ctx.scene.enter(ENUM_SCENES_ID.EDIT_NAME_ITEM_SCENE_ID);
+    }
+    @Action(/^(EDIT_ITEM_DESCRIPTION:.*)$/)
+    async editItemDescription(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+
+        const itemId = ctx.callbackQuery['data'].split(':')[1];
+        ctx.session.itemId = itemId;
+        ctx.scene.enter(ENUM_SCENES_ID.EDIT_DESCRIPTION_ITEM_SCENE_ID);
+    }
+
+    @Action(/^(EDIT_ITEM_RARITY:.*)$/)
+    async editItemRarity(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+
+        const itemId = ctx.callbackQuery['data'].split(':')[1];
+        ctx.session.itemId = itemId;
+        ctx.scene.enter(ENUM_SCENES_ID.EDIT_RARITY_ITEM_SCENE_ID);
+    }
+    @Action(/^(EDIT_ITEM_SLOT:.*)$/)
+    async editSlot(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+
+        const itemId = ctx.callbackQuery['data'].split(':')[1];
+        ctx.session.itemId = itemId;
+        ctx.scene.enter(ENUM_SCENES_ID.EDIT_SLOT_ITEM_SCENE_ID);
+    }
+
+    @Action(/^(EDIT_ITEM_PHOTO:.*)$/)
+    async editPhoto(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+
+        const itemId = ctx.callbackQuery['data'].split(':')[1];
+        ctx.session.itemId = itemId;
+        ctx.scene.enter(ENUM_SCENES_ID.EDIT_PHOTO_ITEM_SCENE_ID);
     }
     @Action(/^(CREATE_OFFER_BUTTON.*)$/)
     async createOffer(@Ctx() ctx: BotContext) {
@@ -337,11 +483,12 @@ export class ShopScene {
     }
 
     @Action(/^(DELETE_OFFER_BUTTON.*)$/)
-    async deleteOffer(@Ctx() ctx: BotContext) {
+    async deleteOffer(@Ctx() ctx: BotContext, @Sender() sender) {
         await ctx.answerCbQuery();
         const itemId = ctx.callbackQuery['data'].split(':')[1];
         await this.shopService.makeOfferNotActive(itemId);
-        await this.showItem(ctx, ctx.session.itemId);
+        const isAdmin = await this.userService.isAdmin(sender.id.toString());
+        await this.showItem(ctx, ctx.session.itemId, isAdmin);
         await ctx.reply('Предложение отмечено как неактивное');
     }
     @Action(ENUM_ACTION_NAMES.BACK_TO_SHOPPING_DISTRICT_ACTION)
@@ -355,23 +502,6 @@ export class ShopScene {
         await ctx.scene.enter(ENUM_SCENES_ID.SHOPPING_DISTRICT_SCENE_ID);
     }
 
-    /*   @Action(/^(PREV_ITEM.*)$/)
-    async prevItem(@Ctx() ctx: BotContext) {
-        await this.showOffer(ctx, offers_displayed, formState.num);
-    }
-
-    @Action(/^(NEXT_ITEM.*)$/)
-    async nextItem(@Ctx() ctx: BotContext) {
-        await this.showOffer(ctx, offers_displayed, formState.num);
-        if (formState.num + 1 > offers_displayed.length) {
-            return;
-        }
-
-        formState.num++;
-
-        this.showOffer(ctx, offers_displayed, formState.num);
-    }*/
-
     async showOffer(
         ctx: BotContext,
         offers: Paginated<ShopEntity>,
@@ -382,7 +512,7 @@ export class ShopScene {
         if (totalItems == 0) {
             await ctx.replyWithPhoto(
                 {
-                    source: KNIGHT_IMAGE_PATH,
+                    source: SHOP_IMAGE_PATH,
                 },
                 {
                     caption: 'Предложений пока нет.',
@@ -423,7 +553,7 @@ export class ShopScene {
         if (offerIndex == 1) {
             await ctx.replyWithPhoto(
                 {
-                    source: KNIGHT_IMAGE_PATH,
+                    source: SHOP_IMAGE_PATH,
                 },
                 {
                     caption:
@@ -448,7 +578,7 @@ export class ShopScene {
                 undefined,
                 undefined,
                 {
-                    media: KNIGHT_IMAGE_PATH,
+                    media: SHOP_IMAGE_PATH,
                     //     media: offers[offerIndex - 1].image,
                     type: 'photo',
                     caption:
