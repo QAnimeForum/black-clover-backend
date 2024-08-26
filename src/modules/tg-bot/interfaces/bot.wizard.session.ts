@@ -3,7 +3,7 @@ import { CharacterCreateDto } from '../../character/dto/character.create.dto';
 import { SpellCreateDto } from '../../grimoire/dto/spell.create.dto';
 import { GrimoireCreateDto } from '../../grimoire/dto/grimoire.create.dto';
 import { SquadCreateDto } from 'src/modules/squards/dto/squad.create.dto';
-import { MoneyAddDto } from 'src/modules/money/dto/money-add.dto';
+import { MoneyAddDto, OfferAmmountDto } from 'src/modules/money/dto/money-add.dto';
 import { PlantCreateDto } from 'src/modules/plants/services/plant.service';
 import { DevilDefaultSpellsEntity } from 'src/modules/devils/entity/devil.default.spells.entity';
 import { DevilUnionsPercentEnum } from 'src/modules/devils/constants/devil.union.percent.enum';
@@ -21,6 +21,7 @@ export enum ENUM_DEVIL_LIST_BACK_TYPE {
 export interface BotWizardSession extends Scenes.WizardSessionData {
     item: EquipmentItemDto;
     spell: SpellCreateDto;
+    offerAmount: OfferAmmountDto;
     moneyInfo: MoneyAddDto;
     announcement: {
         name: string;

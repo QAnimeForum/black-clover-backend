@@ -66,7 +66,6 @@ export class CharactersSettingsScene {
                 ]).resize(),
             }
         );
-
     }
 
     @Hears(BACK_TO_ADMIN_BUTTON)

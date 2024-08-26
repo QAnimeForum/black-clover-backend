@@ -80,7 +80,6 @@ export class AddMoneyWizard {
                 ctx.scene.session.moneyInfo.tgId = Number.parseInt(
                     ctx.update.message.text
                 );
-                console.log(ctx.update.message.text);
                 await ctx.reply(
                     `Введите сумму, которую находите начислить, в формате:\n {количество медных} {количество серебряных} {количество золотых} {количество электрумовых} {количество платиновых}`
                 );
@@ -156,7 +155,6 @@ export class AddMoneyWizard {
             ctx.scene.enter(ENUM_SCENES_ID.ADMIN_MONEY_SCENE_ID);
         });
         composer.action('yes', async (ctx) => {
-            // this.moneyService
             await ctx.answerCbQuery();
             const copperText = ` Медные: ${ctx.scene.session.moneyInfo.copper}\n`;
             const silverText = `Серебряные: ${ctx.scene.session.moneyInfo.copper}\n`;

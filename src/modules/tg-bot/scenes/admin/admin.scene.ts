@@ -110,25 +110,41 @@ export class AdminScene {
                 [
                     Markup.button.callback(
                         'Выдать предмет пользователю',
-                        'give_item_to_user'
+                        'GIVE_ITEM_TO_USER'
                     ),
                 ],
                 [
                     Markup.button.callback(
                         'Создать предложение в магазине',
-                        'create_offer'
+                        'CREATE_OFFER'
                     ),
                 ],
                 [
                     Markup.button.callback(
                         'Удалить предложение в магазине',
-                        'delete_offer'
+                        'DELETE_OFFER'
                     ),
                 ],
             ]),
         });
     }
 
+    @Action('GIVE_ITEM_TO_USER')
+    async giveItemToUser(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        await ctx.scene.enter(ENUM_SCENES_ID.GIVE_ITEM_SCENE_ID);
+    }
+    @Action('CREATE_OFFER')
+    async createOffer(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        await ctx.scene.enter(ENUM_SCENES_ID.CREATE_OFFER_SCENE_ID);
+    }
+
+    @Action('DELETE_OFFER')
+    async deleteOffer(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        await ctx.scene.enter(ENUM_SCENES_ID.DELETE_OFFER_SCENE_ID);
+    }
     @Hears(PLANTS_BUTTON)
     async plants(@Ctx() ctx: BotContext) {
         ctx.scene.enter(ENUM_SCENES_ID.PLANTS_SCENE_ID);

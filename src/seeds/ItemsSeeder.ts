@@ -1,6 +1,6 @@
 import { DataSource, Repository } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
-import { categories } from '../../Assets/json/items/categories.json';
+import { categories } from '../../Assets/json/items/categories_with_items.json';
 import { EqupmentItemEntity } from '../modules/items/entity/equpment.item.entity';
 import { ItemCategoryEntity } from '../modules/items/entity/item.category.entity';
 import { ENUM_ITEM_RARITY } from '../modules/items/constants/item.entity.enum';

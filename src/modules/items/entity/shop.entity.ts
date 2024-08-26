@@ -31,5 +31,33 @@ export class ShopEntity {
     })
     isActvie: boolean;
 
-    price: number;
+    @Column({
+        name: 'copper',
+        type: 'int',
+    })
+    copper: number;
+
+    @Column({
+        name: 'copper',
+        type: 'int',
+    })
+    silver: number;
+
+    @Column({
+        name: 'copper',
+        type: 'int',
+    })
+    gold: number;
+
+    @Column({
+        name: 'copper',
+        type: 'int',
+    })
+    electrum: number;
+
+    @Column({
+        name: 'copper',
+        type: 'int',
+    })
+    platinum: number;
 }
