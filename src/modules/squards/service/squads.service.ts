@@ -25,6 +25,7 @@ import { ArmedForcesRankEntity } from '../entity/armed.forces.rank.entity';
 import { ArmedForcesMemberEntity } from '../entity/armed.forces.member.entity';
 import { ArmedForcesMemberCreateDto } from '../dto/armed.forces.member.create.dto';
 import { MoneyEntity } from 'src/modules/money/entity/money.entity';
+import { KNIGHT_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
 
 @Injectable()
 export class SquadsService {
@@ -287,6 +288,7 @@ export class SquadsService {
         const squad = new SquadEntity();
         squad.name = dto.name;
         squad.description = dto.description;
+        squad.image = '/default/default-knight.jpg';
         squad.armorForces = forces;
         return this.squadRepository.insert(squad);
     }

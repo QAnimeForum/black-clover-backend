@@ -13,6 +13,7 @@ import {
     CREATE_ITEM_BUTTON,
     CREATE_OFFER_BUTTON,
     DELETE_ITEM,
+    EDIT_ITEM_CATEGORY,
     EDIT_ITEM_DESCRIPTION,
     EDIT_ITEM_NAME,
     EDIT_ITEM_PHOTO,
@@ -48,7 +49,7 @@ export class ShopScene {
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
-    // await this.shopService.createCategories();
+        //  await this.shopService.createCategories();
         const caption = 'Магазин';
         const isAdmin = await this.userService.isAdmin(sender.id.toString());
         if (ctx.chat.type == 'private') {
@@ -407,6 +408,12 @@ export class ShopScene {
                     EDIT_ITEM_PHOTO,
                     `EDIT_ITEM_PHOTO:${item.id}`
                 ),
+                Markup.button.callback(
+                    EDIT_ITEM_CATEGORY,
+                    `EDIT_ITEM_CATEGORY:${item.id}`
+                ),
+            ]);
+            buttons.push([
                 Markup.button.callback(DELETE_ITEM, `DELETE_ITEM:${item.id}`),
             ]);
         }
@@ -474,6 +481,15 @@ export class ShopScene {
         const itemId = ctx.callbackQuery['data'].split(':')[1];
         ctx.session.itemId = itemId;
         ctx.scene.enter(ENUM_SCENES_ID.EDIT_PHOTO_ITEM_SCENE_ID);
+    }
+
+    @Action(/^(EDIT_ITEM_CATEGORY:.*)$/)
+    async editItemCategory(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+
+        const itemId = ctx.callbackQuery['data'].split(':')[1];
+        ctx.session.itemId = itemId;
+        ctx.scene.enter(ENUM_SCENES_ID.EDIT_CATEGORY_ITEM_SCENE_ID);
     }
     @Action(/^(CREATE_OFFER_BUTTON.*)$/)
     async createOffer(@Ctx() ctx: BotContext) {

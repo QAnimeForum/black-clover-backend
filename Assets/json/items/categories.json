@@ -171,6 +171,22 @@
         {
           "name": "Платки",
           "children": []
+        },
+        {
+          "name": "Галстуки",
+          "children": []
+        },
+        {
+          "name": "Ремни",
+          "children": []
+        },
+        {
+          "name": "Подтяжки",
+          "children": []
+        },
+        {
+          "name": "Перчатки",
+          "children": []
         }
       ]
     },
@@ -195,26 +211,6 @@
         },
         {
           "name": "Трости",
-          "children": []
-        },
-        {
-          "name": "Галстуки",
-          "children": []
-        },
-        {
-          "name": "Шляпы",
-          "children": []
-        },
-        {
-          "name": "Ремни",
-          "children": []
-        },
-        {
-          "name": "Подтяжки",
-          "children": []
-        },
-        {
-          "name": "Перчатки",
           "children": []
         },
         {

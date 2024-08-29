@@ -5,11 +5,12 @@ import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
 import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
 import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
 import { Composer, Markup, Scenes, Telegraf } from 'telegraf';
-import { BackgroundService } from 'src/modules/character/services/background.service';
 import { message } from 'telegraf/filters';
 import { Downloader } from 'nodejs-file-downloader';
 import { LOGGER_EXCEPTION, LOGGER_INFO } from 'src/modules/tg-bot/utils/logger';
 import { EqupmentItemService } from 'src/modules/items/service/equipment.item.service';
+import fs from 'fs';
+import path from 'path';
 @Injectable()
 export class ItemPhotoChangeWizard {
     readonly scene: Scenes.WizardScene<BotContext>;
@@ -65,7 +66,6 @@ export class ItemPhotoChangeWizard {
                     await ctx.reply('Ошибка загрузки файла');
                     return;
                 }
-
                 const array = file.split('.');
                 const format = array[array.length - 1].toLowerCase();
 
@@ -78,13 +78,29 @@ export class ItemPhotoChangeWizard {
                     await ctx.reply('Неправильный формат файла');
                     return;
                 }
-                await ctx.sendPhoto({
-                    source: file,
-                });
-                const item  = await this.equipmentItemService.changePhoto({
+                const fileName = file.split('/')[file.split('/').length - 1];
+                const item = await this.equipmentItemService.changePhoto({
                     id: itemId,
-                    photoPath: `0.${saveFormat}`,
+                    photoPath: fileName,
                 });
+                fs.readdir(`Assets/images/items/${itemId}`, (err, files) => {
+                    if (err) throw err;
+
+                    for (const file of files) {
+                        if (file != fileName) {
+                            fs.unlink(
+                                path.join(
+                                    `Assets/images/items/${itemId}`,
+                                    file
+                                ),
+                                (err) => {
+                                    if (err) throw err;
+                                }
+                            );
+                        }
+                    }
+                });
+
                 this.logger.log(
                     LOGGER_INFO,
                     `🟢 Пользователь успешно изменил фотографию предмета. * {  id: ${ctx.session.itemId}}`

@@ -18,10 +18,13 @@ import {
     ARMED_FORCES_RANKS_BUTTON,
     SHOW_SQUAD_REQUESTS_BUTTON,
     PEOPLE_MANAGEMENT_BUTTON,
+    SQUADS_MANAGEMENT_BUTTON,
+    CREATE_SQUAD_BUTTON,
 } from 'src/modules/tg-bot/constants/button-names.constant';
 import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
 import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
 import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
+import { KNIGHT_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
 
 @Scene(ENUM_SCENES_ID.ADMIN_ARMED_FORCES_MAGIC_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -86,6 +89,7 @@ export class AdminArmedForcesScene {
             SHOW_SQUAD_REQUESTS_BUTTON,
             PEOPLE_MANAGEMENT_BUTTON,
         ]);
+        keyboardButtons.push([SQUADS_MANAGEMENT_BUTTON]);
         keyboardButtons.push([ARMED_FORCES_INFORMATION_BUTTON, BACK_BUTTON]);
         await ctx.reply(caption, {
             parse_mode: 'HTML',
@@ -111,7 +115,7 @@ export class AdminArmedForcesScene {
             limit: 5,
             path: '',
             filter: {
-                forces_id: `$eq:${armedForcesId}`,
+                'armedForces.id': `$eq:${armedForcesId}`,
                 status: ENUM_ARMED_FORCES_REQUEST.PENDING,
             },
             page: page,
@@ -536,6 +540,30 @@ export class AdminArmedForcesScene {
             parse_mode: 'HTML',
             ...Markup.inlineKeyboard(buttons),
         });
+    }
+
+    @Hears(SQUADS_MANAGEMENT_BUTTON)
+    async managementSquads(@Ctx() ctx: BotContext) {
+        ctx.replyWithPhoto(
+            {
+                source: KNIGHT_IMAGE_PATH,
+            },
+            {
+                caption: 'Управление отрядами',
+                ...Markup.inlineKeyboard([
+                    [
+                        Markup.button.callback(
+                            CREATE_SQUAD_BUTTON,
+                            CREATE_SQUAD_BUTTON
+                        ),
+                    ],
+                ]),
+            }
+        );
+    }
+    @Action(CREATE_SQUAD_BUTTON)
+    async createSquad(@Ctx() ctx: BotContext) {
+        ctx.scene.enter(ENUM_SCENES_ID.CREATE_SQUAD_SCENE_ID);
     }
 }
 
