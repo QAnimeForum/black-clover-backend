@@ -149,6 +149,7 @@ export const EDIT_ITEM_DESCRIPTION = '✏️Описание';
 export const EDIT_ITEM_PHOTO = '✏️Фото';
 export const EDIT_ITEM_SLOT = '✏️Место ношения';
 export const EDIT_ITEM_RARITY = '✏️Редкость';
+export const EDIT_ITEM_CATEGORY = '✏️Категорию';
 export const DELETE_ITEM = '🗑Удалить предмет';
 //ARMED FORCES
 export const CHARACTERS_BUTTON = '👤Пользователи';
@@ -163,6 +164,7 @@ export const SHOW_SQUAD_REQUESTS_BUTTON = '📔 Заявки';
 export const COMMANDER_IN_CHIEF_BUTTON = '📘меню главнокомандующего';
 export const PEOPLE_MANAGEMENT_BUTTON = '👤Управление людьми';
 export const ARMED_FORCES_RANKS_BUTTON = '📊Ранги';
+export const SQUADS_MANAGEMENT_BUTTON = '🛡Управление отрядами';
 export const JOIN_TO_ARMED_FORCES_BUTTON = '🛡Вступить';
 export const CREATE_SQUAD_BUTTON = '🛡Создать отряд';
 export const JOIN_TO_SQUAD_BUTTON = '🛡Подать заявку в отряд';

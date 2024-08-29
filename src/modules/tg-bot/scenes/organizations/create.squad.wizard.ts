@@ -2,31 +2,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { BotContext } from '../../interfaces/bot.context';
 import { Composer, Scenes, Telegraf } from 'telegraf';
 import { CharacterService } from 'src/modules/character/services/character.service';
-import { Context, InjectBot, SceneEnter, TELEGRAF_STAGE, Wizard } from 'nestjs-telegraf';
+import { InjectBot, TELEGRAF_STAGE } from 'nestjs-telegraf';
 import { TgBotService } from '../../services/tg-bot.service';
 import { SquadsService } from 'src/modules/squards/service/squads.service';
 import { message } from 'telegraf/filters';
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
-import { Logger } from 'winston';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
-@Wizard(ENUM_SCENES_ID.CREATE_SQUAD_SCENE_ID)
-export class CreateScquadWizard {
-    constructor(
-        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
-    ) {}
-    @SceneEnter()
-    async enter(@Context() ctx: BotContext) {
-        ctx.scene.session.squad = {
-            name: '',
-            description: '',
-            forces_id: ctx.session.armedForcesId,
-        };
-        await ctx.reply('Введите название отряда');
-        ctx.wizard.next();
-    }
-}
-/*
 @Injectable()
 export class CreateSquadWizard {
     readonly scene: Scenes.WizardScene<BotContext>;
@@ -39,12 +20,12 @@ export class CreateSquadWizard {
         private readonly squadService: SquadsService,
         private readonly tgBotService: TgBotService
     ) {
-    
-        this.steps = [this.start(), this.step1(), this.exit()];
+        this.steps = [this.step1(), this.exit()];
         this.scene = new Scenes.WizardScene<BotContext>(
-            ENUM_SCENES_ID.createSquad,
+            ENUM_SCENES_ID.CREATE_SQUAD_SCENE_ID,
             ...this.steps
         );
+        this.scene.enter(this.start());
         this.stage.register(this.scene);
         bot.use(stage.middleware());
         bot.catch((err: Error, ctx) => {
@@ -53,20 +34,15 @@ export class CreateSquadWizard {
     }
 
     start() {
-        return this.tgBotService.createComposer(async (composer) => {
-            composer.use(async (ctx) => {
-                console.log(ctx.scene.session.squad);
-                ctx.scene.session.squad = {
-                    name: '',
-                    description: '',
-                    forces_id: ctx.session.armed_forces_id,
-                };
-                await ctx.reply('Введите название отряда');
-                ctx.wizard.next();
-            });
-        });
+        return async (ctx: BotContext) => {
+            ctx.scene.session.squad = {
+                name: '',
+                description: '',
+                forces_id: ctx.session.adminSelectedArmedForcesId,
+            };
+            await ctx.reply('Введите название отряда');
+        };
     }
-
     step1() {
         return this.tgBotService.createComposer(async (composer) => {
             composer.on(message('text'), async (ctx) => {
@@ -87,9 +63,10 @@ export class CreateSquadWizard {
                     ctx.scene.session.squad
                 );
                 console.log(squad);
-                ctx.scene.enter(ENUM_SCENES_ID.armedForces);
+                ctx.scene.enter(
+                    ENUM_SCENES_ID.ADMIN_ARMED_FORCES_MAGIC_SCENE_ID
+                );
             });
         });
     }
 }
-*/

@@ -85,8 +85,7 @@ export class EqupmentItemService {
         newItem.jump = 0;
         const savedItem = await this.equipmentItemRepository.save(newItem);
 
-        const dir =
-            `${process.env.APP_API_URL}/Assets/images/items/${savedItem.id}`;
+        const dir = `${process.env.APP_API_URL}/Assets/images/items/${savedItem.id}`;
 
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
@@ -247,6 +246,17 @@ export class EqupmentItemService {
             .execute();
     }
 
+    async changeItemCategory(dto: ChangeItemCategoryDto) {
+        return await this.connection
+            .createQueryBuilder()
+            .update(EqupmentItemEntity)
+            .set({ categoryId: dto.categoryId })
+            .where('id = :id', { id: dto.id })
+            .returning('*')
+            .updateEntity(true)
+            .execute();
+    }
+
     async changeBodyPart(dto: ChangeBodyPartDto) {
         return await this.connection
             .createQueryBuilder()
@@ -287,6 +297,11 @@ class ChangeRarityDto {
 class ChangeBodyPartDto {
     id: string;
     bodyPart: ENUM_BODY_PART_ENUM;
+}
+
+class ChangeItemCategoryDto {
+    id: string;
+    categoryId: string;
 }
 
 class ChangePhotoDto {

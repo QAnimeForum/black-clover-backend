@@ -24,7 +24,7 @@ import { MyDevilsScene } from './scenes/devils/devils-my.scene';
 import { MySpiritsScene } from './scenes/spirits/spirits-my.scene';
 import { AllSpiritsScene } from './scenes/spirits/all.spirits';
 
-import { CreateScquadWizard } from './scenes/organizations/create.squad.wizard';
+import { CreateSquadWizard } from './scenes/organizations/create.squad.wizard';
 import { AvatarEditWizard } from './scenes/profile/background/avatar-edit.wizard';
 import { BackgroundScene } from './scenes/profile/background/background.scene';
 import { CharacterHistoryEditWizard } from './scenes/profile/background/history-edit.wizard';
@@ -121,6 +121,7 @@ import { ItemDescriptionEditWiazard } from './scenes/organizations/shop/item.edi
 import { ItemEditRarityWizard } from './scenes/organizations/shop/item.edit-rarity.wizard';
 import { ItemEditSlotDescriptionWizard } from './scenes/organizations/shop/item.edit-slot.description';
 import { ItemPhotoChangeWizard } from './scenes/organizations/shop/item.photo-change.wizard';
+import { ItemEditCategoryWizard } from './scenes/organizations/shop/item.edit-category.wizard';
 
 @Module({
     imports: [
@@ -190,7 +191,7 @@ import { ItemPhotoChangeWizard } from './scenes/organizations/shop/item.photo-ch
         CreateSolveWizard,
         ArmedForcesScene,
         AcceptRequestWizard,
-        CreateScquadWizard,
+        CreateSquadWizard,
         SquadScene,
         CommanderInChiefScene,
         MinesScene,
@@ -211,7 +212,6 @@ import { ItemPhotoChangeWizard } from './scenes/organizations/shop/item.photo-ch
         BLackMarketScene,
         SearchOfferByNameScene,
         SearchOfferByCategoryScene,
-
         CreateSolveWizard,
         MyOffersScene,
         CheckOffersScene,
@@ -222,6 +222,7 @@ import { ItemPhotoChangeWizard } from './scenes/organizations/shop/item.photo-ch
         ItemEditRarityWizard,
         ItemEditSlotDescriptionWizard,
         ItemPhotoChangeWizard,
+        ItemEditCategoryWizard,
         //profile
         CharacterCreateWizard,
         BackgroundScene,
