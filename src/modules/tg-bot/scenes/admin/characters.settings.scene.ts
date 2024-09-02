@@ -29,8 +29,6 @@ import {
 } from '../../constants/button-names.constant';
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { AnnouncementService } from 'src/modules/events/services/announcement.service';
-import { SquadsService } from 'src/modules/squards/service/squads.service';
 import { CharacterService } from 'src/modules/character/services/character.service';
 import { CharacterEntity } from 'src/modules/character/entity/character.entity';
 import { Paginated } from 'nestjs-paginate';

@@ -6,6 +6,7 @@ export class MoneyAddDto {
     electrum: number;
     gold: number;
     platinum: number;
+    description: string;
 }
 
 export class OfferAmmountDto {

@@ -10,13 +10,11 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ENUM_SCENES_ID } from '../constants/scenes.id.enum';
 import { Logger } from 'winston';
 import { START_TREVEL_BUTTON } from '../constants/button-names.constant';
-import { SquadsService } from 'src/modules/squards/service/squads.service';
 @Scene(ENUM_SCENES_ID.START_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class StartScene {
     constructor(
         private readonly userService: UserService,
-        private readonly squadService: SquadsService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
 

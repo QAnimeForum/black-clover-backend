@@ -295,7 +295,7 @@ export class AdminArmedForcesScene {
             ],
         ];
         members.data.map((member, index) => {
-            const item = `${index + 1}) ${member.character.background.name}, ${member.character?.grimoire?.magicName ?? ''}, ${member.rank.name}`;
+            const item = `${index + 1}) ${member.character.background.name}, ${member.character?.grimoire?.magicName ?? ''}, ${member.rank.name}\n`;
             caption += item;
             keyboard.push([
                 Markup.button.callback(
