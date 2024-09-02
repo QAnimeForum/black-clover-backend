@@ -27,7 +27,8 @@ export class AddMoneyWizard {
             ENUM_SCENES_ID.GIVE_MONEY_SCENE_ID,
             this.step1(),
             this.step2(),
-            this.step3()
+            this.step3(),
+            this.step4(),
         );
 
         this.scene.enter(this.start());
@@ -49,6 +50,7 @@ export class AddMoneyWizard {
                 electrum: 0,
                 gold: 0,
                 platinum: 0,
+                description: '',
             };
             await ctx.reply(
                 `🧟 Введи  ID игрока, которому хотите перечислить деньги.\n Если игрока не находит, то ему нужно прописать /start в боте!\n Для выхода из формы введите /cancel`,
@@ -81,7 +83,7 @@ export class AddMoneyWizard {
                     ctx.update.message.text
                 );
                 await ctx.reply(
-                    `Введите сумму, которую находите начислить, в формате:\n {количество медных} {количество серебряных} {количество золотых} {количество электрумовых} {количество платиновых}`
+                    `Введите сумму, которую находите начислить, в формате:\n {количество медных} {количество серебряных} {количество электрумовых} {количество золотых} {количество платиновых}`
                 );
                 ctx.wizard.next();
             }
@@ -156,12 +158,40 @@ export class AddMoneyWizard {
         });
         composer.action('yes', async (ctx) => {
             await ctx.answerCbQuery();
+            await ctx.reply('Введите, за что вы переводите деньги.');
+            ctx.wizard.next();
+        });
+
+        composer.action('CHANGE_MONEY', async (ctx) => {
+            await ctx.reply(
+                `Введите сумму, которую находите начислить, в формате:\n {количество медных} {количество серебряных} {количество золотых} {количество электрумовых} {количество платиновых}`
+            );
+            ctx.wizard.back();
+            ctx.wizard.selectStep(1);
+        });
+        composer.action('CANCEL', async (ctx) => {
+            await ctx.reply('Первод денег отменён.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_MONEY_SCENE_ID);
+        });
+        return composer;
+    }
+
+    step4() {
+        const composer = new Composer<BotContext>();
+        composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
+        composer.command('cancel', async (ctx) => {
+            await ctx.reply('Первод денег отменён.');
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_MONEY_SCENE_ID);
+        });
+        composer.on(message('text'), async (ctx) => {
+            ctx.scene.session.moneyInfo.description = ctx.update.message.text;
             const copperText = ` Медные: ${ctx.scene.session.moneyInfo.copper}\n`;
-            const silverText = `Серебряные: ${ctx.scene.session.moneyInfo.copper}\n`;
-            const electrumText = `Электрумовые: ${ctx.scene.session.moneyInfo.copper} \n`;
-            const goldText = `Золотые: ${ctx.scene.session.moneyInfo.copper}\n`;
-            const platinumText = `Платиновые: ${ctx.scene.session.moneyInfo.copper}\n`;
+            const silverText = `Серебряные: ${ctx.scene.session.moneyInfo.silver}\n`;
+            const electrumText = `Электрумовые: ${ctx.scene.session.moneyInfo.electrum} \n`;
+            const goldText = `Золотые: ${ctx.scene.session.moneyInfo.gold}\n`;
+            const platinumText = `Платиновые: ${ctx.scene.session.moneyInfo.platinum}\n`;
             const tg = ctx.scene.session.moneyInfo.tgId;
+
             await this.walletService.addCharacterMoney(
                 ctx.scene.session.moneyInfo
             );
@@ -182,22 +212,12 @@ export class AddMoneyWizard {
                     silverText +
                     electrumText +
                     goldText +
-                    platinumText
+                    platinumText +
+                    `Причина: ` + ctx.scene.session.moneyInfo.description
             );
             ctx.scene.enter(ENUM_SCENES_ID.ADMIN_MONEY_SCENE_ID);
         });
 
-        composer.action('CHANGE_MONEY', async (ctx) => {
-            await ctx.reply(
-                `Введите сумму, которую находите начислить, в формате:\n {количество медных} {количество серебряных} {количество золотых} {количество электрумовых} {количество платиновых}`
-            );
-            ctx.wizard.back();
-            ctx.wizard.selectStep(1);
-        });
-        composer.action('CANCEL', async (ctx) => {
-            await ctx.reply('Первод денег отменён.');
-            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_MONEY_SCENE_ID);
-        });
         return composer;
     }
 }

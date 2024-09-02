@@ -52,7 +52,7 @@ export class WalletService {
                 moneyLogEntity.gold = dto.gold;
                 moneyLogEntity.electrum = dto.electrum;
                 moneyLogEntity.platinum = dto.platinum;
-                moneyLogEntity.note = 'Начисление денег администратором';
+                moneyLogEntity.note = `Начисление денег администратором. Причина: ${dto.description}`;
                 await transactionManager.save(moneyLogEntity);
             }
         );

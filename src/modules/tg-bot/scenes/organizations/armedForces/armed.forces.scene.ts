@@ -295,8 +295,9 @@ export class ArmedForcesScene {
     }
 
     @Hears(ARMED_FORCES_MAIN_BUTTON)
-    async mainOffice(@Ctx() ctx: BotContext) {
+    async mainOffice(@Ctx() ctx: BotContext, @Sender('id') tgId) {
         const buttons = [];
+        const squadMember = await this.squadsService.findArmedForcesMemberByTgId(tgId);
         buttons.push([
             Markup.button.callback(TREASURY_BUTTON, TREASURY_BUTTON),
         ]);
@@ -306,7 +307,9 @@ export class ArmedForcesScene {
                 EXIT_FROM_ARMY_FORCES_BUTTON
             ),
         ]);
-        const caption = '';
+        let caption = `<strong>Информация о вас</strong>\n`;
+        caption += `Ваш ранг: ${squadMember.rank.name}\n`;
+        caption += `Количество звёзд: ${squadMember.stars}\n`;
         await ctx.sendPhoto(
             {
                 source: ARMED_FORCES,
