@@ -57,6 +57,7 @@ export class ShopService {
         newOffer.electrum = dto.electrum;
         newOffer.platinum = dto.platinum;
         newOffer.isActvie = true;
+        console.log(newOffer);
         return this.shopRepository.save(newOffer);
     }
 

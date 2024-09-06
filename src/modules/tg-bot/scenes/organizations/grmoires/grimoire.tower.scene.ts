@@ -368,7 +368,7 @@ export class GrimoireTowerScene {
             ),
             Markup.button.callback(ADD_SPELL_BUTTON, ADD_SPELL_BUTTON),
         ]);
-        character.grimoire.spells.map((spell, index) => {
+        character.grimoire.spells.map((spell, _index) => {
             const status = spellStatusToText(spell.status);
             buttons.push([
                 Markup.button.callback(
@@ -418,7 +418,7 @@ export class GrimoireTowerScene {
             ),
             Markup.button.callback(ADD_SPELL_BUTTON, ADD_SPELL_BUTTON),
         ]);
-        character.grimoire.spells.map((spell, index) => {
+        character.grimoire.spells.map((spell, _index) => {
             const status = spellStatusToText(spell.status);
             buttons.push([
                 Markup.button.callback(
@@ -462,7 +462,7 @@ export class GrimoireTowerScene {
         const character =
             await this.grimoireService.findGrimoireById(selectedGrimoireId);
         const buttons = [];
-        character.grimoire.spells.map((spell, index) => {
+        character.grimoire.spells.map((spell, _index) => {
             const status = spellStatusToText(spell.status);
             buttons.push([
                 Markup.button.callback(
@@ -646,11 +646,16 @@ export class GrimoireTowerScene {
 
     @Hears(GRIMOIRE_GET_BUTTON)
     public async wantGrimoire(@Ctx() ctx: BotContext) {
-        const isExist = await this.grimoireService.isRequestExist(
+        const isRequestExist = await this.grimoireService.isRequestExist(
             ctx.message.from.id.toString()
         );
-        if (isExist) {
+        const grimoire = await this.grimoireService.findGrimoireByUserTgId(
+            ctx.message.from.id
+        );
+        if (isRequestExist) {
             await ctx.reply('Заявка уже принята, к вам придут.');
+        } else if (grimoire) {
+            await ctx.reply('У вас уже есть гримуар');
         } else {
             await this.showChooseMenu(ctx);
         }

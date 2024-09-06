@@ -117,6 +117,7 @@ export const WALLET_BUTTON = '👛Кошелёк';
 
 export const EXCHANGE_RATES_BUTTON = '💰Курс валют';
 export const TRANSFER_MONEY_BUTTON = '💸Перевести деньги';
+export const CURRENCY_CONVERSION_BUTTON = '💶Конвертация валюты';
 //WORK
 export const WORKS_BUTTON = 'Работа';
 export const ORGANIZATIONS_BUTTON = '🏢Организации';
@@ -149,8 +150,18 @@ export const EDIT_ITEM_DESCRIPTION = '✏️Описание';
 export const EDIT_ITEM_PHOTO = '✏️Фото';
 export const EDIT_ITEM_SLOT = '✏️Место ношения';
 export const EDIT_ITEM_RARITY = '✏️Редкость';
-export const EDIT_ITEM_CATEGORY = '✏️Категорию';
+export const EDIT_ITEM_CATEGORY = '✏️Категория';
+export const EDIT_PHYSICAL_DAMAGE = '✏️Физ. урон';
+export const EDIT_MAGIC_DAMAGE = '✏️Магический урон';
+export const EDIT_PHYSICAL_DEFENSE = '✏️Физическая защита';
+export const EDIT_MAGIC_DEFENSE = '✏️Магическая защита';
 export const DELETE_ITEM = '🗑Удалить предмет';
+/**
+ *         "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+ */
 //ARMED FORCES
 export const CHARACTERS_BUTTON = '👤Пользователи';
 export const CHARACTERS_LIST_BUTTON = '👤Пользователи';

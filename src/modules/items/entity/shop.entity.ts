@@ -38,25 +38,25 @@ export class ShopEntity {
     copper: number;
 
     @Column({
-        name: 'copper',
+        name: 'silver',
         type: 'int',
     })
     silver: number;
 
     @Column({
-        name: 'copper',
+        name: 'gold',
         type: 'int',
     })
     gold: number;
 
     @Column({
-        name: 'copper',
+        name: 'electrum',
         type: 'int',
     })
     electrum: number;
 
     @Column({
-        name: 'copper',
+        name: 'platinum',
         type: 'int',
     })
     platinum: number;

@@ -17,6 +17,8 @@ export class EqupmentItemService {
         private readonly categoryRepository: TreeRepository<ItemCategoryEntity>,
         @InjectRepository(EqupmentItemEntity)
         private readonly equipmentItemRepository: Repository<EqupmentItemEntity>,
+        @InjectRepository(ShopEntity)
+        private readonly shopRepository: Repository<ShopEntity>,
         @InjectDataSource()
         private readonly connection: DataSource
     ) {}
@@ -158,6 +160,37 @@ export class EqupmentItemService {
             searchableColumns: ['name', 'bodyPart'],
             select: ['id', 'name', 'bodyPart', 'category', 'categoryId'],
             filterableColumns: {},
+        });
+    }
+
+    async findOffers(query: PaginateQuery) {
+        return paginate(query, this.shopRepository, {
+            sortableColumns: ['id'],
+            nullSort: 'last',
+            defaultSortBy: [['id', 'DESC']],
+            searchableColumns: ['id'],
+            select: [
+                'id',
+                'copper',
+                'silver',
+                'electrum',
+                'gold',
+                'platinum',
+                'item',
+                'item.id',
+                'item.name',
+                'item.description',
+                'item.bodyPart',
+                'item.rarity',
+                'item.category',
+                'item.category.id',
+                'item.category.name',
+                'item.physicalAttackDamage',
+                'item.physicalDefense',
+                'item.magicAttackDamage',
+                'item.magicDefense',
+            ],
+            relations: ['item', 'item.category'],
         });
     }
 

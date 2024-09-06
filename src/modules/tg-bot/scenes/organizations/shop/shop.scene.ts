@@ -19,6 +19,10 @@ import {
     EDIT_ITEM_PHOTO,
     EDIT_ITEM_RARITY,
     EDIT_ITEM_SLOT,
+    EDIT_MAGIC_DAMAGE,
+    EDIT_MAGIC_DEFENSE,
+    EDIT_PHYSICAL_DAMAGE,
+    EDIT_PHYSICAL_DEFENSE,
     GOODS_BUTTON,
     GOODS_BY_CATEOGORY_BUTTON,
     GOODS_BY_RARITY_BUTTON,
@@ -119,12 +123,11 @@ export class ShopScene {
     }
     @Hears(OFFERS_BUTTON)
     async offers(@Ctx() ctx: BotContext) {
-        const offers =
-            await this.equipmentItemService.findAllEquipmentItemsNotOnShop({
-                path: '',
-            });
-        console.log(offers);
-        /* await this.showOffer(ctx, offers, 1);*/
+        const offers = await this.equipmentItemService.findOffers({
+            path: '',
+        });
+        //const offers: Paginated<ShopEntity> = ;
+        await this.showOffer(ctx, offers, 1);
     }
     @Hears(GOODS_BUTTON)
     async goodsButton(@Ctx() ctx: BotContext) {
@@ -383,6 +386,15 @@ export class ShopScene {
         caption += `<strong>Описание</strong>\n${item.description}\n`;
         const buttons = [];
         if (isAdmin) {
+            const isItemHasOffer = this.shopService.hasItemOffer(itemId);
+            if (!isItemHasOffer) {
+                buttons.push([
+                    Markup.button.callback(
+                        CREATE_OFFER_BUTTON,
+                        `CREATE_OFFER_BUTTON:${item.id}`
+                    ),
+                ]);
+            }
             buttons.push([
                 Markup.button.callback(
                     EDIT_ITEM_NAME,
@@ -413,6 +425,28 @@ export class ShopScene {
                     `EDIT_ITEM_CATEGORY:${item.id}`
                 ),
             ]);
+            buttons.push([
+                Markup.button.callback(
+                    EDIT_PHYSICAL_DAMAGE,
+                    `EDIT_PHYSICAL_DAMAGE:${item.id}`
+                ),
+                Markup.button.callback(
+                    EDIT_PHYSICAL_DEFENSE,
+                    `EDIT_PHYSICAL_DEFENSE:${item.id}`
+                ),
+            ]);
+
+            buttons.push([
+                Markup.button.callback(
+                    EDIT_MAGIC_DAMAGE,
+                    `EDIT_MAGIC_DAMAGE:${item.id}`
+                ),
+                Markup.button.callback(
+                    EDIT_MAGIC_DEFENSE,
+                    `EDIT_MAGIC_DEFENSE:${item.id}`
+                ),
+            ]);
+
             buttons.push([
                 Markup.button.callback(DELETE_ITEM, `DELETE_ITEM:${item.id}`),
             ]);
@@ -498,6 +532,13 @@ export class ShopScene {
         await ctx.scene.enter(ENUM_SCENES_ID.CREATE_OFFER_SCENE_ID);
     }
 
+    @Action(/^(BUY.*)$/)
+    async buy(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const offerId = ctx.callbackQuery['data'].split(':')[1];
+        await ctx.reply('Покупка пока недоступна');
+    }
+
     @Action(/^(DELETE_OFFER_BUTTON.*)$/)
     async deleteOffer(@Ctx() ctx: BotContext, @Sender() sender) {
         await ctx.answerCbQuery();
@@ -532,14 +573,14 @@ export class ShopScene {
                 },
                 {
                     caption: 'Предложений пока нет.',
-                    ...Markup.inlineKeyboard([
+                    /*  ...Markup.inlineKeyboard([
                         [
                             Markup.button.callback(
                                 CREATE_OFFER_BUTTON,
                                 CREATE_OFFER_BUTTON
                             ),
                         ],
-                    ]),
+                    ]),*/
                 }
             );
         }
@@ -558,13 +599,20 @@ export class ShopScene {
                         callback_data: 'next_item',
                     },
                 ],
-                [{ text: 'Вернуться в меню', callback_data: 'open_menu' }],
             ],
         };
 
         inline_keyboard.inline_keyboard.unshift([
-            { text: 'Купить за деньги', callback_data: 'buy_with_money' },
+            { text: 'Купить', callback_data: `BUY:${data[offerIndex - 1].id}` },
         ]);
+
+        //  const wallet = character.wallet;
+        const copperText = `${data[offerIndex - 1].copper} 🟤`;
+        const silverText = `${data[offerIndex - 1].silver} ⚪️`;
+        const electrumText = `${data[offerIndex - 1].electrum} 🔵`;
+        const goldTextText = `${data[offerIndex - 1].gold} 🟡`;
+        const platinumText = `${data[offerIndex - 1].platinum} 🪙`;
+        const price = `${platinumText} ${goldTextText} ${electrumText} ${silverText} ${copperText} \n`;
 
         if (offerIndex == 1) {
             await ctx.replyWithPhoto(
@@ -577,11 +625,25 @@ export class ShopScene {
                         totalItems +
                         '</b> предложений:\n\n⌨ Название предмета: <b>' +
                         data[offerIndex - 1].item.name +
-                        '</b>\n👊🏼 Сила: <b> ' +
-                        '</b>\n💎 Цены: <b>' +
-                        +'</b>\n👚 Надевается в слот: <b>' +
-                        data[offerIndex - 1].item.bodyPart +
-                        '</b>\n📃 Описание: <b>' +
+                        '</b>\n💎 Категория: <b> ' +
+                        data[offerIndex - 1].item.category.name +
+                        '</b>\n💎 Редкость: <b> ' +
+                        convertRarityToText(data[offerIndex - 1].item.rarity) +
+                        '</b>\n👚 Слот: <b>' +
+                        convertBodyPartToText(
+                            data[offerIndex - 1].item.bodyPart
+                        ) +
+                        '</b>\n\n👊🏼 Физ. урон: <b> ' +
+                        data[offerIndex - 1].item.physicalAttackDamage +
+                        '</b>\n👊🏼 Маг. урон: <b> ' +
+                        data[offerIndex - 1].item.magicAttackDamage +
+                        '</b>\n🛡 Физ. защита: <b> ' +
+                        data[offerIndex - 1].item.physicalDefense +
+                        '</b>\n🛡 Маг. защита: <b> ' +
+                        data[offerIndex - 1].item.magicDefense +
+                        '</b>\n💴 Цена: <b>' +
+                        price +
+                        '</b>\n📃 Описание\n <b>' +
                         data[offerIndex - 1].item.description +
                         '</b>',
                     parse_mode: 'HTML',
@@ -603,7 +665,7 @@ export class ShopScene {
                         '</b> предложений:\n\n⌨ Название предмета: <b>' +
                         data[offerIndex - 1].item.name +
                         '</b>\n👊🏼 Сила: <b> ' +
-                        '</b>\n💎 Цены: <b>' +
+                        '</b>\n💎 Цена: <b>' +
                         +'</b>\n👚 Надевается в слот: <b>' +
                         data[offerIndex - 1].item.bodyPart +
                         '</b>\n📃 Описание: <b>' +
