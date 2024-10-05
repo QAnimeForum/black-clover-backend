@@ -14,6 +14,7 @@ export default class FoodComponentEntity {
         type: 'varchar',
     })
     name: string;
+
     @Column('varchar', { name: 'flavors', array: true })
     flavors: string[];
     @Column('varchar', { name: 'textures', array: true })

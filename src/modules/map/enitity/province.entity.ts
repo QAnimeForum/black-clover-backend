@@ -29,6 +29,12 @@ export class ProvinceEntity {
 
     @Column({
         type: 'varchar',
+        default: '',
+    })
+    description: string;
+
+    @Column({
+        type: 'varchar',
     })
     image: string;
 

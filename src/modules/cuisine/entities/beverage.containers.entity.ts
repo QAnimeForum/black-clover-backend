@@ -6,16 +6,26 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
-export class AccessoryEntity {
+@Entity('beverage_container')
+export class BeverageContainersEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
-
     @Column({
         type: 'varchar',
     })
     name: string;
+    @Column({
+        type: 'varchar',
+    })
+    description: string;
 
+    @Column({
+        type: 'uuid',
+        name: 'type_id',
+    })
+    typeId: string;
+
+    
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;
 

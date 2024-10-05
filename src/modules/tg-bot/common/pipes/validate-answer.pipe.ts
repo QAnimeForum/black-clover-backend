@@ -15,8 +15,11 @@ export class ValidateAnswerPipe implements PipeTransform {
     constructor(private options: ValidateAnswerOptions) {}
     transform(value: { text: string }) {
         const objToValidate = { text: value.text };
+        if (value.text == '/start') {
+            return value.text;
+        }
         let answerValidation = Joi.string();
-
+        console.log(this.options);
         if (this.options?.validationSchema)
             answerValidation = this.options.validationSchema;
         else if (this.options?.validAnswers)
@@ -32,6 +35,7 @@ export class ValidateAnswerPipe implements PipeTransform {
             text: answerValidation,
         });
         const { error } = validationSchema.validate(objToValidate);
+        console.log(error);
         if (error) {
             throw new InvalidAnswerException(this.options.errorMessage);
         }

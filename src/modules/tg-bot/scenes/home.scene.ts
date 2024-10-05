@@ -130,7 +130,6 @@ export class HomeScene {
     @Action(MAP_BUTTON)
     @AllowedRoles(ENUM_ROLE_TYPE.USER, ENUM_ROLE_TYPE.ADMIN)
     async map(@Ctx() ctx: BotContext) {
-        await ctx.deleteMessage();
         await ctx.scene.enter(ENUM_SCENES_ID.MAP_SCENE_ID);
     }
 

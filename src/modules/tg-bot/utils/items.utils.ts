@@ -18,8 +18,8 @@ export const convertRarityToText = (rarity: ENUM_ITEM_RARITY) => {
     }
 };
 
-export const convertBodyPartToText = (rarity: ENUM_BODY_PART_ENUM) => {
-    switch (rarity) {
+export const convertBodyPartToText = (bodyPartItem: ENUM_BODY_PART_ENUM) => {
+    switch (bodyPartItem) {
         case ENUM_BODY_PART_ENUM.ARMOR:
             return 'Броня';
         case ENUM_BODY_PART_ENUM.CLOAK:
@@ -32,17 +32,9 @@ export const convertBodyPartToText = (rarity: ENUM_BODY_PART_ENUM) => {
             return 'Одноручный';
         case ENUM_BODY_PART_ENUM.TWO_HANDS:
             return 'Двуручный';
-        case ENUM_BODY_PART_ENUM.HEARDRESS:
+        case ENUM_BODY_PART_ENUM.HEADDRESS:
             return 'Предмет для головы';
-        case ENUM_BODY_PART_ENUM.LEEGS:
-            return 'Предмет для ног';
-        case ENUM_BODY_PART_ENUM.RING:
-            return 'Кольцо';
-        case ENUM_BODY_PART_ENUM.SHOES:
-            return 'Ботинки';
-        case ENUM_BODY_PART_ENUM.VEHICLE:
-            return 'Транспорт';
-        case ENUM_BODY_PART_ENUM.NO:
-            return 'Нет';
+        case ENUM_BODY_PART_ENUM.ACCESSORY:
+            return 'Аксессуар';
     }
 };

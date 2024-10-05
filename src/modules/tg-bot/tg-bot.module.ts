@@ -36,7 +36,6 @@ import { CharacterParamsScene } from './scenes/profile/params.scene';
 import { ProfileScene } from './scenes/profile/profile.scene';
 import { WalletScene } from './scenes/profile/wallet.scene';
 import { OrganizationsScene } from './scenes/organizations/organization.scene';
-import { MapWizard } from './scenes/map/map.wizard';
 import { MoneyModule } from '../money/money.module';
 import { ItemsModule } from '../items/items.module';
 import { AnnouncementModule } from '../events/event.module';
@@ -122,6 +121,16 @@ import { ItemEditRarityWizard } from './scenes/organizations/shop/item.edit-rari
 import { ItemEditSlotDescriptionWizard } from './scenes/organizations/shop/item.edit-slot.description';
 import { ItemPhotoChangeWizard } from './scenes/organizations/shop/item.photo-change.wizard';
 import { ItemEditCategoryWizard } from './scenes/organizations/shop/item.edit-category.wizard';
+import { DevilCreateWizard } from './scenes/devils/devil.create.wizard';
+import { DevilEditNameWizard } from './scenes/devils/devil.edit.name.wizard';
+import { DevilEditDescriptionWizard } from './scenes/devils/devil.edit.description.wizard';
+import { DevilEditFloorWizard } from './scenes/devils/devil.edit.floor.wizard';
+import { DevilEditRankWizard } from './scenes/devils/devil.edit.rank.wizard';
+import { MapScene } from './scenes/map/map.scene';
+import { RegionScene } from './scenes/map/region.scene';
+import { CityScene } from './scenes/map/city.scene';
+import { StateScene } from './scenes/map/state.scene';
+
 
 @Module({
     imports: [
@@ -176,11 +185,19 @@ import { ItemEditCategoryWizard } from './scenes/organizations/shop/item.edit-ca
         //Devils
         AllDevilsScene,
         MyDevilsScene,
+        DevilCreateWizard,
+        DevilEditNameWizard,
+        DevilEditDescriptionWizard,
+        DevilEditFloorWizard,
+        DevilEditRankWizard,
         //Spirits
         AllSpiritsScene,
         MySpiritsScene,
         //Map
-        MapWizard,
+        MapScene,
+        StateScene,
+        RegionScene,
+        CityScene,
         //organizartions
         CreateEquipmentItemWizard,
         OrganizationsScene,

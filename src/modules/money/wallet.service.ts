@@ -258,6 +258,17 @@ export class WalletService {
         return wallets[0];
     }
 
+    async findWalletByUserTgIdWithTransaction(
+        transaction: EntityManager,
+        tgUserId: string
+    ): Promise<WalletEntity> {
+        const query: string = `select wallet.* from wallet JOIN character ON wallet.id = character.wallet_id JOIN game_user on character.user_id = game_user.id  where game_user.tg_user_id = '${tgUserId}'`;
+        const wallets: Array<WalletEntity> = await transaction.query(query);
+        if (wallets.length !== 1) {
+            return;
+        }
+        return wallets[0];
+    }
     async findAllTransactions() {
         return await this.moneyLogsRepository.find();
     }
@@ -270,8 +281,78 @@ export class WalletService {
             throw Error('No user with such id');
         }
     }
+    async canUserBuyItem(wallet: WalletEntity, price: MoneyDto) {
+        const totalCopperInWallet =
+            wallet.copper +
+            wallet.silver * 10 +
+            wallet.electrum * 50 +
+            wallet.gold * 100 +
+            wallet.platinum * 1000;
+        const totalCopperInPrice =
+            price.copper +
+            price.silver * 10 +
+            price.electrum * 50 +
+            price.gold * 100 +
+            price.platinum * 1000;
+        return totalCopperInWallet >= totalCopperInPrice;
+    }
+    async payWithMoney(
+        transactionManager: EntityManager,
+        wallet: WalletEntity,
+        price: MoneyDto
+    ) {
+        const totalCopperInWallet =
+            wallet.copper +
+            wallet.silver * 10 +
+            wallet.electrum * 50 +
+            wallet.gold * 100 +
+            wallet.platinum * 1000;
+        const totalCopperInPrice =
+            price.copper +
+            price.silver * 10 +
+            price.electrum * 50 +
+            price.gold * 100 +
+            price.platinum * 1000;
+        const remainder = totalCopperInWallet - totalCopperInPrice;
+        const moneyLogEntity1 = new MoneyLogEntity();
+        moneyLogEntity1.recipient = `Кошелёк ${wallet.id}`;
+        moneyLogEntity1.sender = `Нет`;
+        moneyLogEntity1.copper = wallet.copper;
+        moneyLogEntity1.silver = wallet.silver;
+        moneyLogEntity1.gold = wallet.gold;
+        moneyLogEntity1.electrum = wallet.electrum;
+        moneyLogEntity1.platinum = wallet.platinum;
+        moneyLogEntity1.note = 'Произошла покупка предмета. Старая сумма.';
 
-    payWithMoney(user_id: string, amountCoopers: number): void {
-        // this.walletRepository.decrement({ id: user_id }, "money", amount);
+        await transactionManager.save(moneyLogEntity1);
+        wallet.copper = remainder;
+        wallet.silver = 0;
+        wallet.electrum = 0;
+        wallet.gold = 0;
+        wallet.platinum = 0;
+        await transactionManager.update(
+            WalletEntity,
+            {
+                id: wallet.id,
+            },
+            {
+                copper: remainder,
+                silver: 0,
+                gold: 0,
+                electrum: 0,
+                platinum: 0,
+            }
+        );
+        const moneyLogEntity2 = new MoneyLogEntity();
+        moneyLogEntity2.recipient = `Кошелёк ${wallet.id}`;
+        moneyLogEntity2.sender = `Нет`;
+        moneyLogEntity2.copper = price.copper;
+        moneyLogEntity2.silver = price.silver;
+        moneyLogEntity2.gold = price.gold;
+        moneyLogEntity2.electrum = price.electrum;
+        moneyLogEntity2.platinum = price.platinum;
+        moneyLogEntity2.note =
+            'Конвертация валюты. Произошла в меню кошелька. Новая сумма.';
+        await transactionManager.save(moneyLogEntity2);
     }
 }

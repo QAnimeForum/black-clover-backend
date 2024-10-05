@@ -4,12 +4,20 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
-    OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
 import DrinkType from './drink.type.entity';
-import { MoneyEntity } from '../../money/entity/money.entity';
+
+
+export enum ENUM_DRINK_QUALITY {
+    NASTY,
+    AWFUL,
+    ACCEPTABLE,
+    DECENT,
+    GOOD,
+    EXCELLENT,
+}
 
 @Entity('drink')
 export class DrinkEntity {
@@ -27,31 +35,24 @@ export class DrinkEntity {
         type: 'varchar',
     })
     appearance: string;
+
     @Column({
-        type: 'int',
+        type: 'enum',
+        enum: ENUM_DRINK_QUALITY,
+        default: ENUM_DRINK_QUALITY.AWFUL,
     })
-    quality: number;
-    @Column({
-        type: 'int',
-    })
-    strength: number;
-    @OneToOne(() => MoneyEntity)
-    @JoinColumn({
-        name: 'price_id',
-        referencedColumnName: 'id',
-    })
-    cost: MoneyEntity;
+    quality: ENUM_DRINK_QUALITY;
 
     @ManyToOne(() => DrinkType, (drinkType) => drinkType.drinks)
     @JoinColumn({
-        name: 'drink_id',
+        name: 'type_id',
         referencedColumnName: 'id',
     })
     type: DrinkType;
 
     @Column({
         type: 'uuid',
-        name: 'drink_id',
+        name: 'type_id',
     })
     typeId: string;
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
@@ -60,3 +61,13 @@ export class DrinkEntity {
     @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
     updatedAt: Date;
 }
+
+
+/**
+ *    @OneToOne(() => MoneyEntity)
+    @JoinColumn({
+        name: 'price_id',
+        referencedColumnName: 'id',
+    })
+    cost: MoneyEntity;
+ */

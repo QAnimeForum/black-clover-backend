@@ -33,7 +33,14 @@ export class MapService {
             nullSort: 'last',
             defaultSortBy: [['id', 'DESC']],
             searchableColumns: ['id'],
-            select: ['id', 'name','fullName', 'bonusHp', 'bonusMagicPower'],
+            select: [
+                'id',
+                'name',
+                'fullName',
+                'symbol',
+                'bonusHp',
+                'bonusMagicPower',
+            ],
             relations: ['form'],
             filterableColumns: {
                 state_id: true,
@@ -49,10 +56,11 @@ export class MapService {
             nullSort: 'last',
             defaultSortBy: [['id', 'DESC']],
             searchableColumns: ['id'],
-            select: ['id', 'fullName', 'state_id'],
-            relations: ['form'],
+            select: ['id', 'fullName', 'shortName', 'state_id', 'state'],
+            relations: ['form', 'state'],
             filterableColumns: {
                 state_id: true,
+                'state.id': true,
             },
         });
     }
@@ -63,9 +71,11 @@ export class MapService {
             nullSort: 'last',
             defaultSortBy: [['id', 'DESC']],
             searchableColumns: ['id'],
-            select: ['id', 'name', 'province_id'],
+            select: ['id', 'name', 'province'],
+            relations: ['province'],
             filterableColumns: {
                 province_id: true,
+                'province.id': true,
             },
         });
     }
@@ -90,8 +100,31 @@ export class MapService {
     }
 
     async findStateById(stateId: string) {
-        return await this.stateRepository.findOneBy({
-            id: stateId,
+        return await this.stateRepository.findOne({
+            where: {
+                id: stateId,
+            },
+            relations: {
+                form: true,
+            },
+        });
+    }
+
+    async findRegionById(regionId: string) {
+        return await this.provinceRepository.findOne({
+            where: {
+                id: regionId,
+            },
+        });
+    }
+    
+    
+
+    async findBurgById(burgId: string) {
+        return await this.burgRepository.findOne({
+            where: {
+                id: burgId,
+            }
         });
     }
 

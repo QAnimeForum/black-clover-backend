@@ -1,21 +1,14 @@
 import {
-    Column,
     CreateDateColumn,
     Entity,
-    PrimaryGeneratedColumn,
+    PrimaryColumn,
     UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
-export class BootsEntity {
-    @PrimaryGeneratedColumn('uuid')
+@Entity('drink')
+export class RecipeEntity {
+    @PrimaryColumn('uuid')
     id: string;
-
-    @Column({
-        type: 'varchar',
-    })
-    name: string;
-
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;
 

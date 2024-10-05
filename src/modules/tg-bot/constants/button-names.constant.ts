@@ -4,6 +4,7 @@ export const START_TREVEL_BUTTON = '🌍 Начать путешествие';
 export const GO_TO_HOME = '🌍 На главное меню';
 export const BACK_BUTTON = '🔙Назад';
 export const BACK_TO_ADMIN_BUTTON = '🔙В главную админку';
+export const BACK_TO_REGION_BUTTON = '🔙Назад в регион';
 export const HELP_BUTTON = '❓Помощь';
 export const KNOWLEGE_BASE_BUTTON = '🗂 База знаний';
 export const GUIDES_BUTTON = '📚 Гайды';
@@ -33,6 +34,7 @@ export const DEVILS_KNOLAGE_BASE_BUTTON = 'база знаний о дьявол
 export const DEVIL_LIST_BUTTON = 'Списки дьяволов';
 export const DEVIL_TYPE_SORT_RANK_BUTTON = 'Список дьяволов по рангам';
 export const DEVIL_TYPE_SORT_FLOOR_BUTTON = 'Список дьяволов по этажам';
+export const DEVIL_CREATE_BUTTON = 'Создать дьявола';
 //CHARACTER
 export const PROFILE_BUTTON = '👤Профиль';
 export const BACKGROUND_BUTTON = 'ℹБиография';
@@ -99,9 +101,13 @@ export const INVENTORY_BUTTON = '🎒Инвентарь';
 export const CHANGE_EQUIPMENT_BUTTON = '🎒Сменить экипировку';
 export const EQUIPMENT_BUTTON = '🎒Экипировка';
 export const ALL_INVENTORY_BUTTON = '🎒показать весь инвентарь';
+export const REAL_ESTATE_BUTTON = '🏠Недвижимое имущество';
+export const RECIPIES_BUTTON = '🛠Рецепты';
+
 export const JEWEIRY_BUTTON = '💎Укашения';
 export const RESOURCES_BUTTON = '♻️Ресурсы';
-export const FOOD_BUTTON = '🍧Еда';
+export const FOOD_BUTTON = '🍧Еда и напитки';
+export const WORKS_OF_ART_BUTTON = '🖼Произведения искусства';
 export const ALCOHOL_BUTTON = '🥃Алкоголь';
 export const WEAPONS_BUTTON = '⚔️Оружие';
 export const ARMOR_BUTTON = '🪖Броня';
@@ -117,6 +123,7 @@ export const WALLET_BUTTON = '👛Кошелёк';
 
 export const EXCHANGE_RATES_BUTTON = '💰Курс валют';
 export const TRANSFER_MONEY_BUTTON = '💸Перевести деньги';
+export const CURRENCY_CONVERSION_BUTTON = '💶Конвертация валюты';
 //WORK
 export const WORKS_BUTTON = 'Работа';
 export const ORGANIZATIONS_BUTTON = '🏢Организации';
@@ -149,8 +156,18 @@ export const EDIT_ITEM_DESCRIPTION = '✏️Описание';
 export const EDIT_ITEM_PHOTO = '✏️Фото';
 export const EDIT_ITEM_SLOT = '✏️Место ношения';
 export const EDIT_ITEM_RARITY = '✏️Редкость';
-export const EDIT_ITEM_CATEGORY = '✏️Категорию';
+export const EDIT_ITEM_CATEGORY = '✏️Категория';
+export const EDIT_PHYSICAL_DAMAGE = '✏️Физ. урон';
+export const EDIT_MAGIC_DAMAGE = '✏️Магический урон';
+export const EDIT_PHYSICAL_DEFENSE = '✏️Физическая защита';
+export const EDIT_MAGIC_DEFENSE = '✏️Магическая защита';
 export const DELETE_ITEM = '🗑Удалить предмет';
+/**
+ *         "physicalAttackDamage": 0,
+              "magicAttackDamage": 0,
+              "physicalDefense": 0,
+              "magicDefense": 0
+ */
 //ARMED FORCES
 export const CHARACTERS_BUTTON = '👤Пользователи';
 export const CHARACTERS_LIST_BUTTON = '👤Пользователи';

@@ -106,7 +106,7 @@ export class DevilsService {
             description: dto.description,
             rank: ENUM_DEVIL_RANK[dto.rank],
             floor: ENUM_DEVIL_FLOOR[dto.floor],
-            magicType: dto.magic_type,
+            magicType: dto.magicType,
             /* union_10: devil_union_10,
             union_25: devil_union_25,
             union_50: devil_union_50,
@@ -126,9 +126,28 @@ export class DevilsService {
     }
     async updateDevilDescription(id: string, dto: DevilUpdateDescriptionDto) {
         const devil = await this.findDevilById(id);
-        devil.name = dto.description;
+        devil.description = dto.description;
         this.devilRepository.save(devil);
     }
+
+    async updateDevilFloor(id: string, floor: ENUM_DEVIL_FLOOR) {
+        return await this.connection
+            .createQueryBuilder()
+            .update(DevilEntity)
+            .set({ floor: floor })
+            .where('id = :id', { id: id })
+            .execute();
+    }
+
+    async updateDevilRank(id: string, rank: ENUM_DEVIL_RANK) {
+        return await this.connection
+            .createQueryBuilder()
+            .update(DevilEntity)
+            .set({ rank: rank })
+            .where('id = :id', { id: id })
+            .execute();
+    }
+
     async existByName(name: string): Promise<boolean> {
         const entity = await this.devilRepository.findOneBy({
             name: name,
@@ -210,7 +229,7 @@ export class DevilsService {
             },
             relations: {
                 spell: true,
-            }
+            },
         });
     }
 }

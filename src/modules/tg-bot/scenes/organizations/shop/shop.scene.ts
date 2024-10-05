@@ -19,6 +19,10 @@ import {
     EDIT_ITEM_PHOTO,
     EDIT_ITEM_RARITY,
     EDIT_ITEM_SLOT,
+    EDIT_MAGIC_DAMAGE,
+    EDIT_MAGIC_DEFENSE,
+    EDIT_PHYSICAL_DAMAGE,
+    EDIT_PHYSICAL_DEFENSE,
     GOODS_BUTTON,
     GOODS_BY_CATEOGORY_BUTTON,
     GOODS_BY_RARITY_BUTTON,
@@ -38,6 +42,10 @@ import {
 } from 'src/modules/tg-bot/utils/items.utils';
 import fs from 'fs';
 import { UserService } from 'src/modules/user/services/user.service';
+import { method } from 'lodash';
+import { showOffers } from 'src/modules/tg-bot/utils/inventory.utils';
+import { button } from 'telegraf/typings/markup';
+import { WalletService } from 'src/modules/money/wallet.service';
 @Scene(ENUM_SCENES_ID.SHOP_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class ShopScene {
@@ -45,7 +53,8 @@ export class ShopScene {
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
         private readonly equipmentItemService: EqupmentItemService,
         private readonly userService: UserService,
-        private readonly shopService: ShopService
+        private readonly shopService: ShopService,
+        private readonly walletService: WalletService,
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
@@ -119,12 +128,38 @@ export class ShopScene {
     }
     @Hears(OFFERS_BUTTON)
     async offers(@Ctx() ctx: BotContext) {
-        const offers =
-            await this.equipmentItemService.findAllEquipmentItemsNotOnShop({
-                path: '',
-            });
-        console.log(offers);
-        /* await this.showOffer(ctx, offers, 1);*/
+        const offers = await this.equipmentItemService.findOffers({
+            path: '',
+            limit: 1,
+            page: 1,
+        });
+        const { data, meta } = offers;
+        const { itemsPerPage, currentPage, totalPages, totalItems } = meta;
+        let offer: ShopEntity = null;
+        if (itemsPerPage == 1) {
+            offer = data[0];
+        }
+        const [caption, buttons] = showOffers(
+            offer,
+            currentPage,
+            totalPages,
+            totalItems
+        );
+        const itemImage = `${process.env.APP_API_URL}/Assets/images/items/${offer.item.id}/${offer.item.image}`;
+
+        await ctx.replyWithPhoto(
+            {
+                source:
+                    fs.existsSync(itemImage) && fs.lstatSync(itemImage).isFile()
+                        ? itemImage
+                        : SHOP_IMAGE_PATH,
+            },
+            {
+                caption: caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard(buttons),
+            }
+        );
     }
     @Hears(GOODS_BUTTON)
     async goodsButton(@Ctx() ctx: BotContext) {
@@ -383,6 +418,15 @@ export class ShopScene {
         caption += `<strong>Описание</strong>\n${item.description}\n`;
         const buttons = [];
         if (isAdmin) {
+            const isItemHasOffer = await this.shopService.hasItemOffer(itemId);
+            if (!isItemHasOffer) {
+                buttons.push([
+                    Markup.button.callback(
+                        CREATE_OFFER_BUTTON,
+                        `CREATE_OFFER_BUTTON:${item.id}`
+                    ),
+                ]);
+            }
             buttons.push([
                 Markup.button.callback(
                     EDIT_ITEM_NAME,
@@ -414,6 +458,28 @@ export class ShopScene {
                 ),
             ]);
             buttons.push([
+                Markup.button.callback(
+                    EDIT_PHYSICAL_DAMAGE,
+                    `EDIT_PHYSICAL_DAMAGE:${item.id}`
+                ),
+                Markup.button.callback(
+                    EDIT_PHYSICAL_DEFENSE,
+                    `EDIT_PHYSICAL_DEFENSE:${item.id}`
+                ),
+            ]);
+
+            buttons.push([
+                Markup.button.callback(
+                    EDIT_MAGIC_DAMAGE,
+                    `EDIT_MAGIC_DAMAGE:${item.id}`
+                ),
+                Markup.button.callback(
+                    EDIT_MAGIC_DEFENSE,
+                    `EDIT_MAGIC_DEFENSE:${item.id}`
+                ),
+            ]);
+
+            buttons.push([
                 Markup.button.callback(DELETE_ITEM, `DELETE_ITEM:${item.id}`),
             ]);
         }
@@ -424,13 +490,13 @@ export class ShopScene {
             ),
         ]);
         await ctx.deleteMessage();
-        const avatar = `${process.env.APP_API_URL}/Assets/images/items/${itemId}/${item.image}`;
+        const itemImage = `${process.env.APP_API_URL}/Assets/images/items/${itemId}/${item.image}`;
 
         await ctx.replyWithPhoto(
             {
                 source:
-                    fs.existsSync(avatar) && fs.lstatSync(avatar).isFile()
-                        ? avatar
+                    fs.existsSync(itemImage) && fs.lstatSync(itemImage).isFile()
+                        ? itemImage
                         : SHOP_IMAGE_PATH,
             },
             {
@@ -498,6 +564,190 @@ export class ShopScene {
         await ctx.scene.enter(ENUM_SCENES_ID.CREATE_OFFER_SCENE_ID);
     }
 
+    @Action(/^(BUY:.*)$/)
+    async buy(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const offerId = ctx.callbackQuery['data'].split(':')[1];
+        const page = ctx.callbackQuery['data'].split(':')[2];
+        await ctx.editMessageReplyMarkup({
+            inline_keyboard: [
+                [
+                    Markup.button.callback(
+                        'Да, я хочу купить этот предмет',
+                        `BUY_YES:${offerId}:${page}`
+                    ),
+                ],
+                [
+                    Markup.button.callback(
+                        'Я передумал покупать этот предмет',
+                        `BUY_NO:${offerId}:${page}`
+                    ),
+                ],
+            ],
+        });
+        /*await ctx.telegram.editMessageMedia(
+            ctx.chat?.id,
+            undefined,
+            undefined,
+            {
+                media:
+                    fs.existsSync(itemImage) &&
+                    fs.lstatSync(itemImage).isFile()
+                        ? itemImage
+                        : SHOP_IMAGE_PATH,
+                //     media: offers[offerIndex - 1].image,
+                type: 'photo',
+                caption:
+                    '',
+                parse_mode: 'HTML',
+            },
+            Markup.inlineKeyboard([
+                [
+                    Markup.button.callback(
+                        'Да, я хочу купить этот предмет',
+                        `BUY_YES:${offerId}:${page}`
+                    ),
+                ],
+                [
+                    Markup.button.callback(
+                        'Я передумал покупать этот предмет',
+                        `BUY_NO:${offerId}:${page}`
+                    ),
+                ],
+            ])
+        );*/
+    }
+
+    @Action(/^(BUY_YES:.*)$/)
+    async buyYes(@Ctx() ctx: BotContext, @Sender('id') tgId) {
+        await ctx.answerCbQuery();
+        const offerId = ctx.callbackQuery['data'].split(':')[1];
+        const page = ctx.callbackQuery['data'].split(':')[2];
+        const wallet = await this.walletService.findWalletByUserTgId(tgId);
+        const caption = await this.shopService.buy(offerId, tgId);
+        await ctx.reply(caption);
+    }
+
+    @Action(/^(BUY_NO:.*)$/)
+    async buyNo(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const offerId = ctx.callbackQuery['data'].split(':')[1];
+        const page = ctx.callbackQuery['data'].split(':')[2];
+        const offers = await this.equipmentItemService.findOffers({
+            path: '',
+            limit: 1,
+            page: page,
+        });
+        const { data, meta } = offers;
+        const { itemsPerPage, currentPage, totalPages, totalItems } = meta;
+        let offer: ShopEntity = null;
+        if (itemsPerPage == 1) {
+            offer = data[0];
+        }
+        const [caption, buttons] = showOffers(
+            offer,
+            currentPage,
+            totalPages,
+            totalItems
+        );
+        const itemImage = `${process.env.APP_API_URL}/Assets/images/items/${offer.item.id}/${offer.item.image}`;
+
+        const image =
+            fs.existsSync(itemImage) && fs.lstatSync(itemImage).isFile()
+                ? itemImage
+                : SHOP_IMAGE_PATH;
+        await ctx.editMessageMedia({
+            type: 'photo',
+            media: {
+                source: image,
+            },
+        });
+        await ctx.editMessageCaption(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(buttons),
+        });
+    }
+
+    @Action(/^(SHOP_NEXT_PAGE.*)$/)
+    async nextPage(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
+        const offers = await this.equipmentItemService.findOffers({
+            path: '',
+            limit: 1,
+            page: page,
+        });
+        const { data, meta } = offers;
+        console.log(page);
+        const { itemsPerPage, currentPage, totalPages, totalItems } = meta;
+        let offer: ShopEntity = null;
+        if (itemsPerPage == 1) {
+            offer = data[0];
+        }
+        const [caption, buttons] = showOffers(
+            offer,
+            currentPage,
+            totalPages,
+            totalItems
+        );
+        const itemImage = `${process.env.APP_API_URL}/Assets/images/items/${offer.item.id}/${offer.item.image}`;
+
+        const image =
+            fs.existsSync(itemImage) && fs.lstatSync(itemImage).isFile()
+                ? itemImage
+                : SHOP_IMAGE_PATH;
+        await ctx.editMessageMedia({
+            type: 'photo',
+            media: {
+                source: image,
+            },
+        });
+        await ctx.editMessageCaption(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(buttons),
+        });
+    }
+
+    @Action(/^(SHOP_PREVIOUS_PAGE.*)$/)
+    async previousPage(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
+        const offers = await this.equipmentItemService.findOffers({
+            path: '',
+            limit: 1,
+            page: page,
+        });
+        const { data, meta } = offers;
+        console.log(offers);
+        const { itemsPerPage, currentPage, totalPages, totalItems } = meta;
+        let offer: ShopEntity = null;
+        if (itemsPerPage == 1) {
+            offer = data[0];
+        }
+        const [caption, buttons] = showOffers(
+            offer,
+            currentPage,
+            totalPages,
+            totalItems
+        );
+        const itemImage = `${process.env.APP_API_URL}/Assets/images/items/${offer.item.id}/${offer.item.image}`;
+
+        const image =
+            fs.existsSync(itemImage) && fs.lstatSync(itemImage).isFile()
+                ? itemImage
+                : SHOP_IMAGE_PATH;
+        await ctx.editMessageMedia({
+            type: 'photo',
+            media: {
+                source: image,
+            },
+        });
+        await ctx.editMessageCaption(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(buttons),
+        });
+    }
+
     @Action(/^(DELETE_OFFER_BUTTON.*)$/)
     async deleteOffer(@Ctx() ctx: BotContext, @Sender() sender) {
         await ctx.answerCbQuery();
@@ -518,7 +768,7 @@ export class ShopScene {
         await ctx.scene.enter(ENUM_SCENES_ID.SHOPPING_DISTRICT_SCENE_ID);
     }
 
-    async showOffer(
+    async showOffer1(
         ctx: BotContext,
         offers: Paginated<ShopEntity>,
         offerIndex: number
@@ -532,14 +782,14 @@ export class ShopScene {
                 },
                 {
                     caption: 'Предложений пока нет.',
-                    ...Markup.inlineKeyboard([
+                    /*  ...Markup.inlineKeyboard([
                         [
                             Markup.button.callback(
                                 CREATE_OFFER_BUTTON,
                                 CREATE_OFFER_BUTTON
                             ),
                         ],
-                    ]),
+                    ]),*/
                 }
             );
         }
@@ -558,18 +808,33 @@ export class ShopScene {
                         callback_data: 'next_item',
                     },
                 ],
-                [{ text: 'Вернуться в меню', callback_data: 'open_menu' }],
             ],
         };
 
         inline_keyboard.inline_keyboard.unshift([
-            { text: 'Купить за деньги', callback_data: 'buy_with_money' },
+            {
+                text: 'Купить',
+                callback_data: `BUY:${data[offerIndex - 1].id}${offerIndex}`,
+            },
         ]);
 
+        //  const wallet = character.wallet;
+        const copperText = `${data[offerIndex - 1].copper} 🟤`;
+        const silverText = `${data[offerIndex - 1].silver} ⚪️`;
+        const electrumText = `${data[offerIndex - 1].electrum} 🔵`;
+        const goldTextText = `${data[offerIndex - 1].gold} 🟡`;
+        const platinumText = `${data[offerIndex - 1].platinum} 🪙`;
+        const price = `${platinumText} ${goldTextText} ${electrumText} ${silverText} ${copperText} \n`;
+
+        const itemImage = `${process.env.APP_API_URL}/Assets/images/items/${data[offerIndex - 1].item.id}/${data[offerIndex - 1].item.image}`;
         if (offerIndex == 1) {
             await ctx.replyWithPhoto(
                 {
-                    source: SHOP_IMAGE_PATH,
+                    source:
+                        fs.existsSync(itemImage) &&
+                        fs.lstatSync(itemImage).isFile()
+                            ? itemImage
+                            : SHOP_IMAGE_PATH,
                 },
                 {
                     caption:
@@ -577,11 +842,25 @@ export class ShopScene {
                         totalItems +
                         '</b> предложений:\n\n⌨ Название предмета: <b>' +
                         data[offerIndex - 1].item.name +
-                        '</b>\n👊🏼 Сила: <b> ' +
-                        '</b>\n💎 Цены: <b>' +
-                        +'</b>\n👚 Надевается в слот: <b>' +
-                        data[offerIndex - 1].item.bodyPart +
-                        '</b>\n📃 Описание: <b>' +
+                        '</b>\n💎 Категория: <b> ' +
+                        data[offerIndex - 1].item.category.name +
+                        '</b>\n💎 Редкость: <b> ' +
+                        convertRarityToText(data[offerIndex - 1].item.rarity) +
+                        '</b>\n👚 Слот: <b>' +
+                        convertBodyPartToText(
+                            data[offerIndex - 1].item.bodyPart
+                        ) +
+                        '</b>\n\n👊🏼 Физ. урон: <b> ' +
+                        data[offerIndex - 1].item.physicalAttackDamage +
+                        '</b>\n👊🏼 Маг. урон: <b> ' +
+                        data[offerIndex - 1].item.magicAttackDamage +
+                        '</b>\n🛡 Физ. защита: <b> ' +
+                        data[offerIndex - 1].item.physicalDefense +
+                        '</b>\n🛡 Маг. защита: <b> ' +
+                        data[offerIndex - 1].item.magicDefense +
+                        '</b>\n💴 Цена: <b>' +
+                        price +
+                        '</b>\n📃 Описание\n <b>' +
                         data[offerIndex - 1].item.description +
                         '</b>',
                     parse_mode: 'HTML',
@@ -594,7 +873,11 @@ export class ShopScene {
                 undefined,
                 undefined,
                 {
-                    media: SHOP_IMAGE_PATH,
+                    media:
+                        fs.existsSync(itemImage) &&
+                        fs.lstatSync(itemImage).isFile()
+                            ? itemImage
+                            : SHOP_IMAGE_PATH,
                     //     media: offers[offerIndex - 1].image,
                     type: 'photo',
                     caption:
@@ -603,7 +886,7 @@ export class ShopScene {
                         '</b> предложений:\n\n⌨ Название предмета: <b>' +
                         data[offerIndex - 1].item.name +
                         '</b>\n👊🏼 Сила: <b> ' +
-                        '</b>\n💎 Цены: <b>' +
+                        '</b>\n💎 Цена: <b>' +
                         +'</b>\n👚 Надевается в слот: <b>' +
                         data[offerIndex - 1].item.bodyPart +
                         '</b>\n📃 Описание: <b>' +

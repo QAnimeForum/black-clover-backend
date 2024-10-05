@@ -1,4 +1,4 @@
-import { Ctx, Hears, Scene, SceneEnter } from 'nestjs-telegraf';
+import { Action, Ctx, Hears, Scene, SceneEnter } from 'nestjs-telegraf';
 import { Inject, UseFilters } from '@nestjs/common';
 import { Markup } from 'telegraf';
 import { TelegrafExceptionFilter } from '../filters/tg-bot.filter';
@@ -35,6 +35,36 @@ export class HelpScene {
         }
     }
 
+    @Hears(KNOWLEGE_BASE_BUTTON)
+    async knowlegeBase(@Ctx() ctx: BotContext) {
+        const buttons = [];
+        buttons.push([Markup.button.callback('Найти предметы', 'FIND_ITEM')]);
+        buttons.push([
+            Markup.button.callback('Найти ресурсы', 'FIND_RESOURCES'),
+        ]);
+        buttons.push([
+            Markup.button.url(
+                'Share game 🎮',
+                `https://t.me/test434555_bot/?text=@test434555_bot #items`
+            ),
+            Markup.button.callback(
+                'Найти еду и напитки',
+                'FIND_FOOD_AND_DRINK'
+            ),
+        ]);
+        await ctx.reply(
+            'Здесь можно узнать информацию о монстрах, экипировке и ресурсах, существующих в этом мире. \nЧто ты хочешь найти?',
+            {
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard(buttons),
+            }
+        );
+    }
+
+    @Action('FIND_ITEM')
+    async findItem(@Ctx() ctx: BotContext) {
+        //  await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);
+    }
     @Hears(BACK_BUTTON)
     async home(@Ctx() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.HOME_SCENE_ID);

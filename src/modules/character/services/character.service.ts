@@ -21,7 +21,6 @@ import fs from 'fs';
 import { KNIGHT_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
 import { WalletService } from 'src/modules/money/wallet.service';
 import { EquipmentEntity } from 'src/modules/items/entity/equipment.entity';
-import { GrimoireEntity } from 'src/modules/grimoire/entity/grimoire.entity';
 import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 @Injectable()
 export class CharacterService {

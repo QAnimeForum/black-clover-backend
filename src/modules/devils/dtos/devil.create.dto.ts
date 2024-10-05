@@ -15,5 +15,9 @@ export class DevilCreateDto {
     rank: string;
     @ApiProperty({ example: 'магия гравитации' })
     @IsNotEmpty()
-    magic_type: string;
+    magicType: string;
+
+    @ApiProperty({ example: 'ссылка на фотографию' })
+    @IsNotEmpty()
+    image: string;
 }

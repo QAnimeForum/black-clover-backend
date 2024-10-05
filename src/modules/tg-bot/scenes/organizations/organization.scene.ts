@@ -42,7 +42,7 @@ export class OrganizationsScene {
                     parse_mode: 'HTML',
                     ...Markup.keyboard([
                         [GRIMOIRE_TOWER_BUTTON, SHOPPING_DISTRICT_BUTTON],
-                        [GARDEN_BUTTON, MINES_BUTTON],
+                      /*  [GARDEN_BUTTON, MINES_BUTTON],*/
                         [MAGIC_PARLAMENT_BUTTON, ARMED_FORCES_BUTTON],
                         [BACK_BUTTON],
                     ]).resize(),

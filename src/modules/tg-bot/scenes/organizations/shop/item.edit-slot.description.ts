@@ -41,7 +41,7 @@ export class ItemEditSlotDescriptionWizard {
                             Markup.button.callback(
                                 'Головной убор',
                                 'ENUM_BODY_PART:' +
-                                    ENUM_BODY_PART_ENUM.HEARDRESS
+                                    ENUM_BODY_PART_ENUM.HEADDRESS
                             ),
                             Markup.button.callback(
                                 'Броня',
@@ -61,8 +61,8 @@ export class ItemEditSlotDescriptionWizard {
                         ],
                         [
                             Markup.button.callback(
-                                'Кольцо',
-                                'ENUM_BODY_PART:' + ENUM_BODY_PART_ENUM.RING
+                                'Аксессуар',
+                                'ENUM_BODY_PART:' + ENUM_BODY_PART_ENUM.ACCESSORY
                             ),
                             Markup.button.callback(
                                 'Перчатки',
@@ -76,7 +76,7 @@ export class ItemEditSlotDescriptionWizard {
                             ),
                             Markup.button.callback(
                                 'Ботинки',
-                                'ENUM_BODY_PART:' + ENUM_BODY_PART_ENUM.SHOES
+                                'ENUM_BODY_PART:' + ENUM_BODY_PART_ENUM.FEET
                             ),
                         ],
                     ]),
