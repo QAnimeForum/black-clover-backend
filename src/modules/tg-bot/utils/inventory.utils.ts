@@ -212,9 +212,9 @@ export const showOffers = (
     }
 
     caption = showOffer(offer, totalItems);
-    buttons.push([
+   /* buttons.push([
         Markup.button.callback(`Купить`, `BUY:${offer.id}:${currentPage}`),
-    ]);
+    ]);*/
     if (currentPage == 1 && totalPages == 1) {
         buttons.push([
             Markup.button.callback(
