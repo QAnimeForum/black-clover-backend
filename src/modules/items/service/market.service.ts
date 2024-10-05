@@ -48,10 +48,10 @@ export class MarketService {
                 resolve(false);
             });
         }
-        this.inventoryService.addItemToInventory(
+      /*  this.inventoryService.addItemToInventory(
             offer[0].owner_id,
             offer[0].item_id
-        );
+        );*/
         await this.marketRepository.delete(offerId);
         return new Promise((resolve) => {
             resolve(true);

@@ -1,4 +1,11 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import { CharacterEntity } from '../../character/entity/character.entity';
 
 export enum ENUM_USER_PERMISSION_TYPE {
@@ -28,4 +35,11 @@ export class UserEntity {
         default: ENUM_USER_PERMISSION_TYPE.OPRDINARY,
     })
     type: ENUM_USER_PERMISSION_TYPE;
+
+    /* 
+     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;*/
 }

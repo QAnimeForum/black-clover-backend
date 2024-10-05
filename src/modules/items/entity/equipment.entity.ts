@@ -1,4 +1,5 @@
 import {
+    Column,
     CreateDateColumn,
     Entity,
     JoinColumn,
@@ -20,7 +21,14 @@ export class EquipmentEntity {
         name: 'cap_id',
         referencedColumnName: 'id',
     })
-    cap: EqupmentItemEntity;
+    headdress: EqupmentItemEntity;
+
+    @Column({
+        name: 'headdress_id',
+        type: 'uuid',
+        nullable: true,
+    })
+    headdressId: string;
 
     @ManyToOne(() => EqupmentItemEntity, { nullable: true })
     @JoinColumn({
@@ -29,12 +37,26 @@ export class EquipmentEntity {
     })
     armor: EqupmentItemEntity;
 
+    @Column({
+        name: 'armor_id',
+        type: 'uuid',
+        nullable: true,
+    })
+    armorId: string;
+
     @ManyToOne(() => EqupmentItemEntity, { nullable: true })
     @JoinColumn({
         name: 'cloak_id',
         referencedColumnName: 'id',
     })
     cloak: EqupmentItemEntity;
+
+    @Column({
+        name: 'cloak_id',
+        type: 'uuid',
+        nullable: true,
+    })
+    cloakId: string;
 
     @ManyToOne(() => EqupmentItemEntity, { nullable: true })
     @JoinColumn({
@@ -43,12 +65,26 @@ export class EquipmentEntity {
     })
     leftHand: EqupmentItemEntity;
 
+    @Column({
+        name: 'left_hand_id',
+        type: 'uuid',
+        nullable: true,
+    })
+    leftHandId: string;
+
     @ManyToOne(() => EqupmentItemEntity, { nullable: true })
     @JoinColumn({
         name: 'right_hand_id',
         referencedColumnName: 'id',
     })
     rightHand: EqupmentItemEntity;
+
+    @Column({
+        name: 'right_hand_id',
+        type: 'uuid',
+        nullable: true,
+    })
+    rightHandId: string;
 
     @ManyToOne(() => EqupmentItemEntity, { nullable: true })
     @JoinColumn({
@@ -57,19 +93,40 @@ export class EquipmentEntity {
     })
     gloves: EqupmentItemEntity;
 
-    @ManyToOne(() => EqupmentItemEntity, { nullable: true })
-    @JoinColumn({
-        name: 'shoes_id',
-        referencedColumnName: 'id',
+    @Column({
+        name: 'gloves_id',
+        type: 'uuid',
+        nullable: true,
     })
-    shoes: EqupmentItemEntity;
+    glovesId: string;
 
     @ManyToOne(() => EqupmentItemEntity, { nullable: true })
     @JoinColumn({
-        name: 'ring_id',
+        name: 'feet_id',
         referencedColumnName: 'id',
     })
-    ring: EqupmentItemEntity;
+    feet: EqupmentItemEntity;
+
+    @Column({
+        name: 'feet_id',
+        type: 'uuid',
+        nullable: true,
+    })
+    feetId: string;
+
+    @ManyToOne(() => EqupmentItemEntity, { nullable: true })
+    @JoinColumn({
+        name: 'accessory_id',
+        referencedColumnName: 'id',
+    })
+    accessory: EqupmentItemEntity;
+
+    @Column({
+        name: 'accessory_id',
+        type: 'uuid',
+        nullable: true,
+    })
+    accessoryId: string;
 
     @ManyToOne(() => EqupmentItemEntity, { nullable: true })
     @JoinColumn({
@@ -77,6 +134,13 @@ export class EquipmentEntity {
         referencedColumnName: 'id',
     })
     vehicle: VehicleEntity;
+
+    @Column({
+        name: 'vehicle_id',
+        type: 'uuid',
+        nullable: true,
+    })
+    vehicleId: string;
     /**
  * 
     @ManyToOne(() => EqupmentItemEntity)

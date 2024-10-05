@@ -12,7 +12,7 @@ import {
 import { ItemCategoryEntity } from './item.category.entity';
 import { ENUM_ITEM_RARITY } from '../constants/item.entity.enum';
 import { ENUM_BODY_PART_ENUM } from '../constants/body.part.enum';
-import { InventoryEqipmentItemsEntity } from './inventory.entity';
+import { InventoryEqipmentItemsEntity } from './inventory.eqipmentItems.entity';
 
 @Entity('equpment_item')
 export class EqupmentItemEntity {
@@ -64,9 +64,10 @@ export class EqupmentItemEntity {
     rarity: ENUM_ITEM_RARITY;
 
     @Column({
+        name: 'body_part',
         type: 'enum',
         enum: ENUM_BODY_PART_ENUM,
-        default: ENUM_BODY_PART_ENUM.NO,
+        default: ENUM_BODY_PART_ENUM.ACCESSORY,
     })
     bodyPart: ENUM_BODY_PART_ENUM;
 
@@ -148,10 +149,7 @@ export class EqupmentItemEntity {
     @Column({ name: 'jump', default: 0 })
     jump: number;
 
-    @OneToMany(
-        () => InventoryEqipmentItemsEntity,
-        (items) => items.equpmentItem
-    )
+    @OneToMany(() => InventoryEqipmentItemsEntity, (items) => items.inventory)
     inventoryEqipmentItems: InventoryEqipmentItemsEntity[];
 
     @ApiProperty()

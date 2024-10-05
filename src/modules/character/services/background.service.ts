@@ -117,6 +117,15 @@ export class BackgroundService {
         ).raw[0];
  */
     }
+
+
+    async countUsersFromState(stateId: string) {
+        return await this.backgroundRepository.count({
+            where: {
+                stateId: stateId,
+            }
+        });
+    }
     async findBackgroundByCharacterId(
         characterId: string
     ): Promise<BackgroundEntity> {

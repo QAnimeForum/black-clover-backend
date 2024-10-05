@@ -42,6 +42,10 @@ import {
 } from 'src/modules/tg-bot/utils/items.utils';
 import fs from 'fs';
 import { UserService } from 'src/modules/user/services/user.service';
+import { method } from 'lodash';
+import { showOffers } from 'src/modules/tg-bot/utils/inventory.utils';
+import { button } from 'telegraf/typings/markup';
+import { WalletService } from 'src/modules/money/wallet.service';
 @Scene(ENUM_SCENES_ID.SHOP_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class ShopScene {
@@ -49,7 +53,8 @@ export class ShopScene {
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
         private readonly equipmentItemService: EqupmentItemService,
         private readonly userService: UserService,
-        private readonly shopService: ShopService
+        private readonly shopService: ShopService,
+        private readonly walletService: WalletService,
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
@@ -125,9 +130,36 @@ export class ShopScene {
     async offers(@Ctx() ctx: BotContext) {
         const offers = await this.equipmentItemService.findOffers({
             path: '',
+            limit: 1,
+            page: 1,
         });
-        //const offers: Paginated<ShopEntity> = ;
-        await this.showOffer(ctx, offers, 1);
+        const { data, meta } = offers;
+        const { itemsPerPage, currentPage, totalPages, totalItems } = meta;
+        let offer: ShopEntity = null;
+        if (itemsPerPage == 1) {
+            offer = data[0];
+        }
+        const [caption, buttons] = showOffers(
+            offer,
+            currentPage,
+            totalPages,
+            totalItems
+        );
+        const itemImage = `${process.env.APP_API_URL}/Assets/images/items/${offer.item.id}/${offer.item.image}`;
+
+        await ctx.replyWithPhoto(
+            {
+                source:
+                    fs.existsSync(itemImage) && fs.lstatSync(itemImage).isFile()
+                        ? itemImage
+                        : SHOP_IMAGE_PATH,
+            },
+            {
+                caption: caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard(buttons),
+            }
+        );
     }
     @Hears(GOODS_BUTTON)
     async goodsButton(@Ctx() ctx: BotContext) {
@@ -386,7 +418,7 @@ export class ShopScene {
         caption += `<strong>Описание</strong>\n${item.description}\n`;
         const buttons = [];
         if (isAdmin) {
-            const isItemHasOffer = this.shopService.hasItemOffer(itemId);
+            const isItemHasOffer = await this.shopService.hasItemOffer(itemId);
             if (!isItemHasOffer) {
                 buttons.push([
                     Markup.button.callback(
@@ -458,13 +490,13 @@ export class ShopScene {
             ),
         ]);
         await ctx.deleteMessage();
-        const avatar = `${process.env.APP_API_URL}/Assets/images/items/${itemId}/${item.image}`;
+        const itemImage = `${process.env.APP_API_URL}/Assets/images/items/${itemId}/${item.image}`;
 
         await ctx.replyWithPhoto(
             {
                 source:
-                    fs.existsSync(avatar) && fs.lstatSync(avatar).isFile()
-                        ? avatar
+                    fs.existsSync(itemImage) && fs.lstatSync(itemImage).isFile()
+                        ? itemImage
                         : SHOP_IMAGE_PATH,
             },
             {
@@ -532,11 +564,188 @@ export class ShopScene {
         await ctx.scene.enter(ENUM_SCENES_ID.CREATE_OFFER_SCENE_ID);
     }
 
-    @Action(/^(BUY.*)$/)
+    @Action(/^(BUY:.*)$/)
     async buy(@Ctx() ctx: BotContext) {
         await ctx.answerCbQuery();
         const offerId = ctx.callbackQuery['data'].split(':')[1];
-        await ctx.reply('Покупка пока недоступна');
+        const page = ctx.callbackQuery['data'].split(':')[2];
+        await ctx.editMessageReplyMarkup({
+            inline_keyboard: [
+                [
+                    Markup.button.callback(
+                        'Да, я хочу купить этот предмет',
+                        `BUY_YES:${offerId}:${page}`
+                    ),
+                ],
+                [
+                    Markup.button.callback(
+                        'Я передумал покупать этот предмет',
+                        `BUY_NO:${offerId}:${page}`
+                    ),
+                ],
+            ],
+        });
+        /*await ctx.telegram.editMessageMedia(
+            ctx.chat?.id,
+            undefined,
+            undefined,
+            {
+                media:
+                    fs.existsSync(itemImage) &&
+                    fs.lstatSync(itemImage).isFile()
+                        ? itemImage
+                        : SHOP_IMAGE_PATH,
+                //     media: offers[offerIndex - 1].image,
+                type: 'photo',
+                caption:
+                    '',
+                parse_mode: 'HTML',
+            },
+            Markup.inlineKeyboard([
+                [
+                    Markup.button.callback(
+                        'Да, я хочу купить этот предмет',
+                        `BUY_YES:${offerId}:${page}`
+                    ),
+                ],
+                [
+                    Markup.button.callback(
+                        'Я передумал покупать этот предмет',
+                        `BUY_NO:${offerId}:${page}`
+                    ),
+                ],
+            ])
+        );*/
+    }
+
+    @Action(/^(BUY_YES:.*)$/)
+    async buyYes(@Ctx() ctx: BotContext, @Sender('id') tgId) {
+        await ctx.answerCbQuery();
+        const offerId = ctx.callbackQuery['data'].split(':')[1];
+        const page = ctx.callbackQuery['data'].split(':')[2];
+        const wallet = await this.walletService.findWalletByUserTgId(tgId);
+        const caption = await this.shopService.buy(offerId, tgId);
+        await ctx.reply(caption);
+    }
+
+    @Action(/^(BUY_NO:.*)$/)
+    async buyNo(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const offerId = ctx.callbackQuery['data'].split(':')[1];
+        const page = ctx.callbackQuery['data'].split(':')[2];
+        const offers = await this.equipmentItemService.findOffers({
+            path: '',
+            limit: 1,
+            page: page,
+        });
+        const { data, meta } = offers;
+        const { itemsPerPage, currentPage, totalPages, totalItems } = meta;
+        let offer: ShopEntity = null;
+        if (itemsPerPage == 1) {
+            offer = data[0];
+        }
+        const [caption, buttons] = showOffers(
+            offer,
+            currentPage,
+            totalPages,
+            totalItems
+        );
+        const itemImage = `${process.env.APP_API_URL}/Assets/images/items/${offer.item.id}/${offer.item.image}`;
+
+        const image =
+            fs.existsSync(itemImage) && fs.lstatSync(itemImage).isFile()
+                ? itemImage
+                : SHOP_IMAGE_PATH;
+        await ctx.editMessageMedia({
+            type: 'photo',
+            media: {
+                source: image,
+            },
+        });
+        await ctx.editMessageCaption(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(buttons),
+        });
+    }
+
+    @Action(/^(SHOP_NEXT_PAGE.*)$/)
+    async nextPage(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
+        const offers = await this.equipmentItemService.findOffers({
+            path: '',
+            limit: 1,
+            page: page,
+        });
+        const { data, meta } = offers;
+        console.log(page);
+        const { itemsPerPage, currentPage, totalPages, totalItems } = meta;
+        let offer: ShopEntity = null;
+        if (itemsPerPage == 1) {
+            offer = data[0];
+        }
+        const [caption, buttons] = showOffers(
+            offer,
+            currentPage,
+            totalPages,
+            totalItems
+        );
+        const itemImage = `${process.env.APP_API_URL}/Assets/images/items/${offer.item.id}/${offer.item.image}`;
+
+        const image =
+            fs.existsSync(itemImage) && fs.lstatSync(itemImage).isFile()
+                ? itemImage
+                : SHOP_IMAGE_PATH;
+        await ctx.editMessageMedia({
+            type: 'photo',
+            media: {
+                source: image,
+            },
+        });
+        await ctx.editMessageCaption(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(buttons),
+        });
+    }
+
+    @Action(/^(SHOP_PREVIOUS_PAGE.*)$/)
+    async previousPage(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const page = Number.parseInt(ctx.callbackQuery['data'].split(':')[1]);
+        const offers = await this.equipmentItemService.findOffers({
+            path: '',
+            limit: 1,
+            page: page,
+        });
+        const { data, meta } = offers;
+        console.log(offers);
+        const { itemsPerPage, currentPage, totalPages, totalItems } = meta;
+        let offer: ShopEntity = null;
+        if (itemsPerPage == 1) {
+            offer = data[0];
+        }
+        const [caption, buttons] = showOffers(
+            offer,
+            currentPage,
+            totalPages,
+            totalItems
+        );
+        const itemImage = `${process.env.APP_API_URL}/Assets/images/items/${offer.item.id}/${offer.item.image}`;
+
+        const image =
+            fs.existsSync(itemImage) && fs.lstatSync(itemImage).isFile()
+                ? itemImage
+                : SHOP_IMAGE_PATH;
+        await ctx.editMessageMedia({
+            type: 'photo',
+            media: {
+                source: image,
+            },
+        });
+        await ctx.editMessageCaption(caption, {
+            parse_mode: 'HTML',
+            ...Markup.inlineKeyboard(buttons),
+        });
     }
 
     @Action(/^(DELETE_OFFER_BUTTON.*)$/)
@@ -559,7 +768,7 @@ export class ShopScene {
         await ctx.scene.enter(ENUM_SCENES_ID.SHOPPING_DISTRICT_SCENE_ID);
     }
 
-    async showOffer(
+    async showOffer1(
         ctx: BotContext,
         offers: Paginated<ShopEntity>,
         offerIndex: number
@@ -603,7 +812,10 @@ export class ShopScene {
         };
 
         inline_keyboard.inline_keyboard.unshift([
-            { text: 'Купить', callback_data: `BUY:${data[offerIndex - 1].id}` },
+            {
+                text: 'Купить',
+                callback_data: `BUY:${data[offerIndex - 1].id}${offerIndex}`,
+            },
         ]);
 
         //  const wallet = character.wallet;
@@ -614,10 +826,15 @@ export class ShopScene {
         const platinumText = `${data[offerIndex - 1].platinum} 🪙`;
         const price = `${platinumText} ${goldTextText} ${electrumText} ${silverText} ${copperText} \n`;
 
+        const itemImage = `${process.env.APP_API_URL}/Assets/images/items/${data[offerIndex - 1].item.id}/${data[offerIndex - 1].item.image}`;
         if (offerIndex == 1) {
             await ctx.replyWithPhoto(
                 {
-                    source: SHOP_IMAGE_PATH,
+                    source:
+                        fs.existsSync(itemImage) &&
+                        fs.lstatSync(itemImage).isFile()
+                            ? itemImage
+                            : SHOP_IMAGE_PATH,
                 },
                 {
                     caption:
@@ -656,7 +873,11 @@ export class ShopScene {
                 undefined,
                 undefined,
                 {
-                    media: SHOP_IMAGE_PATH,
+                    media:
+                        fs.existsSync(itemImage) &&
+                        fs.lstatSync(itemImage).isFile()
+                            ? itemImage
+                            : SHOP_IMAGE_PATH,
                     //     media: offers[offerIndex - 1].image,
                     type: 'photo',
                     caption:

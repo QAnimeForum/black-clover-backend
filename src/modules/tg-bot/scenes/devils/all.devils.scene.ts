@@ -29,6 +29,7 @@ import {
     ADD_SPELL_BUTTON,
     BACK_BUTTON,
     DELETE_SPELL_BUTTON,
+    DEVIL_CREATE_BUTTON,
     DEVIL_FLOOR_1_BUTTON,
     DEVIL_FLOOR_2_BUTTON,
     DEVIL_FLOOR_3_BUTTON,
@@ -88,20 +89,62 @@ export class AllDevilsScene {
             selectedId: '',
         };
         if (chatType == 'private') {
+            const buttons = [];
+            buttons.push([
+                [DEVIL_TYPE_SORT_FLOOR_BUTTON, DEVIL_TYPE_SORT_RANK_BUTTON],
+                [BACK_BUTTON],
+            ]);
             await ctx.replyWithPhoto(
                 { source: DEVILS_IMAGE_PATH },
                 {
                     caption: `Вы попали в преисподнюю`,
                     parse_mode: 'HTML',
-                    ...Markup.keyboard([
-                        [
-                            DEVIL_TYPE_SORT_FLOOR_BUTTON,
-                            DEVIL_TYPE_SORT_RANK_BUTTON,
-                        ],
-                        [BACK_BUTTON],
-                    ]).resize(),
+                    ...Markup.keyboard(buttons).resize(),
                 }
             );
+            if (ctx.session.devilId) {
+                const devilId = ctx.session.devilId;
+                const devil = await this.devilService.findDevilById(devilId);
+                const caption = defilInformationToText(devil);
+                const buttons = [
+                    [
+                        Markup.button.callback(
+                            'Редактировать имя',
+                            `EDIT_NAME:${devilId}`
+                        ),
+                        Markup.button.callback(
+                            'Редактировать описание',
+                            `EDIT_DESCRIPTION:${devilId}`
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            'Редактировать этаж',
+                            `EDIT_FLOOR:${devilId}`
+                        ),
+                        Markup.button.callback(
+                            'Редактировать ранк',
+                            `EDIT_RANK:${devilId}`
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            BACK_BUTTON,
+                            `DEVIL_ID:${devilId}`
+                        ),
+                    ],
+                ];
+                await ctx.replyWithPhoto(
+                    {
+                        source: `${STATIC_IMAGE_BASE_PATH}${devil.image}`,
+                    },
+                    {
+                        caption: caption,
+                        parse_mode: 'HTML',
+                        ...Markup.inlineKeyboard(buttons),
+                    }
+                );
+            }
             if (ctx.session.editUnionSpellId) {
                 const buttons = [];
                 const isAdmin = await this.userService.isAdmin(
@@ -212,7 +255,7 @@ export class AllDevilsScene {
         }
     }
     @SceneEnter()
-    async enter(@Ctx() ctx: BotContext) {
+    async enter(@Ctx() ctx: BotContext, @Sender() sender) {
         // await this.showEntryButtons(ctx);
         ctx.scene.session.devilsList = {
             backStatus: ENUM_DEVIL_LIST_BACK_TYPE.BACK_TO_HOME,
@@ -267,16 +310,67 @@ export class AllDevilsScene {
                 );
                 ctx.session.devilCreateSpellDto.devilId = null;
                 ctx.session.devilCreateSpellDto.percent = null;
+            } else if (ctx.session.devilId) {
+                const devilId = ctx.session.devilId;
+                const devil = await this.devilService.findDevilById(devilId);
+                const caption = defilInformationToText(devil);
+                const isShowAdminButton = await this.userService.isAdmin(
+                    sender.id
+                );
+                const buttons = [
+                    [
+                        Markup.button.callback(
+                            'Редактировать имя',
+                            `EDIT_NAME:${devilId}`
+                        ),
+                        Markup.button.callback(
+                            'Редактировать описание',
+                            `EDIT_DESCRIPTION:${devilId}`
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            'Редактировать этаж',
+                            `EDIT_FLOOR:${devilId}`
+                        ),
+                        Markup.button.callback(
+                            'Редактировать ранк',
+                            `EDIT_RANK:${devilId}`
+                        ),
+                    ],
+                    [
+                        Markup.button.callback(
+                            BACK_BUTTON,
+                            `DEVIL_ID:${devilId}`
+                        ),
+                    ],
+                ];
+                await ctx.replyWithPhoto(
+                    {
+                        source: `${STATIC_IMAGE_BASE_PATH}${devil.image}`,
+                    },
+                    {
+                        caption: caption,
+                        parse_mode: 'HTML',
+                        ...Markup.inlineKeyboard(buttons),
+                    }
+                );
             } else {
+                const isShowAdminButton = await this.userService.isAdmin(
+                    sender.id
+                );
+                const buttons = [];
+                if (isShowAdminButton) {
+                    buttons.push([DEVIL_CREATE_BUTTON]);
+                }
+                buttons.push([DEVIL_LIST_BUTTON]);
+                buttons.push([BACK_BUTTON]);
                 await ctx.replyWithPhoto(
                     { source: DEVILS_IMAGE_PATH },
                     {
                         caption: `Вы попали в преисподнюю`,
                         parse_mode: 'HTML',
-                        ...Markup.keyboard([
-                            [DEVIL_LIST_BUTTON],
-                            [BACK_BUTTON],
-                        ]).resize(),
+                        ...Markup.keyboard(buttons).resize(),
                     }
                 );
             }
@@ -309,6 +403,7 @@ export class AllDevilsScene {
     @Hears(DEVIL_LIST_BUTTON)
     @Action(DEVIL_LIST_BUTTON)
     async showDevilList(@Ctx() ctx: BotContext) {
+        ctx.session.devilId = null;
         await ctx.deleteMessage();
         await ctx.replyWithPhoto(
             { source: DEVILS_IMAGE_PATH },
@@ -899,12 +994,42 @@ export class AllDevilsScene {
             ],
             [Markup.button.callback(BACK_BUTTON, `DEVIL_ID:${devilId}`)],
         ];
-
         await ctx.editMessageReplyMarkup({
             inline_keyboard: buttons,
         });
     }
 
+    @Action(/^EDIT_NAME:(.*)$/)
+    async editDevilName(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const devilId = await ctx.callbackQuery['data'].split(':')[1];
+        ctx.session.devilId = devilId;
+        await ctx.scene.enter(ENUM_SCENES_ID.DEVIL_EDIT_NAME_SCENE_ID);
+    }
+
+    @Action(/^EDIT_FLOOR:(.*)$/)
+    async editDevilFloor(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const devilId = await ctx.callbackQuery['data'].split(':')[1];
+        ctx.session.devilId = devilId;
+        await ctx.scene.enter(ENUM_SCENES_ID.DEVIL_EDIT_FLOOR_SCENE_ID);
+    }
+
+    @Action(/^EDIT_DESCRIPTION:(.*)$/)
+    async editDevilDescription(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const devilId = await ctx.callbackQuery['data'].split(':')[1];
+        ctx.session.devilId = devilId;
+        await ctx.scene.enter(ENUM_SCENES_ID.DEVIL_EDIT_DESCRIPTION_SCENE_ID);
+    }
+
+    @Action(/^EDIT_RANK:(.*)$/)
+    async editDevilRank(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        const devilId = await ctx.callbackQuery['data'].split(':')[1];
+        ctx.session.devilId = devilId;
+        await ctx.scene.enter(ENUM_SCENES_ID.DEVIL_EDIT_RANK_SCENE_ID);
+    }
     @Action(EDIT_SPELL_NAME_BUTTON)
     async editSpellName(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
@@ -957,5 +1082,10 @@ export class AllDevilsScene {
     async editSpellMinLevel(@Ctx() ctx: BotContext) {
         ctx.answerCbQuery();
         ctx.scene.enter(ENUM_SCENES_ID.EDIT_SPELL_MINIMAL_LEVEL_SCENE_ID);
+    }
+
+    @Hears(DEVIL_CREATE_BUTTON)
+    async createDevil(@Ctx() ctx: BotContext) {
+        await ctx.scene.enter(ENUM_SCENES_ID.DEVIL_CREATE_SCENE_ID);
     }
 }

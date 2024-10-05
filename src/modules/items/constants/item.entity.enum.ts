@@ -1,4 +1,5 @@
 export enum ENUM_ITEM_RARITY {
+    GARBAGE = 'GARBAGE',
     COMMON = 'COMMON',
     UNCOMMON = 'UNCOMMON',
     RARE = 'RARE',

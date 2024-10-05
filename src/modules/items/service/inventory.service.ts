@@ -2,17 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { EquipmentEntity } from '../entity/equipment.entity';
-import {
-    InventoryEntity,
-    InventoryEqipmentItemsEntity,
-} from '../entity/inventory.entity';
-import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import { InventoryEntity } from '../entity/inventory.entity';
+import { paginate, PaginateQuery } from 'nestjs-paginate';
 import { EqupmentItemEntity } from '../entity/equpment.item.entity';
-import { Inventory } from 'src/modules/character/domain/Inventory';
 import { VehicleEntity } from '../entity/vehicle.entity';
-import { ENUM_BODY_PART_ENUM } from '../constants/body.part.enum';
 import { EqupmentItemService } from './equipment.item.service';
 import { CharacterEntity } from 'src/modules/character/entity/character.entity';
+import { InventoryEqipmentItemsEntity } from '../entity/inventory.eqipmentItems.entity';
+import { ENUM_BODY_PART_ENUM } from '../constants/body.part.enum';
 @Injectable()
 export class InventoryService {
     constructor(
@@ -53,11 +50,95 @@ export class InventoryService {
     }
 
     public async findAllEquipmentItems(query: PaginateQuery) {
-        return paginate(query, this.invetororyEquipmentItemsRepository, {
+        const query1 = await this.connection
+            .query(`select equpment_item.id, equpment_item.name,  count(*) as count
+from inventory_equipment_items
+join equpment_item on equpment_item.id = inventory_equipment_items.equpment_item_id
+where inventory_equipment_items.inventory_id='f78fa4ab-a873-4603-a8e4-fe70ba6e2941'
+group by equpment_item.name, equpment_item.id
+order by  equpment_item.name;`);
+        /*   const queryBuilder = this.equipmentItemRepository
+            .createQueryBuilder('equipmentItem')
+            .innerJoinAndSelect("equipmentItem.metadata", "metadata")
+            .innerJoin(
+                'inventory_equipment_items.equpmentItem',
+                'equpmentItem',
+                'equpmentItem.id = inventory_equipment_items.equpmentItem.id'
+            );*/
+        const queryBuilder = await this.invetororyEquipmentItemsRepository
+            .createQueryBuilder('inventory_equipment_items')
+            .innerJoin('inventory_equipment_items.inventory', 'inventory')
+            .innerJoin('inventory_equipment_items.equpmentItem', 'equpmentItem')
+            .select('inventory_equipment_items.id')
+            .addSelect('equpmentItem.id')
+            .addSelect('equpmentItem.name')
+            .addSelect('inventory.id')
+            .addSelect('COUNT(*)', 'count')
+            .groupBy('inventory_equipment_items.id')
+            .addGroupBy('inventory.id')
+            .addGroupBy('equpmentItem.id')
+            .addGroupBy('equpmentItem.name')
+            .orderBy('equpmentItem.name');
+
+        console.log(query1);
+        // .groupBy('inventory_equipment_items.id');
+        /* const queryBuilder = this.invetororyEquipmentItemsRepository
+            .createQueryBuilder('inventory_equipment_items')
+            .innerJoin('inventory_equipment_items.inventory', 'inventory')
+            .innerJoin('inventory_equipment_items.equpmentItem', 'equpmentItem')
+            .select('inventory_equipment_items.id')
+            .addSelect('equpmentItem.id')
+            .addSelect('equpmentItem.name')
+            .addSelect('inventory.id')
+            .addSelect(
+                'COUNT(equpmentItem.id)',
+                'sum'
+            )
+            .addGroupBy('inventory.id')
+            .addGroupBy('equpmentItem.id');*/
+        //  .distinctOn(['equpmentItem.id'])
+        //.orderBy('equpmentItem.id')
+        /*     .groupBy('inventory_equipment_items.id')
+            .addGroupBy('inventory.id')
+            .addGroupBy('equpmentItem.id')
+            .addGroupBy('equpmentItem.name')*/ /* .groupBy('inventory_equipment_items.id')
+            .addGroupBy('inventory.id')
+            .addGroupBy('equpmentItem.id')
+            .addGroupBy('equpmentItem.name');*/
+        /**
+             *    .select('inventory_equipment_items')
+            .from(InventoryEqipmentItemsEntity, 'inventory_equipment_items')
+            .leftJoinAndMapMany(
+                'inventory_equipment_items.inventory_id',
+                InventoryEntity,
+                'inventory',
+                'inventory.id = inventory_equipment_items.inventory_id'
+            )
+            .leftJoinAndMapMany(
+                'inventory_equipment_items.equpment_item_id',
+                EqupmentItemEntity,
+                'equpment_item',
+                'equpment_item.id = inventory_equipment_items.equpment_item_id'
+            )
+             */
+        /*    .leftJoinAndMapMany(
+                'inventory_equipment_items.equpment_item_id',
+                EqupmentItemEntity,
+                'equpment_item',
+                'equpment_item.id = inventory_equipment_items.equpment_item_id'
+            )
+            .leftJoinAndMapMany(
+                'inventory_equipment_items.inventory_id',
+                InventoryEntity,
+                'inventory',
+                'inventory.id = inventory_equipment_items.inventory_id'
+            );*/
+        return paginate(query, queryBuilder, {
             sortableColumns: ['id'],
             nullSort: 'last',
             defaultSortBy: [['id', 'DESC']],
-            searchableColumns: [
+        });
+        /*            /*   searchableColumns: [
                 'id',
                 'inventory',
                 'inventory.id',
@@ -65,8 +146,8 @@ export class InventoryService {
                 'equpmentItem.id',
                 'equpmentItem.name',
                 'equpmentItem.bodyPart',
-            ],
-            select: [
+            ],*/
+          /*  select: [
                 'id',
                 'inventory',
                 'inventory.id',
@@ -74,14 +155,14 @@ export class InventoryService {
                 'equpmentItem.id',
                 'equpmentItem.name',
                 'equpmentItem.bodyPart',
+                'count',
             ],
             relations: ['inventory', 'equpmentItem'],
             filterableColumns: {
                 'equpmentItem.bodyPart': true,
                 inventory_id: true,
-            },
-        });
-        /*   await paginate<InventoryEntity>(query, queryBuilder, {
+            },*;/  
+        await paginate<InventoryEntity>(query, queryBuilder, {
             sortableColumns: ['id'],
             nullSort: 'last',
             defaultSortBy: [['id', 'DESC']],
@@ -107,16 +188,49 @@ export class InventoryService {
         });
     }
     async findEquipmentByTgId(tgUserId: string): Promise<EquipmentEntity> {
-        const query: string = `select equipment.* from equipment JOIN character ON equipment.id = character.equipment_id JOIN game_user on character.user_id = game_user.id  where game_user.tg_user_id = '${tgUserId}'`;
+        const character = await this.characterRepostiry.findOneBy({
+            user: {
+                tgUserId: tgUserId,
+            },
+        });
+        console.log(character);
+        return await this.equipomentRepository.findOne({
+            where: {
+                id: character.equipmentId,
+            },
+            relations: {
+                headdress: true,
+                armor: true,
+                cloak: true,
+                leftHand: true,
+                rightHand: true,
+                gloves: true,
+                feet: true,
+                accessory: true,
+                vehicle: true,
+            },
+        });
+        /*    const query: string = `select equipment.* from equipment JOIN character ON equipment.id = character.equipment_id JOIN game_user on character.user_id = game_user.id  where game_user.tg_user_id = '${tgUserId}'`;
         const equipments: Array<EquipmentEntity> =
             await this.equipomentRepository.query(query);
         if (equipments.length !== 1) {
             return;
-        }
-        return equipments[0];
+        }*.
+        return equipments[0];*/
     }
 
-    async findInventoryIdByTgId(tgUserId: string) {
+    async findItem(itemId: string) {
+        if (itemId === null) {
+            return null;
+        }
+        return await this.equipmentItemRepository.findOne({
+            where: {
+                id: itemId,
+            },
+        });
+    }
+
+    async findInventoryByTgId(tgUserId: string) {
         const character = await this.characterRepostiry.findOne({
             where: {
                 user: {
@@ -130,7 +244,7 @@ export class InventoryService {
         return character.inventory;
     }
 
-    async findInventoryByTgId(tgUserId: string): Promise<string> {
+    async findInventoryIdByTgId(tgUserId: string): Promise<string> {
         const query: string = `select inventory.* from inventory JOIN character ON inventory.id = character.inventory_id JOIN game_user on character.user_id = game_user.id  where game_user.tg_user_id = '${tgUserId}'`;
         const inventories = await this.equipomentRepository.query(query);
         if (inventories.length !== 1) {
@@ -140,15 +254,76 @@ export class InventoryService {
     }
 
     async addItemToInventory(
-        characterId: string,
+        transactionManager: EntityManager,
+        inventoryId: string,
         itemId: string
-    ): Promise<void> {
-        const inventory = await this.findInventoryByCharacterId(characterId);
-        await this.connection
+    ) {
+        const inventoryEqipmentItem = new InventoryEqipmentItemsEntity();
+        inventoryEqipmentItem.invetoryId = inventoryId;
+        inventoryEqipmentItem.equpmentItemId = itemId;
+        await transactionManager.save(inventoryEqipmentItem);
+        /* await this.connection
             .createQueryBuilder()
             .relation(InventoryEntity, 'items')
             .of(inventory)
-            .add(itemId);
+            .add(itemId);*/
+    }
+
+    async changeItemInInventory(
+        itemId: string,
+        slot: ENUM_BODY_PART_ENUM,
+        equipment: EquipmentEntity
+    ) {
+        switch (slot) {
+            case ENUM_BODY_PART_ENUM.ARMOR: {
+                await this.equipomentRepository.update(equipment.id, {
+                    armorId: itemId,
+                });
+                break;
+            }
+            case ENUM_BODY_PART_ENUM.CLOAK: {
+                await this.equipomentRepository.update(equipment.id, {
+                    cloakId: itemId,
+                });
+                break;
+            }
+            case ENUM_BODY_PART_ENUM.FEET: {
+                await this.equipomentRepository.update(equipment.id, {
+                    feetId: itemId,
+                });
+                break;
+            }
+            case ENUM_BODY_PART_ENUM.GLOVES: {
+                await this.equipomentRepository.update(equipment.id, {
+                    glovesId: itemId,
+                });
+                break;
+            }
+            case ENUM_BODY_PART_ENUM.HAND: {
+                await this.equipomentRepository.update(equipment.id, {
+                    leftHandId: itemId,
+                });
+                break;
+            }
+            case ENUM_BODY_PART_ENUM.TWO_HANDS: {
+                await this.equipomentRepository.update(equipment.id, {
+                    leftHandId: itemId,
+                });
+                break;
+            }
+            case ENUM_BODY_PART_ENUM.HEADDRESS: {
+                await this.equipomentRepository.update(equipment.id, {
+                    headdressId: itemId,
+                });
+                break;
+            }
+            case ENUM_BODY_PART_ENUM.ACCESSORY: {
+                await this.equipomentRepository.update(equipment.id, {
+                    accessoryId: itemId,
+                });
+                break;
+            }
+        }
     }
     /*
     async deleteItemFromInventory(characterId: string, itemId: string) {

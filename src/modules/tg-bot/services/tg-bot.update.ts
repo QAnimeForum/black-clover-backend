@@ -7,18 +7,28 @@ import {
     InlineQuery,
     Ctx,
 } from 'nestjs-telegraf';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { BotContext } from '../interfaces/bot.context';
 import { Markup, Telegraf } from 'telegraf';
 import { SAMPLE_SPELL_URL } from '../constants/images';
 import { ENUM_SCENES_ID } from '../constants/scenes.id.enum';
 import { InlineQueryResult } from 'telegraf/typings/core/types/typegram';
 import { SEARCH_OFFERS_BY_NAME_BUTTON } from '../constants/button-names.constant';
+import { ShopService } from 'src/modules/items/service/shop.service';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { EqupmentItemService } from 'src/modules/items/service/equipment.item.service';
 
 @Injectable()
 @Update()
 //export class TgBotUpdate extends Telegraf<BotContext> {
-export class TgBotUpdate extends Telegraf<BotContext> {
+//extends Telegraf<BotContext>
+export class TgBotUpdate {
+
+    constructor(
+        private readonly equipmentItemService: EqupmentItemService,
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    ) {}
+
     @Start()
     async onStart(@Context() ctx: BotContext) {
         await ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID);
@@ -35,8 +45,7 @@ export class TgBotUpdate extends Telegraf<BotContext> {
     }
     @Command('map')
     async map(@Context() ctx: BotContext) {
-        ctx.reply('карта пока недоступна');
-        //   await ctx.scene.enter(ENUM_SCENES_ID.map);
+    await ctx.scene.enter(ENUM_SCENES_ID.MAP_SCENE_ID);
     }
 
     @Command('spirits')
@@ -84,10 +93,15 @@ export class TgBotUpdate extends Telegraf<BotContext> {
             },
         });
     }
-    @InlineQuery('#wft')
+
+
+    @InlineQuery('#items')
     async searchByName(@Ctx() ctx: BotContext) {
+        console.log(ctx.inlineQuery);
         //    await ctx.scene.enter(ENUM_SCENES_ID.SEARCH_OFFERS_BY_NAME_SCENE_ID);
-        console.log('djckdvjkf');
+        const items = await this.equipmentItemService.findAllEquipmentItems({
+            path: '',
+        });
         const offers: Array<any> = [
             {
                 id: 'kvfvkvf',

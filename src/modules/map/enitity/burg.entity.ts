@@ -5,6 +5,7 @@ import {
     PrimaryGeneratedColumn,
     CreateDateColumn,
     UpdateDateColumn,
+    JoinColumn,
 } from 'typeorm';
 import { ProvinceEntity } from './province.entity';
 
@@ -28,7 +29,52 @@ export class BurgEntity {
     image: string;
 
     @ManyToOne(() => ProvinceEntity, (province) => province.burgs)
+    @JoinColumn({ name: 'province_id', referencedColumnName: 'id' })
     province: ProvinceEntity;
+
+    @Column({
+        name: 'province_id',
+        type: 'varchar',
+        nullable: true,
+    })
+    provinceId: string;
+
+    @Column({
+        name: 'is_captial',
+        type: 'boolean',
+        default: false,
+    })
+    isCaptial: boolean;
+
+    @Column({
+        name: 'has_port',
+        type: 'boolean',
+        default: false,
+    })
+    hasPort: boolean;
+
+    
+    @Column({
+        name: 'has_walls',
+        type: 'boolean',
+        default: false,
+    })
+    hasWalls: boolean;
+
+    @Column({
+        name: 'has_shopping_area',
+        type: 'boolean',
+        default: false,
+    })
+    hasShoppingArea: boolean;
+
+
+    @Column({
+        name: 'has_slum',
+        type: 'boolean',
+        default: false,
+    })
+    hasSlum: boolean;
 
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;

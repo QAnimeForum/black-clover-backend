@@ -104,7 +104,7 @@ export class EqupmentItemService {
             newItem.image = '';
             newItem.categoryId = '';
             newItem.rarity = ENUM_ITEM_RARITY.COMMON;
-            newItem.bodyPart = ENUM_BODY_PART_ENUM.NO;
+            newItem.bodyPart = ENUM_BODY_PART_ENUM.FEET;
             newItem.heal = 0;
             newItem.strength = 0;
             newItem.dexterity = 0;
@@ -189,6 +189,7 @@ export class EqupmentItemService {
                 'item.physicalDefense',
                 'item.magicAttackDamage',
                 'item.magicDefense',
+                'item.image',
             ],
             relations: ['item', 'item.category'],
         });

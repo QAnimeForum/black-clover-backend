@@ -10,9 +10,9 @@ import {
 } from 'typeorm';
 import { CharacterEntity } from './character.entity';
 import { AbilityEntity } from './ability.entity';
-import { ArmorClassEntity } from './armor.class.entity';
 import { SpeedEntity } from './speed.entity';
 import { ProficiencyEntity } from './proficiency.entity';
+import { ArmorClassEntity } from './armor.class.entity';
 @Entity('сharacter_сharacteristics')
 export class CharacterCharacteristicsEntity {
     @PrimaryGeneratedColumn('uuid')

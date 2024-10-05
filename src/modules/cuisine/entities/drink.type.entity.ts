@@ -16,6 +16,11 @@ export default class DrinkTypeEntity {
         type: 'varchar',
     })
     name: string;
+
+    @Column({
+        type: 'varchar',
+    })
+    drinkImage: string;
   /**
    *   @Column({
         type: 'varchar',

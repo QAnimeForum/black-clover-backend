@@ -7,7 +7,6 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 import { CharacterCharacteristicsEntity } from './character.characteristics.entity';
-import { ArmorEntity } from '../../items/entity/armor.entity';
 
 @Entity('armor_class')
 export class ArmorClassEntity {
@@ -24,8 +23,7 @@ export class ArmorClassEntity {
     bonus: number;
     @OneToOne(() => CharacterCharacteristicsEntity)
     characterCharacteristics: CharacterCharacteristicsEntity;
-    @OneToOne(() => ArmorEntity)
-    armor: ArmorEntity;
+
 
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;

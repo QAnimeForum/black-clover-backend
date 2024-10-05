@@ -50,7 +50,7 @@ export class CreateEquipmentItemWizard {
                 name: '',
                 description: '',
                 rarity: ENUM_ITEM_RARITY.COMMON,
-                body: ENUM_BODY_PART_ENUM.NO,
+                body: ENUM_BODY_PART_ENUM.ACCESSORY,
                 image: '',
                 categoryId: '',
                 physicalAttackDamage: 0,
@@ -168,7 +168,7 @@ export class CreateEquipmentItemWizard {
                             Markup.button.callback(
                                 'Головной убор',
                                 'ENUM_BODY_PART:' +
-                                    ENUM_BODY_PART_ENUM.HEARDRESS
+                                    ENUM_BODY_PART_ENUM.HEADDRESS
                             ),
                             Markup.button.callback(
                                 'Броня',
@@ -188,8 +188,8 @@ export class CreateEquipmentItemWizard {
                         ],
                         [
                             Markup.button.callback(
-                                'Кольцо',
-                                'ENUM_BODY_PART:' + ENUM_BODY_PART_ENUM.RING
+                                'Аксессуар',
+                                'ENUM_BODY_PART:' + ENUM_BODY_PART_ENUM.ACCESSORY
                             ),
                             Markup.button.callback(
                                 'Перчатки',
@@ -203,7 +203,7 @@ export class CreateEquipmentItemWizard {
                             ),
                             Markup.button.callback(
                                 'Ботинки',
-                                'ENUM_BODY_PART:' + ENUM_BODY_PART_ENUM.SHOES
+                                'ENUM_BODY_PART:' + ENUM_BODY_PART_ENUM.FEET
                             ),
                         ],
                     ]),

@@ -61,7 +61,7 @@ export const probmlemListButtons = (
                 ENUM_ACTION_NAMES.PAGE_ACTION
             ),
         ]);
-    } else if (currentPage == 1 && problems.meta.totalPages > 1) {
+    } else if (currentPage == 1 && totalPages > 1) {
         buttons.push([
             Markup.button.callback(
                 `${currentPage} из ${totalPages}`,
@@ -78,10 +78,7 @@ export const probmlemListButtons = (
                 `<<`,
                 `${ENUM_ACTION_NAMES.PROBLEMS_PREVIOUS_ACTION}${ENUM_ACTION_NAMES.DELIMITER}${currentPage - 1}`
             ),
-            Markup.button.callback(
-                `${problems.meta.currentPage} из ${problems.meta.totalPages}`,
-                `PAGE`
-            ),
+            Markup.button.callback(`${currentPage} из ${totalPages}`, `PAGE`),
         ]);
     } else {
         buttons.push([

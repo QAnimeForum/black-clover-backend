@@ -1,12 +1,13 @@
-export const MAX_LEVEL_CREATION_SPELLS = 5;
-export const MAX_COUNT_CREATION_SPELLS = 5;
+export const MAX_LEVEL_CREATION_SPELLS = 9;
+export const MAX_COUNT_CREATION_SPELLS = 9;
+export const MAX_COUNT_CREATION_DOUBLE_SPELLS = 11;
 
 export const MAX_LEVEL_HEALING_SPELLS = 4;
 export const MAX_COUNT_HEALING_SPELLS = 4;
 
 
-export const MAX_LEVEL_CURSES_SPELLS = 6;
-export const MAX_COUNT_CURSES_SPELLS = 6;
+export const MAX_LEVEL_CURSES_SPELLS = 7;
+export const MAX_COUNT_CURSES_SPELLS = 7;
 
 export const MAX_LEVEL_FORBIDDEN_SPELLS = 3;
 export const MAX_COUNT_FORBIDDEN_SPELLS = 3;

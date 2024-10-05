@@ -10,6 +10,7 @@ import { DevilUnionsPercentEnum } from 'src/modules/devils/constants/devil.union
 import { ENUM_ITEM_RARITY } from 'src/modules/items/constants/item.entity.enum';
 import { ENUM_BODY_PART_ENUM } from 'src/modules/items/constants/body.part.enum';
 import { EquipmentItemDto } from 'src/modules/items/dto/equipment.item.dto';
+import { DevilCreateDto } from 'src/modules/devils/dtos/devil.create.dto';
 
 export enum ENUM_DEVIL_LIST_BACK_TYPE {
     BACK_TO_HOME = 'BACK_TO_HOME',
@@ -38,4 +39,5 @@ export interface BotWizardSession extends Scenes.WizardSessionData {
         sortType: 'rank' | 'floor';
         selectedId: string;
     };
+    devil: DevilCreateDto;
 }

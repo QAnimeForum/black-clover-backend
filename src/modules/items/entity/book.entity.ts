@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
     Column,
     CreateDateColumn,
@@ -6,19 +7,28 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
-export class SchieldEntity {
+@Entity('book')
+export class BookEntity {
+    @ApiProperty()
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
+    @ApiProperty()
     @Column({
-        type: 'varchar',
+        length: 30,
+        unique: true,
     })
     name: string;
 
+    @ApiProperty()
+    @Column({ type: 'text' })
+    description: string;
+
+    @ApiProperty()
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;
 
+    @ApiProperty()
     @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
     updatedAt: Date;
 }
