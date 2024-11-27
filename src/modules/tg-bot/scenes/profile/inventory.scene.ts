@@ -19,7 +19,6 @@ import {
     REAL_ESTATE_BUTTON,
     RECIPIES_BUTTON,
     VEHICLES_BUTTON,
-
     WORKS_OF_ART_BUTTON,
 } from '../../constants/button-names.constant';
 import {
@@ -28,15 +27,15 @@ import {
     showInvnentoryStatistics,
 } from '../../utils/inventory.utils';
 import { ENUM_ACTION_NAMES } from '../../constants/action-names.constant';
-import { Paginated } from 'nestjs-paginate';
 import { ENUM_BODY_PART_ENUM } from 'src/modules/items/constants/body.part.enum';
-import { EquipmentEntity } from 'src/modules/items/entity/equipment.entity';
+import { EqupmentItemService } from 'src/modules/items/service/equipment.item.service';
 
 @Scene(ENUM_SCENES_ID.INVENTORY_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class InventoryScene {
     constructor(
         private readonly inventoryService: InventoryService,
+        private readonly equpmentItemService: EqupmentItemService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
@@ -153,18 +152,18 @@ export class InventoryScene {
         const equipment =
             await this.inventoryService.findEquipmentByTgId(tgUserId);
         const items = await this.inventoryService.findAllEquipmentItems({
-            path: '',
+            inventoryId: inventory.id,
+            bodyPart: currentSlot,
             page: 1,
             limit: 15,
-        /*    filter: {
+            /*    filter: {
                 'equpmentItem.bodyPart': `$eq:${currentSlot}`,
                 inventory_id: `$eq:${inventory.id}`,
             },*/
         });
-        console.log(items);
         let caption = '';
         const buttons = [];
-        if (items.data.length == 0) {
+        if (items.length == 0) {
             caption = 'У вас нет экипировки подходящего типа!';
         } else {
             caption += ` На вас надето: `;
@@ -174,7 +173,7 @@ export class InventoryScene {
                         const item = await this.inventoryService.findItem(
                             equipment.armorId
                         );
-                        caption += item?.name ?? '-';
+                        caption += item?.equpmentItem.name ?? '-';
                         buttons.push([
                             Markup.button.callback(
                                 'Снять предмет',
@@ -191,7 +190,7 @@ export class InventoryScene {
                         const item = await this.inventoryService.findItem(
                             equipment.cloakId
                         );
-                        caption += item?.name ?? '-';
+                        caption += item?.equpmentItem.name ?? '-';
                         buttons.push([
                             Markup.button.callback(
                                 'Снять предмет',
@@ -214,7 +213,7 @@ export class InventoryScene {
                                 `REMOVE_ITEM:${ENUM_BODY_PART_ENUM.FEET}`
                             ),
                         ]);
-                        caption += item?.name ?? '-';
+                        caption += item?.equpmentItem.name ?? '-';
                     } else {
                         caption += '-';
                     }
@@ -232,7 +231,7 @@ export class InventoryScene {
                                 `REMOVE_ITEM:${ENUM_BODY_PART_ENUM.GLOVES}`
                             ),
                         ]);
-                        caption += item?.name ?? '-';
+                        caption += item?.equpmentItem.name ?? '-';
                     } else {
                         caption += '-';
                     }
@@ -250,7 +249,7 @@ export class InventoryScene {
                                 `REMOVE_ITEM:${ENUM_BODY_PART_ENUM.HAND}`
                             ),
                         ]);
-                        caption += item?.name ?? '-';
+                        caption += item?.equpmentItem.name ?? '-';
                     } else {
                         caption += '-';
                     }
@@ -268,7 +267,7 @@ export class InventoryScene {
                                 `REMOVE_ITEM:${ENUM_BODY_PART_ENUM.TWO_HANDS}`
                             ),
                         ]);
-                        caption += item?.name ?? '-';
+                        caption += item?.equpmentItem.name ?? '-';
                     } else {
                         caption += '-';
                     }
@@ -286,7 +285,7 @@ export class InventoryScene {
                                 `REMOVE_ITEM:${ENUM_BODY_PART_ENUM.HEADDRESS}`
                             ),
                         ]);
-                        caption += item?.name ?? '-';
+                        caption += item?.equpmentItem.name ?? '-';
                     } else {
                         caption += '-';
                     }
@@ -304,7 +303,7 @@ export class InventoryScene {
                                 `REMOVE_ITEM:${ENUM_BODY_PART_ENUM.ACCESSORY}`
                             ),
                         ]);
-                        caption += item?.name ?? '-';
+                        caption += item?.equpmentItem.name ?? '-';
                     } else {
                         caption += '-';
                     }
@@ -321,13 +320,13 @@ export class InventoryScene {
                                 `REMOVE_ITEM:${equipment.id}:${ENUM_BODY_PART_ENUM.FEET}`
                             ),
                         ]);
-                        caption += item?.name ?? '-';
+                        caption += item?.equpmentItem.name ?? '-';
                     } else {
                         caption += '-';
                     }
                     break;
                 }
-             /**
+                /**
               *    case ENUM_BODY_PART_ENUM.VEHICLE: {
                     if (equipment.vehicle) {
                         const item = await this.inventoryService.findItem(
@@ -351,11 +350,11 @@ export class InventoryScene {
             }
             caption +=
                 '\n<strong>Выберите предмет, который вы хотите надеть:</strong>\n';
-           items.data.map((item, index) => {
-                caption += `${index + 1}) ${item.equpmentItem.name}\n`;
+            items.map((item, index) => {
+                //   caption += `${index + 1}) ${item.name}(${item.count})\n`;
                 buttons.push([
                     Markup.button.callback(
-                        `${item.equpmentItem.name}\n`,
+                        `${item.name}(${item.count})\n`,
                         `ADD_ITEM_TO_SLOT:${item.id}:${currentSlot}`
                     ),
                 ]);
@@ -375,81 +374,105 @@ export class InventoryScene {
 
     @Action(/^(ADD_ITEM_TO_SLOT:.*)$/)
     async addItemToSlot(@Ctx() ctx: BotContext, @Sender('id') tgUserId) {
-        await ctx.answerCbQuery();
+        // await ctx.answerCbQuery();
         const itemId = ctx.callbackQuery['data'].split(':')[1];
         const currentSlot =
             ENUM_BODY_PART_ENUM[ctx.callbackQuery['data'].split(':')[2]];
+        const item = await this.equpmentItemService.findItemById(itemId);
         const equipment =
             await this.inventoryService.findEquipmentByTgId(tgUserId);
         switch (currentSlot) {
             case ENUM_BODY_PART_ENUM.ARMOR: {
-                if (equipment.armor.id == itemId) {
-                    await ctx.reply('Вы пытаетесь заменить предмет на себя');
+                if (equipment?.armor?.equpmentItem.name == item.name) {
+                    await ctx.answerCbQuery(`${item.name} уже экипирован`, {
+                        show_alert: true,
+                    });
+                    return;
                 }
-
-                return;
             }
             case ENUM_BODY_PART_ENUM.CLOAK: {
-                if (equipment.cloak.id == itemId) {
-                    await ctx.reply('Вы пытаетесь заменить предмет на себя');
+                if (equipment?.cloak?.equpmentItem.name == item.name) {
+                    await ctx.answerCbQuery(`${item.name} уже экипирован`, {
+                        show_alert: true,
+                    });
+                    return;
                 }
-                return;
             }
             case ENUM_BODY_PART_ENUM.FEET: {
-                if (equipment.feet.id == itemId) {
-                    await ctx.reply('Вы пытаетесь заменить предмет на себя');
+                if (equipment?.feet?.equpmentItem.name == item.name) {
+                    await ctx.answerCbQuery(`${item.name} уже экипирован`, {
+                        show_alert: true,
+                    });
+                    return;
                 }
-                return;
             }
             case ENUM_BODY_PART_ENUM.GLOVES: {
-                if (equipment.gloves.id == itemId) {
-                    await ctx.reply('Вы пытаетесь заменить предмет на себя');
+                if (equipment?.gloves?.equpmentItem.name == item.name) {
+                    await ctx.answerCbQuery(`${item.name} уже экипирован`, {
+                        show_alert: true,
+                    });
+                    return;
                 }
-                return;
             }
             case ENUM_BODY_PART_ENUM.HAND: {
-                if (equipment.leftHand.id == itemId) {
-                    await ctx.reply('Вы пытаетесь заменить предмет на себя');
+                if (equipment?.leftHand?.equpmentItem.name == item.name) {
+                    await ctx.answerCbQuery(`${item.name} уже экипирован`, {
+                        show_alert: true,
+                    });
+                    return;
                 }
-                return;
             }
             case ENUM_BODY_PART_ENUM.TWO_HANDS: {
-                if (equipment.leftHand.id == itemId) {
-                    await ctx.reply('Вы пытаетесь заменить предмет на себя');
+                if (equipment?.leftHand?.equpmentItem.name == item.name) {
+                    await ctx.answerCbQuery(`${item.name} уже экипирован`, {
+                        show_alert: true,
+                    });
+                    return;
                 }
-                if (equipment.rightHand.id == itemId) {
-                    await ctx.reply('Вы пытаетесь заменить предмет на себя');
+                if (equipment?.rightHand?.equpmentItem.name == item.name) {
+                    await ctx.answerCbQuery(`${item.name} уже экипирован`, {
+                        show_alert: true,
+                    });
+                    return;
                 }
-                return;
             }
             case ENUM_BODY_PART_ENUM.HEADDRESS: {
-                if (equipment.headdress.id == itemId) {
-                    await ctx.reply('Вы пытаетесь заменить предмет на себя');
+                if (equipment?.headdress?.equpmentItem.name == item.name) {
+                    await ctx.answerCbQuery(`${item.name} уже экипирован`, {
+                        show_alert: true,
+                    });
+                    return;
                 }
-                return;
             }
             case ENUM_BODY_PART_ENUM.ACCESSORY: {
-                if (equipment.accessory.id == itemId) {
-                    await ctx.reply('Вы пытаетесь заменить предмет на себя');
+                if (equipment?.accessory?.equpmentItem.name == item.name) {
+                    await ctx.answerCbQuery(`${item.name} уже экипирован`, {
+                        show_alert: true,
+                    });
+                    return;
                 }
-                return;
             }
             case ENUM_BODY_PART_ENUM.FEET: {
-                if (equipment.feet.id == itemId) {
-                    await ctx.reply('Вы пытаетесь заменить предмет на себя');
+                if (equipment?.feet?.equpmentItem.name == item.name) {
+                    await ctx.answerCbQuery(`${item.name} уже экипирован`, {
+                        show_alert: true,
+                    });
+                    return;
                 }
-                return;
             }
-         /**
+            default:
+                await ctx.answerCbQuery();
+
+            /**
           *    case ENUM_BODY_PART_ENUM.VEHICLE: {
                 if (equipment.vehicle.id == itemId) {
-                    await ctx.reply('Вы пытаетесь заменить предмет на себя');
+                    await ctx.reply(`уже экипирован`);
                 }
                 return;
             }
           */
         }
-        await this.inventoryService.changeItemInInventory(
+        const result = await this.inventoryService.changeItemInInventory(
             itemId,
             currentSlot,
             equipment
@@ -464,12 +487,11 @@ export class InventoryScene {
             ENUM_BODY_PART_ENUM[ctx.callbackQuery['data'].split(':')[1]];
         const equipment =
             await this.inventoryService.findEquipmentByTgId(tgUserId);
-        const inventory = await this.inventoryService.changeItemInInventory(
+        await this.inventoryService.changeItemInInventory(
             null,
             currentSlot,
             equipment
-        );
-        console.log(inventory);
+        );  
         await this.chooseItem(ctx, tgUserId, currentSlot);
     }
 

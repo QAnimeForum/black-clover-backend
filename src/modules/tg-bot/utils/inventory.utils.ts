@@ -14,14 +14,8 @@ import {
 } from '../constants/button-names.constant';
 import { INVENTORY_IMAGE_PATH } from '../constants/images';
 import { ShopEntity } from 'src/modules/items/entity/shop.entity';
-import {
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-} from 'telegraf/typings/core/types/typegram';
+import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
 import { convertRarityToText, convertBodyPartToText } from './items.utils';
-import fs from 'fs';
-import { Paginated } from 'nestjs-paginate';
-import { EqupmentItemEntity } from 'src/modules/items/entity/equpment.item.entity';
 export const equipmentToText = (
     equipmentEntity: EquipmentEntity,
     username: string
@@ -32,23 +26,23 @@ export const equipmentToText = (
     const title = '<strong><u>Надетая экипировка</u></strong>\n\n';
     caption += title;
 
-    const headdressBlock = `🎩 Головной убор: ${equipmentEntity.headdress ? equipmentEntity.headdress.name : '-'}\n`;
+    const headdressBlock = `🎩 Головной убор: ${equipmentEntity.headdress ? equipmentEntity.headdress.equpmentItem.name : '-'}\n`;
     caption += headdressBlock;
-    const armorBlock = `🎽 Доспех: ${equipmentEntity.armor ? equipmentEntity.armor.name : '-'}\n`;
+    const armorBlock = `🎽 Доспех: ${equipmentEntity.armor ? equipmentEntity.armor.equpmentItem.name : '-'}\n`;
     caption += armorBlock;
-    const cloakBlock = `🧥 Плащ: ${equipmentEntity.cloak ? equipmentEntity.cloak.name : '-'}\n`;
+    const cloakBlock = `🧥 Плащ: ${equipmentEntity.cloak ? equipmentEntity.cloak.equpmentItem.name : '-'}\n`;
     caption += cloakBlock;
-    const leftHandBlock = `🤛🏼 Левая рука: ${equipmentEntity.leftHand ? equipmentEntity.leftHand.name : '-'}\n`;
+    const leftHandBlock = `🤛🏼 Левая рука: ${equipmentEntity.leftHand ? equipmentEntity.leftHand.equpmentItem.name : '-'}\n`;
     caption += leftHandBlock;
-    const rightHandBlock = `🤜🏼 Правая рука: ${equipmentEntity.rightHand ? equipmentEntity.rightHand.name : '-'}\n`;
+    const rightHandBlock = `🤜🏼 Правая рука: ${equipmentEntity.rightHand ? equipmentEntity.rightHand.equpmentItem.name : '-'}\n`;
     caption += rightHandBlock;
-    const glovesBlock = `🧤 Перчатки: ${equipmentEntity.gloves ? equipmentEntity.gloves.name : '-'}\n`;
+    const glovesBlock = `🧤 Перчатки: ${equipmentEntity.gloves ? equipmentEntity.gloves.equpmentItem.name : '-'}\n`;
     caption += glovesBlock;
-    const shoesBlock = `🥾Обувь: ${equipmentEntity.feet ? equipmentEntity.feet.name : '-'}\n`;
+    const shoesBlock = `🥾Обувь: ${equipmentEntity.feet ? equipmentEntity.feet.equpmentItem.name : '-'}\n`;
     caption += shoesBlock;
-    const ringBlock = `💍 Аксессуар: ${equipmentEntity.accessory ? equipmentEntity.accessory.name : '-'}\n`;
+    const ringBlock = `💍 Аксессуар: ${equipmentEntity.accessory ? equipmentEntity.accessory.equpmentItem.name : '-'}\n`;
     caption += ringBlock;
-    const vehicleBlock = `🧹 Средство передедвижения: ${equipmentEntity.vehicle ? equipmentEntity.vehicle.name : '-'}\n`;
+    const vehicleBlock = `🧹 Средство передедвижения: ${equipmentEntity.vehicle ? equipmentEntity.vehicle.equpmentItem.name : '-'}\n`;
     caption += vehicleBlock;
     /*  const helmetBlock = `🪖 Шлем: ${equipmentEntity?.helmet ? equipmentEntity.helmet.name : '-'}\n`;
     caption += helmetBlock;
@@ -196,6 +190,7 @@ export const showInvnentoryStatistics = async (
 
 export const showOffers = (
     offer: ShopEntity | null,
+    isUserHasEquipmentItem: boolean,
     currentPage: number,
     totalPages: number,
     totalItems: number
@@ -211,10 +206,10 @@ export const showOffers = (
         return [caption, buttons];
     }
 
-    caption = showOffer(offer, totalItems);
-   /* buttons.push([
+    caption = showOffer(offer, isUserHasEquipmentItem, totalItems);
+    buttons.push([
         Markup.button.callback(`Купить`, `BUY:${offer.id}:${currentPage}`),
-    ]);*/
+    ]);
     if (currentPage == 1 && totalPages == 1) {
         buttons.push([
             Markup.button.callback(
@@ -257,7 +252,11 @@ export const showOffers = (
     return [caption, buttons];
 };
 
-const showOffer = (offer: ShopEntity, totalItems: number) => {
+const showOffer = (
+    offer: ShopEntity,
+    isUserHasEquipmentItem,
+    totalItems: number
+) => {
     const copperText = `${offer.copper} 🟤`;
     const silverText = `${offer.silver} ⚪️`;
     const electrumText = `${offer.electrum} 🔵`;
@@ -265,7 +264,7 @@ const showOffer = (offer: ShopEntity, totalItems: number) => {
     const platinumText = `${offer.platinum} 🪙`;
     const price = `${platinumText} ${goldTextText} ${electrumText} ${silverText} ${copperText} \n`;
 
-    const caption =
+    let caption =
         '🛍️ Для вас сегодня есть <b>' +
         totalItems +
         '</b> предложений:\n\n⌨ Название предмета: <b>' +
@@ -286,8 +285,11 @@ const showOffer = (offer: ShopEntity, totalItems: number) => {
         offer.item.magicDefense +
         '</b>\n💴 Цена: <b>' +
         price +
-        '</b>\n📃 Описание\n <b>' +
+        '</b>\n<b>📃 Описание\n</b>' +
         offer.item.description +
-        '</b>';
+        '\n';
+    if (isUserHasEquipmentItem) {
+        caption += `<b>У вас уже есть этот предмет</b>`;
+    }
     return caption;
 };

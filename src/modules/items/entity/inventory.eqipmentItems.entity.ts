@@ -4,7 +4,6 @@ import {
     JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
-    RelationCount,
 } from 'typeorm';
 import { EqupmentItemEntity } from './equpment.item.entity';
 import { InventoryEntity } from './inventory.entity';
@@ -35,5 +34,4 @@ export class InventoryEqipmentItemsEntity {
         name: 'equpment_item_id',
     })
     public equpmentItemId: string;
-    
 }

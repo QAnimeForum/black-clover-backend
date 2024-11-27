@@ -42,6 +42,14 @@ export class ProvinceEntity {
     @JoinColumn({ name: 'state_id', referencedColumnName: 'id' })
     state: StateEntity;
 
+    @Column({
+        name: 'state_id',
+        type: 'varchar',
+        nullable: true,
+    })
+    stateId: string;
+
+
     @ManyToOne(() => ProvinceFormEntity, (form) => form.provinces)
     @JoinColumn({ name: 'form_id', referencedColumnName: 'id' })
     form: ProvinceFormEntity;

@@ -3,14 +3,12 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
     Tree,
     TreeChildren,
     TreeParent,
 } from 'typeorm';
-import { EquipmentEntity } from './equipment.entity';
 import { EqupmentItemEntity } from './equpment.item.entity';
 @Entity('item_category')
 @Tree('closure-table')

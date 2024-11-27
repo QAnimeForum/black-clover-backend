@@ -10,7 +10,6 @@ import { FilterOperator, paginate, PaginateQuery } from 'nestjs-paginate';
 import { MoneyDto } from 'src/modules/money/dto/money.dto';
 import { categories } from 'Assets/json/items/categories.json';
 import { ItemCategoryEntity } from '../entity/item.category.entity';
-import { throws } from 'assert';
 @Injectable()
 export class ShopService {
     constructor(
@@ -57,8 +56,7 @@ export class ShopService {
         newOffer.gold = dto.gold;
         newOffer.electrum = dto.electrum;
         newOffer.platinum = dto.platinum;
-        newOffer.isActvie = true;
-        console.log(newOffer);
+        newOffer.isActive = true;
         return this.shopRepository.save(newOffer);
     }
 
@@ -96,7 +94,7 @@ export class ShopService {
             id: offerId,
         });
         if (result.length) {
-            return result[0].isActvie;
+            return result[0].isActive;
         } else {
             throw Error('No offer with such id');
         }
@@ -107,7 +105,7 @@ export class ShopService {
             id: offerId,
         });
         if (result.length) {
-            this.shopRepository.update(offerId, { isActvie: false });
+            this.shopRepository.update(offerId, { isActive: false });
         } else {
             throw Error('No offer with such id');
         }

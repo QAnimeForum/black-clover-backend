@@ -13,6 +13,7 @@ import { VehicleEntity } from '../../items/entity/vehicle.entity';
 import { GearEntity } from '../../items/entity/gear.entity';
 import { DrinkEntity } from '../../cuisine/entities/drink.entity';
 import { InventoryEqipmentItemsEntity } from './inventory.eqipmentItems.entity';
+import { DrinkInventoryEntity } from './drink.inventory.entity';
 @Entity('inventory')
 export class InventoryEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -67,6 +68,10 @@ export class InventoryEntity {
     @JoinTable({
         name: 'inventory_eqipment_items',
     })*/
+
+    @OneToMany(() => DrinkInventoryEntity, (items) => items.drink)
+    drinks: DrinkInventoryEntity[];
+
     @OneToMany(() => InventoryEqipmentItemsEntity, (items) => items.inventory)
     inventoryEqipmentItems: InventoryEqipmentItemsEntity[];
 

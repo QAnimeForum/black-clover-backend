@@ -503,7 +503,7 @@ export class CreateEquipmentItemWizard {
             );
             await this.equipmentItemService.create(ctx.scene.session.item);
             ctx.scene.session.item = null;
-            ctx.scene.enter(ENUM_SCENES_ID.SHOP_SCENE_ID);
+            ctx.scene.enter(ENUM_SCENES_ID.ADMIN_ITEMS_SCENE_ID);
         });
         return composer;
     }
