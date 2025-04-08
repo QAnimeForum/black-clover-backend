@@ -10,18 +10,19 @@ import {
 
 import { VehicleEntity } from './vehicle.entity';
 import { EqupmentItemEntity } from './equpment.item.entity';
+import { InventoryEqipmentItemsEntity } from './inventory.eqipmentItems.entity';
 
 @Entity('equipment')
 export class EquipmentEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => EqupmentItemEntity, { nullable: true })
+    @ManyToOne(() => InventoryEqipmentItemsEntity, { nullable: true })
     @JoinColumn({
         name: 'cap_id',
         referencedColumnName: 'id',
     })
-    headdress: EqupmentItemEntity;
+    headdress: InventoryEqipmentItemsEntity;
 
     @Column({
         name: 'headdress_id',
@@ -30,12 +31,12 @@ export class EquipmentEntity {
     })
     headdressId: string;
 
-    @ManyToOne(() => EqupmentItemEntity, { nullable: true })
+    @ManyToOne(() => InventoryEqipmentItemsEntity, { nullable: true })
     @JoinColumn({
         name: 'armor_id',
         referencedColumnName: 'id',
     })
-    armor: EqupmentItemEntity;
+    armor: InventoryEqipmentItemsEntity;
 
     @Column({
         name: 'armor_id',
@@ -44,12 +45,12 @@ export class EquipmentEntity {
     })
     armorId: string;
 
-    @ManyToOne(() => EqupmentItemEntity, { nullable: true })
+    @ManyToOne(() => InventoryEqipmentItemsEntity, { nullable: true })
     @JoinColumn({
         name: 'cloak_id',
         referencedColumnName: 'id',
     })
-    cloak: EqupmentItemEntity;
+    cloak: InventoryEqipmentItemsEntity;
 
     @Column({
         name: 'cloak_id',
@@ -58,12 +59,12 @@ export class EquipmentEntity {
     })
     cloakId: string;
 
-    @ManyToOne(() => EqupmentItemEntity, { nullable: true })
+    @ManyToOne(() => InventoryEqipmentItemsEntity, { nullable: true })
     @JoinColumn({
         name: 'left_hand_id',
         referencedColumnName: 'id',
     })
-    leftHand: EqupmentItemEntity;
+    leftHand: InventoryEqipmentItemsEntity;
 
     @Column({
         name: 'left_hand_id',
@@ -72,12 +73,12 @@ export class EquipmentEntity {
     })
     leftHandId: string;
 
-    @ManyToOne(() => EqupmentItemEntity, { nullable: true })
+    @ManyToOne(() => InventoryEqipmentItemsEntity, { nullable: true })
     @JoinColumn({
         name: 'right_hand_id',
         referencedColumnName: 'id',
     })
-    rightHand: EqupmentItemEntity;
+    rightHand: InventoryEqipmentItemsEntity;
 
     @Column({
         name: 'right_hand_id',
@@ -86,12 +87,12 @@ export class EquipmentEntity {
     })
     rightHandId: string;
 
-    @ManyToOne(() => EqupmentItemEntity, { nullable: true })
+    @ManyToOne(() => InventoryEqipmentItemsEntity, { nullable: true })
     @JoinColumn({
         name: 'gloves_id',
         referencedColumnName: 'id',
     })
-    gloves: EqupmentItemEntity;
+    gloves: InventoryEqipmentItemsEntity;
 
     @Column({
         name: 'gloves_id',
@@ -100,13 +101,12 @@ export class EquipmentEntity {
     })
     glovesId: string;
 
-    @ManyToOne(() => EqupmentItemEntity, { nullable: true })
+    @ManyToOne(() => InventoryEqipmentItemsEntity, { nullable: true })
     @JoinColumn({
         name: 'feet_id',
         referencedColumnName: 'id',
     })
-    feet: EqupmentItemEntity;
-
+    feet: InventoryEqipmentItemsEntity;
     @Column({
         name: 'feet_id',
         type: 'uuid',
@@ -114,12 +114,12 @@ export class EquipmentEntity {
     })
     feetId: string;
 
-    @ManyToOne(() => EqupmentItemEntity, { nullable: true })
+    @ManyToOne(() => InventoryEqipmentItemsEntity, { nullable: true })
     @JoinColumn({
         name: 'accessory_id',
         referencedColumnName: 'id',
     })
-    accessory: EqupmentItemEntity;
+    accessory: InventoryEqipmentItemsEntity;
 
     @Column({
         name: 'accessory_id',
@@ -128,12 +128,12 @@ export class EquipmentEntity {
     })
     accessoryId: string;
 
-    @ManyToOne(() => EqupmentItemEntity, { nullable: true })
+    @ManyToOne(() => InventoryEqipmentItemsEntity, { nullable: true })
     @JoinColumn({
         name: 'vehicle_id',
         referencedColumnName: 'id',
     })
-    vehicle: VehicleEntity;
+    vehicle: InventoryEqipmentItemsEntity;
 
     @Column({
         name: 'vehicle_id',

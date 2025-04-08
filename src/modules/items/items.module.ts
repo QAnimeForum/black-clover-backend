@@ -24,13 +24,18 @@ import { ShopEntity } from './entity/shop.entity';
 import { CharacterEntity } from '../character/entity/character.entity';
 import { InventoryEqipmentItemsEntity } from './entity/inventory.eqipmentItems.entity';
 import { BookEntity } from './entity/book.entity';
+import { ResourceEntity } from './entity/resource.entity';
+import { ResourceCategoryEntity } from './entity/resource.category.entity';
+import {  ResourceService } from './service/resource.service';
+import { DrinkInventoryEntity } from './entity/drink.inventory.entity';
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             EqupmentItemEntity,
             InventoryEntity,
             ItemCategoryEntity,
-
+            ResourceEntity,
+            ResourceCategoryEntity,
             ClothesEntity,
             HouseEnity,
             GearEntity,
@@ -41,6 +46,7 @@ import { BookEntity } from './entity/book.entity';
             ShopEntity,
             CharacterEntity,
             InventoryEqipmentItemsEntity,
+            DrinkInventoryEntity,
             BookEntity,
         ]),
         MoneyModule,
@@ -55,6 +61,7 @@ import { BookEntity } from './entity/book.entity';
         EqupmentItemService,
         MarketService,
         ShopService,
+        ResourceService,
     ],
     exports: [
         ClothesService,
@@ -65,6 +72,7 @@ import { BookEntity } from './entity/book.entity';
         EqupmentItemService,
         MarketService,
         ShopService,
+        ResourceService,
     ],
 })
 export class ItemsModule {}

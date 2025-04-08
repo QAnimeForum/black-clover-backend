@@ -17,11 +17,14 @@ export interface BotSession extends Scenes.WizardSession<BotWizardSession> {
     armedForcesId: string;
     problemId: string;
     itemId: string;
+    adminDrinkIdForEdit: string;
     user: UserEntity;
     devilPaginateQuery: PaginateQuery;
+    selectedBarId: string;
+    adminMenuId: string;
+    adminSpellId: string | null;
     adminGrimoireId: string | null;
     characterIdForChangeRaceAndState: string | null;
-    adminSpellId: string | null;
     spellEdit: {
         grimoireId: string | null;
         spellId: string | null;
@@ -35,5 +38,5 @@ export interface BotSession extends Scenes.WizardSession<BotWizardSession> {
         currentState: StateEntity;
         currentRegion: ProvinceEntity;
         currentCity: BurgEntity;
-    }
+    };
 }

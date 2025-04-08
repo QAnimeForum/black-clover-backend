@@ -1,5 +1,5 @@
-import { Action, Ctx, Hears, Scene, SceneEnter, Sender } from 'nestjs-telegraf';
-import { KNIGHT_IMAGE_PATH } from '../../constants/images';
+import { Action, Ctx, Hears, Scene, SceneEnter } from 'nestjs-telegraf';
+import { BAR_IMAGE_PATH, ORGANIZATIONS_IMAGE_PATH } from '../../constants/images';
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
 import { BotContext } from '../../interfaces/bot.context';
 import { Inject, UseFilters } from '@nestjs/common';
@@ -18,6 +18,7 @@ import {
     MINES_BUTTON,
     SHOPPING_DISTRICT_BUTTON,
 } from '../../constants/button-names.constant';
+import { MenuService } from 'src/modules/cuisine/service/menu.service';
 
 @Scene(ENUM_SCENES_ID.ORGANIZATIONS_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -25,17 +26,18 @@ export class OrganizationsScene {
     constructor(
         private readonly characterService: CharacterService,
         private readonly mapService: MapService,
+        private readonly menuService: MenuService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
-    async enter(@Ctx() ctx: BotContext, @Sender() sender) {
+    async enter(@Ctx() ctx: BotContext) {
         const chatType = ctx.chat.type;
 
         const caption = 'Вы вошли в город!';
         if (chatType == 'private') {
             await ctx.sendPhoto(
                 {
-                    source: KNIGHT_IMAGE_PATH,
+                    source: ORGANIZATIONS_IMAGE_PATH,
                 },
                 {
                     caption,
@@ -49,7 +51,40 @@ export class OrganizationsScene {
                 }
             );
         } else {
-            await ctx.reply(
+            await ctx.sendPhoto(
+                {
+                    source: ORGANIZATIONS_IMAGE_PATH,
+                },
+                {
+                    caption,
+                    parse_mode: 'HTML',
+                    ...Markup.inlineKeyboard([
+                        [
+                            Markup.button.callback(
+                                GRIMOIRE_TOWER_BUTTON,
+                                GRIMOIRE_TOWER_BUTTON
+                            ),
+                            Markup.button.callback(
+                                SHOPPING_DISTRICT_BUTTON,
+                                SHOPPING_DISTRICT_BUTTON
+                            ),
+                        ],
+                        [
+                            Markup.button.callback(
+                                MAGIC_PARLAMENT_BUTTON,
+                                MAGIC_PARLAMENT_BUTTON
+                            ),
+                            ,
+                            Markup.button.callback(
+                                ARMED_FORCES_BUTTON,
+                                ARMED_FORCES_BUTTON
+                            ),
+                        ],
+                    ]),
+                }
+            );
+          /**
+           *   await ctx.reply(
                 caption,
                 Markup.inlineKeyboard([
                     [
@@ -80,6 +115,7 @@ export class OrganizationsScene {
                     ],
                 ])
             );
+           */
         }
         /**
       *    const background = await this.characterService.findBackgroundByTgId(
@@ -120,7 +156,7 @@ export class OrganizationsScene {
     @Action(SHOPPING_DISTRICT_BUTTON)
     async shopDistrict(@Ctx() ctx: BotContext) {
         await ctx.deleteMessage();
-        await ctx.scene.enter(ENUM_SCENES_ID.SHOPPING_DISTRICT_SCENE_ID);
+     await ctx.scene.enter(ENUM_SCENES_ID.SHOPPING_DISTRICT_SCENE_ID);
     }
 
     @Hears(GARDEN_BUTTON)

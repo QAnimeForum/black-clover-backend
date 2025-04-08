@@ -9,24 +9,6 @@ import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
 import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
 import { ShopService } from 'src/modules/items/service/shop.service';
 import { EqupmentItemService } from 'src/modules/items/service/equipment.item.service';
-import { Paginated } from 'nestjs-paginate';
-import { ShopEntity } from 'src/modules/items/entity/shop.entity';
-import fs from 'fs';
-import {
-    BACK_BUTTON,
-    CREATE_OFFER_BUTTON,
-} from 'src/modules/tg-bot/constants/button-names.constant';
-import { SHOP_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
-import {
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-} from 'telegraf/typings/core/types/typegram';
-import { EqupmentItemEntity } from 'src/modules/items/entity/equpment.item.entity';
-import { ENUM_ACTION_NAMES } from 'src/modules/tg-bot/constants/action-names.constant';
-import {
-    convertRarityToText,
-    convertBodyPartToText,
-} from 'src/modules/tg-bot/utils/items.utils';
 
 @Injectable()
 export class CreateOfferWizard {
@@ -69,7 +51,7 @@ export class CreateOfferWizard {
         const composer = new Composer<BotContext>();
         composer.start((ctx) => ctx.scene.enter(ENUM_SCENES_ID.START_SCENE_ID));
         composer.command('cancel', async (ctx) => {
-            await ctx.reply('Цели не изменены.');
+            await ctx.reply('Создание предложение в магазине прервано.');
             ctx.scene.enter(ENUM_SCENES_ID.SHOP_SCENE_ID);
         });
         composer.on(message('text'), async (ctx) => {

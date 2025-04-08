@@ -47,6 +47,8 @@ export class StateScene {
                 'state.id': `$eq:${ctx.session.map.currentState.id}`,
             },
         });
+        const capital = await this.mapService.findCapital(state.id);
+        console.log(capital);
         const armedForces =
             await this.squadService.findArmedForcesByState(state);
         for (let i = 0; i < regions.data.length - 1; i += 2) {
@@ -68,12 +70,13 @@ export class StateScene {
         let caption = `<strong>${state.fullName}</strong>\n\n`;
         caption += `<strong>⚜️Символ:</strong> ${state.symbol}\n`;
         caption += `<strong>🏤Форма правления:</strong> ${state.form.name}\n`;
-        caption += `<strong>🛡Название армии: ${armedForces.name}</strong>\n`;
+        caption += `<strong>⭐️Столица:</strong> ${capital ? `${capital.name} (${capital.province.fullName})` : 'нет'}\n`;
+        caption += `<strong>🛡Название армии:</strong> ${armedForces.name}\n`;
         caption += `<strong>📖Описание</strong>\n ${state.description}\n\n`;
         caption += `<strong>📊Статистика</strong>\n`;
-        caption += `<em>Количество областей:</em> ${regions.data.length}\n`;
+        caption += `<em>Количество областей:</em> ${regions.data.length}\n\n`;
         //    caption += `<em>Количество городов:</em>\n`;
-        caption += `<strong>📊Статистика по игрокам</strong>\n\n`;
+        caption += `<strong>📊Статистика по игрокам</strong>\n`;
         //  caption += `<em>Количество жителей в королевстве: </em>\n`;
         caption += `<em>Количество игроков из этой страны:</em> ${playersCount}\n`;
         //  caption += `<em>Количество игроков, проживающих в этой стране:</em>\n`;

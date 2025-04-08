@@ -1,16 +1,4 @@
-import {
-    Ctx,
-    Hears,
-    Message,
-    On,
-    Scene,
-    SceneEnter,
-    Wizard,
-    WizardStep,
-    Command,
-    Action,
-    Sender,
-} from 'nestjs-telegraf';
+import { Ctx, Hears, Scene, SceneEnter, Action } from 'nestjs-telegraf';
 import { ADMIN_IMAGE_PATH } from '../../constants/images';
 
 import { TelegrafExceptionFilter } from '../../filters/tg-bot.filter';
@@ -23,9 +11,7 @@ import {
     ANNOUNCEMENTS_BUTTON,
     ARMED_FORCES_BUTTON,
     BACK_BUTTON,
-    BACK_TO_ADMIN_BUTTON,
     CHARACTERS_BUTTON,
-    CHARACTERS_LIST_BUTTON,
     CHRONICLE_BUTTON,
     GAMES_BUTTON,
     GRIMOIRES_BUTTON,
@@ -38,26 +24,20 @@ import {
 import { ENUM_SCENES_ID } from '../../constants/scenes.id.enum';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { AnnouncementService } from 'src/modules/events/services/announcement.service';
-import { SquadsService } from 'src/modules/squards/service/squads.service';
-import { CharacterService } from 'src/modules/character/services/character.service';
 import { CharacterEntity } from 'src/modules/character/entity/character.entity';
 import { Paginated } from 'nestjs-paginate';
 import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
 import { ENUM_ACTION_NAMES } from '../../constants/action-names.constant';
-import { RaceService } from 'src/modules/race/race.service';
-import { CharacteristicService } from 'src/modules/character/services/characteristics.service';
-import { MapService } from 'src/modules/map/service/map.service';
+import { ShopService } from 'src/modules/items/service/shop.service';
+import { EqupmentItemService } from 'src/modules/items/service/equipment.item.service';
 @Scene(ENUM_SCENES_ID.ADMIN_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class AdminScene {
     constructor(
         private readonly userService: UserService,
-        private readonly characterService: CharacterService,
+        private readonly equipmentItemService: EqupmentItemService,
         private readonly announcementService: AnnouncementService,
-        private readonly armedForcesService: SquadsService,
-        private readonly raceService: RaceService,
-        private readonly stateService: MapService,
-        private readonly characteristicService: CharacteristicService,
+        private readonly shopService: ShopService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
@@ -73,12 +53,6 @@ export class AdminScene {
                     [CHARACTERS_BUTTON, ITEMS_BUTTON],
                     [MAGIC_PARLAMENT_BUTTON, ARMED_FORCES_BUTTON],
                     [BACK_BUTTON],
-                    /*     [PERMITIONS_BUTTON, GRIMOIRES_BUTTON, ITEMS_BUTTON],
-                    [PLANTS_BUTTON, GAMES_BUTTON, MONEY_BUTTON],
-                    [MAGIC_PARLAMENT_BUTTON, ARMED_FORCES_BUTTON],
-                    [CHARACTERS_BUTTON],
-                  [ANNOUNCEMENTS_BUTTON, CHRONICLE_BUTTON],
-                    [BACK_BUTTON],*/
                 ]).resize(),
             }
         );
@@ -102,49 +76,9 @@ export class AdminScene {
     }
     @Hears(ITEMS_BUTTON)
     async items(@Ctx() ctx: BotContext) {
-        await ctx.reply('Предметы', {
-            parse_mode: 'HTML',
-            ...Markup.inlineKeyboard([
-                [Markup.button.callback('Список предметов', 'create_item')],
-                [Markup.button.callback('Создать предмет', 'create_item')],
-                [
-                    Markup.button.callback(
-                        'Выдать предмет пользователю',
-                        'GIVE_ITEM_TO_USER'
-                    ),
-                ],
-                [
-                    Markup.button.callback(
-                        'Создать предложение в магазине',
-                        'CREATE_OFFER'
-                    ),
-                ],
-                [
-                    Markup.button.callback(
-                        'Удалить предложение в магазине',
-                        'DELETE_OFFER'
-                    ),
-                ],
-            ]),
-        });
+        await ctx.scene.enter(ENUM_SCENES_ID.ADMIN_ITEMS_SCENE_ID);
     }
 
-    @Action('GIVE_ITEM_TO_USER')
-    async giveItemToUser(@Ctx() ctx: BotContext) {
-        await ctx.answerCbQuery();
-        await ctx.scene.enter(ENUM_SCENES_ID.GIVE_ITEM_SCENE_ID);
-    }
-    @Action('CREATE_OFFER')
-    async createOffer(@Ctx() ctx: BotContext) {
-        await ctx.answerCbQuery();
-        await ctx.scene.enter(ENUM_SCENES_ID.CREATE_OFFER_SCENE_ID);
-    }
-
-    @Action('DELETE_OFFER')
-    async deleteOffer(@Ctx() ctx: BotContext) {
-        await ctx.answerCbQuery();
-        await ctx.scene.enter(ENUM_SCENES_ID.DELETE_OFFER_SCENE_ID);
-    }
     @Hears(PLANTS_BUTTON)
     async plants(@Ctx() ctx: BotContext) {
         ctx.scene.enter(ENUM_SCENES_ID.PLANTS_SCENE_ID);

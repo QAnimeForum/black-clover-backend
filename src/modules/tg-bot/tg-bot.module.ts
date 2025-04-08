@@ -49,8 +49,6 @@ import { CharacterTraitsEditWizard } from './scenes/profile/background/character
 import { IdealsEditWizard } from './scenes/profile/background/ideals-edit.wizard';
 import { AnnouncementCreateWizard } from './scenes/admin/announcement.create.wizard';
 import { AdminScene } from './scenes/admin/admin.scene';
-
-
 import { ShopScene } from './scenes/organizations/shop/shop.scene';
 import { BLackMarketScene } from './scenes/organizations/shop/black.market.scene';
 import { CasinoScene } from './scenes/organizations/casino.scene';
@@ -86,8 +84,6 @@ import {
     SearchOfferByCategoryScene,
     SearchOfferByNameScene,
 } from './scenes/organizations/shop/search-offer.by-name.scene';
-import { CreateEquipmentItemWizard } from './scenes/organizations/shop/create-equipment.item.wizard';
-import { CreateOfferWizard } from './scenes/organizations/shop/create-offer.wizard';
 import { GrimoireTowerScene } from './scenes/organizations/grmoires/grimoire.tower.scene';
 import { CreateRequestWizard } from './scenes/organizations/grmoires/create.request.wizard';
 import { EditMagicNameWizard } from './scenes/profile/grimoire/magic-name.edit.scene';
@@ -115,12 +111,6 @@ import { JudicialOfficerAddWizard } from './scenes/admin/parlament/judicial-offi
 import { JudicialOfficerRemoveWizard } from './scenes/admin/parlament/judicial-officer-remove.scene';
 import { DeleteAdminWizard } from './scenes/admin/remove.admin.wizard';
 import { CharactersSettingsScene } from './scenes/admin/characters.settings.scene';
-import { ItemNameEditWiazard } from './scenes/organizations/shop/item.edit-name.wizard';
-import { ItemDescriptionEditWiazard } from './scenes/organizations/shop/item.edit-description.wizard';
-import { ItemEditRarityWizard } from './scenes/organizations/shop/item.edit-rarity.wizard';
-import { ItemEditSlotDescriptionWizard } from './scenes/organizations/shop/item.edit-slot.description';
-import { ItemPhotoChangeWizard } from './scenes/organizations/shop/item.photo-change.wizard';
-import { ItemEditCategoryWizard } from './scenes/organizations/shop/item.edit-category.wizard';
 import { DevilCreateWizard } from './scenes/devils/devil.create.wizard';
 import { DevilEditNameWizard } from './scenes/devils/devil.edit.name.wizard';
 import { DevilEditDescriptionWizard } from './scenes/devils/devil.edit.description.wizard';
@@ -130,7 +120,22 @@ import { MapScene } from './scenes/map/map.scene';
 import { RegionScene } from './scenes/map/region.scene';
 import { CityScene } from './scenes/map/city.scene';
 import { StateScene } from './scenes/map/state.scene';
-
+import { AdminItemsScene } from './scenes/admin/items/admin.items.scene';
+import { CreateOfferWizard } from './scenes/admin/items/create-offer.wizard';
+import { GiveEquipmentItemWizard } from './scenes/admin/items/give-item-to-user.wizard';
+import { CreateEquipmentItemWizard } from './scenes/admin/items/equipment-items/create-equipment.item.wizard';
+import { ItemEditCategoryWizard } from './scenes/admin/items/equipment-items/item.edit-category.wizard';
+import { ItemDescriptionEditWiazard } from './scenes/admin/items/equipment-items/item.edit-description.wizard';
+import { ItemNameEditWiazard } from './scenes/admin/items/equipment-items/item.edit-name.wizard';
+import { ItemEditRarityWizard } from './scenes/admin/items/equipment-items/item.edit-rarity.wizard';
+import { ItemEditSlotDescriptionWizard } from './scenes/admin/items/equipment-items/item.edit-slot.description';
+import { ItemPhotoChangeWizard } from './scenes/admin/items/equipment-items/item.photo-change.wizard';
+import { CreateDrinkWizard } from './scenes/admin/items/drink/drink-create.wizard';
+import { CuisineModule } from '../cuisine/cuisine.module';
+import { DrinkNameEditWiazard } from './scenes/admin/items/drink/drink.edit-name.wizard';
+import { DrinkDescriptionEditWiazard } from './scenes/admin/items/drink/drink.edit-description.wizard';
+import { DrinkPhotoChangeWizard } from './scenes/admin/items/drink/drink.edit-photo.wizard';
+import { RestaurantAddWizard } from './scenes/admin/items/menu/restaurant.add-wizard.wizard';
 
 @Module({
     imports: [
@@ -157,6 +162,7 @@ import { StateScene } from './scenes/map/state.scene';
         RaceModule,
         UserModule,
         CharacterModule,
+        CuisineModule,
     ],
     providers: [
         TgBotUpdate,
@@ -170,6 +176,8 @@ import { StateScene } from './scenes/map/state.scene';
 
         //admin
         AdminScene,
+        AdminItemsScene,
+        GiveEquipmentItemWizard,
         CharactersSettingsScene,
         AdminGrimoireScene,
         AddAdminWizard,
@@ -233,6 +241,13 @@ import { StateScene } from './scenes/map/state.scene';
         MyOffersScene,
         CheckOffersScene,
 
+        //drinks
+        CreateDrinkWizard,
+        DrinkNameEditWiazard,
+        DrinkDescriptionEditWiazard,
+        DrinkPhotoChangeWizard,
+        // Restaurant
+        RestaurantAddWizard,
         //change item
         ItemNameEditWiazard,
         ItemDescriptionEditWiazard,

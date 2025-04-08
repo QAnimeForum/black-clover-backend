@@ -6,15 +6,20 @@ import { Logger } from 'winston';
 import { ENUM_SCENES_ID } from 'src/modules/tg-bot/constants/scenes.id.enum';
 import { BotContext } from 'src/modules/tg-bot/interfaces/bot.context';
 import { TelegrafExceptionFilter } from 'src/modules/tg-bot/filters/tg-bot.filter';
-import { KNIGHT_IMAGE_PATH } from 'src/modules/tg-bot/constants/images';
+import {
+    BAR_IMAGE_PATH,
+    KNIGHT_IMAGE_PATH,
+} from 'src/modules/tg-bot/constants/images';
 import { BACK_BUTTON } from 'src/modules/tg-bot/constants/button-names.constant';
 import { ENUM_ACTION_NAMES } from '../../constants/action-names.constant';
+import { MenuService } from 'src/modules/cuisine/service/menu.service';
 
 @Scene(ENUM_SCENES_ID.CASINO_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
 export class CasinoScene {
     constructor(
-        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+        private readonly menuService: MenuService
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext) {

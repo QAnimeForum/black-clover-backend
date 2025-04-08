@@ -23,6 +23,7 @@ import {
     QUESTS_BUTTON,
 } from '../constants/button-names.constant';
 import { AnnouncementService } from 'src/modules/events/services/announcement.service';
+import { ResourceService } from 'src/modules/items/service/resource.service';
 
 @Scene(ENUM_SCENES_ID.HOME_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -30,6 +31,7 @@ export class HomeScene {
     constructor(
         private readonly userSerivce: UserService,
         private readonly announcementService: AnnouncementService,
+        private readonly rescourceService: ResourceService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
 
@@ -38,6 +40,7 @@ export class HomeScene {
     async enter(@Ctx() ctx: BotContext, @Sender('id') tgId: string) {
         const chatType = ctx.chat.type;
         const isShowAdminButton = await this.userSerivce.isAdmin(tgId);
+   //     await this.rescourceService.loadCategories();
         const caption = 'Привет, путник!';
         if (chatType == 'private') {
             const caption = 'Привет, путник!';

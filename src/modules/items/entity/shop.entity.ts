@@ -29,7 +29,7 @@ export class ShopEntity {
         name: 'is_active',
         type: 'bool',
     })
-    isActvie: boolean;
+    isActive: boolean;
 
     @Column({
         name: 'copper',

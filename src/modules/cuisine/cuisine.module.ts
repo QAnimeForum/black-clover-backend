@@ -3,22 +3,27 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DrinkEntity } from './entities/drink.entity';
 import FoodComponentEntity from './entities/food.component.entity';
-import CuisineEntity from './entities/cuisine.enitity';
 import { MoneyModule } from '../money/money.module';
-import DrinkTypeEntity from './entities/drink.type.entity';
-
+import { RecipeEntity } from './entities/recipe.entity';
+import { RestaurantDrinksEntity } from './entities/restaurant.drinks.entity';
+import { RestaurantMenuEntity } from './entities/restaurant.menu.entity';
+import { ItemsModule } from '../items/items.module';
+import { DrinkService } from './service/drink.service';
+import { MenuService } from './service/menu.service';
 @Module({
     imports: [
         TypeOrmModule.forFeature([
-            CuisineEntity,
             DrinkEntity,
-            DrinkTypeEntity,
+            RecipeEntity,
+            RestaurantDrinksEntity,
+            RestaurantMenuEntity,
             FoodComponentEntity,
         ]),
         MoneyModule,
+        ItemsModule,
     ],
     controllers: [],
-    providers: [],
-    exports: [],
+    providers: [DrinkService, MenuService],
+    exports: [DrinkService, MenuService],
 })
 export class CuisineModule {}

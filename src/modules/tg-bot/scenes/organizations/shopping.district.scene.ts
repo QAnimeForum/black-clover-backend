@@ -16,6 +16,8 @@ import {
     SHOP_BUTTON,
 } from '../../constants/button-names.constant';
 import { ENUM_ACTION_NAMES } from '../../constants/action-names.constant';
+import { BAR_IMAGE_PATH, ORGANIZATIONS_IMAGE_PATH } from '../../constants/images';
+import { MenuService } from 'src/modules/cuisine/service/menu.service';
 
 @Scene(ENUM_SCENES_ID.SHOPPING_DISTRICT_SCENE_ID)
 @UseFilters(TelegrafExceptionFilter)
@@ -23,15 +25,21 @@ export class ShoppingDistrictScene {
     constructor(
         private readonly characterService: CharacterService,
         private readonly mapService: MapService,
+        private readonly menuService: MenuService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
     ) {}
     @SceneEnter()
     async enter(@Ctx() ctx: BotContext, @Sender() sender) {
         const type = ctx.chat.type;
         if (type == 'private') {
-            await ctx.reply(
-                'Добро пожаловать в торговый квартал!\n\nЗдесь вы можете обзовестись новыми вещами или заработать, продав собственные',
+            await ctx.sendPhoto(
                 {
+                    source: ORGANIZATIONS_IMAGE_PATH,
+                },
+                {
+                    caption:
+                        'Добро пожаловать в торговый квартал!\n\nЗдесь вы можете обзовестись новыми вещами или заработать, продав собственные',
+
                     parse_mode: 'HTML',
                     ...Markup.keyboard([
                         [SHOP_BUTTON, BLACK_MARKET_BUTTON],
@@ -117,13 +125,52 @@ export class ShoppingDistrictScene {
     async barAction(@Ctx() ctx: BotContext) {
         await ctx.answerCbQuery();
         await ctx.deleteMessage();
-        await ctx.scene.enter(ENUM_SCENES_ID.BAR_SCENE_ID);
+        const menuList = await this.menuService.findRestrantMenus({
+            path: '',
+        });
+        const caption = 'В какое заведение хотите отправиться?';
+        const buttons = [];
+        menuList.data.map((item) => {
+            buttons.push([Markup.button.callback(item.name, `BAR:${item.id}`)]);
+        });
+        await ctx.sendPhoto(
+            {
+                source: BAR_IMAGE_PATH,
+            },
+            {
+                caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard(buttons),
+            }
+        );
     }
     @Hears(BAR_BUTTON)
     async barHears(@Ctx() ctx: BotContext) {
+        const menuList = await this.menuService.findRestrantMenus({
+            path: '',
+        });
+        const caption = 'В какое заведение хотите отправиться?';
+        const buttons = [];
+        menuList.data.map((item) => {
+            buttons.push([Markup.button.callback(item.name, `BAR:${item.id}`)]);
+        });
+        await ctx.sendPhoto(
+            {
+                source: BAR_IMAGE_PATH,
+            },
+            {
+                caption,
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard(buttons),
+            }
+        );
+    }
+    @Action(/^(BAR:.*)$/)
+    async bar(@Ctx() ctx: BotContext) {
+        await ctx.answerCbQuery();
+        ctx.session.selectedBarId = ctx.callbackQuery['data'].split(':')[1];
         await ctx.scene.enter(ENUM_SCENES_ID.BAR_SCENE_ID);
     }
-
     @Action(ENUM_ACTION_NAMES.BACK_TO_ORGANIZATIONS_ACTION)
     async homeAction(@Ctx() ctx: BotContext) {
         await ctx.answerCbQuery();

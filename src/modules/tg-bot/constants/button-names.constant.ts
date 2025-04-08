@@ -134,6 +134,8 @@ export const CREATE_GARDEN_BUTTON = '🏡Создать сад';
 export const SHOPPING_DISTRICT_BUTTON = '🛍Торговый квартал';
 export const GRIMOIRE_TOWER_BUTTON = '🏰Башня гримуаров';
 export const SHOP_BUTTON = '🛍Магазин';
+export const FORGE_BUTTON = '🗡Кузница';
+export const RESOURCE_SHOP_BUTTON = '🛍Мазазин ресурсов';
 export const CHECK_OFFERS_BUTTON = '🏦 Посмотреть предложения';
 export const SEARCH_OFFERS_BUTTON = '🔎 Поиск предложений';
 export const SEARCH_OFFERS_BY_NAME_BUTTON = '🔎 Поиск по имени';
@@ -145,11 +147,14 @@ export const ALL_GOODS_BUTTON = '🎒 Все товары';
 export const GOODS_BY_CATEOGORY_BUTTON = 'По категории';
 export const GOODS_BY_RARITY_BUTTON = 'По редкости';
 export const OFFERS_BUTTON = 'Позиции магазина';
+export const GIVE_ITEM_BUTTON = '➕ Выдать предмет';
 export const CREATE_OFFER_BUTTON = '➕ Создать предложение';
 export const DELETE_OFFER_BUTTON = '➖ Удалить предложение';
 export const BLACK_MARKET_BUTTON = '🛍Чёрный рынок';
 export const MY_OFFERS_BUTTON = '🛍️ Мои предложения';
 export const BAR_BUTTON = '🍸Бар';
+export const MENU_BUTTON = '🍸Меню';
+export const SELL_INGREDIENTS_BUTTON = '💵Продать';
 export const CASINO_BUTTON = '🎰Казино';
 export const EDIT_ITEM_NAME = '✏️Название';
 export const EDIT_ITEM_DESCRIPTION = '✏️Описание';
@@ -162,6 +167,13 @@ export const EDIT_MAGIC_DAMAGE = '✏️Магический урон';
 export const EDIT_PHYSICAL_DEFENSE = '✏️Физическая защита';
 export const EDIT_MAGIC_DEFENSE = '✏️Магическая защита';
 export const DELETE_ITEM = '🗑Удалить предмет';
+
+
+export const ADD_DRINK_TO_MENU_BUTTON = 'Добавить напиток в меню';
+export const EDIT_DRINK_NAME_BUTTON = '✏️Название';
+export const EDIT_DRINK_DESCRIPTION_BUTTON = '✏️Описание';
+export const EDIT_DRINK_PHOTO_BUTTON = '✏️Фото';
+export const DELETE_DRINK_BUTTON = '🗑Удалить';
 /**
  *         "physicalAttackDamage": 0,
               "magicAttackDamage": 0,
@@ -213,6 +225,8 @@ export const JUDGE_OFFICE_BUTTON = '⚖️Офис судьи';
 export const ADMIN_PANEL_BUTTON = '⚙️Панель админа';
 export const PERMITIONS_BUTTON = '👤Выдача прав';
 export const ITEMS_BUTTON = '🎒Предметы';
+export const EQUIPMENT_ITEMS_BUTTON = '🎒Предметы экипировки';
+export const SHOP_SETTINGS_BUTTON = '🎒Настройки магазина';
 export const GAMES_BUTTON = '🎰Казино';
 export const PLANTS_BUTTON = '🌳Растения';
 export const MONEY_BUTTON = '🏦Деньги';

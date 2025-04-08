@@ -2,22 +2,12 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn,
-    ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import DrinkType from './drink.type.entity';
-
-
-export enum ENUM_DRINK_QUALITY {
-    NASTY,
-    AWFUL,
-    ACCEPTABLE,
-    DECENT,
-    GOOD,
-    EXCELLENT,
-}
+import { RestaurantDrinksEntity } from './restaurant.drinks.entity';
+import { DrinkInventoryEntity } from '../../items/entity/drink.inventory.entity';
 
 @Entity('drink')
 export class DrinkEntity {
@@ -27,6 +17,13 @@ export class DrinkEntity {
         type: 'varchar',
     })
     name: string;
+
+    @Column({
+        name: 'image_path',
+        type: 'varchar',
+    })
+    imagePath: string;
+
     @Column({
         type: 'varchar',
     })
@@ -36,6 +33,31 @@ export class DrinkEntity {
     })
     appearance: string;
 
+    @OneToMany(() => RestaurantDrinksEntity, (item) => item.drink)
+    restaurantDrinks: RestaurantDrinksEntity[];
+
+    @OneToMany(() => DrinkInventoryEntity, (item) => item.drink)
+    inventorySlots: DrinkInventoryEntity[];
+
+    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    updatedAt: Date;
+}
+
+/**
+ * 
+ * 
+ * 
+export enum ENUM_DRINK_QUALITY {
+    NASTY,
+    AWFUL,
+    ACCEPTABLE,
+    DECENT,
+    GOOD,
+    EXCELLENT,
+}
     @Column({
         type: 'enum',
         enum: ENUM_DRINK_QUALITY,
@@ -55,14 +77,7 @@ export class DrinkEntity {
         name: 'type_id',
     })
     typeId: string;
-    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
-    createdAt: Date;
-
-    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
-    updatedAt: Date;
-}
-
-
+ */
 /**
  *    @OneToOne(() => MoneyEntity)
     @JoinColumn({
@@ -71,3 +86,48 @@ export class DrinkEntity {
     })
     cost: MoneyEntity;
  */
+ 
+    /*
+    @Entity('drink_type')
+    export default class DrinkTypeEntity {
+        @PrimaryGeneratedColumn('uuid')
+        id: string;
+        @Column({
+            type: 'varchar',
+        })
+        name: string;
+    
+        @Column({
+            type: 'varchar',
+        })
+        drinkImage: string;
+        @Column({
+            type: 'varchar',
+        })
+        strengthMin: number;
+        @Column({
+            type: 'varchar',
+        })
+        strengthMax: number;
+        @Column({
+            type: 'varchar',
+        })
+        costMin: number;
+        @Column({
+            type: 'varchar',
+        })
+        costMax: number;
+        @Column('varchar', { name: 'colors', array: true })
+        appearances: string[];
+    
+    
+    
+        @OneToMany(() => DrinkEntity, (drink) => drink.type)
+        drinks: DrinkEntity[];
+        @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+        createdAt: Date;
+    
+        @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+        updatedAt: Date;
+    }
+    */

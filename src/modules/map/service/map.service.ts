@@ -65,6 +65,19 @@ export class MapService {
         });
     }
 
+    public async findCapital(stateId: string) {
+        return await this.burgRepository.findOne({
+            where: {
+                isCaptial: true,
+                province: {
+                    stateId: stateId,
+                },
+            },
+            relations: {
+                province: true,
+            },
+        });
+    }
     public findAllBurgs(query: PaginateQuery): Promise<Paginated<BurgEntity>> {
         return paginate(query, this.burgRepository, {
             sortableColumns: ['id', 'name'],

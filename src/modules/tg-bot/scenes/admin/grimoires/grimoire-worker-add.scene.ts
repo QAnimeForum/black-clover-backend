@@ -44,7 +44,7 @@ export class GrmoireWorkerAddWizard {
             await ctx.reply('Цели не изменены.');
             ctx.scene.enter(ENUM_SCENES_ID.BACKGROUND_SCENE_ID);
         });
-        composer.on(message('text'), async (ctx) => {
+       (message('text'), async (ctx) => {
             const regex = /^[a-zA-Zа-яА_Я\-]{2,25}$/;
             const message = ctx.update?.message.text;
             const character =

@@ -141,7 +141,6 @@ export class EqupmentItemService {
     }
 
     async findAllEquipmentItemsNotOnShop(query: PaginateQuery) {
-        /*   const sqlQuery = 'select * from equpment_item LEFT_JOIN shop ON equipment_item.id = shop.item_id where shop.id is null';*/
         const queryBuilder = this.equipmentItemRepository
             .createQueryBuilder()
             .select('equipment_item')
@@ -192,6 +191,9 @@ export class EqupmentItemService {
                 'item.image',
             ],
             relations: ['item', 'item.category'],
+            filterableColumns: {
+                'item.rarity': true,
+            },
         });
     }
 
